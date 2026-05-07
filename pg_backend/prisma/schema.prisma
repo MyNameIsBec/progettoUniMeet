@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+//
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- ATTORI ---
+
+model Studente {
+  matricola       String         @id
+  nome            String
+  cognome         String
+  email           String         @unique
+  password        String
+  corso_di_studi  String
+  prenotazioni    Prenotazione[]
+}
+
+model Docente {
+  id_docente       String             @id @default(uuid())
+  nome             String
+  cognome          String
+  email            String             @unique
+  password         String
+  ufficio          String
+  corsi            Corso[]
+  slot_ricevimento SlotRicevimento[]
+}
+
+model Amministratore {
+  id_admin        String @id @default(uuid())
+  nome            String
+  email           String @unique
+  password        String
+}
+
+// --- DIDATTICA E INFORMAZIONI ---
+
+model Corso {
+  id_corso        String   @id @default(uuid())
+  nome_corso      String
+  anno            Int
+  cfu             Int
+  id_docente      String
+  docente         Docente  @relation(fields: [id_docente], references: [id_docente])
+  bacheca         Bacheca?
+}
+
+model Bacheca {
+  id_bacheca             String   @id @default(uuid())
+  titolo                 String
+  descrizione            String
+  data_ultimo_aggiornamento DateTime @updatedAt
+  id_corso               String   @unique
+  corso                  Corso    @relation(fields: [id_corso], references: [id_corso])
+  faqs                   FAQ[]
+}
+
+model FAQ {
+  id_faq             String   @id @default(uuid())
+  domanda            String
+  risposta           String
+  data_pubblicazione DateTime @default(now())
+  ultima_modifica    DateTime @updatedAt
+  id_bacheca         String
+  bacheca            Bacheca  @relation(fields: [id_bacheca], references: [id_bacheca])
+}
+
+// --- RICEVIMENTO E PRENOTAZIONI ---
+
+model SlotRicevimento {
+  id_slot         String          @id @default(uuid())
+  data            DateTime        @db.Date
+  ora_inizio      DateTime        @db.Time
+  ora_fine        DateTime        @db.Time
+  disponibilita   Boolean         @default(true)
+  id_docente      String
+  docente         Docente         @relation(fields: [id_docente], references: [id_docente])
+  luogo           LuogoRicevimento?
+  prenotazioni    Prenotazione[]
+}
+
+model LuogoRicevimento {
+  id_luogo        String          @id @default(uuid())
+  nome_aula       String
+  edificio        String
+  piano           String
+  latitudine      Float?
+  longitudine     Float?
+  id_slot         String          @unique
+  slot            SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
+}
+
+model Prenotazione {
+  id_prenotazione    String      @id @default(uuid())
+  data_prenotazione  DateTime    @default(now())
+  argomento          String
+  stato_prenotazione String      @default("IN_ATTESA")
+  matricola_studente String
+  studente           Studente    @relation(fields: [matricola_studente], references: [matricola])
+  id_slot            String
+  slot               SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
+  documenti          Documento[]
+}
+
+model Documento {
+  id_documento      String       @id @default(uuid())
+  nome_file         String
+  tipo_file         String
+  dimensione        Int
+  data_caricamento  DateTime     @default(now())
+  percorso_file     String
+  id_prenotazione   String
+  prenotazione      Prenotazione @relation(fields: [id_prenotazione], references: [id_prenotazione])
+}
+
+model Notifica {
+  id_notifica String   @id @default(uuid())
+  messaggio   String
+  data_invio  DateTime @default(now())
+  tipo        String
+}
