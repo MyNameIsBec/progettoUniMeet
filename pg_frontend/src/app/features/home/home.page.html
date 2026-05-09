@@ -1,0 +1,384 @@
+<ion-header>
+  <ion-toolbar>
+    <div class="toolbar-container">
+
+      <div class="logo-section">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline" class="logo-main-icon"></ion-icon>
+          <h1>UniMeet</h1>
+        </div>
+        <span>Ricevimenti universitari semplificati</span>
+      </div>
+
+      <nav class="desktop-nav">
+        <a href="#home">Home</a>
+        <a href="#funzionalita">Funzionalità</a>
+        <a href="#come-funziona">Come funziona</a>
+        <a href="#accesso">Accedi</a>
+        <a href="#contatti">Contatti</a>
+      </nav>
+
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <!-- HERO -->
+  <section id="home" class="hero-section">
+
+    <div class="hero-container">
+
+      <div class="hero-content">
+
+        <h1>
+          Gestisci i ricevimenti universitari in modo semplice
+        </h1>
+
+        <p>
+          UniMeet è la piattaforma che connette studenti e docenti,
+          semplificando la prenotazione e la gestione dei ricevimenti
+          in modo efficiente e organizzato.
+        </p>
+
+        <div class="hero-buttons">
+
+          <ion-button size="large" href="#accesso">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Accedi
+          </ion-button>
+
+          <ion-button size="large" fill="outline" href="#accesso">
+            <ion-icon name="person-add-outline" slot="start"></ion-icon>
+            Registrati
+          </ion-button>
+
+        </div>
+
+      </div>
+
+      <div class="hero-image-box">
+        <div class="university-placeholder">
+          <ion-icon name="school-outline"></ion-icon>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FUNZIONALITÀ -->
+  <section id="funzionalita" class="section features-section">
+
+    <div class="section-title">
+      <h2>Cosa puoi fare con UniMeet</h2>
+      <div class="title-line"></div>
+    </div>
+
+    <div class="features-grid">
+
+      <!-- STUDENTE -->
+      <ion-card class="info-card student-card">
+
+        <ion-card-content>
+
+          <div class="info-card-layout">
+
+            <div class="main-role-icon student-icon-bg">
+              <ion-icon name="school-outline"></ion-icon>
+            </div>
+
+            <div class="role-content">
+
+              <h3>Se sei uno studente puoi:</h3>
+
+              <ul class="feature-list">
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="calendar-outline"></ion-icon>
+                  </span>
+                  <span>Consultare la disponibilità dei docenti</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="calendar-clear-outline"></ion-icon>
+                  </span>
+                  <span>Prenotare ricevimenti in pochi clic</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </span>
+                  <span>Gestire e modificare i tuoi appuntamenti</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="notifications-outline"></ion-icon>
+                  </span>
+                  <span>Ricevere notifiche e promemoria</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                  </span>
+                  <span>Caricare e condividere documenti utili</span>
+                </li>
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </ion-card-content>
+
+      </ion-card>
+
+      <!-- DOCENTE -->
+      <ion-card class="info-card teacher-card">
+
+        <ion-card-content>
+
+          <div class="info-card-layout">
+
+            <div class="main-role-icon teacher-icon-bg">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div class="role-content">
+
+              <h3>Se sei un docente puoi:</h3>
+
+              <ul class="feature-list teacher-list">
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="calendar-number-outline"></ion-icon>
+                  </span>
+                  <span>Gestire i tuoi slot di ricevimento</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="people-outline"></ion-icon>
+                  </span>
+                  <span>Visualizzare le prenotazioni degli studenti</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                  </span>
+                  <span>Approvare o rifiutare le richieste</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="folder-outline"></ion-icon>
+                  </span>
+                  <span>Consultare e gestire i documenti</span>
+                </li>
+
+                <li>
+                  <span class="list-icon">
+                    <ion-icon name="time-outline"></ion-icon>
+                  </span>
+                  <span>Organizzare al meglio i tuoi ricevimenti</span>
+                </li>
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </ion-card-content>
+
+      </ion-card>
+
+    </div>
+
+  </section>
+
+  <!-- COME FUNZIONA -->
+  <section id="come-funziona" class="section how-section">
+
+    <div class="section-title">
+      <h2>Come funziona</h2>
+      <div class="title-line"></div>
+    </div>
+
+    <ion-grid>
+      <ion-row>
+
+        <ion-col size="12" size-md="4">
+
+          <ion-card class="step-card">
+            <ion-card-content>
+              <div class="step-number">1</div>
+              <h3>Crea il tuo account</h3>
+              <p>
+                Registrati o accedi con le tue credenziali universitarie.
+                Il sistema riconoscerà automaticamente il tuo ruolo.
+              </p>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+
+        <ion-col size="12" size-md="4">
+
+          <ion-card class="step-card">
+            <ion-card-content>
+              <div class="step-number">2</div>
+              <h3>Gestisci o prenota</h3>
+              <p>
+                Gli studenti prenotano gli slot disponibili, mentre i docenti
+                organizzano fasce orarie e richieste ricevute.
+              </p>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+
+        <ion-col size="12" size-md="4">
+
+          <ion-card class="step-card">
+            <ion-card-content>
+              <div class="step-number">3</div>
+              <h3>Ricevi notifiche</h3>
+              <p>
+                UniMeet invia promemoria e aggiornamenti sugli appuntamenti,
+                evitando dimenticanze e sovrapposizioni.
+              </p>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+  </section>
+
+  <!-- ACCESSO / REGISTRAZIONE -->
+  <section id="accesso" class="section auth-section">
+
+    <ion-card class="auth-card">
+
+      <ion-card-header>
+        <ion-card-title>Accedi o Registrati</ion-card-title>
+        <ion-card-subtitle>
+          Per usare UniMeet, accedi al tuo account o crea un nuovo profilo.
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <ion-segment value="login">
+
+          <ion-segment-button value="login">
+            <ion-icon name="person-outline"></ion-icon>
+            <ion-label>Accedi</ion-label>
+          </ion-segment-button>
+
+          <ion-segment-button value="register">
+            <ion-icon name="person-add-outline"></ion-icon>
+            <ion-label>Registrati</ion-label>
+          </ion-segment-button>
+
+        </ion-segment>
+
+        <div class="auth-form">
+
+          <ion-grid>
+            <ion-row>
+
+              <ion-col size="12" size-md="6">
+
+                <div class="custom-field">
+                  <label>Email</label>
+
+                  <ion-item>
+                    <ion-input type="email" placeholder="es. nome.cognome@univ.it">
+                    </ion-input>
+                  </ion-item>
+                </div>
+
+              </ion-col>
+
+              <ion-col size="12" size-md="6">
+
+                <div class="custom-field">
+                  <label>Password</label>
+
+                  <ion-item>
+                    <ion-input type="password" placeholder="Inserisci la password">
+                    </ion-input>
+                  </ion-item>
+                </div>
+
+              </ion-col>
+
+            </ion-row>
+          </ion-grid>
+
+          <div class="auth-options">
+
+            <ion-checkbox labelPlacement="end">
+              Ricordami
+            </ion-checkbox>
+
+            <a href="#">Password dimenticata?</a>
+
+          </div>
+
+          <ion-button expand="block" class="login-button">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Accedi
+          </ion-button>
+
+          <p class="register-hint">
+            Non hai ancora un account?
+            <a href="#">Registrati</a>
+          </p>
+
+        </div>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contatti" class="footer">
+
+    <div class="footer-brand">
+
+      <div class="logo-row">
+        <ion-icon name="calendar-outline" class="logo-main-icon"></ion-icon>
+        <h2>UniMeet</h2>
+      </div>
+
+      <p>Piattaforma per i ricevimenti universitari</p>
+
+    </div>
+
+    <div class="footer-copy">
+      © 2026 UniMeet - Progetto universitario
+    </div>
+
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Termini di utilizzo</a>
+    </div>
+
+  </footer>
+
+</ion-content>
