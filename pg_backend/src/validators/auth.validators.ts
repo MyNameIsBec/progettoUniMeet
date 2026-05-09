@@ -1,13 +1,18 @@
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
+export const loginSchema = [
+  body('email').isEmail().normalizeEmail(),
+  body('password').isString().notEmpty(),
+];
+
 export const studenteRegistrationSchema = [
   body('matricola').isString().notEmpty().trim(),
   body('nome').isString().notEmpty().trim(),
   body('cognome').isString().notEmpty().trim(),
   body('email').isEmail().normalizeEmail(),
   body('password').isString().isLength({ min: 8 }),
-  body('corso_di_studi').isString().notEmpty().trim(),
+  body('corsoDiStudi').isString().notEmpty().trim(),
 ];
 
 export const docenteRegistrationSchema = [
@@ -16,6 +21,30 @@ export const docenteRegistrationSchema = [
   body('email').isEmail().normalizeEmail(),
   body('password').isString().isLength({ min: 8 }),
   body('ufficio').isString().notEmpty().trim(),
+];
+
+export const adminRegistrationSchema = [
+  body('nome').isString().notEmpty().trim(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isString().isLength({ min: 8 }),
+];
+
+export const changePasswordSchema = [
+  body('oldPassword').isString().notEmpty(),
+  body('newPassword').isString().isLength({ min: 8 }),
+];
+
+export const forgotPasswordSchema = [
+  body('email').isEmail().normalizeEmail(),
+];
+
+export const resetPasswordSchema = [
+  body('token').isString().notEmpty(),
+  body('nuovaPassword').isString().isLength({ min: 8 }),
+];
+
+export const refreshTokenSchema = [
+  body('refreshToken').isString().notEmpty(),
 ];
 
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
