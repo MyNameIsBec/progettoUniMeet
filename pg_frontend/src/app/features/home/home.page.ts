@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 
 import {
   IonHeader,
@@ -69,7 +69,10 @@ import {
     IonCheckbox
 ]
 })
-export class HomePage {
+export class HomePage implements AfterViewInit {
+  activeSection: string = 'home';
+  private cdr = inject(ChangeDetectorRef);
+
   constructor() {
     addIcons({
       calendarOutline,
@@ -87,5 +90,19 @@ export class HomePage {
       folderOutline,
       timeOutline
     });
+  }
+
+  ngAfterViewInit() {
+    const sections = document.querySelectorAll<HTMLElement>('section[id], footer[id]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          this.activeSection = entry.target.id;
+          this.cdr.detectChanges();
+        }
+      });
+    }, { rootMargin: '-50% 0px -50% 0px' });
+
+    sections.forEach(section => observer.observe(section));
   }
 }

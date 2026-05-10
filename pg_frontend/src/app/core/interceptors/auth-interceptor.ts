@@ -4,27 +4,22 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth';
 
-
 export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router); 
+  const router = inject(Router);
   const authService = inject(AuthService);
-  const baseUrl = 'https://localhost:3000'; // URL del server
+  const baseUrl = 'http://localhost:5000';
 
-  const token = authService.getToken(); 
-  let apiReq = req; 
+  const token = authService.getToken();
 
-  if (token !== null && token !== undefined) {
-    apiReq = req.clone({
-      url: `${baseUrl}/${req.url}`,
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  } else {
-    apiReq = req.clone({
-      url: `${baseUrl}/${req.url}` //richiesta anonima, senza token
-    });
+  const isAbsolute = req.url.startsWith('http://') || req.url.startsWith('https://');
+  const cleanUrl = isAbsolute ? req.url : `${baseUrl}/${req.url.replace(/^\//, '')}`;
+
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  const apiReq = req.clone({ url: cleanUrl, setHeaders: headers });
 
   return next(apiReq).pipe(
     catchError((err: HttpErrorResponse) => {
@@ -33,7 +28,6 @@ export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.clear();
         router.navigate(['/login']);
       }
-
       return throwError(() => err);
     })
   );

@@ -11,11 +11,11 @@
       </div>
 
       <nav class="desktop-nav">
-        <a href="#home">Home</a>
-        <a href="#funzionalita">Funzionalità</a>
-        <a href="#come-funziona">Come funziona</a>
-        <a href="#accesso">Accedi</a>
-        <a href="#contatti">Contatti</a>
+        <a href="#home" [class.active]="activeSection === 'home'">Home</a>
+        <a href="#funzionalita" [class.active]="activeSection === 'funzionalita'">Funzionalità</a>
+        <a href="#come-funziona" [class.active]="activeSection === 'come-funziona'">Come funziona</a>
+        <a href="#accesso" [class.active]="activeSection === 'accesso'">Accedi</a>
+        <a href="#contatti" [class.active]="activeSection === 'contatti'">Contatti</a>
       </nav>
 
     </div>

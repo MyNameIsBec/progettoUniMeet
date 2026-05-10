@@ -1,13 +1,26 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>gestione-slot-admin</ion-title>
+    <ion-title>Gestione Slot Admin</ion-title>
+  </ion-toolbar>
+  <ion-toolbar class="segment-toolbar">
+    <ion-segment [value]="activeSegment">
+      <ion-segment-button value="dashboard" routerLink="/dashboard-admin">
+        <ion-label>Dashboard</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="utenti" routerLink="/gestione-utenti">
+        <ion-label>Gestione Utenti</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="slot" routerLink="/gestione-slot-admin">
+        <ion-label>Slot</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">gestione-slot-admin</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="page-placeholder">
+    <ion-icon name="time-outline"></ion-icon>
+    <h2>Gestione Slot</h2>
+    <p>Prossimamente — panoramica globale degli slot con filtri per docente e data.</p>
+  </div>
 </ion-content>
