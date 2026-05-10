@@ -45,6 +45,7 @@ export class AuthService {
       { email, password }
     ).pipe(
       tap(session => {
+        session.role = session.role.toLowerCase() as UserRole;
         this.currentUser = session;
         this.saveSessionToStorage(session);
       })
@@ -109,7 +110,9 @@ export class AuthService {
     const raw = localStorage.getItem('unimeet_session');
     if (raw) {
       try {
-        this.currentUser = JSON.parse(raw) as UserSession;
+        const session = JSON.parse(raw) as UserSession;
+        session.role = session.role.toLowerCase() as UserRole;
+        this.currentUser = session;
       } catch {
         localStorage.removeItem('unimeet_session');
       }

@@ -16,7 +16,8 @@ pg_backend/
 │   ├── services/              # Logica di business
 │   ├── routes/                # Endpoint HTTP
 │   ├── middleware/
-│   │   └── authenticate.ts    # Middleware JWT (protegge le rotte)
+│   │   ├── authenticate.ts    # Middleware JWT (protegge le rotte)
+│   │   └── authorize.ts       # Middleware ruoli (controlla il ruolo dal JWT)
 │   ├── app.ts                 # Configurazione Express
 │   └── server.ts              # Entry point del server
 ├── prisma.config.ts           # Configurazione Prisma (datasource URL)
@@ -146,7 +147,7 @@ npx prisma generate
 | `luogo.service.ts` *(to be added)* | CRUD luogo associato a uno slot |
 | `prenotazione.service.ts` *(to be added)* | CRUD prenotazione, gestione stato (IN_ATTESA → CONFERMATO/RIFIUTATO) |
 | `notifica.service.ts` *(to be added)* | CRUD notifiche |
-| `admin.service.ts` *(to be added)* | Register/login admin, statistiche dashboard |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD) |
 
 ---
 
@@ -199,7 +200,7 @@ Le routes vengono montate in `app.ts` su prefisso `/api`. Esempio per auth (`aut
 | `/api/auth/change-password` | POST | Cambio password (autenticato) |
 | `/api/auth/profile` | GET | Dati profilo (autenticato) |
 
-Per le entity future (corsi, bacheche, slot, prenotazioni, notifiche, admin):
+Per le entity future (corsi, bacheche, slot, prenotazioni, notifiche):
 - `/api/corsi` — `corso.routes.ts`
 - `/api/bacheche` — `bacheca.routes.ts`
 - `/api/faq` — `faq.routes.ts`
@@ -207,7 +208,17 @@ Per le entity future (corsi, bacheche, slot, prenotazioni, notifiche, admin):
 - `/api/luoghi` — `luogo.routes.ts`
 - `/api/prenotazioni` — `prenotazione.routes.ts`
 - `/api/notifiche` — `notifica.routes.ts`
-- `/api/admin` — `admin.routes.ts`
+
+Endpoint admin (`admin.routes.ts`):
+
+| Endpoint | Metodo | Descrizione |
+|----------|--------|-------------|
+| `/api/admin/stats` | GET | Statistiche dashboard |
+| `/api/admin/utenti` | GET | Lista utenti unificata (filtro `?ruolo=`) |
+| `/api/admin/utenti` | POST | Creazione utente |
+| `/api/admin/utenti/:id` | PUT | Modifica utente |
+| `/api/admin/utenti/:id` | DELETE | Eliminazione utente |
+| `/api/admin/slot` | GET | Lista slot globali (filtri `?docenteId=&data=&stato=`) |
 
 ---
 
@@ -236,6 +247,13 @@ export const handleValidationErrors = (req, res, next) => {
   next();
 };
 ```
+
+File validator aggiuntivo:
+
+| File | Descrizione |
+|------|-------------|
+| `auth.validators.ts` | Login, registrazione (studente/docente/admin), cambio/reset password, refresh token |
+| `admin.validators.ts` | Creazione/modifica utenti admin, filtri slot globali |
 
 ---
 
@@ -329,6 +347,7 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - **Porta**: backend su `5000` (Angular chiama `ip:5000`)
 - **camelCase**: i body usano camelCase (`corsoDiStudi`, `nuovaPassword`) — il service mappa a snake_case per Prisma
 - **Amministratore**: non ha `cognome` nello schema; login e profilo restituiscono `cognome: ''`
+- **Role case**: il backend usa ruoli in **MAIUSCOLO** (`STUDENTE`, `DOCENTE`, `AMMINISTRATORE`); il frontend li normalizza in **lowercase** (`studente`, `docente`, `amministratore`) all'arrivo della risposta in `AuthService.login()` e `loadSessionFromStorage()`
 
 ---
 
@@ -343,4 +362,4 @@ Il backend è allineato con il `AuthService` Angular esistente:
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ❌ |
 | 6 | CRUD Prenotazione, gestione stato, upload documenti | ❌ |
 | 7 | CRUD Notifiche | ❌ |
-| 8 | Amministratore: dashboard, statistiche, gestione utenti | ❌ |
+| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali | ✅ |

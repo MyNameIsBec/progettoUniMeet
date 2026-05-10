@@ -67,7 +67,9 @@ export class LoginPage implements OnInit {
           ? this.urlDiRitorno
           : role === 'docente'
             ? '/docente/dashboard'
-            : '/studente/dashboard';
+            : role === 'amministratore'
+              ? '/dashboard-admin'
+              : '/studente/dashboard';
         this.router.navigateByUrl(target);
       },
       error: (err: Error) => {

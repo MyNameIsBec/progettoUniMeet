@@ -28,31 +28,252 @@ ion-segment-button {
   font-weight: 700;
 }
 
-.page-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 8%;
-  text-align: center;
+.utenti-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 8%;
 }
 
-.page-placeholder ion-icon {
-  font-size: 64px;
-  color: #94a3b8;
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+ion-chip {
+  --background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+ion-chip.active {
+  --background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.crea-btn {
+  --border-radius: 8px;
+  text-transform: none;
+  font-weight: 700;
+}
+
+.search-bar {
+  --border-radius: 12px;
+  --background: #ffffff;
+  --box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
   margin-bottom: 20px;
 }
 
-.page-placeholder h2 {
-  font-size: 24px;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 10px;
+.table-wrap {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  overflow-x: auto;
 }
 
-.page-placeholder p {
-  font-size: 16px;
+.utenti-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.utenti-table th {
+  text-align: left;
+  padding: 16px 20px;
+  font-size: 12px;
+  font-weight: 700;
   color: #64748b;
-  margin: 0;
-  max-width: 400px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafcff;
+}
+
+.utenti-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #0f172a;
+  vertical-align: middle;
+}
+
+.utenti-table tr:last-child td {
+  border-bottom: none;
+}
+
+.utenti-table tr:hover td {
+  background: #f8faff;
+}
+
+.ruolo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ruolo-badge ion-icon {
+  font-size: 16px;
+}
+
+.ruolo-studente {
+  background: #eaf2ff;
+  color: #2563eb;
+}
+
+.ruolo-docente {
+  background: #eafaf0;
+  color: #16a34a;
+}
+
+.ruolo-amministratore {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.nome-cell {
+  font-weight: 600;
+}
+
+.email-cell {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.dettagli-cell {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.actions-col {
+  width: 90px;
+  text-align: right;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 18px;
+}
+
+.icon-btn.edit {
+  color: #2563eb;
+}
+
+.icon-btn.edit:hover {
+  background: #eaf2ff;
+}
+
+.icon-btn.delete {
+  color: #ef4444;
+}
+
+.icon-btn.delete:hover {
+  background: #fef2f2;
+}
+
+.empty-row {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 20px !important;
+  font-style: italic;
+}
+
+.modal-content {
+  --background: #f8fbff;
+  padding: 24px;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.field-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.field-group ion-input,
+.field-group ion-select {
+  --background: #ffffff;
+  --color: #0f172a;
+  --placeholder-color: #94a3b8;
+  --placeholder-opacity: 1;
+  --border-radius: 10px;
+  --border-color: #e2e8f0;
+  --padding-start: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+ion-button {
+  --border-radius: 8px;
+  text-transform: none;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .hide-mobile {
+    display: none;
+  }
+
+  .utenti-content {
+    padding: 16px 4%;
+  }
+}
+
+@media (max-width: 560px) {
+  .utenti-content {
+    padding: 12px 3%;
+  }
+
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .crea-btn {
+    width: 100%;
+  }
+
+  .utenti-table th,
+  .utenti-table td {
+    padding: 10px 12px;
+  }
 }

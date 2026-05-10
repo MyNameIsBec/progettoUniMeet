@@ -39,5 +39,8 @@
 - [ ] CRUD Notifiche
 
 ## Fase 8 — Amministratore (Dashboard)
-- [ ] Statistiche (utenze, prenotazioni, corsi)
-- [ ] Gestione utenti (lista, disabilita/attiva)
+- [x] Statistiche (utenze, prenotazioni, corsi)
+- [x] API gestione utenti (lista, crea, modifica, elimina)
+- [x] API slot globali con filtri
+- [x] Pagina Gestione Utenti frontend (tabella, ricerca, CRUD)
+- [x] Pagina Gestione Slot Admin frontend (filtri, griglia slot)

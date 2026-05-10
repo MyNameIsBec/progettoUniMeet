@@ -1,5 +1,89 @@
 # CHANGES
 
+## Fix navigazione attiva home — IntersectionObserver mancante
+
+**Data:** 10/05/2026
+
+**Modifica:** Aggiunto `IntersectionObserver` in `HomePage` per aggiornare dinamicamente la sezione attiva del menu durante lo scroll manuale (mancava l'implementazione nonostante fosse documentata in CHANGES.md). Risolto il bug per cui cliccando una sezione a volte non veniva evidenziata.
+
+### File modificati
+
+#### `pg_frontend/src/app/features/home/home.page.ts`
+- Aggiunti `AfterViewInit`, `ChangeDetectorRef`, `inject` agli import
+- Implementato `ngAfterViewInit()` con `IntersectionObserver` che osserva le sezioni `section[id]` e aggiorna `activeSection` quando una sezione entra nel viewport centrale (`rootMargin: '-40% 0px -55% 0px'`)
+- Iniettato `ChangeDetectorRef` per forzare il rilevamento delle modifiche all'attivazione della sezione
+
+---
+
+## Admin CRUD — gestione utenti e slot globali
+
+**Data:** 10/05/2026
+
+**Modifica:** Implementate API backend e pagine frontend per la gestione completa degli utenti (CRUD su studenti, docenti, amministratori) e la visualizzazione globale degli slot di ricevimento da pannello admin.
+
+### Backend — nuovi file
+
+#### `pg_backend/src/validators/admin.validators.ts`
+- `creaUtenteSchema` — validazione creazione utenti con campo `ruolo` e campi condizionali per tipo
+- `modificaUtenteSchema` — validazione modifica (tutti i campi opzionali)
+- `slotFiltriSchema` — validazione filtri query per slot globali
+
+### Backend — file modificati
+
+#### `pg_backend/src/services/admin.service.ts`
+- Aggiunte interfacce `UtenteUnificato`, `SlotGriglia`
+- `getAllUsers(ruolo?)` — query parallele su Studente/Docente/Amministratore, unifica con campo `ruolo`
+- `createUser(data)` — creazione nella tabella giusta in base a `data.ruolo`, con hash password e check email duplicata
+- `updateUser(id, data)` — ricerca utente su tutte le tabelle, update campi forniti
+- `deleteUser(id)` — elimina da tabella corretta (cascade prenotazioni per studenti)
+- `getSlotGlobali(filtri?)` — lista slot con join a Docente e Luogo, filtri per docente/data/stato
+- Helper `trovaUtentePerId(id)` — cerca su tutte e 3 le tabelle per ID
+
+#### `pg_backend/src/controllers/admin.controller.ts`
+- Aggiunti handler: `getUtenti`, `creaUtente`, `modificaUtente`, `eliminaUtente`, `getSlotGlobali`
+
+#### `pg_backend/src/routes/admin.routes.ts`
+- Aggiunte routes: `GET /admin/utenti`, `POST /admin/utenti`, `PUT /admin/utenti/:id`, `DELETE /admin/utenti/:id`, `GET /admin/slot`
+
+### Frontend — file modificati
+
+#### `pg_frontend/src/app/core/services/admin.ts`
+- Aggiunte interfacce: `UtenteUnificato`, `CreaUtenteRequest`, `SlotGriglia`, `FiltriSlot`
+- Aggiunti metodi: `getUtenti(ruolo?)`, `creaUtente(dati)`, `modificaUtente(id, dati)`, `eliminaUtente(id)`, `getSlotGlobali(filtri?)`
+
+### Frontend — file riscritti
+
+#### `pg_frontend/src/app/features/admin/gestione-utenti/`
+- Tabella utenti con colonne: Ruolo (con badge colorato), Nome, Email, Dettagli, Azioni
+- Chip filtro: Tutti / Studenti / Docenti / Admin
+- Barra di ricerca con debounce (nome/email/matricola)
+- Modale creazione/modifica con campi dinamici in base al ruolo
+- Bottone elimina con conferma
+
+#### `pg_frontend/src/app/features/admin/gestione-slot-admin/`
+- Card filtri: select docente, select data, select stato
+- Griglia slot card con: docente, data, ora, aula, stato, conteggio prenotazioni
+- Stile coerente con Dashboard (border-radius 18px, ombre, palette blue)
+
+---
+
+## Fix login admin — normalizzazione ruolo e redirect
+
+**Data:** 10/05/2026
+
+**Modifica:** Risolto il login per l'utente amministratore: il ruolo `AMMINISTRATORE` (uppercase) restituito dal backend veniva confrontato con `amministratore` (lowercase) atteso dal frontend, causando il fallimento dei `roleGuard` e il redirect errato a `/studente/dashboard`. Aggiunta normalizzazione in lowercase nel `AuthService` e redirect dedicato nella login page.
+
+### File modificati
+
+#### `pg_frontend/src/app/core/services/auth.ts`
+- `login()`: aggiunto `session.role = session.role.toLowerCase()` nel `tap` dopo la risposta HTTP, per normalizzare il ruolo uppercase del backend in lowercase usato dal frontend
+- `loadSessionFromStorage()`: stessa normalizzazione per sessioni già salvate in localStorage
+
+#### `pg_frontend/src/app/features/auth/login/login.page.ts`
+- Aggiunto redirect `role === 'amministratore' → '/dashboard-admin'` nel ramo `next()` di `effettuaLogin()`
+
+---
+
 ## Navigazione attiva nel menu (home page)
 
 **Data:** 10/05/2026
@@ -134,52 +218,6 @@
 
 ---
 
-# TO DO
+# ✅ Completato
 
-## Fase A — Backend: API Gestione Utenti
-
-Endpoint da aggiungere in `admin.routes.ts` (protetti da `authenticate` + `authorize('AMMINISTRATORE')`):
-
-| Endpoint | Descrizione |
-|----------|-------------|
-| `GET /api/admin/utenti` | Lista unificata di tutti gli utenti (studenti + docenti + admin) con filtro ruolo opzionale |
-| `POST /api/admin/utenti` | Creazione utente (studente/docente/admin) |
-| `PUT /api/admin/utenti/:id` | Modifica utente (nome, email, ecc.) |
-| `DELETE /api/admin/utenti/:id` | Eliminazione utente |
-
-File da modificare:
-- `pg_backend/src/services/admin.service.ts` — metodi `getAllUsers()`, `createUser()`, `updateUser()`, `deleteUser()`
-- `pg_backend/src/controllers/admin.controller.ts` — handlers corrispondenti
-- `pg_backend/src/routes/admin.routes.ts` — nuove routes
-
-## Fase B — Backend: API Gestione Slot Admin
-
-| Endpoint | Descrizione |
-|----------|-------------|
-| `GET /api/admin/slot` | Lista slot globali con filtri (docente, data, stato) |
-
-## Fase C — Frontend: Servizio `Admin`
-
-Metodi da aggiungere a `pg_frontend/src/app/core/services/admin.ts`:
-
-- `getUtenti(ruolo?)` — lista utenti
-- `creaUtente(dati)` — crea utente
-- `modificaUtente(id, dati)` — modifica utente
-- `eliminaUtente(id, ruolo)` — elimina utente
-- `getSlotGlobali(filtri?)` — lista slot globali
-
-## Fase D — Frontend: Pagina Gestione Utenti
-
-Partendo dal placeholder in `pg_frontend/src/app/features/admin/gestione-utenti/`:
-- Segment per filtrare: Tutti / Studenti / Docenti / Admin
-- Barra di ricerca per nome/email/matricola
-- Tabella/lista utenti con azioni modifica/elimina
-- Bottone "Crea utente" con form dinamico
-- Stile coerente con la Dashboard
-
-## Fase E — Frontend: Pagina Gestione Slot Admin
-
-Partendo dal placeholder in `pg_frontend/src/app/features/admin/gestione-slot-admin/`:
-- Filtri: select docente, date picker, select stato
-- Lista slot con docente, data, ora, aula, stato
-- Possibilità di modificare/annullare slot
+Tutte le fasi A–E sono state implementate in questo changeset.
