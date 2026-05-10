@@ -61,7 +61,7 @@ ion-toolbar {
   padding-bottom: 16px;
 }
 
-.desktop-nav a:first-child {
+.desktop-nav a.active {
   color: #2563eb;
   border-bottom: 3px solid #2563eb;
 }
@@ -72,7 +72,6 @@ ion-button {
   font-weight: 700;
 }
 
-/* HERO */
 
 .hero-section {
   position: relative;
@@ -148,7 +147,6 @@ ion-button {
   color: rgba(37, 99, 235, 0.16);
 }
 
-/* SECTIONS */
 
 .section {
   padding: 34px 8%;
@@ -175,7 +173,6 @@ ion-button {
   background: #2563eb;
 }
 
-/* FEATURE CARDS */
 
 .features-section {
   padding-top: 30px;
@@ -297,7 +294,6 @@ ion-button {
   color: #16a34a;
 }
 
-/* HOW IT WORKS */
 
 .how-section {
   background: #f8fbff;
@@ -356,7 +352,6 @@ ion-col {
   line-height: 1.65;
 }
 
-/* AUTH */
 
 .auth-section {
   padding-top: 30px;
@@ -446,36 +441,70 @@ ion-segment-button {
   color: #64748b;
 }
 
-/* FOOTER */
 
 .footer {
   border-top: 1px solid #e2e8f0;
-  padding: 26px 8%;
+  padding: 32px 8%;
   background: #ffffff;
   color: #475569;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr auto;
   gap: 24px;
   align-items: center;
 }
 
-.footer-brand p {
-  margin: 4px 0 0;
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer .logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer .logo-row ion-icon {
+  font-size: 28px;
+  color: #2563eb;
+}
+
+.footer-brand h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.footer-brand p,
+.footer-note {
+  margin: 0;
   color: #64748b;
+  max-width: 360px;
 }
 
 .footer-copy {
-  text-align: center;
-  color: #64748b;
+  text-align: right;
+  color: #94a3b8;
+  font-size: 14px;
 }
 
-.footer-links {
-  display: flex;
-  justify-content: flex-end;
-  gap: 34px;
+@media (max-width: 1000px) {
+  .footer {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .footer-copy {
+    text-align: center;
+  }
+
+  .footer .logo-row,
+  .footer-links {
+    justify-content: center;
+  }
 }
 
-/* RESPONSIVE */
+
 
 @media (max-width: 1000px) {
   .toolbar-container {

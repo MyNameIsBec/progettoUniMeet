@@ -1,20 +1,115 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { IonContent, IonButton, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { calendarOutline, lockClosedOutline, eyeOutline, eyeOffOutline, alertCircleOutline, checkmarkCircleOutline, arrowBackOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { AuthService } from '../../../core/services/auth';
+
+function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+  const pwd = group.get('password')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  return pwd === confirm ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'app-reset-password',
-  templateUrl: './reset-password.page.html',
-  styleUrls: ['./reset-password.page.scss'],
+  templateUrl: 'reset-password.page.html',
+  styleUrls: ['reset-password.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    IonContent, IonButton, IonIcon, IonInput, IonSpinner
+  ]
 })
 export class ResetPasswordPage implements OnInit {
 
-  constructor() { }
+  resetForm!: FormGroup;
+  inCaricamento = false;
+  resetCompletato = false;
+  errorMessage = '';
+  mostraPassword = false;
+  mostraConfermaPassword = false;
+  tokenValido = true;
+  private tokenString = '';
 
-  ngOnInit() {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    addIcons({
+      calendarOutline, lockClosedOutline, eyeOutline, eyeOffOutline,
+      alertCircleOutline, checkmarkCircleOutline, arrowBackOutline,
+      shieldCheckmarkOutline
+    });
   }
 
+  ngOnInit(): void {
+    this.tokenString = this.route.snapshot.queryParams['token'] ?? '';
+
+    if (!this.tokenString) {
+      this.tokenValido = false;
+      return;
+    }
+
+    this.resetForm = this.fb.group(
+      {
+        password: ['', [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        ]],
+        confirmPassword: ['', Validators.required]
+      },
+      { validators: passwordMatchValidator }
+    );
+  }
+
+  get password() { return this.resetForm.get('password')!; }
+  get confirmPassword() { return this.resetForm.get('confirmPassword')!; }
+
+  get forzaPassword(): number {
+    const val = this.password?.value ?? '';
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    return score;
+  }
+
+  get hasUppercase(): boolean { return /[A-Z]/.test(this.password?.value ?? ''); }
+  get hasNumber(): boolean    { return /[0-9]/.test(this.password?.value ?? ''); }
+
+  get etichettaForzaPassword(): string {
+    return ['', 'Debole', 'Discreta', 'Buona', 'Ottima'][this.forzaPassword];
+  }
+
+  get coloreForzaPassword(): string {
+    return ['', '#ef4444', '#f97316', '#eab308', '#16a34a'][this.forzaPassword];
+  }
+
+  salvaNuovaPassword(): void {
+    if (this.resetForm.invalid) { this.resetForm.markAllAsTouched(); return; }
+
+    this.inCaricamento = true;
+    this.errorMessage = '';
+
+    this.authService.confermaResetPassword(this.tokenString, this.password.value).subscribe({
+      next: () => {
+        this.inCaricamento = false;
+        this.resetCompletato = true;
+      },
+      error: (err: Error) => {
+        this.inCaricamento = false;
+        this.errorMessage = err.message;
+      }
+    });
+  }
+
+  goTo(path: string): void { this.router.navigate([path]); }
 }

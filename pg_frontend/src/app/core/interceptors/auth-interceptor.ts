@@ -4,16 +4,15 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth';
 
-
 export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
-  const router = inject(Router); 
+  const router = inject(Router);
   const authService = inject(AuthService);
-  const baseUrl = 'https://localhost:3000'; // URL del server
+  const baseUrl = 'https://localhost:5000';
 
-  const token = authService.getToken(); 
-  let apiReq = req; 
+  const token = authService.getToken();
+  let apiReq = req;
 
-  if (token !== null && token !== undefined) {
+  if (token != null) {
     apiReq = req.clone({
       url: `${baseUrl}/${req.url}`,
       setHeaders: {
@@ -21,9 +20,7 @@ export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
       }
     });
   } else {
-    apiReq = req.clone({
-      url: `${baseUrl}/${req.url}` //richiesta anonima, senza token
-    });
+    apiReq = req.clone({ url: `${baseUrl}/${req.url}` });
   }
 
   return next(apiReq).pipe(

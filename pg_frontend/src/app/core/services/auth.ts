@@ -13,7 +13,6 @@ export interface UserSession {
   token: string;
 }
 
-// Dati richiesti per registrare un nuovo studente
 export interface RegistrazioneStudente {
   nome: string;
   cognome: string;
@@ -23,16 +22,9 @@ export interface RegistrazioneStudente {
   corsoDiStudi: string;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  static getToken() {
-    throw new Error('Method not implemented.');
-  }
-
-  private apiUrl: string = ''; //IP del server
+  private apiUrl = '';
   private currentUser: UserSession | null = null;
 
   constructor(private http: HttpClient) {
@@ -40,7 +32,7 @@ export class AuthService {
   }
 
   setURL(ip: string): void {
-    this.apiUrl = `http://${ip}:5000`; //porta?
+    this.apiUrl = `http://${ip}:5000`;
   }
 
   getApiUrl(): string {

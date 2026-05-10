@@ -1,4 +1,3 @@
-
 export interface Studente {
   matricola: string;
   nome: string;
@@ -25,9 +24,9 @@ export interface Corso {
 }
 
 export interface Amministratore {
-    id: string;
-    nome: string;
-    email: string;
-    password: string;
+  id: string;
+  nome: string;
+  email: string;
+  password: string;
 }
 
