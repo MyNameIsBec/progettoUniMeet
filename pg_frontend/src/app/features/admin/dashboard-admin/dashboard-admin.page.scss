@@ -1,0 +1,146 @@
+ion-content {
+  --background: #f8fbff;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #0f172a;
+}
+
+.segment-toolbar {
+  --min-height: 56px;
+  padding: 0 8%;
+}
+
+ion-segment {
+  max-width: 620px;
+  margin: 0 auto;
+  --background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+ion-segment-button {
+  --color: #64748b;
+  --color-checked: #2563eb;
+  --indicator-color: #2563eb;
+  font-weight: 700;
+}
+
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 34px 8%;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  margin: 0;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.stat-card ion-card-content {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.stat-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon ion-icon {
+  font-size: 28px;
+}
+
+.student-icon { background: #eaf2ff; }
+.student-icon ion-icon { color: #2563eb; }
+
+.teacher-icon { background: #eafaf0; }
+.teacher-icon ion-icon { color: #16a34a; }
+
+.booking-icon { background: #eef2ff; }
+.booking-icon ion-icon { color: #6366f1; }
+
+.slot-icon { background: #fff7ed; }
+.slot-icon ion-icon { color: #f97316; }
+
+.today-icon { background: #fef2f2; }
+.today-icon ion-icon { color: #ef4444; }
+
+.new-icon { background: #f0fdf4; }
+.new-icon ion-icon { color: #22c55e; }
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.quick-actions {
+  margin-top: 36px;
+}
+
+.quick-actions h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 18px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+ion-button {
+  --border-radius: 8px;
+  text-transform: none;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-content {
+    padding: 24px 6%;
+  }
+}

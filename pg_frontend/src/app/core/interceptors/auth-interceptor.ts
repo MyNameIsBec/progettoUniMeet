@@ -7,20 +7,33 @@ import { AuthService } from '../services/auth';
 export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
-  const baseUrl = 'https://localhost:5000';
+  const baseUrl = 'http://localhost:5000'; // URL del server
 
-  const token = authService.getToken();
-  let apiReq = req;
+  const token = authService.getToken(); 
+  const isAbsolute = req.url.startsWith('http://') || req.url.startsWith('https://');
+  const cleanUrl = req.url.replace(/^\//, ''); // Rimuove lo slash iniziale se presente
 
-  if (token != null) {
-    apiReq = req.clone({
-      url: `${baseUrl}/${req.url}`,
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  let apiReq = req; 
+
+  if (isAbsolute) {
+    if (token) {
+      apiReq = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` }
+      });
+    }
   } else {
-    apiReq = req.clone({ url: `${baseUrl}/${req.url}` });
+    if (token !== null && token !== undefined) {
+      apiReq = req.clone({
+        url: `${baseUrl}/${cleanUrl}`,
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } else {
+      apiReq = req.clone({
+        url: `${baseUrl}/${cleanUrl}` //richiesta anonima, senza token
+      });
+    }
   }
 
   return next(apiReq).pipe(
@@ -30,7 +43,6 @@ export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.clear();
         router.navigate(['/login']);
       }
-
       return throwError(() => err);
     })
   );
