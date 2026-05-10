@@ -131,3 +131,55 @@
 - `baseUrl` cambiato da `https://localhost:3000` a `http://localhost:5000`
 - Aggiunto controllo `isAbsolute` per non prependere baseUrl se l'URL è già assoluto (es. usato da `AuthService.setURL()`)
 - Aggiunto `req.url.replace(/^\//, '')` per evitare doppi slash quando l'URL inizia con `/`
+
+---
+
+# TO DO
+
+## Fase A — Backend: API Gestione Utenti
+
+Endpoint da aggiungere in `admin.routes.ts` (protetti da `authenticate` + `authorize('AMMINISTRATORE')`):
+
+| Endpoint | Descrizione |
+|----------|-------------|
+| `GET /api/admin/utenti` | Lista unificata di tutti gli utenti (studenti + docenti + admin) con filtro ruolo opzionale |
+| `POST /api/admin/utenti` | Creazione utente (studente/docente/admin) |
+| `PUT /api/admin/utenti/:id` | Modifica utente (nome, email, ecc.) |
+| `DELETE /api/admin/utenti/:id` | Eliminazione utente |
+
+File da modificare:
+- `pg_backend/src/services/admin.service.ts` — metodi `getAllUsers()`, `createUser()`, `updateUser()`, `deleteUser()`
+- `pg_backend/src/controllers/admin.controller.ts` — handlers corrispondenti
+- `pg_backend/src/routes/admin.routes.ts` — nuove routes
+
+## Fase B — Backend: API Gestione Slot Admin
+
+| Endpoint | Descrizione |
+|----------|-------------|
+| `GET /api/admin/slot` | Lista slot globali con filtri (docente, data, stato) |
+
+## Fase C — Frontend: Servizio `Admin`
+
+Metodi da aggiungere a `pg_frontend/src/app/core/services/admin.ts`:
+
+- `getUtenti(ruolo?)` — lista utenti
+- `creaUtente(dati)` — crea utente
+- `modificaUtente(id, dati)` — modifica utente
+- `eliminaUtente(id, ruolo)` — elimina utente
+- `getSlotGlobali(filtri?)` — lista slot globali
+
+## Fase D — Frontend: Pagina Gestione Utenti
+
+Partendo dal placeholder in `pg_frontend/src/app/features/admin/gestione-utenti/`:
+- Segment per filtrare: Tutti / Studenti / Docenti / Admin
+- Barra di ricerca per nome/email/matricola
+- Tabella/lista utenti con azioni modifica/elimina
+- Bottone "Crea utente" con form dinamico
+- Stile coerente con la Dashboard
+
+## Fase E — Frontend: Pagina Gestione Slot Admin
+
+Partendo dal placeholder in `pg_frontend/src/app/features/admin/gestione-slot-admin/`:
+- Filtri: select docente, date picker, select stato
+- Lista slot con docente, data, ora, aula, stato
+- Possibilità di modificare/annullare slot
