@@ -44,3 +44,7 @@
 - [x] API slot globali con filtri
 - [x] Pagina Gestione Utenti frontend (tabella, ricerca, CRUD)
 - [x] Pagina Gestione Slot Admin frontend (filtri, griglia slot)
+- [ ] Aggiustare le scritte che non si vedono nei form
+- [ ] Permettere all'amministratore di gestire le prenotazioni (eliminarle o modificarle)
+- [ ] Consentire all'amministratore di bloccare determinati giorni dal calendario (es. festivi)
+- [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)

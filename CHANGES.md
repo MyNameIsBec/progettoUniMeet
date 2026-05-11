@@ -67,6 +67,36 @@
 
 ---
 
+## Fix minori — form admin, compilazione TS, stili input
+
+**Data:** 10/05/2026
+
+**Modifica:** Risolti problemi di visibilità del testo negli `ion-input`/`ion-select` delle pagine admin (mancavano `--color` e `--placeholder-color`). Corretti errori TypeScript nel backend (`exactOptionalPropertyTypes`, casting `req.params`, tipi Date). Puliti import inutilizzati nel frontend.
+
+### File modificati
+
+#### `pg_frontend/src/app/features/admin/gestione-utenti/gestione-utenti.page.scss`
+- Aggiunti `--color: #0f172a`, `--placeholder-color: #94a3b8`, `--placeholder-opacity: 1` agli `ion-input` e `ion-select` del modale
+
+#### `pg_frontend/src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.scss`
+- Aggiunti `--color: #0f172a`, `--placeholder-color: #94a3b8`, `--placeholder-opacity: 1` agli `ion-select` dei filtri
+
+#### `pg_backend/src/services/admin.service.ts`
+- `trovaUtentePerId()`: tipizzato `user` come `any` per evitare conflitto tra tipi Prisma diversi
+- `getSlotGlobali()`: helper `fmtDate`/`fmtTime` per gestire Date in modo sicuro
+
+#### `pg_backend/src/controllers/admin.controller.ts`
+- `req.params.id` castato a `string` per Express 5
+- Filtri slot costruiti con oggetto parziale per `exactOptionalPropertyTypes`
+
+#### `pg_frontend/src/app/features/admin/gestione-utenti/gestione-utenti.page.ts`
+- Rimosso `IonList`, `IonSpinner` (inutilizzati); aggiunto `IonButtons`
+
+#### `pg_frontend/src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.ts`
+- Rimossi `IonItem`, `IonList`, `IonDatetime`, `IonChip`, `IonSpinner`, `IonButton` (inutilizzati)
+
+---
+
 ## Fix login admin — normalizzazione ruolo e redirect
 
 **Data:** 10/05/2026
@@ -81,31 +111,6 @@
 
 #### `pg_frontend/src/app/features/auth/login/login.page.ts`
 - Aggiunto redirect `role === 'amministratore' → '/dashboard-admin'` nel ramo `next()` di `effettuaLogin()`
-
----
-
-## Navigazione attiva nel menu (home page)
-
-**Data:** 10/05/2026
-
-**Modifica:** I link del menu di navigazione nella home page ora si evidenziano in blu dinamicamente in base alla sezione visibile nello scroll, invece di avere solo "Home" fissa come attiva.
-
-### File modificati
-
-#### `pg_frontend/src/app/features/home/home.page.ts`
-- Aggiunto `AfterViewInit`, `ChangeDetectorRef`, `inject` agli import
-- Aggiunta proprietà `activeSection: string = 'home'`
-- Iniettato `ChangeDetectorRef` tramite `inject()`
-- Implementato `ngAfterViewInit()` con `IntersectionObserver` che osserva le sezioni `[id]` e aggiorna `activeSection` quando una sezione entra nel viewport (con rootMargin al 50% per rilevare la sezione centrale)
-
-#### `pg_frontend/src/app/features/home/home.page.html`
-- Aggiunto `[class.active]="activeSection === '<id>'"` a ciascun link del menu (`Home`, `Funzionalità`, `Come funziona`, `Accedi`, `Contatti`)
-
-#### `pg_frontend/src/app/features/home/home.page.scss`
-- Sostituito `.desktop-nav a:first-child` con `.desktop-nav a.active` (stessi stili: colore `#2563eb` e bordo inferiore blu di 3px)
-
-#### `pg_frontend/angular.json`
-- Aumentato il budget `anyComponentStyle` da 2kb/4kb a 8kb/12kb (il file SCSS della home page era già oltre il limite precedente)
 
 ---
 

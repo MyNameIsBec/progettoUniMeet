@@ -22,7 +22,10 @@ sudo systemctl start postgresql
 brew services start postgresql@16
 ```
 
-**Windows:** avvia il servizio da `Services` o con `pg_ctl`.
+**Windows:** avvia il servizio da `Services.msc` o con:
+```powershell
+net start postgresql-<versione>
+```
 
 ### 2. Configura il database
 
@@ -36,6 +39,13 @@ Se il tuo utente PostgreSQL ha password diversa, modifica `YOLO`.
 
 ### 3. Esegui lo script di setup
 
+**Cross-platform (Windows, Linux, macOS):**
+```bash
+cd pg_backend
+node setup-db.js
+```
+
+**Solo Unix:** puoi anche usare lo script bash:
 ```bash
 cd pg_backend
 chmod +x setup-db.sh
@@ -43,10 +53,12 @@ chmod +x setup-db.sh
 ```
 
 Lo script:
-1. Verifica che PostgreSQL sia in esecuzione
-2. Crea il database `prenotazioni_db` se non esiste
-3. Applica tutte le migrazioni Prisma
-4. Genera il Prisma Client
+1. Verifica i prerequisiti (Node.js, npm)
+2. Legge `DATABASE_URL` dal file `.env`
+3. Verifica che PostgreSQL sia raggiungibile
+4. Crea il database `prenotazioni_db` se non esiste
+5. Applica tutte le migrazioni Prisma
+6. Genera il Prisma Client
 
 ### 4. Popola con dati di test (opzionale)
 
@@ -94,7 +106,7 @@ docker run -d \
   -p 5432:5432 \
   postgres:latest
 
-# Poi esegui setup (salta il check PostgreSQL)
+# Poi esegui migrazioni e seed
 npx prisma migrate deploy
 npx prisma generate
 npm run seed
@@ -116,8 +128,7 @@ docker rm -f pg_prenotazioni
 # poi riesegui il container come sopra
 
 # Riapplica migrazioni e seed
-npx prisma migrate deploy
-npx prisma generate
+node setup-db.js
 npm run seed
 ```
 
@@ -132,5 +143,7 @@ npm run seed
 | `npm start` | Avvia il server dalla build compilata |
 | `npm run seed` | Popola il DB con dati di test |
 | `npx prisma studio` | Apri interfaccia grafica per esplorare i dati |
+| `node setup-db.js` | Setup completo DB (cross-platform) |
+| `./setup-db.sh` | Setup completo DB (Unix) |
 | `npx prisma migrate deploy` | Applica migrazioni pendenti |
 | `npx prisma generate` | Rigenera il client Prisma |
