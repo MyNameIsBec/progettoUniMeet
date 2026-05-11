@@ -21,7 +21,8 @@ pg_backend/
 │   ├── app.ts                 # Configurazione Express
 │   └── server.ts              # Entry point del server
 ├── prisma.config.ts           # Configurazione Prisma (datasource URL)
-├── setup-db.sh                # Script automatizzato setup DB
+├── setup-db.sh                # Script automatizzato setup DB (Unix)
+├── setup-db.js                # Script automatizzato setup DB (cross-platform)
 ├── dist/                      # JS compilato (generato da tsc, ignorato)
 ├── TODO.md
 ├── README.md                  # Istruzioni setup DB locale
@@ -94,12 +95,44 @@ export const prisma = new PrismaClient({ adapter });
 
 ### Script di setup automatico
 
-`setup-db.sh` automatizza la creazione del database e l'applicazione delle migrazioni:
+Sono disponibili due script di setup:
 
-1. Verifica che PostgreSQL sia in esecuzione (`pg_isready`)
-2. Crea il database `prenotazioni_db` se non esiste
-3. Esegue `npx prisma migrate deploy` (applica migrazioni pendenti)
-4. Genera il Prisma Client con `npx prisma generate`
+| Script | Piattaforma | Linguaggio |
+|--------|-------------|------------|
+| `setup-db.js` | **Windows, Linux, macOS** | Node.js (cross-platform) |
+| `setup-db.sh` | Linux, macOS (Unix) | Bash |
+
+Entrambi automatizzano creazione del database e migrazioni:
+
+1. Verificano i prerequisiti (Node.js, npm, `npx`)
+2. Leggono `DATABASE_URL` dal file `.env`
+3. Verificano che PostgreSQL sia raggiungibile
+4. Creano il database `prenotazioni_db` se non esiste
+5. Eseguono `npx prisma migrate deploy` (applica migrazioni pendenti)
+6. Generano il Prisma Client con `npx prisma generate`
+
+Esecuzione:
+```bash
+node setup-db.js      # cross-platform (raccomandato)
+# oppure
+./setup-db.sh         # solo Unix
+```
+
+#### `setup-db.js` — diagnostica avanzata
+
+Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
+
+- **Rilevamento del servizio PostgreSQL** specifico per piattaforma:
+  - **Windows**: usa `sc query` per trovare servizi "postgres" e verificare se sono in esecuzione
+  - **macOS**: verifica con `brew services list`
+  - **Linux**: usa `pg_isready` e `systemctl`
+- **Connessione via modulo `pg`** (già nelle dipendenze npm) — non richiede client PostgreSQL da riga di comando
+- **Fallback su più database di manutenzione**: tenta `postgres` → `template1` → direttamente il DB target
+- **Codici di errore PostgreSQL decodificati**:
+  - `28P01` → autenticazione fallita (password errata o `pg_hba.conf`)
+  - `ECONNREFUSED` → PostgreSQL non in ascolto
+  - `ENOTFOUND` → host irraggiungibile (suggerisce `127.0.0.1` invece di `localhost` su Windows)
+- **Hint specifici per Windows**: percorso `pg_hba.conf`, comando `netstat`, link download
 
 ### Seed dati di test
 
@@ -355,11 +388,18 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 | Fase | Cosa implementare | Stato |
 |------|-------------------|-------|
-| 1 | Setup DB, script `setup-db.sh`, migrazioni, seed dati | ✅ |
+| 1 | Setup DB, script `setup-db.sh`/`setup-db.js`, migrazioni, seed dati | ✅ |
 | 2 | Auth: login JWT, middleware, profile, refresh, cambio/reset password, register admin | ✅ |
 | 3 | CRUD Corsi, associazione corso ↔ docente | ❌ |
 | 4 | CRUD Bacheca e FAQ | ❌ |
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ❌ |
 | 6 | CRUD Prenotazione, gestione stato, upload documenti | ❌ |
 | 7 | CRUD Notifiche | ❌ |
-| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali | ✅ |
+| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali | 🔄 |
+
+### Task aggiuntivi — Fase 8 (Amministratore)
+
+- [ ] Aggiustare le scritte che non si vedono nei form
+- [ ] Permettere all'amministratore di gestire le prenotazioni (eliminarle o modificarle)
+- [ ] Consentire all'amministratore di bloccare determinati giorni dal calendario (es. festivi)
+- [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)

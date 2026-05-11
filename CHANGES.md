@@ -1,5 +1,51 @@
 # CHANGES
 
+## Setup DB cross-platform — setup-db.js, diagnostica PostgreSQL, README/TODO/DOC
+
+**Data:** 11/05/2026
+
+**Modifica:** Sostituito lo script bash `setup-db.sh` con un equivalente Node.js cross-platform (`setup-db.js`) che funziona nativamente su Windows, Linux e macOS. Aggiunta diagnostica avanzata per errori di connessione PostgreSQL con hint specifici per piattaforma. Aggiornati README, TODO e DOCUMENTAZIONE.
+
+### File creati
+
+#### `pg_backend/setup-db.js`
+- Script Node.js cross-platform che usa il modulo `pg` per connettersi a PostgreSQL
+- Rilevamento del servizio PostgreSQL specifico per OS:
+  - **Windows**: `sc query` per trovare servizi "postgres", mostra stato (esecuzione/fermo)
+  - **macOS**: `brew services list`
+  - **Linux**: `pg_isready` + `systemctl is-active`
+- Tentativo di connessione con fallback su più DB di manutenzione (`postgres` → `template1` → DB target)
+- Diagnostica errori PostgreSQL decodificati per codice:
+  - `28P01` → autenticazione fallita, suggerisce fix `pg_hba.conf`
+  - `ECONNREFUSED` → PostgreSQL non in ascolto, mostra comandi di debug
+  - `ENOTFOUND` → host irraggiungibile, suggerisce `127.0.0.1` su Windows (IPv6)
+- Hint specifici per Windows: percorso `pg_hba.conf`, comando `netstat`, link download
+
+### File modificati
+
+#### `pg_backend/README.md`
+- Aggiunta sezione setup cross-platform: `node setup-db.js` come metodo primario
+- Aggiunto comando Windows per avviare PostgreSQL: `net start postgresql-<versione>`
+- Script di setup ora documenta 6 passi (inclusi check prerequisiti e lettura `.env`)
+- Aggiunti `node setup-db.js` e `./setup-db.sh` nella tabella comandi utili
+- Sezione reset aggiornata per usare `node setup-db.js`
+
+#### `pg_backend/TODO.md`
+- Aggiunti 4 task per la Fase 8 (Amministratore):
+  - Aggiustare scritte non visibili nei form
+  - Gestione prenotazioni admin (elimina/modifica)
+  - Blocco giorni calendario (festivi)
+  - Rimuovere cambio ruolo utenti
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- Aggiunto `setup-db.js` nella struttura del progetto
+- Nuova sottosezione "Script di setup automatico" con tabella comparativa (bash vs Node.js)
+- Documentata diagnostica avanzata di `setup-db.js` (rilevamento servizio, codici errore, hint Windows)
+- Aggiornata tabella TODO finale: Fase 1 include `setup-db.js`, Fase 8 passa a `🔄`
+- Aggiunta lista task aggiuntivi Fase 8
+
+---
+
 ## Fix navigazione attiva home — IntersectionObserver mancante
 
 **Data:** 10/05/2026
