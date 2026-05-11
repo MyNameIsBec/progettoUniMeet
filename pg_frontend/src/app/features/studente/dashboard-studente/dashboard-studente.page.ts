@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import {
   IonContent,
@@ -8,7 +9,8 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonButton
+  IonButton,
+  IonRouterOutlet
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -38,18 +40,21 @@ import {
   styleUrls: ['./dashboard-studente.page.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
+    RouterLinkActive,
     IonContent,
     IonIcon,
     IonCard,
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonButton
+    IonButton,
+    IonRouterOutlet
   ]
 })
 export class DashboardStudentePage {
-  constructor() {
+  constructor(private router: Router) {
     addIcons({
       calendarOutline,
       calendarClearOutline,
@@ -68,5 +73,9 @@ export class DashboardStudentePage {
       arrowForwardOutline,
       chevronForwardOutline
     });
+  }
+
+  isHome(): boolean {
+    return this.router.url === '/dashboard-studente' || this.router.url === '/dashboard-studente/';
   }
 }

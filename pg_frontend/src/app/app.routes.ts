@@ -4,7 +4,8 @@ import { authGuard, roleGuard } from './core/guards/auth-guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    //redirectTo: 'home',
+    redirectTo: 'dashboard-studente',
     pathMatch: 'full',
   },
   {
@@ -25,14 +26,9 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard-studente',
-    canActivate: [authGuard, roleGuard('studente')],
+    //canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/dashboard-studente/dashboard-studente.page').then(m => m.DashboardStudentePage),
     children: [
-      {
-        path: '',
-        redirectTo: 'elenco-docenti',
-        pathMatch: 'full'
-      },
       {
         path: 'elenco-docenti',
         loadComponent: () => import('./features/studente/elenco-docenti/elenco-docenti.page').then(m => m.ElencoDocentiPage)
