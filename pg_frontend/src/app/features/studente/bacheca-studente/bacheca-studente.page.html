@@ -1,13 +1,334 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>bacheca-studente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="bacheca-page">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">bacheca-studente</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <h1>UniMeet</h1>
+            <span>Area Studente</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a routerLink="/dashboard-studente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/elenco-docenti">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Docenti</span>
+        </a>
+
+        <a routerLink="/calendario-slot">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Prenota</span>
+        </a>
+
+        <a routerLink="/riepilogo-prenotazioni">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Le mie prenotazioni</span>
+        </a>
+
+        <a routerLink="/bacheca-studente" class="active">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>FAQ / Bacheca</span>
+        </a>
+
+        <a routerLink="/profilo-studente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <button class="menu-button">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+
+        <div class="topbar-actions">
+
+          <button class="notification-button" routerLink="/notifiche">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-badge">3</span>
+          </button>
+
+          <div class="student-profile-mini">
+            <div class="student-avatar-small">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Alessio Lombardo</strong>
+              <span>Studente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- PAGE HEADER -->
+      <section class="page-header">
+        <h2>FAQ e informazioni utili</h2>
+        <p>
+          Qui trovi le risposte alle domande più comuni e alcuni collegamenti utili
+          ai servizi dell’Università degli Studi di Palermo.
+        </p>
+      </section>
+
+      <!-- MAIN GRID -->
+      <section class="bacheca-simple-grid">
+
+        <!-- FAQ -->
+        <ion-card class="faq-main-card">
+
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="help-circle-outline"></ion-icon>
+              Domande frequenti
+            </ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+
+            <div class="faq-list">
+
+              <details class="faq-details">
+                <summary>
+                  <span>Come posso prenotare un ricevimento?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Per prenotare un ricevimento vai nella sezione
+                  <strong>Prenota</strong>, scegli il docente, seleziona uno slot
+                  disponibile e conferma la richiesta.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Posso scegliere l’argomento del ricevimento?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Sì. Durante la prenotazione puoi indicare la tipologia di argomento
+                  e aggiungere una breve descrizione del problema o della richiesta.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Posso allegare documenti alla prenotazione?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Sì. Puoi caricare documenti utili come appunti, immagini, slide,
+                  esercizi o altro materiale da condividere con il docente.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Come faccio a vedere le mie prenotazioni?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Puoi visualizzare le prenotazioni future e lo storico nella sezione
+                  <strong>Le mie prenotazioni</strong>, dove troverai data, ora,
+                  docente, aula e stato della richiesta.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Posso annullare una prenotazione?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Sì, se rientri nel limite di tempo previsto dal sistema.
+                  In caso contrario dovrai contattare il docente o effettuare
+                  una nuova prenotazione.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Dove trovo l’aula o l’ufficio del docente?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Nel dettaglio della prenotazione troverai aula, edificio, piano
+                  e una mappa indicativa per raggiungere il luogo del ricevimento.
+                </div>
+              </details>
+
+              <details class="faq-details">
+                <summary>
+                  <span>Riceverò un promemoria prima del ricevimento?</span>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </summary>
+
+                <div class="faq-content">
+                  Sì. Il sistema invia un reminder prima del ricevimento con le
+                  informazioni utili, come docente, orario, aula e data.
+                </div>
+              </details>
+
+            </div>
+
+          </ion-card-content>
+
+        </ion-card>
+
+        <!-- SUPPORTO PRENOTAZIONE -->
+        <ion-card class="support-card">
+
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+              Domande durante la prenotazione
+            </ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+
+            <p>
+              Durante il processo di prenotazione potrai indicare eventuali domande
+              o dubbi da sottoporre al docente.
+            </p>
+
+            <p>
+              Potrai specificare l’argomento del ricevimento, descrivere brevemente
+              il problema e allegare documenti utili.
+            </p>
+
+            <div class="support-highlight">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>
+                Le domande inserite saranno visibili al docente nel riepilogo
+                della prenotazione.
+              </span>
+            </div>
+
+            <ion-button routerLink="/calendario-slot" expand="block">
+              <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
+              Vai alla prenotazione
+            </ion-button>
+
+          </ion-card-content>
+
+        </ion-card>
+
+      </section>
+
+      <!-- LINK UTILI -->
+      <section class="useful-links-section">
+
+        <ion-card class="useful-links-card">
+
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="link-outline"></ion-icon>
+              Link utili UniPa
+            </ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+
+            <div class="useful-links-grid">
+
+              <a class="useful-link" href="https://www.unipa.it/" target="_blank" rel="noopener noreferrer">
+                <div class="useful-link-icon blue">
+                  <ion-icon name="school-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <h3>Sito ufficiale UniPa</h3>
+                  <p>Portale ufficiale dell’Università degli Studi di Palermo.</p>
+                </div>
+
+                <ion-icon name="open-outline"></ion-icon>
+              </a>
+
+              <a class="useful-link" href="https://www.unipa.it/biblioteche/" target="_blank" rel="noopener noreferrer">
+                <div class="useful-link-icon green">
+                  <ion-icon name="library-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <h3>Biblioteche UniPa</h3>
+                  <p>Informazioni su biblioteche, servizi, orari e risorse disponibili.</p>
+                </div>
+
+                <ion-icon name="open-outline"></ion-icon>
+              </a>
+
+              <a class="useful-link" href="https://www.unipa.it/servizi/" target="_blank" rel="noopener noreferrer">
+                <div class="useful-link-icon orange">
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <h3>Servizi per studenti</h3>
+                  <p>Accesso alle informazioni generali e ai servizi universitari.</p>
+                </div>
+
+                <ion-icon name="open-outline"></ion-icon>
+              </a>
+
+              <a class="useful-link" href="https://www.unipa.it/didattica/" target="_blank" rel="noopener noreferrer">
+                <div class="useful-link-icon purple">
+                  <ion-icon name="book-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <h3>Didattica UniPa</h3>
+                  <p>Informazioni su corsi, calendari didattici, esami e attività formative.</p>
+                </div>
+
+                <ion-icon name="open-outline"></ion-icon>
+              </a>
+
+            </div>
+
+          </ion-card-content>
+
+        </ion-card>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </ion-content>

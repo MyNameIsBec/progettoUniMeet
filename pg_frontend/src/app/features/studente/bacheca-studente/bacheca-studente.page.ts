@@ -1,20 +1,78 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+
+import {
+  IonContent,
+  IonIcon,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonButton
+} from '@ionic/angular/standalone';
+
+import { addIcons } from 'ionicons';
+
+import {
+  calendarOutline,
+  calendarClearOutline,
+  calendarNumberOutline,
+  homeOutline,
+  peopleOutline,
+  helpCircleOutline,
+  personOutline,
+  logOutOutline,
+  menuOutline,
+  notificationsOutline,
+  chevronDownOutline,
+  chevronForwardOutline,
+  chatbubbleEllipsesOutline,
+  informationCircleOutline,
+  linkOutline,
+  schoolOutline,
+  libraryOutline,
+  bookOutline,
+  openOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-bacheca-studente',
   templateUrl: './bacheca-studente.page.html',
   styleUrls: ['./bacheca-studente.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [
+    RouterLink,
+    IonContent,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonButton
+  ]
 })
-export class BachecaStudentePage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
+export class BachecaStudentePage {
+  constructor() {
+    addIcons({
+      calendarOutline,
+      calendarClearOutline,
+      calendarNumberOutline,
+      homeOutline,
+      peopleOutline,
+      helpCircleOutline,
+      personOutline,
+      logOutOutline,
+      menuOutline,
+      notificationsOutline,
+      chevronDownOutline,
+      chevronForwardOutline,
+      chatbubbleEllipsesOutline,
+      informationCircleOutline,
+      linkOutline,
+      schoolOutline,
+      libraryOutline,
+      bookOutline,
+      openOutline
+    });
   }
-
 }

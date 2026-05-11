@@ -1,13 +1,513 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>elenco-docenti</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="docenti-page">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">elenco-docenti</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <h1>UniMeet</h1>
+            <span>Area Studente</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a routerLink="/dashboard-studente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/elenco-docenti" class="active">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Docenti</span>
+        </a>
+
+        <a routerLink="/calendario-slot">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Prenota</span>
+        </a>
+
+        <a routerLink="/riepilogo-prenotazioni">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Le mie prenotazioni</span>
+        </a>
+
+        <a routerLink="/bacheca-studente">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>FAQ / Bacheca</span>
+        </a>
+
+        <a routerLink="/profilo-studente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <button class="menu-button">
+          <ion-icon name="menu-outline"></ion-icon>
+        </button>
+
+        <div class="topbar-actions">
+
+          <button class="notification-button" routerLink="/notifiche">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-badge">3</span>
+          </button>
+
+          <div class="student-profile-mini">
+            <div class="student-avatar-small">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Alessio Lombardo</strong>
+              <span>Studente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- PAGE HEADER -->
+      <section class="page-header">
+        <h2>Docenti disponibili</h2>
+        <p>
+          Consulta i docenti, visualizza le informazioni principali e prenota un ricevimento.
+        </p>
+      </section>
+
+      <!-- FILTRI -->
+      <section class="filters-card">
+
+        <div class="search-field">
+          <ion-icon name="search-outline"></ion-icon>
+          <input type="text" placeholder="Cerca docente o corso...">
+        </div>
+
+        <div class="select-field">
+          <ion-select placeholder="Tutti i corsi" interface="popover">
+            <ion-select-option value="tutti">Tutti i corsi</ion-select-option>
+            <ion-select-option value="basi-dati">Basi di Dati</ion-select-option>
+            <ion-select-option value="reti">Reti di Calcolatori</ion-select-option>
+            <ion-select-option value="ia">Intelligenza Artificiale</ion-select-option>
+            <ion-select-option value="diritto">Diritto Privato</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="select-field">
+          <ion-select placeholder="Tutti gli edifici" interface="popover">
+            <ion-select-option value="tutti">Tutti gli edifici</ion-select-option>
+            <ion-select-option value="a">Edificio A</ion-select-option>
+            <ion-select-option value="b">Edificio B</ion-select-option>
+            <ion-select-option value="c">Edificio C</ion-select-option>
+            <ion-select-option value="d">Edificio D</ion-select-option>
+          </ion-select>
+        </div>
+
+        <div class="select-field">
+          <ion-select placeholder="Stato disponibilità" interface="popover">
+            <ion-select-option value="tutti">Tutti</ion-select-option>
+            <ion-select-option value="disponibile">Disponibile</ion-select-option>
+            <ion-select-option value="non-disponibile">Non disponibile</ion-select-option>
+          </ion-select>
+        </div>
+
+      </section>
+
+      <!-- CONTENUTO PRINCIPALE -->
+      <section class="docenti-content-grid">
+
+        <!-- ELENCO DOCENTI -->
+        <div class="teachers-grid">
+
+          <!-- DOCENTE 1 -->
+          <ion-card class="teacher-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar blue">
+                  <span>MR</span>
+                </div>
+
+                <div>
+                  <h3>Prof. Mario Rossi</h3>
+                  <p>Analisi Matematica I</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>m.rossi&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio A, Aula 201</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>23/05/2025 · 10:00</strong>
+              </div>
+
+              <div class="teacher-status available">
+                Disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button routerLink="/calendario-slot">
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCENTE 2 -->
+          <ion-card class="teacher-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar purple">
+                  <span>LB</span>
+                </div>
+
+                <div>
+                  <h3>Prof.ssa Laura Bianchi</h3>
+                  <p>Diritto Privato</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>l.bianchi&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio B, Studio 15</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>22/05/2025 · 14:30</strong>
+              </div>
+
+              <div class="teacher-status available">
+                Disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button routerLink="/calendario-slot">
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCENTE 3 -->
+          <ion-card class="teacher-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar teal">
+                  <span>AV</span>
+                </div>
+
+                <div>
+                  <h3>Prof. Andrea Verdi</h3>
+                  <p>Economia Aziendale</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>a.verdi&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio C, Aula 103</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>28/05/2025 · 09:00</strong>
+              </div>
+
+              <div class="teacher-status available">
+                Disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button routerLink="/calendario-slot">
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCENTE 4 -->
+          <ion-card class="teacher-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar coral">
+                  <span>CC</span>
+                </div>
+
+                <div>
+                  <h3>Prof.ssa Chiara Conti</h3>
+                  <p>Scienza delle Finanze</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>c.conti&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio B, Studio 22</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>27/05/2025 · 11:00</strong>
+              </div>
+
+              <div class="teacher-status available">
+                Disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button routerLink="/calendario-slot">
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCENTE 5 -->
+          <ion-card class="teacher-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar blue">
+                  <span>GP</span>
+                </div>
+
+                <div>
+                  <h3>Prof. Giovanni Parisi</h3>
+                  <p>Programmazione e Algoritmi</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>g.parisi&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio D, Lab. Informatica 2</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>23/05/2025 · 15:30</strong>
+              </div>
+
+              <div class="teacher-status available">
+                Disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button routerLink="/calendario-slot">
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCENTE 6 -->
+          <ion-card class="teacher-card disabled-card">
+            <ion-card-content>
+
+              <div class="teacher-header">
+                <div class="teacher-avatar gray">
+                  <span>FS</span>
+                </div>
+
+                <div>
+                  <h3>Prof.ssa Francesca Sala</h3>
+                  <p>Marketing</p>
+                </div>
+              </div>
+
+              <div class="teacher-info">
+                <div>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <span>f.sala&#64;unimeet.it</span>
+                </div>
+
+                <div>
+                  <ion-icon name="business-outline"></ion-icon>
+                  <span>Edificio A, Aula 305</span>
+                </div>
+              </div>
+
+              <div class="next-slot">
+                <span>Prossimo slot:</span>
+                <strong>Nessuno slot disponibile</strong>
+              </div>
+
+              <div class="teacher-status unavailable">
+                Non disponibile
+              </div>
+
+              <div class="teacher-actions">
+                <ion-button fill="outline" routerLink="/calendario-slot">
+                  Disponibilità
+                </ion-button>
+
+                <ion-button disabled>
+                  Prenota
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+        </div>
+
+        <!-- COLONNA DESTRA -->
+        <aside class="right-info-column">
+
+          <ion-card class="info-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="information-circle-outline"></ion-icon>
+                Come scegliere il docente
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="guide-step">
+                <span>1</span>
+                <p>Scegli il docente del corso di tuo interesse.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>2</span>
+                <p>Controlla il giorno e l’orario del prossimo slot disponibile.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>3</span>
+                <p>Inserisci l’argomento e una breve descrizione della richiesta.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>4</span>
+                <p>Allega eventuali documenti utili, se necessario.</p>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="booking-help-card">
+            <ion-card-content>
+
+              <div>
+                <h3>Pronto a prenotare il tuo ricevimento?</h3>
+
+                <p>
+                  Vai alla pagina di prenotazione per scegliere data, orario
+                  e inserire i dettagli della tua richiesta.
+                </p>
+
+                <ion-button expand="block" routerLink="/calendario-slot">
+                  <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
+                  Vai alla prenotazione
+                </ion-button>
+              </div>
+
+              <div class="calendar-illustration">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>
+                  <ion-icon name="checkmark-outline"></ion-icon>
+                </span>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+        </aside>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </ion-content>
