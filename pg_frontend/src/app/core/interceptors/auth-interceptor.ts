@@ -9,11 +9,11 @@ export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const baseUrl = 'http://localhost:5000'; // URL del server
 
-  const token = authService.getToken(); 
+  const token = authService.getToken();
   const isAbsolute = req.url.startsWith('http://') || req.url.startsWith('https://');
   const cleanUrl = req.url.replace(/^\//, ''); // Rimuove lo slash iniziale se presente
 
-  let apiReq = req; 
+  let apiReq = req;
 
   if (isAbsolute) {
     if (token) {

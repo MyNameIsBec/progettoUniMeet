@@ -1,0 +1,109 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard-studente"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Appuntamenti</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar 
+      [(ngModel)]="filters.search" 
+      (ionInput)="applyFilters()" 
+      placeholder="Cerca docente o materia..."
+      class="custom-search">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <!-- Sezione Filtri Rapidi -->
+  <div class="filters-row">
+    <ion-grid fixed>
+      <ion-row>
+        <ion-col size="6">
+          <div class="filter-box">
+            <ion-select label="Materia" label-placement="floating" [(ngModel)]="filters.materia" (ionChange)="applyFilters()">
+              <ion-select-option value="tutte">Tutte</ion-select-option>
+              <ion-select-option *ngFor="let m of materie" [value]="m">{{m}}</ion-select-option>
+            </ion-select>
+          </div>
+        </ion-col>
+        <ion-col size="6">
+          <div class="filter-box">
+            <ion-select label="Docente" label-placement="floating" [(ngModel)]="filters.docente" (ionChange)="applyFilters()">
+              <ion-select-option value="tutti">Tutti</ion-select-option>
+              <ion-select-option *ngFor="let d of docenti" [value]="d">{{d}}</ion-select-option>
+            </ion-select>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Switch Vista -->
+  <div class="view-toggle">
+    <ion-segment [(ngModel)]="viewMode" (ionChange)="applyFilters()" mode="ios">
+      <ion-segment-button value="calendar">
+        <ion-label>Calendario</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="list">
+        <ion-label>Lista completa</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Vista Calendario -->
+  <div *ngIf="viewMode === 'calendar'" class="calendar-view">
+    <ion-card class="calendar-card">
+      <ion-datetime 
+        presentation="date" 
+        size="cover" 
+        [firstDayOfWeek]="1"
+        (ionChange)="onDateSelected($event)"
+        class="custom-date-picker">
+      </ion-datetime>
+    </ion-card>
+  </div>
+
+  <!-- Elenco Slot -->
+  <div class="slots-section">
+    <h3 class="section-title">
+      {{ viewMode === 'calendar' ? 'Disponibilità per il giorno selezionato' : 'Tutti gli slot disponibili' }}
+    </h3>
+
+    <div *ngIf="filteredSlots.length === 0" class="no-results">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <p>Nessun appuntamento trovato per questi filtri.</p>
+    </div>
+
+    <ion-card *ngFor="let slot of filteredSlots" class="slot-item" [ngClass]="slot.stato">
+      <ion-card-content>
+        <div class="slot-flex">
+          <div class="time-column">
+            <span class="time">{{ slot.oraInizio }}</span>
+            <span class="duration">30 min</span>
+          </div>
+
+          <div class="info-column">
+            <h4 class="docente-name">{{ slot.docente }}</h4>
+            <p class="subject-name">{{ slot.materia }}</p>
+            <p class="location-info">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ slot.ufficio }}
+            </p>
+          </div>
+
+          <div class="action-column">
+            <ion-button *ngIf="slot.stato === 'disponibile'" (click)="prenota(slot)" fill="solid" class="btn-primary-custom">
+              Prenota
+            </ion-button>
+            <ion-badge *ngIf="slot.stato === 'bloccato'" color="danger">Chiuso</ion-badge>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>

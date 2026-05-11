@@ -1,0 +1,178 @@
+:host {
+  --ion-background-color: #f8fbff;
+}
+
+// Wrapper principale con animazione d'ingresso
+.booking-detail-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+// Banner di stato in alto
+.status-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px 16px;
+
+  ion-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .booking-id {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+  }
+}
+
+// Card principale delle informazioni
+.main-info-card {
+  margin: 0 0 24px 0;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+
+  .teacher-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+
+    .avatar-circle {
+      width: 56px;
+      height: 56px;
+      background: #eff6ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      ion-icon {
+        font-size: 28px;
+        color: #2563eb;
+      }
+    }
+
+    .text-info {
+      ion-card-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 2px;
+      }
+      ion-card-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: none;
+      }
+    }
+  }
+
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 8px;
+
+    h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 15px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    ion-icon {
+      font-size: 22px;
+      margin-right: 12px;
+    }
+  }
+}
+
+// Sezione Note
+.notes-section {
+  margin-bottom: 32px;
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .note-card {
+    margin: 0;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #475569;
+      margin: 0;
+      font-style: italic;
+    }
+  }
+}
+
+// Footer con azioni
+.actions-footer {
+  text-align: center;
+
+  ion-button {
+    --border-radius: 12px;
+    height: 52px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .disclaimer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #94a3b8;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// Animazione
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Loading state
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  
+  p {
+    margin-top: 16px;
+    color: #64748b;
+    font-weight: 600;
+  }
+}

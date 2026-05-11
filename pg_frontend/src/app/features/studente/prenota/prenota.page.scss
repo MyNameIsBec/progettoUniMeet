@@ -1,0 +1,198 @@
+:host {
+  --ion-background-color: #ffffff;
+}
+
+// Sfondo con gradiente leggero ispirato alla home
+ion-content {
+  --background: radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.05), transparent 40%),
+                 linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+}
+
+// Barra di ricerca pulita
+.custom-search {
+  --background: #ffffff;
+  --color: #1e293b;
+  --placeholder-color: #64748b;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 8px 16px;
+  border-bottom: 1px solid #edf2f7;
+  
+  .searchbar-input {
+    color: #1e293b !important;
+  }
+}
+
+// Griglia filtri
+.filters-row {
+  margin-bottom: 16px;
+  
+  .filter-box {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 2px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    ion-select {
+      --placeholder-color: #2563eb;
+      --placeholder-opacity: 0.6;
+      color: #1e293b;
+      font-weight: 700;
+      font-size: 14px;
+      
+      &::part(label) {
+        color: #64748b !important;
+        font-weight: 600;
+      }
+      
+      &::part(text) {
+        color: #1e293b !important;
+      }
+    }
+  }
+}
+
+// Segment per switch vista
+.view-toggle {
+  margin: 0 auto 24px;
+  max-width: 400px;
+  
+  ion-segment {
+    --background: #f1f5f9;
+    border-radius: 10px;
+    padding: 4px;
+
+    ion-segment-button {
+      --indicator-color: #2563eb;
+      --color: #475569;
+      --color-checked: #ffffff;
+      font-weight: 700;
+      
+      ion-label {
+        color: inherit;
+      }
+    }
+  }
+}
+
+// Calendario
+.calendar-card {
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 30px;
+
+  .custom-date-picker {
+    --background: #ffffff;
+    --ion-color-step-300: #ffffff;
+    --ion-text-color: #2563eb;
+    
+    &::part(calendar-header) {
+      background: #f8fbff;
+      border-bottom: 1px solid #edf2f7;
+    }
+  }
+}
+
+// Titoli sezioni
+.section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 20px;
+  padding-left: 12px;
+  border-left: 5px solid #2563eb;
+}
+
+// Card dello Slot
+.slot-item {
+  margin: 0 0 16px 0;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  background: #ffffff;
+
+  &.bloccato {
+    opacity: 0.7;
+    background: #f8fafc;
+  }
+
+  .slot-flex {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .time-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 85px;
+    padding-right: 16px;
+    border-right: 2px solid #f1f5f9;
+
+    .time {
+      font-size: 19px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .duration {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+  }
+
+  .info-column {
+    flex: 1;
+
+    .docente-name {
+      font-size: 17px;
+      font-weight: 800;
+      margin: 0 0 4px;
+      color: #1e293b;
+    }
+    .subject-name {
+      font-size: 14px;
+      color: #475569;
+      margin: 0 0 6px;
+      font-weight: 600;
+    }
+    .location-info {
+      font-size: 13px;
+      color: #2563eb;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+  }
+
+  .action-column {
+    .btn-primary-custom {
+      --background: #2563eb;
+      --color: #ffffff;
+      --border-radius: 10px;
+      font-weight: 800;
+      font-size: 14px;
+      height: 40px;
+    }
+    
+    ion-badge {
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 50px 0;
+  color: #64748b;
+  ion-icon { font-size: 56px; margin-bottom: 12px; opacity: 0.2; }
+  p { font-weight: 600; }
+}
