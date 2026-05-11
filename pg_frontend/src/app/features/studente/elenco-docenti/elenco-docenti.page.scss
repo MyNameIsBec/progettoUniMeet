@@ -1,0 +1,682 @@
+:host {
+    font-family: Arial, sans-serif;
+    color: #0f172a;
+}
+
+.docenti-page {
+    --background: #f8fbff;
+}
+
+/* LAYOUT */
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+    background: #f8fbff;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 28px 18px;
+    box-shadow: 6px 0 24px rgba(15, 23, 42, 0.04);
+}
+
+.sidebar-logo {
+    margin-bottom: 38px;
+}
+
+.logo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-logo ion-icon {
+    color: #2563eb;
+    font-size: 34px;
+}
+
+.sidebar-logo h1 {
+    margin: 0;
+    color: #2563eb;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.sidebar-logo span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    color: #334155;
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.sidebar-nav a ion-icon {
+    font-size: 22px;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+}
+
+.sidebar-nav .logout-link {
+    margin-top: 18px;
+    color: #dc2626;
+}
+
+.sidebar-nav .logout-link:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    box-shadow: none;
+}
+
+/* MAIN */
+
+.main-content {
+    min-width: 0;
+    background: #f8fbff;
+}
+
+/* TOPBAR */
+
+.topbar {
+    height: 86px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menu-button,
+.notification-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.menu-button ion-icon {
+    font-size: 28px;
+    color: #0f172a;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.notification-button {
+    position: relative;
+}
+
+.notification-button ion-icon {
+    font-size: 26px;
+    color: #0f172a;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -7px;
+    width: 20px;
+    height: 20px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-profile-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.student-profile-mini strong {
+    display: block;
+    color: #0f172a;
+    font-size: 15px;
+}
+
+.student-profile-mini span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.student-avatar-small {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.student-avatar-small ion-icon {
+    font-size: 24px;
+    color: #2563eb;
+}
+
+/* HEADER PAGINA */
+
+.page-header {
+    padding: 34px 34px 18px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.page-header p {
+    margin: 8px 0 0;
+    color: #475569;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* FILTRI */
+
+.filters-card {
+    margin: 0 34px 22px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    display: grid;
+    grid-template-columns: 1.4fr 0.9fr 0.9fr 0.9fr;
+    gap: 18px;
+}
+
+.search-field,
+.select-field {
+    min-height: 54px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+}
+
+.search-field ion-icon {
+    color: #64748b;
+    font-size: 22px;
+    margin-right: 10px;
+}
+
+.search-field input {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: #0f172a;
+    font: inherit;
+    background: transparent;
+}
+
+.search-field input::placeholder {
+    color: #64748b;
+}
+
+.select-field ion-select {
+    width: 100%;
+    --color: #0f172a;
+    --placeholder-color: #0f172a;
+    --placeholder-opacity: 1;
+}
+
+/* STATISTICHE */
+
+.stats-grid {
+    margin: 0 34px 22px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+ion-card {
+    margin: 0;
+}
+
+.stat-card,
+.teacher-card,
+.info-card,
+.booking-help-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+}
+
+.stat-card ion-card-content {
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.stat-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eaf2ff;
+}
+
+.stat-icon ion-icon {
+    font-size: 30px;
+}
+
+.stat-icon.blue {
+    background: #eaf2ff;
+}
+
+.stat-icon.blue ion-icon {
+    color: #2563eb;
+}
+
+.stat-icon.green {
+    background: #eafaf0;
+}
+
+.stat-icon.green ion-icon {
+    color: #16a34a;
+}
+
+.stat-icon.purple {
+    background: #f3e8ff;
+}
+
+.stat-icon.purple ion-icon {
+    color: #7c3aed;
+}
+
+.stat-card span {
+    display: block;
+    color: #475569;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.stat-card strong {
+    color: #2563eb;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+/* CONTENUTO */
+
+.docenti-content-grid {
+    margin: 0 34px 34px;
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+}
+
+.teachers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+/* CARD DOCENTE */
+
+.teacher-card ion-card-content {
+    padding: 22px;
+}
+
+.teacher-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.teacher-avatar {
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.teacher-avatar.blue {
+    background: #2563eb;
+}
+
+.teacher-avatar.purple {
+    background: #5b3cc4;
+}
+
+.teacher-avatar.teal {
+    background: #0f9993;
+}
+
+.teacher-avatar.coral {
+    background: #fb6f5f;
+}
+
+.teacher-avatar.gray {
+    background: #64748b;
+}
+
+.teacher-header h3 {
+    margin: 0 0 5px;
+    color: #0f172a;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.teacher-header p {
+    margin: 0;
+    color: #475569;
+    font-weight: 700;
+}
+
+.teacher-info {
+    display: grid;
+    gap: 8px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.teacher-info div {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.teacher-info ion-icon {
+    color: #64748b;
+    font-size: 18px;
+}
+
+.next-slot {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 16px 0 14px;
+    color: #334155;
+}
+
+.next-slot span {
+    color: #64748b;
+    font-weight: 700;
+}
+
+.next-slot strong {
+    color: #0f172a;
+}
+
+.teacher-status {
+    width: max-content;
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.teacher-status.available {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.teacher-status.few {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.teacher-status.unavailable {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.teacher-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+ion-button {
+    --border-radius: 8px;
+    text-transform: none;
+    font-weight: 800;
+}
+
+.disabled-card {
+    opacity: 0.8;
+}
+
+/* COLONNA DESTRA */
+
+.right-info-column {
+    display: grid;
+    gap: 24px;
+}
+
+.info-card ion-card-header,
+.booking-help-card ion-card-header {
+    padding: 24px 24px 8px;
+}
+
+.info-card ion-card-content,
+.booking-help-card ion-card-content {
+    padding: 18px 24px 24px;
+}
+
+.info-card ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #0f172a;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.info-card ion-card-title ion-icon {
+    color: #2563eb;
+}
+
+.guide-step {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.guide-step:last-child {
+    border-bottom: none;
+}
+
+.guide-step span {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.guide-step p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.55;
+    font-weight: 600;
+}
+
+.booking-help-card ion-card-content {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 16px;
+    align-items: center;
+}
+
+.booking-help-card h3 {
+    margin: 0 0 12px;
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.booking-help-card p {
+    margin: 0 0 18px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.calendar-illustration {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-illustration>ion-icon {
+    font-size: 95px;
+    color: #bfdbfe;
+}
+
+.calendar-illustration span {
+    position: absolute;
+    right: 10px;
+    bottom: 4px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-illustration span ion-icon {
+    color: #ffffff;
+    font-size: 24px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1300px) {
+    .docenti-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .teachers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .right-info-column {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 1000px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .filters-card {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .topbar {
+        padding: 0 18px;
+    }
+
+    .student-profile-mini div {
+        display: none;
+    }
+
+    .page-header {
+        padding: 28px 18px 14px;
+    }
+
+    .page-header h2 {
+        font-size: 28px;
+    }
+
+    .filters-card,
+    .stats-grid,
+    .docenti-content-grid {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .teachers-grid,
+    .right-info-column {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-help-card ion-card-content {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-illustration {
+        display: none;
+    }
+}

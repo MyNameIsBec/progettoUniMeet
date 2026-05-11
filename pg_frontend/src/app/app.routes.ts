@@ -110,22 +110,17 @@ export const routes: Routes = [
   {
     path: 'dashboard-admin',
     canActivate: [authGuard, roleGuard('amministratore')],
-    loadComponent: () => import('./features/admin/dashboard-admin/dashboard-admin.page').then(m => m.DashboardAdminPage),
-    children: [
-      {
-        path: '',
-        redirectTo: 'gestione-utenti',
-        pathMatch: 'full'
-      },
-      {
-        path: 'gestione-utenti',
-        loadComponent: () => import('./features/admin/gestione-utenti/gestione-utenti.page').then(m => m.GestioneUtentiPage)
-      },
-      {
-        path: 'gestione-slot-admin',
-        loadComponent: () => import('./features/admin/gestione-slot-admin/gestione-slot-admin.page').then(m => m.GestioneSlotAdminPage)
-      }
-    ]
+    loadComponent: () => import('./features/admin/dashboard-admin/dashboard-admin.page').then(m => m.DashboardAdminPage)
+  },
+  {
+    path: 'gestione-utenti',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-utenti/gestione-utenti.page').then(m => m.GestioneUtentiPage)
+  },
+  {
+    path: 'gestione-slot-admin',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-slot-admin/gestione-slot-admin.page').then(m => m.GestioneSlotAdminPage)
   },
   {
     path: 'unauthorized',
