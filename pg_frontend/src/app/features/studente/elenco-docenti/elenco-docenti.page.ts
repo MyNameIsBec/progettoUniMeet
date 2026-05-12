@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
+import { CommonModule } from '@angular/common';
 import {
-  IonContent,
   IonIcon,
   IonCard,
   IonCardContent,
@@ -12,28 +11,19 @@ import {
   IonSelect,
   IonSelectOption
 } from '@ionic/angular/standalone';
-
 import { addIcons } from 'ionicons';
-
 import {
-  calendarOutline,
-  calendarClearOutline,
-  calendarNumberOutline,
-  homeOutline,
-  peopleOutline,
-  helpCircleOutline,
-  personOutline,
-  logOutOutline,
-  menuOutline,
-  notificationsOutline,
-  chevronDownOutline,
   searchOutline,
-  bookOutline,
   mailOutline,
   businessOutline,
   informationCircleOutline,
-  checkmarkOutline
+  checkmarkOutline,
+  calendarOutline,
+  calendarClearOutline,
+  personOutline
 } from 'ionicons/icons';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+import { Docente } from '../../../core/models/interfacce';
 
 @Component({
   selector: 'app-elenco-docenti',
@@ -41,8 +31,8 @@ import {
   styleUrls: ['./elenco-docenti.page.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
-    IonContent,
     IonIcon,
     IonCard,
     IonCardContent,
@@ -50,29 +40,48 @@ import {
     IonCardTitle,
     IonButton,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    DashboardLayoutComponent
   ]
 })
 export class ElencoDocentiPage {
+  public listaDocenti: Docente[] = [
+    {
+      id: 1,
+      nome: 'Prof. Stefano Bernardi',
+      materia: 'Analisi Matematica I',
+      email: 's.bernardi@unimeet.it',
+      ufficio: 'Edificio A, Aula 201',
+      iniziali: 'SB',
+      coloreAvatar: 'blue',
+      prossimoSlot: '23/05/2026 · 10:00',
+      disponibile: true,
+      descrizione: 'Docente esperto in modellazione matematica.'
+    },
+    {
+      id: 2,
+      nome: 'Prof.ssa Elisa Esposito',
+      materia: 'Diritto Privato',
+      email: 'e.esposito@unimeet.it',
+      ufficio: 'Edificio B, Studio 15',
+      iniziali: 'EE',
+      coloreAvatar: 'purple',
+      prossimoSlot: '22/05/2026 · 14:30',
+      disponibile: true,
+      descrizione: 'Disponibile per ricevimento tesi.'
+    }
+  ];
+
   constructor() {
     addIcons({
-      calendarOutline,
-      calendarClearOutline,
-      calendarNumberOutline,
-      homeOutline,
-      peopleOutline,
-      helpCircleOutline,
-      personOutline,
-      logOutOutline,
-      menuOutline,
-      notificationsOutline,
-      chevronDownOutline,
       searchOutline,
-      bookOutline,
       mailOutline,
       businessOutline,
       informationCircleOutline,
-      checkmarkOutline
+      checkmarkOutline,
+      calendarOutline,
+      calendarClearOutline,
+      personOutline
     });
   }
 }

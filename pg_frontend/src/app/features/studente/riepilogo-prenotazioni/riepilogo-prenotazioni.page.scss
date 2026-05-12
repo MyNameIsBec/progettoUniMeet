@@ -1,0 +1,85 @@
+.page-header {
+  padding: 34px 34px 18px;
+  h2 { font-size: 34px; font-weight: 800; margin: 0; }
+  p { color: var(--ion-color-medium); margin-top: 8px; font-size: 18px; }
+}
+
+.riepilogo-content {
+  padding: 0 34px 34px;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  height: 48px;
+  ion-icon { color: var(--ion-color-medium); font-size: 20px; }
+  input { 
+    border: none; 
+    outline: none; 
+    width: 100%; 
+    font-size: 15px; 
+    background: transparent !important;
+    color: #0f172a !important;
+  }
+}
+
+.prenotazioni-list {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-card {
+  margin: 0;
+  h3 { margin: 0; font-size: 18px; font-weight: 800; }
+  p { margin: 4px 0 0; color: var(--ion-color-medium); font-weight: 600; }
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.details-grid {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-weight: 600;
+  font-size: 14px;
+  ion-icon { color: var(--ion-color-primary); }
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+}
+
+@media (max-width: 700px) {
+  .page-header { padding: 24px 18px 12px; text-align: center; }
+  .riepilogo-content { padding: 0 18px 24px; }
+  .details-grid { gap: 12px; flex-direction: column; }
+}

@@ -4,29 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import * as icons from 'ionicons/icons';
-import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons,
-  IonBackButton, IonSearchbar, IonItem, IonLabel, IonList,
-  IonSelect, IonSelectOption, IonButton, IonIcon, IonBadge,
-  IonCard, IonCardContent, IonGrid, IonRow, IonCol,
-  IonSegment, IonSegmentButton, IonDatetime
+import { 
+  IonItem, 
+  IonSelect, 
+  IonSelectOption, 
+  IonButton, 
+  IonIcon, 
+  IonCard, 
+  IonCardContent, 
+  IonCardHeader,
+  IonCardTitle,
+  IonInput,
+  IonTextarea
 } from '@ionic/angular/standalone';
-
-/**
- * Pagina per la visualizzazione e prenotazione degli slot di ricevimento.
- * Consente allo studente di filtrare per data, docente e materia.
- */
-
-interface Slot {
-  id: string;
-  docente: string;
-  materia: string;
-  data: Date;
-  oraInizio: string;
-  oraFine: string;
-  stato: 'disponibile' | 'prenotato' | 'bloccato';
-  ufficio?: string;
-}
+import { SlotRicevimento } from '../../../core/models/interfacce';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
 @Component({
   selector: 'app-prenota',
@@ -34,68 +26,64 @@ interface Slot {
   styleUrls: ['./prenota.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonTitle,
-    IonToolbar, IonButtons, IonBackButton, IonSearchbar, IonItem,
-    IonLabel, IonList, IonSelect, IonSelectOption, IonButton,
-    IonIcon, IonBadge, IonCard, IonCardContent, IonGrid,
-    IonRow, IonCol, IonSegment, IonSegmentButton, IonDatetime
+    CommonModule, 
+    FormsModule, 
+    IonItem, 
+    IonSelect, 
+    IonSelectOption, 
+    IonButton, 
+    IonIcon, 
+    IonCard, 
+    IonCardContent, 
+    IonCardHeader,
+    IonCardTitle,
+    IonInput,
+    IonTextarea,
+    DashboardLayoutComponent
   ]
 })
 export class PrenotaPage implements OnInit {
 
-  // Stato della vista
-  viewMode: 'calendar' | 'list' = 'calendar';
-  selectedDate: Date = new Date();
+  modalitaVisualizzazione: 'calendario' | 'lista' = 'calendario';
+  dataSelezionata: Date = new Date();
 
-  // Filtri attivi
-  filters = {
-    search: '',
+  filtriRicerca = {
+    testo: '',
     materia: 'tutte',
     docente: 'tutti'
   };
 
-  // Liste per i filtri (mock data)
-  materie = ['Programmazione I', 'Basi di Dati', 'Analisi Matematica', 'Reti di Calcolatori'];
-  docenti = ['Mario Rossi', 'Luigi Bianchi', 'Anna Verdi', 'Paola Neri'];
+  elencoMaterie = ['Programmazione I', 'Basi di Dati', 'Analisi Matematica', 'Reti di Calcolatori'];
+  elencoDocenti = [
+    { id: '1', nome: 'Stefano Bernardi' },
+    { id: '2', nome: 'Elisa Esposito' },
+    { id: '3', nome: 'Marco Galli' },
+    { id: '4', nome: 'Valentina Rizzo' }
+  ];
 
-  // Dati degli slot (mock)
-  allSlots: Slot[] = [
+  tuttiGliSlot: SlotRicevimento[] = [
     {
       id: '1',
-      docente: 'Mario Rossi',
-      materia: 'Programmazione I',
+      docenteId: '1',
+      materia: 'Analisi Matematica I',
       data: new Date(2026, 4, 15, 10, 0),
       oraInizio: '10:00',
       oraFine: '10:30',
       stato: 'disponibile',
-      ufficio: 'Aula B1'
-    },
-    {
-      id: '2',
-      docente: 'Luigi Bianchi',
-      materia: 'Basi di Dati',
-      data: new Date(2026, 4, 15, 11, 0),
-      oraInizio: '11:00',
-      oraFine: '11:30',
-      stato: 'bloccato',
-      ufficio: 'Online (Teams)'
-    },
-    {
-      id: '3',
-      docente: 'Anna Verdi',
-      materia: 'Analisi Matematica',
-      data: new Date(2026, 4, 16, 0, 0),
-      oraInizio: '09:00',
-      oraFine: '09:30',
-      stato: 'disponibile',
-      ufficio: 'Studio 4'
+      luogo: {
+        id: '1',
+        aula: 'Aula 201',
+        edificio: 'Edificio A',
+        piano: 2,
+        latitudine: 0,
+        longitudine: 0
+      }
     }
   ];
 
-  filteredSlots: Slot[] = [];
+  slotFiltrati: SlotRicevimento[] = [];
 
   constructor(private router: Router) {
-    // Registrazione icone in modo più compatto
     addIcons({
       calendarOutline: icons.calendarOutline,
       filterOutline: icons.filterOutline,
@@ -104,59 +92,49 @@ export class PrenotaPage implements OnInit {
       bookOutline: icons.bookOutline,
       timeOutline: icons.timeOutline,
       lockClosedOutline: icons.lockClosedOutline,
-      locationOutline: icons.locationOutline
+      locationOutline: icons.locationOutline,
+      businessOutline: icons.businessOutline,
+      mailOutline: icons.mailOutline,
+      chevronBackOutline: icons.chevronBackOutline,
+      chevronForwardOutline: icons.chevronForwardOutline,
+      informationCircleOutline: icons.informationCircleOutline,
+      personOutline: icons.personOutline,
+      hourglassOutline: icons.hourglassOutline,
+      attachOutline: icons.attachOutline,
+      calendarClearOutline: icons.calendarClearOutline
     });
   }
 
   ngOnInit() {
-    this.applyFilters();
+    this.applicaFiltri();
   }
 
-  /**
-   * Applica i filtri di ricerca, materia e docente alla lista degli slot.
-   */
-  applyFilters() {
-    this.filteredSlots = this.allSlots.filter(slot => {
-      const query = this.filters.search.toLowerCase();
-
-      const matchesSearch = !query ||
-        slot.docente.toLowerCase().includes(query) ||
-        slot.materia.toLowerCase().includes(query);
-
-      const matchesMateria = this.filters.materia === 'tutte' || slot.materia === this.filters.materia;
-      const matchesDocente = this.filters.docente === 'tutti' || slot.docente === this.filters.docente;
-
-      // Filtro data: attivo solo se siamo in modalità calendario
-      let matchesDate = true;
-      if (this.viewMode === 'calendar') {
-        matchesDate = slot.data.toDateString() === this.selectedDate.toDateString();
+  applicaFiltri() {
+    this.slotFiltrati = this.tuttiGliSlot.filter(slot => {
+      const testoCercato = this.filtriRicerca.testo.toLowerCase();
+      const nomeDocente = this.ottieniNomeDocente(slot.docenteId);
+      const corrispondeRicerca = !testoCercato || nomeDocente.toLowerCase().includes(testoCercato) || slot.materia.toLowerCase().includes(testoCercato);
+      const corrispondeMateria = this.filtriRicerca.materia === 'tutte' || slot.materia === this.filtriRicerca.materia;
+      const corrispondeDocente = this.filtriRicerca.docente === 'tutti' || String(slot.docenteId) === String(this.filtriRicerca.docente);
+      let corrispondeData = true;
+      if (this.modalitaVisualizzazione === 'calendario') {
+        corrispondeData = slot.data.toDateString() === this.dataSelezionata.toDateString();
       }
-
-      return matchesSearch && matchesMateria && matchesDocente && matchesDate;
+      return corrispondeRicerca && corrispondeMateria && corrispondeDocente && corrispondeData;
     });
   }
 
-  /**
-   * Gestisce il cambio data dal componente ion-datetime
-   */
-  onDateSelected(event: any) {
-    this.selectedDate = new Date(event.detail.value);
-    this.applyFilters();
+  ottieniNomeDocente(id: string | number): string {
+    const docente = this.elencoDocenti.find(d => String(d.id) === String(id));
+    return docente ? docente.nome : 'Docente Sconosciuto';
   }
 
-  /**
-   * Avvia il processo di prenotazione per uno specifico slot
-   */
-  async prenota(slot: Slot) {
-    if (slot.stato !== 'disponibile') return;
+  quandoDataSelezionata(evento: any) {
+    this.dataSelezionata = new Date(evento.detail.value);
+    this.applicaFiltri();
+  }
 
-    this.router.navigate(['/dashboard-studente/form-prenotazione'], {
-      queryParams: {
-        id: slot.id,
-        docente: slot.docente,
-        materia: slot.materia,
-        ora: slot.oraInizio
-      }
-    });
+  async prenota(slot: SlotRicevimento) {
+    console.log('Prenotazione confermata per:', slot);
   }
 }

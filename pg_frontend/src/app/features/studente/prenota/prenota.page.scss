@@ -1,198 +1,526 @@
 :host {
-  --ion-background-color: #ffffff;
+  font-family: Arial, sans-serif;
+  color: #0f172a;
 }
 
-// Sfondo con gradiente leggero ispirato alla home
-ion-content {
-  --background: radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.05), transparent 40%),
-                 linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+/* HEADER */
+.page-header {
+  padding: 34px 34px 18px;
 }
 
-// Barra di ricerca pulita
-.custom-search {
-  --background: #ffffff;
-  --color: #1e293b;
-  --placeholder-color: #64748b;
-  --border-radius: 12px;
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 8px 16px;
-  border-bottom: 1px solid #edf2f7;
-  
-  .searchbar-input {
-    color: #1e293b !important;
-  }
-}
-
-// Griglia filtri
-.filters-row {
-  margin-bottom: 16px;
-  
-  .filter-box {
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    padding: 2px 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-
-    ion-select {
-      --placeholder-color: #2563eb;
-      --placeholder-opacity: 0.6;
-      color: #1e293b;
-      font-weight: 700;
-      font-size: 14px;
-      
-      &::part(label) {
-        color: #64748b !important;
-        font-weight: 600;
-      }
-      
-      &::part(text) {
-        color: #1e293b !important;
-      }
-    }
-  }
-}
-
-// Segment per switch vista
-.view-toggle {
-  margin: 0 auto 24px;
-  max-width: 400px;
-  
-  ion-segment {
-    --background: #f1f5f9;
-    border-radius: 10px;
-    padding: 4px;
-
-    ion-segment-button {
-      --indicator-color: #2563eb;
-      --color: #475569;
-      --color-checked: #ffffff;
-      font-weight: 700;
-      
-      ion-label {
-        color: inherit;
-      }
-    }
-  }
-}
-
-// Calendario
-.calendar-card {
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  margin-bottom: 30px;
-
-  .custom-date-picker {
-    --background: #ffffff;
-    --ion-color-step-300: #ffffff;
-    --ion-text-color: #2563eb;
-    
-    &::part(calendar-header) {
-      background: #f8fbff;
-      border-bottom: 1px solid #edf2f7;
-    }
-  }
-}
-
-// Titoli sezioni
-.section-title {
-  font-size: 20px;
+.page-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 34px;
   font-weight: 800;
-  color: #1e293b;
-  margin: 0 0 20px;
-  padding-left: 12px;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* CARD BASE */
+.selection-card,
+.calendar-card,
+.important-card,
+.selected-slot-card,
+.booking-form-card {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+}
+
+ion-card-header {
+  padding: 24px 24px 8px;
+}
+
+ion-card-content {
+  padding: 18px 24px 24px;
+}
+
+ion-card-title {
+  color: #0f172a;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+/* SELEZIONE DOCENTE */
+.selection-card {
+  margin: 0 34px 24px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  overflow: hidden;
+}
+
+.selection-form {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 18px;
+  align-items: end;
+  border-right: 1px solid #e2e8f0;
+}
+
+.custom-field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.custom-field ion-item {
+  --background: #ffffff;
+  --color: #0f172a;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  --padding-start: 12px;
+}
+
+.custom-field ion-select,
+.custom-field ion-input,
+.custom-field ion-textarea {
+  --color: #0f172a;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.selected-teacher-box {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: linear-gradient(135deg, #ffffff, #f8fbff);
+}
+
+.teacher-avatar-large {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.selected-teacher-box h3 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.selected-teacher-box p {
+  margin: 0 0 12px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.teacher-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  margin-top: 7px;
+}
+
+.teacher-detail ion-icon {
+  color: #64748b;
+}
+
+/* BOOKING LAYOUT */
+.booking-layout {
+  margin: 0 34px 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) 430px;
+  gap: 24px;
+  align-items: start;
+}
+
+.calendar-column {
+  display: grid;
+  gap: 18px;
+}
+
+/* CALENDARIO */
+.calendar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-actions button {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #2563eb;
+  min-height: 38px;
+  min-width: 42px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.week-title {
+  margin: 18px 0 0;
+  text-align: center;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.calendar-card {
+  overflow: hidden;
+}
+
+.slot-calendar {
+  display: grid;
+  grid-template-columns: 50px repeat(6, 1fr);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  width: 100%;
+}
+
+.calendar-scroll-container {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.calendar-empty,
+.day-header,
+.time-cell,
+.slot,
+.no-slot {
+  height: 60px !important;
+  /* Force same height everywhere */
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  /* Prevent content from pushing height */
+}
+
+.calendar-empty,
+.day-header {
+  background: #f8fafc;
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.day-header strong {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.day-header span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.active-day {
+  background: #eaf2ff;
+}
+
+.active-day strong,
+.active-day span {
+  color: #2563eb;
+}
+
+.time-cell {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot {
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.slot.available {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.slot.available:hover {
+  background: #bbf7d0;
+}
+
+.slot.occupied {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.slot.selected {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.no-slot {
+  background: #f8fafc;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 10px;
+
+  ion-icon {
+    display: none;
+  }
+
+  /* Hide icon to save vertical space */
+  span {
+    font-size: 10px;
+    line-height: 1.1;
+  }
+}
+
+.no-slot.empty {
+  background: #f8fafc;
+}
+
+.legend-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+  font-weight: 700;
+}
+
+.legend-row div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.available-dot {
+  background: #86efac;
+}
+
+.selected-dot {
+  background: #2563eb;
+}
+
+.occupied-dot {
+  background: #cbd5e1;
+}
+
+/* IMPORTANTE */
+.important-card {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.important-card ion-card-content {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 14px;
+}
+
+.important-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.important-card h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.important-card ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.8;
+}
+
+/* COLONNA DESTRA */
+.booking-side-column {
+  display: grid;
+  gap: 18px;
+}
+
+.selected-slot-card {
   border-left: 5px solid #2563eb;
 }
 
-// Card dello Slot
-.slot-item {
-  margin: 0 0 16px 0;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  background: #ffffff;
+.slot-detail-row {
+  display: grid;
+  grid-template-columns: 24px 90px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  color: #475569;
+}
 
-  &.bloccato {
-    opacity: 0.7;
-    background: #f8fafc;
+.slot-detail-row strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.booking-form-card .custom-field {
+  margin-bottom: 18px;
+}
+
+.booking-form-card ion-textarea {
+  min-height: 130px;
+}
+
+.textarea-counter {
+  display: block;
+  text-align: right;
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.upload-box {
+  min-height: 86px;
+  border: 1px dashed #93c5fd;
+  border-radius: 12px;
+  background: #f8fbff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+}
+
+.upload-box strong {
+  display: block;
+  color: #2563eb;
+  margin-bottom: 5px;
+}
+
+.confirm-button {
+  margin-top: 14px;
+  --background: #2563eb;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+
+  .selection-card,
+  .booking-layout {
+    grid-template-columns: 1fr;
   }
 
-  .slot-flex {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .time-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 85px;
-    padding-right: 16px;
-    border-right: 2px solid #f1f5f9;
-
-    .time {
-      font-size: 19px;
-      font-weight: 800;
-      color: #1e293b;
-    }
-    .duration {
-      font-size: 11px;
-      color: #64748b;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-  }
-
-  .info-column {
-    flex: 1;
-
-    .docente-name {
-      font-size: 17px;
-      font-weight: 800;
-      margin: 0 0 4px;
-      color: #1e293b;
-    }
-    .subject-name {
-      font-size: 14px;
-      color: #475569;
-      margin: 0 0 6px;
-      font-weight: 600;
-    }
-    .location-info {
-      font-size: 13px;
-      color: #2563eb;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin: 0;
-    }
-  }
-
-  .action-column {
-    .btn-primary-custom {
-      --background: #2563eb;
-      --color: #ffffff;
-      --border-radius: 10px;
-      font-weight: 800;
-      font-size: 14px;
-      height: 40px;
-    }
-    
-    ion-badge {
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
+  .selection-form {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
   }
 }
 
-.no-results {
-  text-align: center;
-  padding: 50px 0;
-  color: #64748b;
-  ion-icon { font-size: 56px; margin-bottom: 12px; opacity: 0.2; }
-  p { font-weight: 600; }
+@media (max-width: 700px) {
+  .page-header {
+    padding: 24px 18px 12px;
+    text-align: center;
+  }
+
+  .selection-card,
+  .booking-layout {
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .selection-form {
+    grid-template-columns: 1fr;
+  }
+
+  .selected-teacher-box {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+  }
+
+
+  .slot-calendar {
+    grid-template-columns: 40px repeat(6, 1fr);
+    /* Fits entire width */
+  }
+
+  .calendar-empty,
+  .day-header,
+  .time-cell,
+  .slot,
+  .no-slot {
+    height: 52px !important;
+    padding: 2px;
+  }
+
+  .day-header strong {
+    font-size: 10px;
+  }
+
+  .day-header span {
+    font-size: 8px;
+  }
+
+  .time-cell {
+    font-size: 10px;
+  }
+
+  .slot {
+    font-size: 8px;
+    padding: 2px;
+  }
+
+  .slot strong {
+    font-size: 8px;
+    display: block;
+  }
+
+  .slot small {
+    display: none;
+  }
+
+  .no-slot span {
+    display: none;
+  }
+
+  .teacher-actions,
+  .appointment-actions {
+    grid-template-columns: 1fr;
+  }
 }

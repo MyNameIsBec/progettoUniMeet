@@ -1,0 +1,44 @@
+<header class="topbar">
+  <!-- LOGO MOBILE -->
+  <div class="mobile-logo">
+    <ion-icon name="calendar-outline"></ion-icon>
+    <div>
+      <strong>UniMeet</strong>
+      <span>Area {{ ruoloUtente | titlecase }}</span>
+    </div>
+  </div>
+
+  <!-- MENU MOBILE -->
+  <nav class="mobile-top-menu">
+    <a *ngFor="let voce of vociMenuMobile" 
+       [routerLink]="voce.percorso" 
+       routerLinkActive="active" 
+       [routerLinkActiveOptions]="{exact: voce.esatto || false}">
+      <ion-icon [name]="voce.icona"></ion-icon>
+      <span>{{ voce.etichetta }}</span>
+    </a>
+    <a routerLink="/login" class="mobile-logout">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>Logout</span>
+    </a>
+  </nav>
+
+  <!-- AZIONI DESKTOP -->
+  <div class="topbar-actions">
+    <button class="notification-button" routerLink="/notifiche">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <span class="notification-badge">3</span>
+    </button>
+
+    <div class="student-profile-mini">
+      <div class="student-avatar-small">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div>
+        <strong>{{ nomeUtente }}</strong>
+        <span>{{ ruoloUtente | titlecase }}</span>
+      </div>
+      <ion-icon name="chevron-down-outline"></ion-icon>
+    </div>
+  </div>
+</header>

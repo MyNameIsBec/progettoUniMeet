@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-row">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div>
+        <h1>UniMeet</h1>
+        <span>Area {{ ruoloUtente | titlecase }}</span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a *ngFor="let voce of vociMenu" 
+       [routerLink]="voce.percorso" 
+       routerLinkActive="active" 
+       [routerLinkActiveOptions]="{exact: voce.esatto || false}">
+      <ion-icon [name]="voce.icona"></ion-icon>
+      <span>{{ voce.etichetta }}</span>
+    </a>
+
+    <a routerLink="/login" class="logout-link">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>Logout</span>
+    </a>
+  </nav>
+</aside>

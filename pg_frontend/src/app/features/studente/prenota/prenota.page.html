@@ -1,109 +1,366 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/dashboard-studente"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Appuntamenti</ion-title>
-  </ion-toolbar>
+<app-dashboard-layout>
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <h2>Prenota un ricevimento</h2>
+    <p>
+      Seleziona un docente, consulta gli slot disponibili e completa la richiesta di prenotazione.
+    </p>
+  </section>
 
-  <ion-toolbar>
-    <ion-searchbar 
-      [(ngModel)]="filters.search" 
-      (ionInput)="applyFilters()" 
-      placeholder="Cerca docente o materia..."
-      class="custom-search">
-    </ion-searchbar>
-  </ion-toolbar>
-</ion-header>
+  <!-- SELEZIONE DOCENTE -->
+  <section class="selection-card">
 
-<ion-content class="ion-padding">
-  
-  <!-- Sezione Filtri Rapidi -->
-  <div class="filters-row">
-    <ion-grid fixed>
-      <ion-row>
-        <ion-col size="6">
-          <div class="filter-box">
-            <ion-select label="Materia" label-placement="floating" [(ngModel)]="filters.materia" (ionChange)="applyFilters()">
-              <ion-select-option value="tutte">Tutte</ion-select-option>
-              <ion-select-option *ngFor="let m of materie" [value]="m">{{m}}</ion-select-option>
-            </ion-select>
-          </div>
-        </ion-col>
-        <ion-col size="6">
-          <div class="filter-box">
-            <ion-select label="Docente" label-placement="floating" [(ngModel)]="filters.docente" (ionChange)="applyFilters()">
-              <ion-select-option value="tutti">Tutti</ion-select-option>
-              <ion-select-option *ngFor="let d of docenti" [value]="d">{{d}}</ion-select-option>
-            </ion-select>
-          </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
+    <div class="selection-form">
 
-  <!-- Switch Vista -->
-  <div class="view-toggle">
-    <ion-segment [(ngModel)]="viewMode" (ionChange)="applyFilters()" mode="ios">
-      <ion-segment-button value="calendar">
-        <ion-label>Calendario</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="list">
-        <ion-label>Lista completa</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </div>
+      <div class="custom-field">
+        <label>Seleziona docente</label>
 
-  <!-- Vista Calendario -->
-  <div *ngIf="viewMode === 'calendar'" class="calendar-view">
-    <ion-card class="calendar-card">
-      <ion-datetime 
-        presentation="date" 
-        size="cover" 
-        [firstDayOfWeek]="1"
-        (ionChange)="onDateSelected($event)"
-        class="custom-date-picker">
-      </ion-datetime>
-    </ion-card>
-  </div>
+        <ion-item>
+          <ion-select value="mario-rossi" interface="popover">
+            <ion-select-option value="mario-rossi">Prof. Mario Rossi</ion-select-option>
+            <ion-select-option value="laura-bianchi">Prof.ssa Laura Bianchi</ion-select-option>
+            <ion-select-option value="andrea-verdi">Prof. Andrea Verdi</ion-select-option>
+            <ion-select-option value="chiara-conti">Prof.ssa Chiara Conti</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
 
-  <!-- Elenco Slot -->
-  <div class="slots-section">
-    <h3 class="section-title">
-      {{ viewMode === 'calendar' ? 'Disponibilità per il giorno selezionato' : 'Tutti gli slot disponibili' }}
-    </h3>
+      <div class="custom-field">
+        <label>Seleziona corso</label>
 
-    <div *ngIf="filteredSlots.length === 0" class="no-results">
-      <ion-icon name="calendar-outline"></ion-icon>
-      <p>Nessun appuntamento trovato per questi filtri.</p>
+        <ion-item>
+          <ion-select value="analisi" interface="popover">
+            <ion-select-option value="analisi">Analisi Matematica I</ion-select-option>
+            <ion-select-option value="diritto">Diritto Privato</ion-select-option>
+            <ion-select-option value="economia">Economia Aziendale</ion-select-option>
+            <ion-select-option value="programmazione">Programmazione e Algoritmi</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <div class="custom-field">
+        <label>Seleziona data</label>
+
+        <ion-item>
+          <ion-input type="date" value="2025-05-23"></ion-input>
+        </ion-item>
+      </div>
+
     </div>
 
-    <ion-card *ngFor="let slot of filteredSlots" class="slot-item" [ngClass]="slot.stato">
-      <ion-card-content>
-        <div class="slot-flex">
-          <div class="time-column">
-            <span class="time">{{ slot.oraInizio }}</span>
-            <span class="duration">30 min</span>
-          </div>
+    <div class="selected-teacher-box">
 
-          <div class="info-column">
-            <h4 class="docente-name">{{ slot.docente }}</h4>
-            <p class="subject-name">{{ slot.materia }}</p>
-            <p class="location-info">
-              <ion-icon name="location-outline"></ion-icon>
-              {{ slot.ufficio }}
-            </p>
-          </div>
+      <div class="teacher-avatar-large">
+        <span>MR</span>
+      </div>
 
-          <div class="action-column">
-            <ion-button *ngIf="slot.stato === 'disponibile'" (click)="prenota(slot)" fill="solid" class="btn-primary-custom">
-              Prenota
-            </ion-button>
-            <ion-badge *ngIf="slot.stato === 'bloccato'" color="danger">Chiuso</ion-badge>
-          </div>
+      <div>
+        <h3>Prof. Mario Rossi</h3>
+        <p>Analisi Matematica I</p>
+
+        <div class="teacher-detail">
+          <ion-icon name="business-outline"></ion-icon>
+          <span>Edificio A, Aula 201</span>
         </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
 
-</ion-content>
+        <div class="teacher-detail">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>m.rossi&#64;unimeet.it</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- GRIGLIA PRINCIPALE -->
+  <section class="booking-layout">
+
+    <!-- CALENDARIO SLOT -->
+    <div class="calendar-column">
+
+      <ion-card class="calendar-card">
+
+        <ion-card-header>
+
+          <div class="calendar-header-row">
+            <ion-card-title>
+              Slot disponibili
+            </ion-card-title>
+
+            <div class="calendar-actions">
+              <button>
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+
+              <button class="week-button">
+                Settimana
+              </button>
+
+              <button>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <h3 class="week-title">20 - 26 Maggio 2025</h3>
+
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <div class="calendar-scroll-container">
+            <div class="slot-calendar">
+
+              <div class="calendar-empty"></div>
+
+              <div class="day-header">
+                <strong>Lun</strong>
+                <span>20/05</span>
+              </div>
+
+              <div class="day-header">
+                <strong>Mar</strong>
+                <span>21/05</span>
+              </div>
+
+              <div class="day-header">
+                <strong>Mer</strong>
+                <span>22/05</span>
+              </div>
+
+              <div class="day-header active-day">
+                <strong>Gio</strong>
+                <span>23/05</span>
+              </div>
+
+              <div class="day-header">
+                <strong>Ven</strong>
+                <span>24/05</span>
+              </div>
+
+              <div class="day-header weekend">
+                <strong>Sab</strong>
+                <span>25/05</span>
+              </div>
+
+              <div class="time-cell">09:00</div>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+
+              <div class="no-slot">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>Nessun ricevimento previsto</span>
+              </div>
+
+              <div class="time-cell">10:00</div>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot selected">
+                <strong>10:00 - 10:30</strong>
+                <small>Selezionato</small>
+              </button>
+              <button class="slot available">Disponibile</button>
+              <div class="no-slot empty"></div>
+
+              <div class="time-cell">11:00</div>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <div class="no-slot empty"></div>
+
+              <div class="time-cell">12:00</div>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <div class="no-slot empty"></div>
+
+              <div class="time-cell">14:00</div>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <div class="no-slot empty"></div>
+
+              <div class="time-cell">15:00</div>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <div class="no-slot empty"></div>
+
+              <div class="time-cell">16:00</div>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot available">Disponibile</button>
+              <button class="slot occupied" disabled>Occupato</button>
+              <div class="no-slot empty"></div>
+
+            </div>
+          </div>
+
+          <div class="legend-row">
+            <div>
+              <span class="legend-dot available-dot"></span>
+              Disponibile
+            </div>
+
+            <div>
+              <span class="legend-dot selected-dot"></span>
+              Selezionato
+            </div>
+
+            <div>
+              <span class="legend-dot occupied-dot"></span>
+              Occupato
+            </div>
+          </div>
+
+        </ion-card-content>
+
+      </ion-card>
+
+      <ion-card class="important-card">
+        <ion-card-content>
+
+          <div class="important-icon">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+
+          <div>
+            <h3>Importante</h3>
+
+            <ul>
+              <li>Una volta confermata la prenotazione, lo slot non sarà più disponibile per altri studenti.</li>
+              <li>Riceverai un promemoria prima del ricevimento con data, orario e aula.</li>
+              <li>Potrai annullare la prenotazione entro il limite previsto dal sistema.</li>
+            </ul>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- DETTAGLI PRENOTAZIONE -->
+    <aside class="booking-side-column">
+
+      <ion-card class="selected-slot-card">
+        <ion-card-header>
+          <ion-card-title>Slot selezionato</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <div class="slot-detail-row">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Docente</span>
+            <strong>Prof. Mario Rossi</strong>
+          </div>
+
+          <div class="slot-detail-row">
+            <ion-icon name="book-outline"></ion-icon>
+            <span>Corso</span>
+            <strong>Analisi Matematica I</strong>
+          </div>
+
+          <div class="slot-detail-row">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>Data</span>
+            <strong>23/05/2025</strong>
+          </div>
+
+          <div class="slot-detail-row">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>Orario</span>
+            <strong>10:00 - 10:30</strong>
+          </div>
+
+          <div class="slot-detail-row">
+            <ion-icon name="hourglass-outline"></ion-icon>
+            <span>Durata</span>
+            <strong>30 minuti</strong>
+          </div>
+
+          <div class="slot-detail-row">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>Luogo</span>
+            <strong>Edificio A, Aula 201</strong>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="booking-form-card">
+
+        <ion-card-header>
+          <ion-card-title>Dettagli prenotazione</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <div class="custom-field">
+            <label>Tipologia argomento *</label>
+
+            <ion-item>
+              <ion-select value="chiarimenti" interface="popover">
+                <ion-select-option value="chiarimenti">Chiarimenti esame</ion-select-option>
+                <ion-select-option value="progetto">Progetto</ion-select-option>
+                <ion-select-option value="esercizi">Esercizi</ion-select-option>
+                <ion-select-option value="tesi">Tesi</ion-select-option>
+                <ion-select-option value="altro">Altro</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </div>
+
+          <div class="custom-field">
+            <label>Descrizione richiesta *</label>
+
+            <ion-item>
+              <ion-textarea rows="6" maxlength="500"
+                placeholder="Descrivi brevemente cosa vuoi discutere con il docente...">
+                Ho bisogno di chiarimenti su alcuni esercizi svolti in vista dell’esame scritto.
+              </ion-textarea>
+            </ion-item>
+
+            <span class="textarea-counter">73/500</span>
+          </div>
+
+          <div class="custom-field">
+            <label>Allega documento facoltativo</label>
+
+            <div class="upload-box">
+              <ion-icon name="attach-outline"></ion-icon>
+
+              <div>
+                <strong>Carica file o trascina qui</strong>
+                <span>PDF, DOC, DOCX, JPG, PNG max 10MB</span>
+              </div>
+            </div>
+          </div>
+
+          <ion-button expand="block" class="confirm-button" (click)="prenota($any({}))">
+            <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
+            Conferma prenotazione
+          </ion-button>
+
+        </ion-card-content>
+
+      </ion-card>
+
+    </aside>
+
+  </section>
+
+</app-dashboard-layout>

@@ -1,16 +1,306 @@
+/*
+ * App Global Styles
+ * ----------------------------------------------------------------------------
+ */
 
 @import "@ionic/angular/css/core.css";
-
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+// @import '@ionic/angular/css/palettes/dark.system.css';
 
+:root {
+    --ion-font-family: var(--app-font-main);
+}
 
-@import '@ionic/angular/css/palettes/dark.system.css';
+body {
+    font-family: var(--app-font-main);
+    background-color: var(--ion-background-color);
+    color: var(--ion-text-color);
+}
+
+/* Common Layout Utilities */
+.max-width-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Dashboard Layout Base */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--ion-color-light);
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.dashboard-content {
+    --background: transparent;
+    flex: 1;
+}
+
+.content-wrapper {
+    padding-bottom: 40px;
+    min-height: 101%;
+    /* Force scroll if needed, though ion-content handles it */
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 28px 18px;
+    box-shadow: 6px 0 24px rgba(15, 23, 42, 0.04);
+    z-index: 10;
+}
+
+.sidebar-logo {
+    margin-bottom: 38px;
+
+    .logo-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        ion-icon {
+            color: var(--ion-color-primary);
+            font-size: 34px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--ion-color-primary);
+            font-size: 30px;
+            font-weight: 800;
+        }
+    }
+
+    span {
+        color: var(--ion-color-medium);
+        font-size: 14px;
+    }
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        color: #334155;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.2s ease;
+
+        ion-icon {
+            font-size: 22px;
+        }
+
+        &:hover,
+        &.active {
+            background: var(--ion-color-primary);
+            color: #ffffff;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+        }
+
+        &.logout-link {
+            margin-top: 18px;
+            color: var(--ion-color-danger);
+
+            &:hover {
+                background: #fee2e2;
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+.topbar {
+    height: 86px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.student-profile-mini {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    strong {
+        display: block;
+        color: var(--ion-color-dark);
+        font-size: 15px;
+    }
+
+    span {
+        color: var(--ion-color-medium);
+        font-size: 13px;
+    }
+}
+
+.student-avatar-small {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+        font-size: 24px;
+        color: var(--ion-color-primary);
+    }
+}
+
+.mobile-logo,
+.mobile-top-menu {
+    display: none;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.notification-button {
+    position: relative;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    ion-icon {
+        font-size: 26px;
+        color: var(--ion-color-dark);
+    }
+}
+
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -7px;
+    width: 20px;
+    height: 20px;
+    background: var(--ion-color-danger);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive Layout */
+@media (max-width: 900px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .topbar {
+        height: auto;
+        min-height: 86px;
+        padding: 12px 24px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .mobile-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        strong {
+            display: block;
+            color: var(--ion-color-primary);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        span {
+            display: block;
+            color: var(--ion-color-medium);
+            font-size: 10px;
+        }
+    }
+
+    .mobile-top-menu {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 4px 0;
+
+        a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            text-decoration: none;
+            color: var(--ion-color-dark);
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+
+            ion-icon {
+                font-size: 20px;
+                color: var(--ion-color-primary);
+            }
+
+            &.active {
+                color: var(--ion-color-primary);
+            }
+        }
+    }
+
+    .topbar-actions {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .topbar {
+        padding: 12px 16px;
+    }
+}
+
+/* Global Component Overrides */
+ion-card {
+    border-radius: 12px;
+}
+
+ion-button {
+    --border-radius: 8px;
+}

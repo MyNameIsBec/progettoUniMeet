@@ -1,492 +1,186 @@
-<ion-content [fullscreen]="true" class="dashboard-page">
+<app-dashboard-layout [nomeUtente]="nomeStudente">
+  <!-- HEADER PAGINA -->
+  <section class="dashboard-header">
+    <h2>Bentornato {{ nomeStudente }},</h2>
+    <p>Ecco un riepilogo dei tuoi impegni universitari</p>
+  </section>
 
-  <div class="dashboard-layout">
+  <!-- CARD RIEPILOGO -->
+  <section class="summary-grid">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <ion-card class="summary-card">
+      <ion-card-content>
 
-      <div class="sidebar-logo">
-        <div class="logo-row">
+        <div class="summary-icon blue">
           <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+
+        <h3>Prenotazioni future</h3>
+
+        <div class="summary-number">
+          <strong>{{ listaPrenotazioni.length }}</strong>
+          <span>appuntamenti programmati</span>
+        </div>
+
+        <a routerLink="/riepilogo-prenotazioni">
+          Gestisci prenotazioni
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+
+        <div class="summary-icon green">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+
+        <h3>Prossimo ricevimento</h3>
+        
+        <div *ngIf="prossimoRicevimento; else noPrenotazioni" class="next-appointment">
+          <h4>{{ prossimoRicevimento.docente }}</h4>
+          <p>{{ prossimoRicevimento.materia }}</p>
 
           <div>
-            <h1>UniMeet</h1>
-            <span>Area Studente</span>
+            <span>
+              <ion-icon name="calendar-clear-outline"></ion-icon>
+              {{ prossimoRicevimento.data }}
+            </span>
+
+            <span>
+              <ion-icon name="time-outline"></ion-icon>
+              {{ prossimoRicevimento.ora }}
+            </span>
           </div>
+
+          <div>
+            <span>
+              <ion-icon name="location-outline"></ion-icon>
+              {{ prossimoRicevimento.luogo }}
+            </span>
+          </div>
+          
+          <a routerLink="/dettaglio-prenotazione">
+            Vai al dettaglio
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </a>
         </div>
-      </div>
 
-      <nav class="sidebar-nav">
+        <ng-template #noPrenotazioni>
+          <div class="no-appointments">
+            <p>Non hai prenotazioni future</p>
+            <a routerLink="/elenco-docenti" class="book-now">
+              Prenota ora ->
+              <ion-icon name="add-circle-outline"></ion-icon>
+            </a>
+          </div>
+        </ng-template>
 
-        <a routerLink="/dashboard-studente" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">
-          <ion-icon name="home-outline"></ion-icon>
-          <span>Dashboard</span>
-        </a>
+      </ion-card-content>
+    </ion-card>
 
-        <a routerLink="/dashboard-studente/elenco-docenti" routerLinkActive="active">
-          <ion-icon name="people-outline"></ion-icon>
-          <span>Docenti</span>
-        </a>
+  </section>
 
-        <a routerLink="/dashboard-studente/prenota" routerLinkActive="active">
-          <ion-icon name="calendar-clear-outline"></ion-icon>
-          <span>Prenota</span>
-        </a>
+  <!-- PRENOTAZIONI + FAQ -->
+  <section class="dashboard-bottom-grid">
 
-        <a routerLink="/dashboard-studente/riepilogo-prenotazioni" routerLinkActive="active">
+    <ion-card class="appointments-card">
+      <ion-card-header>
+        <ion-card-title>
           <ion-icon name="calendar-number-outline"></ion-icon>
-          <span>Le mie prenotazioni</span>
-        </a>
+          Le tue prenotazioni
+        </ion-card-title>
+      </ion-card-header>
 
-        <a routerLink="/dashboard-studente/bacheca-studente" routerLinkActive="active">
-          <ion-icon name="help-circle-outline"></ion-icon>
-          <span>FAQ / Bacheca</span>
-        </a>
+      <ion-card-content>
 
-        <a routerLink="/dashboard-studente/profilo-studente" routerLinkActive="active">
-          <ion-icon name="person-outline"></ion-icon>
-          <span>Profilo</span>
-        </a>
+        <div *ngFor="let prenotazione of listaPrenotazioni" class="appointment-item">
 
-        <a routerLink="/home" class="logout-link">
-          <ion-icon name="log-out-outline"></ion-icon>
-          <span>Logout</span>
-        </a>
+          <div>
+            <h3>{{ prenotazione.docente }}</h3>
+            <p>{{ prenotazione.materia }}</p>
 
-      </nav>
+            <div class="appointment-meta">
+              <span>
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+                {{ prenotazione.data }}
+              </span>
 
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-
-      <!-- TOPBAR -->
-      <header class="topbar">
-
-        <button class="menu-button">
-          <ion-icon name="menu-outline"></ion-icon>
-        </button>
-
-        <div class="topbar-actions">
-
-          <button class="notification-button" routerLink="/dashboard-studente/notifiche">
-            <ion-icon name="notifications-outline"></ion-icon>
-            <span class="notification-badge">3</span>
-          </button>
-
-          <div class="student-profile-mini">
-            <div class="student-avatar-small">
-              <ion-icon name="person-outline"></ion-icon>
+              <span>
+                <ion-icon name="time-outline"></ion-icon>
+                {{ prenotazione.ora }}
+              </span>
             </div>
 
-            <div>
-              <strong>Alessio Lombardo</strong>
-              <span>Studente</span>
+            <div class="appointment-meta">
+              <span>
+                <ion-icon name="location-outline"></ion-icon>
+                {{ prenotazione.luogo }}
+              </span>
             </div>
+          </div>
 
-            <ion-icon name="chevron-down-outline"></ion-icon>
+          <div class="status-overlay">
+            <span class="badge" [ngClass]="{
+                  'success': prenotazione.stato === 'confermata',
+                  'warning': prenotazione.stato === 'in_attesa',
+                  'danger': prenotazione.stato === 'annullata'
+                }">
+              {{ prenotazione.stato === 'confermata' ? 'Confermata' : (prenotazione.stato === 'in_attesa' ? 'In attesa'
+              : 'Annullata') }}
+            </span>
+          </div>
+
+          <div class="appointment-actions">
+            <ion-button fill="outline" routerLink="/dettaglio-prenotazione">
+              Vedi dettagli
+            </ion-button>
+
+            <ion-button fill="outline" color="danger">
+              Annulla
+            </ion-button>
           </div>
 
         </div>
 
-      </header>
-
-      <!-- DASHBOARD HOME (Visible only if exactly on /dashboard-studente) -->
-      <div *ngIf="isHome()">
-        <!-- DASHBOARD -->
-        <section class="dashboard-section">
-
-          <div class="welcome-box">
-            <h2>Ciao Alessio,</h2>
-            <p>gestisci i tuoi ricevimenti universitari.</p>
-          </div>
-
-          <div class="summary-grid">
-
-            <ion-card class="summary-card">
-              <ion-card-content>
-
-                <div class="summary-icon blue">
-                  <ion-icon name="calendar-outline"></ion-icon>
-                </div>
-
-                <h3>Prenotazioni future</h3>
-
-                <div class="summary-number">
-                  <strong>2</strong>
-                  <span>appuntamenti programmati</span>
-                </div>
-
-                <a routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                  Vai alle prenotazioni
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </a>
-
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="summary-card">
-              <ion-card-content>
-
-                <div class="summary-icon green">
-                  <ion-icon name="time-outline"></ion-icon>
-                </div>
-
-                <h3>Prossimo ricevimento</h3>
-
-                <div class="next-appointment">
-                  <strong>Prof. Mario Rossi</strong>
-                  <span>Basi di Dati</span>
-
-                  <div class="appointment-meta">
-                    <span>
-                      <ion-icon name="calendar-outline"></ion-icon>
-                      12 Giugno 2026
-                    </span>
-
-                    <span>
-                      <ion-icon name="time-outline"></ion-icon>
-                      10:30
-                    </span>
-                  </div>
-
-                  <div class="appointment-meta">
-                    <span>
-                      <ion-icon name="location-outline"></ion-icon>
-                      Aula Edificio A, Piano 2
-                    </span>
-                  </div>
-                </div>
-
-                <a routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                  Visualizza dettagli
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </a>
-
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="summary-card">
-              <ion-card-content>
-
-                <div class="summary-icon orange">
-                  <ion-icon name="folder-outline"></ion-icon>
-                </div>
-
-                <h3>Documenti caricati</h3>
-
-                <div class="summary-number">
-                  <strong>3</strong>
-                  <span>file allegati alle tue prenotazioni</span>
-                </div>
-
-                <a routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                  Vai ai documenti
-                  <ion-icon name="arrow-forward-outline"></ion-icon>
-                </a>
-
-              </ion-card-content>
-            </ion-card>
-
-          </div>
-
-        </section>
-
-        <!-- DOCENTI DISPONIBILI -->
-        <section class="content-card-section">
-
-          <div class="section-header">
-            <h2>Docenti disponibili</h2>
-
-            <div class="section-actions">
-              <a routerLink="/dashboard-studente/elenco-docenti">Vedi tutti</a>
-            </div>
-          </div>
-
-          <div class="teachers-grid">
-
-            <ion-card class="teacher-card">
-              <ion-card-content>
-
-                <div class="teacher-main-row">
-                  <div class="teacher-avatar blue">
-                    <ion-icon name="person-outline"></ion-icon>
-                  </div>
-
-                  <div>
-                    <h3>Prof. Mario Rossi</h3>
-                    <p>Basi di Dati</p>
-                    <span>mario.rossi&#64;university.it</span>
-                    <span>Edificio A - Piano 2</span>
-                  </div>
-                </div>
-
-                <div class="teacher-buttons">
-                  <ion-button fill="outline" routerLink="/dashboard-studente/elenco-docenti">
-                    Disponibilità
-                  </ion-button>
-
-                  <ion-button routerLink="/dashboard-studente/prenota">
-                    Prenota
-                  </ion-button>
-                </div>
-
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="teacher-card">
-              <ion-card-content>
-
-                <div class="teacher-main-row">
-                  <div class="teacher-avatar green">
-                    <ion-icon name="person-outline"></ion-icon>
-                  </div>
-
-                  <div>
-                    <h3>Prof.ssa Laura Bianchi</h3>
-                    <p>Reti di Calcolatori</p>
-                    <span>laura.bianchi&#64;university.it</span>
-                    <span>Edificio B - Piano 1</span>
-                  </div>
-                </div>
-
-                <div class="teacher-buttons">
-                  <ion-button fill="outline" routerLink="/dashboard-studente/elenco-docenti">
-                    Disponibilità
-                  </ion-button>
-
-                  <ion-button routerLink="/dashboard-studente/prenota">
-                    Prenota
-                  </ion-button>
-                </div>
-
-              </ion-card-content>
-            </ion-card>
-
-            <ion-card class="teacher-card">
-              <ion-card-content>
-
-                <div class="teacher-main-row">
-                  <div class="teacher-avatar purple">
-                    <ion-icon name="person-outline"></ion-icon>
-                  </div>
-
-                  <div>
-                    <h3>Prof. Andrea Verdi</h3>
-                    <p>Intelligenza Artificiale</p>
-                    <span>andrea.verdi&#64;university.it</span>
-                    <span>Edificio C - Piano 3</span>
-                  </div>
-                </div>
-
-                <div class="teacher-buttons">
-                  <ion-button fill="outline" routerLink="/dashboard-studente/elenco-docenti">
-                    Disponibilità
-                  </ion-button>
-
-                  <ion-button routerLink="/dashboard-studente/prenota">
-                    Prenota
-                  </ion-button>
-                </div>
-
-              </ion-card-content>
-            </ion-card>
-
-          </div>
-
-        </section>
-
-        <!-- LOWER DASHBOARD -->
-        <section class="dashboard-bottom-grid">
-
-          <!-- PRENOTAZIONI -->
-          <ion-card class="appointments-preview">
-            <ion-card-header>
-              <ion-card-title>
-                <ion-icon name="calendar-number-outline"></ion-icon>
-                Le mie prenotazioni
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-
-              <div class="appointment-card">
-                <div class="status confirmed">Confermata</div>
-
-                <h3>Prof. Mario Rossi</h3>
-                <p>Basi di Dati</p>
-
-                <div class="appointment-info">
-                  <span>
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    12/06/2026
-                  </span>
-
-                  <span>
-                    <ion-icon name="time-outline"></ion-icon>
-                    10:30
-                  </span>
-                </div>
-
-                <div class="appointment-info">
-                  <span>
-                    <ion-icon name="location-outline"></ion-icon>
-                    Aula Edificio A, Piano 2
-                  </span>
-                </div>
-
-                <div class="appointment-actions">
-                  <ion-button fill="outline" routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                    Dettagli
-                  </ion-button>
-
-                  <ion-button color="danger" fill="outline">
-                    Annulla
-                  </ion-button>
-                </div>
-              </div>
-
-              <div class="appointment-card">
-                <div class="status pending">In attesa</div>
-
-                <h3>Prof.ssa Laura Bianchi</h3>
-                <p>Reti di Calcolatori</p>
-
-                <div class="appointment-info">
-                  <span>
-                    <ion-icon name="calendar-outline"></ion-icon>
-                    18/06/2026
-                  </span>
-
-                  <span>
-                    <ion-icon name="time-outline"></ion-icon>
-                    14:00
-                  </span>
-                </div>
-
-                <div class="appointment-info">
-                  <span>
-                    <ion-icon name="location-outline"></ion-icon>
-                    Aula Edificio B, Piano 1
-                  </span>
-                </div>
-
-                <div class="appointment-actions">
-                  <ion-button fill="outline" routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                    Dettagli
-                  </ion-button>
-
-                  <ion-button color="danger" fill="outline">
-                    Annulla
-                  </ion-button>
-                </div>
-              </div>
-
-              <a class="see-all-link" routerLink="/dashboard-studente/riepilogo-prenotazioni">
-                Vedi tutte le prenotazioni
-                <ion-icon name="arrow-forward-outline"></ion-icon>
-              </a>
-
-            </ion-card-content>
-          </ion-card>
-
-          <!-- FAQ -->
-          <ion-card class="faq-preview">
-            <ion-card-header>
-              <ion-card-title>
-                <ion-icon name="help-circle-outline"></ion-icon>
-                Bacheca FAQ
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-
-              <div class="faq-list">
-
-                <details class="faq-details">
-                  <summary>
-                    <span>Come posso annullare una prenotazione?</span>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </summary>
-
-                  <div class="faq-content">
-                    Puoi annullare una prenotazione dalla sezione
-                    <strong>“Le mie prenotazioni”</strong>, selezionando
-                    l’appuntamento interessato e cliccando su
-                    <strong>“Annulla”</strong>. L’annullamento è possibile
-                    solo entro il limite di tempo previsto dal sistema.
-                  </div>
-                </details>
-
-                <details class="faq-details">
-                  <summary>
-                    <span>Posso caricare documenti?</span>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </summary>
-
-                  <div class="faq-content">
-                    Sì, durante la prenotazione puoi allegare file, appunti,
-                    immagini, slide o altri documenti utili per il docente.
-                  </div>
-                </details>
-
-                <details class="faq-details">
-                  <summary>
-                    <span>Dove trovo l’ufficio del docente?</span>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </summary>
-
-                  <div class="faq-content">
-                    Nel riepilogo della prenotazione trovi aula, edificio,
-                    piano e la mappa del luogo in cui si svolgerà il ricevimento.
-                  </div>
-                </details>
-
-                <details class="faq-details">
-                  <summary>
-                    <span>Riceverò un promemoria?</span>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </summary>
-
-                  <div class="faq-content">
-                    Sì, il sistema invierà una notifica prima del ricevimento
-                    con orario, aula, docente e informazioni utili.
-                  </div>
-                </details>
-
-                <details class="faq-details">
-                  <summary>
-                    <span>Posso modificare una prenotazione?</span>
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                  </summary>
-
-                  <div class="faq-content">
-                    Puoi modificare o annullare una prenotazione solo se rientra
-                    nei tempi consentiti dal sistema. In caso contrario, dovrai
-                    effettuare una nuova prenotazione o contattare il docente.
-                  </div>
-                </details>
-
-              </div>
-
-              <a class="see-all-link faq-link" routerLink="/dashboard-studente/bacheca-studente">
-                Vai alla bacheca
-                <ion-icon name="arrow-forward-outline"></ion-icon>
-              </a>
-
-            </ion-card-content>
-          </ion-card>
-
-        </section>
-      </div>
-
-      <!-- CONTENT OUTLET -->
-      <div class="content-wrapper" *ngIf="!isHome()">
-        <ion-router-outlet></ion-router-outlet>
-      </div>
-
-    </main>
-
-  </div>
-
-</ion-content>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="faq-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="help-circle-outline"></ion-icon>
+          Bacheca FAQ
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+
+        <a routerLink="/bacheca-studente" class="faq-row">
+          <span>Come posso annullare una prenotazione?</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </a>
+
+        <a routerLink="/bacheca-studente" class="faq-row">
+          <span>Posso caricare documenti?</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </a>
+
+        <a routerLink="/bacheca-studente" class="faq-row">
+          <span>Dove trovo l’ufficio del docente?</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </a>
+
+        <a routerLink="/bacheca-studente" class="faq-link">
+          Vai alla bacheca
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+
+      </ion-card-content>
+    </ion-card>
+
+  </section>
+
+</app-dashboard-layout>

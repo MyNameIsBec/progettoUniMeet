@@ -1,8 +1,24 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from './auth';
+import { Observable } from 'rxjs';
+import { Studente } from "../models/interfacce";
 
 @Injectable({
   providedIn: 'root',
 })
-export class Studente {
-  
+export class StudenteService {
+  constructor(private http: HttpClient, private authService: AuthService) { }
+
+  private get api(): string {
+    return `${this.authService.getApiUrl()}/api/studenti`;
+  }
+
+  getProfilo(matricola: string): Observable<Studente> {
+    return this.http.get<Studente>(`${this.api}/${matricola}`);
+  }
+
+  aggiornaProfilo(matricola: string, dati: Partial<Studente>): Observable<{ messaggio: string }> {
+    return this.http.put<{ messaggio: string }>(`${this.api}/${matricola}`, dati);
+  }
 }

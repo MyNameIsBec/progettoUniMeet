@@ -4,46 +4,46 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth';
 
-export const httpIntInterceptor: HttpInterceptorFn = (req, next) => {
+export const intercettoreAutenticazione: HttpInterceptorFn = (richiesta, next) => {
   const router = inject(Router);
-  const authService = inject(AuthService);
-  const baseUrl = 'http://localhost:5000'; // URL del server
+  const servizioAuth = inject(AuthService);
+  const urlBaseApi = 'http://localhost:5000'; // URL del server backend
 
-  const token = authService.getToken();
-  const isAbsolute = req.url.startsWith('http://') || req.url.startsWith('https://');
-  const cleanUrl = req.url.replace(/^\//, ''); // Rimuove lo slash iniziale se presente
+  const tokenAutenticazione = servizioAuth.getToken();
+  const eUnPercorsoAssoluto = richiesta.url.startsWith('http://') || richiesta.url.startsWith('https://');
+  const urlPulita = richiesta.url.replace(/^\//, ''); // Rimuove lo slash iniziale se presente
 
-  let apiReq = req;
+  let richiestaModificata = richiesta;
 
-  if (isAbsolute) {
-    if (token) {
-      apiReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
+  if (eUnPercorsoAssoluto) {
+    if (tokenAutenticazione) {
+      richiestaModificata = richiesta.clone({
+        setHeaders: { Authorization: `Bearer ${tokenAutenticazione}` }
       });
     }
   } else {
-    if (token !== null && token !== undefined) {
-      apiReq = req.clone({
-        url: `${baseUrl}/${cleanUrl}`,
+    if (tokenAutenticazione !== null && tokenAutenticazione !== undefined) {
+      richiestaModificata = richiesta.clone({
+        url: `${urlBaseApi}/${urlPulita}`,
         setHeaders: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${tokenAutenticazione}`
         }
       });
     } else {
-      apiReq = req.clone({
-        url: `${baseUrl}/${cleanUrl}` //richiesta anonima, senza token
+      richiestaModificata = richiesta.clone({
+        url: `${urlBaseApi}/${urlPulita}` //richiesta anonima, senza token
       });
     }
   }
 
-  return next(apiReq).pipe(
-    catchError((err: HttpErrorResponse) => {
-      if (err.status === 401) {
+  return next(richiestaModificata).pipe(
+    catchError((errore: HttpErrorResponse) => {
+      if (errore.status === 401) {
         console.error('Sessione scaduta o non autorizzato. Redirect al login...');
         localStorage.clear();
         router.navigate(['/login']);
       }
-      return throwError(() => err);
+      return throwError(() => errore);
     })
   );
 };

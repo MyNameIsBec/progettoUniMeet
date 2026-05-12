@@ -1,0 +1,17 @@
+<div class="dashboard-layout">
+  <app-sidebar [ruoloUtente]="ruoloUtente" [vociMenu]="vociMenu"></app-sidebar>
+  
+  <main class="main-content">
+    <app-topbar 
+      [ruoloUtente]="ruoloUtente" 
+      [nomeUtente]="nomeUtente" 
+      [vociMenuMobile]="vociMenuMobile || vociMenu">
+    </app-topbar>
+    
+    <ion-content class="dashboard-content">
+      <div class="content-wrapper">
+        <ng-content></ng-content>
+      </div>
+    </ion-content>
+  </main>
+</div>
