@@ -399,7 +399,7 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ### Task aggiuntivi — Fase 8 (Amministratore)
 
-- [ ] Aggiustare le scritte che non si vedono nei form
+- [x] Aggiustare le scritte che non si vedono nei form
 - [ ] Permettere all'amministratore di gestire le prenotazioni (eliminarle o modificarle)
 - [ ] Consentire all'amministratore di bloccare determinati giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)

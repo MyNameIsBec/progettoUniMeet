@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonSegment, IonSegmentButton,
-  IonLabel, IonIcon, IonItem, IonButton, IonSearchbar,
+  IonContent, IonLabel, IonIcon, IonButton, IonSearchbar,
   IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonButtons,
+  IonHeader, IonTitle, IonToolbar,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -20,14 +20,13 @@ import { Admin, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services
   styleUrls: ['./gestione-utenti.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonSegment, IonSegmentButton,
-    IonLabel, IonIcon, IonButton, IonSearchbar,
+    IonContent, IonLabel, IonIcon, IonButton, IonSearchbar,
     IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonButtons,
-    CommonModule, FormsModule, RouterLink,
+    IonHeader, IonTitle, IonToolbar,
+    CommonModule, FormsModule,
   ],
 })
 export class GestioneUtentiPage implements OnInit {
-  activeSegment = 'utenti';
   filtroRuolo = '';
   searchTerm = '';
   utenti: UtenteUnificato[] = [];

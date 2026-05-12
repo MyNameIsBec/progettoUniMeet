@@ -3,14 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonSegment,
-  IonSegmentButton,
   IonIcon,
-  IonLabel,
   IonCard,
   IonCardContent,
   IonButton,
@@ -33,14 +26,7 @@ import { Admin, AdminStats } from 'src/app/core/services/admin';
   styleUrls: ['./dashboard-admin.page.scss'],
   standalone: true,
   imports: [
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonSegment,
-    IonSegmentButton,
     IonIcon,
-    IonLabel,
     IonCard,
     IonCardContent,
     IonButton,
@@ -50,7 +36,6 @@ import { Admin, AdminStats } from 'src/app/core/services/admin';
   ],
 })
 export class DashboardAdminPage implements OnInit {
-  activeSegment = 'dashboard';
   stats: AdminStats = {
     totaleStudenti: 0,
     totaleDocenti: 0,

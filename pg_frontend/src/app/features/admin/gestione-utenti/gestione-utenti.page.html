@@ -1,93 +1,72 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Gestione Utenti</ion-title>
-  </ion-toolbar>
-  <ion-toolbar class="segment-toolbar">
-    <ion-segment [value]="activeSegment">
-      <ion-segment-button value="dashboard" routerLink="/dashboard-admin">
-        <ion-label>Dashboard</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="utenti" routerLink="/dashboard-admin/gestione-utenti">
-        <ion-label>Gestione Utenti</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="slot" routerLink="/dashboard-admin/gestione-slot-admin">
-        <ion-label>Slot</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <div class="utenti-content">
-    <div class="toolbar-row">
-      <div class="filter-chips">
-        <ion-chip [class.active]="!filtroRuolo" (click)="onFiltroRuolo('')">
-          <ion-label>Tutti</ion-label>
-        </ion-chip>
-        <ion-chip [class.active]="filtroRuolo === 'studente'" (click)="onFiltroRuolo('studente')">
-          <ion-label>Studenti</ion-label>
-        </ion-chip>
-        <ion-chip [class.active]="filtroRuolo === 'docente'" (click)="onFiltroRuolo('docente')">
-          <ion-label>Docenti</ion-label>
-        </ion-chip>
-        <ion-chip [class.active]="filtroRuolo === 'amministratore'" (click)="onFiltroRuolo('amministratore')">
-          <ion-label>Admin</ion-label>
-        </ion-chip>
-      </div>
-      <ion-button fill="solid" class="crea-btn" (click)="apriModaleCrea()">
-        <ion-icon name="add-outline" slot="start"></ion-icon>
-        Crea utente
-      </ion-button>
+<div class="utenti-content">
+  <div class="toolbar-row">
+    <div class="filter-chips">
+      <ion-chip [class.active]="!filtroRuolo" (click)="onFiltroRuolo('')">
+        <ion-label>Tutti</ion-label>
+      </ion-chip>
+      <ion-chip [class.active]="filtroRuolo === 'studente'" (click)="onFiltroRuolo('studente')">
+        <ion-label>Studenti</ion-label>
+      </ion-chip>
+      <ion-chip [class.active]="filtroRuolo === 'docente'" (click)="onFiltroRuolo('docente')">
+        <ion-label>Docenti</ion-label>
+      </ion-chip>
+      <ion-chip [class.active]="filtroRuolo === 'amministratore'" (click)="onFiltroRuolo('amministratore')">
+        <ion-label>Admin</ion-label>
+      </ion-chip>
     </div>
+    <ion-button fill="solid" class="crea-btn" (click)="apriModaleCrea()">
+      <ion-icon name="add-outline" slot="start"></ion-icon>
+      Crea utente
+    </ion-button>
+  </div>
 
-    <ion-searchbar
-      placeholder="Cerca per nome, email o matricola..."
-      [debounce]="300"
-      (ionInput)="onSearchChange($event)"
-      class="search-bar">
-    </ion-searchbar>
+  <ion-searchbar
+    placeholder="Cerca per nome, email o matricola..."
+    [debounce]="300"
+    (ionInput)="onSearchChange($event)"
+    class="search-bar">
+  </ion-searchbar>
 
-    <div class="table-wrap">
-      <table class="utenti-table">
-        <thead>
-          <tr>
-            <th>Ruolo</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th class="hide-mobile">Dettagli</th>
-            <th class="actions-col">Azioni</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of utentiFiltrati">
-            <td>
-              <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
-                <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
-                <span>{{ ruoloLabel(u.ruolo) }}</span>
-              </div>
-            </td>
-            <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
-            <td class="email-cell">{{ u.email }}</td>
-            <td class="hide-mobile dettagli-cell">
-              <span *ngIf="u.matricola">{{ u.matricola }}</span>
-              <span *ngIf="u.corsoDiStudi"> · {{ u.corsoDiStudi }}</span>
-              <span *ngIf="u.ufficio">{{ u.ufficio }}</span>
-            </td>
-            <td class="actions-col">
-              <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
-                <ion-icon name="create-outline"></ion-icon>
-              </button>
-              <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="utentiFiltrati.length === 0 && !inCaricamento">
-            <td colspan="5" class="empty-row">Nessun utente trovato</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="table-wrap">
+    <table class="utenti-table">
+      <thead>
+        <tr>
+          <th>Ruolo</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th class="hide-mobile">Dettagli</th>
+          <th class="actions-col">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of utentiFiltrati">
+          <td>
+            <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
+              <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
+              <span>{{ ruoloLabel(u.ruolo) }}</span>
+            </div>
+          </td>
+          <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
+          <td class="email-cell">{{ u.email }}</td>
+          <td class="hide-mobile dettagli-cell">
+            <span *ngIf="u.matricola">{{ u.matricola }}</span>
+            <span *ngIf="u.corsoDiStudi"> · {{ u.corsoDiStudi }}</span>
+            <span *ngIf="u.ufficio">{{ u.ufficio }}</span>
+          </td>
+          <td class="actions-col">
+            <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="utentiFiltrati.length === 0 && !inCaricamento">
+          <td colspan="5" class="empty-row">Nessun utente trovato</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <ion-modal [isOpen]="mostraModale" (didDismiss)="chiudiModale()">
@@ -150,4 +129,4 @@
       </ion-content>
     </ng-template>
   </ion-modal>
-</ion-content>
+</div>

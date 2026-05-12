@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonSegment, IonSegmentButton,
-  IonLabel, IonIcon, IonSelect, IonSelectOption,
+  IonIcon, IonSelect, IonSelectOption,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -19,13 +17,11 @@ import { Admin, SlotGriglia, UtenteUnificato, FiltriSlot } from 'src/app/core/se
   styleUrls: ['./gestione-slot-admin.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonSegment, IonSegmentButton,
-    IonLabel, IonIcon, IonSelect, IonSelectOption,
-    CommonModule, FormsModule, RouterLink,
+    IonIcon, IonSelect, IonSelectOption,
+    CommonModule, FormsModule,
   ],
 })
 export class GestioneSlotAdminPage implements OnInit {
-  activeSegment = 'slot';
   slot: SlotGriglia[] = [];
   docenti: UtenteUnificato[] = [];
   inCaricamento = false;
