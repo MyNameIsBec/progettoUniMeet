@@ -1,33 +1,3 @@
-ion-content {
-  --background: #f8fbff;
-}
-
-ion-toolbar {
-  --background: #ffffff;
-  --color: #0f172a;
-}
-
-.segment-toolbar {
-  --min-height: 56px;
-  padding: 0 8%;
-}
-
-ion-segment {
-  max-width: 620px;
-  margin: 0 auto;
-  --background: #ffffff;
-  border: 1px solid #dbeafe;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-ion-segment-button {
-  --color: #64748b;
-  --color-checked: #2563eb;
-  --indicator-color: #2563eb;
-  font-weight: 700;
-}
-
 .dashboard-content {
   max-width: 1400px;
   margin: 0 auto;
