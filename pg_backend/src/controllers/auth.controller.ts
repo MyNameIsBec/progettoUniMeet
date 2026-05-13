@@ -16,8 +16,8 @@ export async function login(req: Request, res: Response) {
 
 export async function registerStudente(req: Request, res: Response) {
   try {
-    await authService.createStudente(req.body);
-    return res.status(201).json({ messaggio: 'Registrazione completata con successo.' });
+    const result = await authService.createStudente(req.body);
+    return res.status(201).json(result);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Email already in use') {
       return res.status(409).json({ error: err.message });
