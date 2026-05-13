@@ -57,10 +57,16 @@ export class AuthService {
     localStorage.removeItem('unimeet_session');
   }
 
-  registraStudente(dati: RegistrazioneStudente): Observable<{ messaggio: string }> {
-    return this.http.post<{ messaggio: string }>(
+  registraStudente(dati: RegistrazioneStudente): Observable<UserSession> {
+    return this.http.post<UserSession>(
       `${this.apiUrl}/api/registrazione`,
       dati
+    ).pipe(
+      tap(session => {
+        session.role = session.role.toLowerCase() as UserRole;
+        this.currentUser = session;
+        this.saveSessionToStorage(session);
+      })
     );
   }
 

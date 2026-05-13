@@ -43,12 +43,12 @@ export async function createStudente(data: {
   email: string;
   password: string;
   corsoDiStudi: string;
-}) {
+}): Promise<LoginResponse> {
   const existing = await prisma.studente.findUnique({ where: { email: data.email } });
   if (existing) throw new Error('Email already in use');
 
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
-  return prisma.studente.create({
+  await prisma.studente.create({
     data: {
       matricola: data.matricola,
       nome: data.nome,
@@ -57,14 +57,18 @@ export async function createStudente(data: {
       password: hashedPassword,
       corso_di_studi: data.corsoDiStudi,
     },
-    select: {
-      matricola: true,
-      nome: true,
-      cognome: true,
-      email: true,
-      corso_di_studi: true,
-    },
   });
+
+  const { accessToken } = generateTokens({ id: data.matricola, email: data.email, ruolo: 'STUDENTE' });
+
+  return {
+    id: data.matricola,
+    nome: data.nome,
+    cognome: data.cognome,
+    email: data.email,
+    role: 'STUDENTE',
+    token: accessToken,
+  };
 }
 
 export async function createDocente(data: {

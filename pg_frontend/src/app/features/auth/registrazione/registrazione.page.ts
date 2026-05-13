@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
-import { AuthService, RegistrazioneStudente } from '../../../core/services/auth';
+import { addIcons } from 'ionicons';
+import { calendarOutline, personAddOutline, eyeOutline, eyeOffOutline, mailOutline, lockClosedOutline, personOutline, alertCircleOutline, arrowBackOutline, checkmarkCircleOutline, schoolOutline } from 'ionicons/icons';
+import { AuthService, UserSession } from '../../../core/services/auth';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
   const pwd = group.get('password')?.value;
@@ -32,7 +35,11 @@ export class RegistrazionePage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-
+    addIcons({
+      calendarOutline, personAddOutline, eyeOutline, eyeOffOutline,
+      mailOutline, lockClosedOutline, personOutline,
+      alertCircleOutline, arrowBackOutline, checkmarkCircleOutline, schoolOutline
+    });
   }
 
   ngOnInit(): void {
@@ -42,6 +49,7 @@ export class RegistrazionePage implements OnInit {
         cognome: ['', [Validators.required, Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         matricola: ['', [Validators.required, Validators.pattern(/^\d{6,10}$/)]],
+        corsoDiStudi: ['', Validators.required],
         password: ['', [
           Validators.required,
           Validators.minLength(8),
@@ -58,6 +66,7 @@ export class RegistrazionePage implements OnInit {
   get cognome() { return this.registrazioneForm.get('cognome')!; }
   get email() { return this.registrazioneForm.get('email')!; }
   get matricola() { return this.registrazioneForm.get('matricola')!; }
+  get corsoDiStudi() { return this.registrazioneForm.get('corsoDiStudi')!; }
   get password() { return this.registrazioneForm.get('password')!; }
   get confirmPassword() { return this.registrazioneForm.get('confirmPassword')!; }
   get terms() { return this.registrazioneForm.get('terms')!; }
@@ -86,18 +95,18 @@ export class RegistrazionePage implements OnInit {
     this.inCaricamento = true;
     this.errorMessage = '';
 
-    const { nome, cognome, email, matricola, password } = this.registrazioneForm.value;
-    const payload: RegistrazioneStudente = { nome, cognome, email, password, matricola, corsoDiStudi: '' };
+    const { nome, cognome, email, matricola, password, corsoDiStudi } = this.registrazioneForm.value;
+    const payload = { nome, cognome, email, password, matricola, corsoDiStudi };
 
     this.authService.registraStudente(payload).subscribe({
-      next: () => {
+      next: (session: UserSession) => {
         this.inCaricamento = false;
-        const role = this.authService.getCurrentUser()?.role;
-        this.router.navigateByUrl(role === 'docente' ? '/dashboard-docente' : '/dashboard-studente');
+        localStorage.setItem('unimeet_session', JSON.stringify(session));
+        this.router.navigateByUrl('/dashboard-studente');
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         this.inCaricamento = false;
-        this.errorMessage = err.message;
+        this.errorMessage = err.error?.error || err.error?.errors?.[0]?.msg || 'Errore durante la registrazione';
       }
     });
   }

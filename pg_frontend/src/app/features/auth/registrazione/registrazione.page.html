@@ -70,6 +70,16 @@
           </span>
         </div>
         <div class="field-group">
+          <label class="field-label">Corso di Studi</label>
+          <div class="field-wrap" [class.has-error]="corsoDiStudi.invalid && corsoDiStudi.touched">
+            <ion-icon name="school-outline" class="field-icon"></ion-icon>
+            <ion-input formControlName="corsoDiStudi" placeholder="Es. Informatica" class="field-input"></ion-input>
+          </div>
+          <span class="field-error-msg" *ngIf="corsoDiStudi.invalid && corsoDiStudi.touched">
+            <ng-container *ngIf="corsoDiStudi.errors?.['required']">Il corso di studi è obbligatorio</ng-container>
+          </span>
+        </div>
+        <div class="field-group">
           <label class="field-label">Password</label>
           <div class="field-wrap" [class.has-error]="password.invalid && password.touched">
             <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
