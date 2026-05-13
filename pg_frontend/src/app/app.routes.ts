@@ -4,7 +4,7 @@ import { authGuard, roleGuard } from './core/guards/auth-guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard-studente',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
 
@@ -29,56 +29,55 @@ export const routes: Routes = [
   // --- STUDENTE ---
   {
     path: 'dashboard-studente',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/dashboard-studente/dashboard-studente.page').then(m => m.DashboardStudentePage)
   },
   {
     path: 'elenco-docenti',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/elenco-docenti/elenco-docenti.page').then(m => m.ElencoDocentiPage)
   },
   {
     path: 'prenota',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/prenota/prenota.page').then(m => m.PrenotaPage)
   },
   {
     path: 'riepilogo-prenotazioni',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/riepilogo-prenotazioni/riepilogo-prenotazioni.page').then(m => m.RiepilogoPrenotazioniPage)
   },
   {
     path: 'dettaglio-prenotazione/:id',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/dettaglio-prenotazione/dettaglio-prenotazione.page').then(m => m.DettaglioPrenotazionePage)
   },
   {
     path: 'profilo-studente',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/profilo-studente/profilo-studente.page').then(m => m.ProfiloStudentePage)
   },
   {
     path: 'bacheca-studente',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/bacheca-studente/bacheca-studente.page').then(m => m.BachecaStudentePage)
   },
   {
     path: 'notifiche',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/notifiche/notifiche.page').then(m => m.NotifichePage)
   },
   {
     path: 'segnalazione',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/segnalazione/segnalazione.page').then(m => m.SegnalazionePage)
   },
 
   // --- DOCENTE ---
   {
     path: 'dashboard-docente',
-    //canActivate: [authGuard, roleGuard('docente')],
-    redirectTo: 'prenotazioni-ricevute',
-    pathMatch: 'full'
+    canActivate: [authGuard, roleGuard('docente')],
+    loadComponent: () => import('./features/docente/dashboard-docente/dashboard-docente.page').then(m => m.DashboardDocentePage)
   },
   {
     path: 'gestione-slot',
