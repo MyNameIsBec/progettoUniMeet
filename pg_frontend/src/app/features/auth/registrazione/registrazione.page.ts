@@ -99,7 +99,7 @@ export class RegistrazionePage implements OnInit {
       next: () => {
         this.inCaricamento = false;
         const role = this.authService.getCurrentUser()?.role;
-        this.router.navigateByUrl(role === 'docente' ? '/docente/dashboard' : '/studente/dashboard');
+        this.router.navigateByUrl(role === 'docente' ? '/dashboard-docente' : '/dashboard-studente');
       },
       error: (err: Error) => {
         this.inCaricamento = false;
