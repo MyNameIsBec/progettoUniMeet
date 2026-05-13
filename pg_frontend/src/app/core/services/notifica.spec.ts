@@ -1,13 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Notifica } from './notifica';
+import { NotificaService } from './notifica';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('Notifica', () => {
-  let service: Notifica;
+describe('NotificaService', () => {
+  let service: NotificaService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Notifica);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [NotificaService]
+    });
+    service = TestBed.inject(NotificaService);
   });
 
   it('should be created', () => {

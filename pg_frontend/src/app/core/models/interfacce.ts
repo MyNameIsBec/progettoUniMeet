@@ -90,6 +90,13 @@ export interface Prenotazione {
 }
 
 // BACHECA E NOTIFICHE
+export interface Bacheca {
+  id: string | number;
+  messaggio: string;
+  tipo: 'sistema' | 'ufficio' | 'стом';
+  dataPubblicazione: string;
+}
+
 export interface FAQ {
   id: number;
   domanda: string;
