@@ -8,113 +8,120 @@
     </p>
   </section>
 
-      <!-- MAIN GRID -->
-      <section class="bacheca-simple-grid">
+  <!-- MAIN GRID -->
+  <section class="bacheca-simple-grid">
 
     <!-- FAQ -->
     <ion-card class="faq-main-card">
       <ion-card-header>
         <ion-card-title>
           <ion-icon name="help-circle-outline"></ion-icon>
-          Domande frequenti
+          Bacheca del tuo Corso
         </ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
         <div class="faq-list">
-
-          <details *ngFor="let faq of listaFaq" [open]="faq.aperta" class="faq-details">
-            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
-              <span>{{ faq.domanda }}</span>
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </summary>
-            <div class="faq-content">
-              {{ faq.risposta }}
+          
+          @if (listaFaq.length === 0) {
+            <div class="no-faq">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <p>Non ci sono comunicazioni o FAQ per questo corso.</p>
             </div>
-          </details>
+          }
+
+          @for (faq of listaFaq; track faq.id) {
+            <details [open]="faq.aperta" class="faq-details">
+              <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
+                <span>{{ faq.domanda }}</span>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </summary>
+              <div class="faq-content">
+                {{ faq.risposta }}
+              </div>
+            </details>
+          }
 
         </div>
       </ion-card-content>
     </ion-card>
 
-        <!-- SUPPORTO PRENOTAZIONE -->
-        <ion-card class="support-card">
+    <!-- SUPPORTO PRENOTAZIONE -->
+    <ion-card class="support-card">
 
-          <ion-card-header>
-            <ion-card-title>
-              <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-              Domande durante la prenotazione
-            </ion-card-title>
-          </ion-card-header>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          Domande durante la prenotazione
+        </ion-card-title>
+      </ion-card-header>
 
-          <ion-card-content>
+      <ion-card-content>
 
-            <p>
-              Durante il processo di prenotazione potrai indicare eventuali domande
-              o dubbi da sottoporre al docente.
-            </p>
+        <p>
+          Durante il processo di prenotazione potrai indicare eventuali domande
+          o dubbi da sottoporre al docente.
+        </p>
 
-            <p>
-              Potrai specificare l’argomento del ricevimento, descrivere brevemente
-              il problema e allegare documenti utili.
-            </p>
+        <p>
+          Potrai specificare l’argomento del ricevimento, descrivere brevemente
+          il problema e allegare documenti utili.
+        </p>
 
-            <div class="support-highlight">
-              <ion-icon name="information-circle-outline"></ion-icon>
-              <span>
-                Le domande inserite saranno visibili al docente nel riepilogo
-                della prenotazione.
-              </span>
-            </div>
+        <div class="support-highlight">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>
+            Le domande inserite saranno visibili al docente nel riepilogo
+            della prenotazione.
+          </span>
+        </div>
 
-            <ion-button routerLink="/prenota" expand="block">
-              <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
-              Vai alla prenotazione
-            </ion-button>
+        <ion-button routerLink="/prenota" expand="block">
+          <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
+          Vai alle prenotazioni
+        </ion-button>
 
-          </ion-card-content>
+      </ion-card-content>
 
-        </ion-card>
+    </ion-card>
 
-      </section>
+  </section>
 
-      <!-- LINK UTILI -->
-      <section class="useful-links-section">
+  <!-- LINK UTILI -->
+  <section class="useful-links-section">
 
-        <ion-card class="useful-links-card">
+    <ion-card class="useful-links-card">
 
-          <ion-card-header>
-            <ion-card-title>
-              <ion-icon name="link-outline"></ion-icon>
-              Link utili UniPa
-            </ion-card-title>
-          </ion-card-header>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="link-outline"></ion-icon>
+          Link utili UniPa
+        </ion-card-title>
+      </ion-card-header>
 
-          <ion-card-content>
+      <ion-card-content>
 
-            <div class="useful-links-grid">
+        <div class="useful-links-grid">
 
-              <a *ngFor="let link of collegamentiUtili" 
-                 class="useful-link" 
-                 [href]="link.url" 
-                 target="_blank" 
-                 rel="noopener noreferrer">
-                <div class="useful-link-icon" [ngClass]="link.colore">
-                  <ion-icon [name]="link.icona"></ion-icon>
-                </div>
+          @for (link of collegamentiUtili; track link.titolo) {
+            <a class="useful-link" [href]="link.url" target="_blank"
+              rel="noopener noreferrer">
+              <div class="useful-link-icon" [ngClass]="link.colore">
+                <ion-icon [name]="link.icona"></ion-icon>
+              </div>
 
-                <div>
-                  <h3>{{ link.titolo }}</h3>
-                  <p>{{ link.descrizione }}</p>
-                </div>
+              <div>
+                <h3>{{ link.titolo }}</h3>
+                <p>{{ link.descrizione }}</p>
+              </div>
 
-                <ion-icon name="open-outline" class="open-icon"></ion-icon>
-              </a>
+              <ion-icon name="open-outline" class="open-icon"></ion-icon>
+            </a>
+          }
 
-            </div>
+        </div>
 
-          </ion-card-content>
-        </ion-card>
-      </section>
-
+      </ion-card-content>
+    </ion-card>
+  </section>
 </app-dashboard-layout>

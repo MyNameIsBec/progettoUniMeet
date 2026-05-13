@@ -6,9 +6,11 @@
           <label>Docente</label>
           <ion-select [(ngModel)]="filtroDocenteId" placeholder="Tutti i docenti" (ionChange)="caricaSlot()">
             <ion-select-option value="">Tutti</ion-select-option>
-            <ion-select-option *ngFor="let d of docenti" [value]="d.id">
-              {{ d.nome }} {{ d.cognome }}
-            </ion-select-option>
+            @for (d of docenti; track d.id) {
+              <ion-select-option [value]="d.id">
+                {{ d.nome }} {{ d.cognome }}
+              </ion-select-option>
+            }
           </ion-select>
         </div>
         <div class="filtro-group">
@@ -33,42 +35,48 @@
     </div>
 
     <div class="slot-grid">
-      <div class="slot-card" *ngFor="let s of slot">
-        <div class="slot-header">
-          <div class="slot-docente">
-            <ion-icon name="school-outline"></ion-icon>
-            <span>{{ s.docente.nome }} {{ s.docente.cognome }}</span>
+      @for (s of slot; track s.id) {
+        <div class="slot-card">
+          <div class="slot-header">
+            <div class="slot-docente">
+              <ion-icon name="school-outline"></ion-icon>
+              <span>{{ s.docente.nome }} {{ s.docente.cognome }}</span>
+            </div>
+            <div class="slot-stato" [class]="statoClasse(s.disponibilita)">
+              <ion-icon [name]="statoIcona(s.disponibilita)"></ion-icon>
+              <span>{{ statoLabel(s.disponibilita) }}</span>
+            </div>
           </div>
-          <div class="slot-stato" [class]="statoClasse(s.disponibilita)">
-            <ion-icon [name]="statoIcona(s.disponibilita)"></ion-icon>
-            <span>{{ statoLabel(s.disponibilita) }}</span>
+          <div class="slot-body">
+            <div class="slot-info">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ s.data }}</span>
+            </div>
+            <div class="slot-info">
+              <ion-icon name="time-outline"></ion-icon>
+              <span>{{ s.oraInizio }} – {{ s.oraFine }}</span>
+            </div>
+            @if (s.luogo) {
+              <div class="slot-info">
+                <ion-icon name="location-outline"></ion-icon>
+                <span>{{ s.luogo.nomeAula }} · {{ s.luogo.edificio }} ({{ s.luogo.piano }})</span>
+              </div>
+            }
+            <div class="slot-info">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>{{ s.prenotazioniCount }} prenotazion{{ s.prenotazioniCount === 1 ? 'e' : 'i' }}</span>
+            </div>
           </div>
         </div>
-        <div class="slot-body">
-          <div class="slot-info">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span>{{ s.data }}</span>
-          </div>
-          <div class="slot-info">
+      } @empty {
+        @if (!inCaricamento) {
+          <div class="slot-empty">
             <ion-icon name="time-outline"></ion-icon>
-            <span>{{ s.oraInizio }} – {{ s.oraFine }}</span>
+            <h3>Nessuno slot trovato</h3>
+            <p>Prova a modificare i filtri applicati.</p>
           </div>
-          <div class="slot-info" *ngIf="s.luogo">
-            <ion-icon name="location-outline"></ion-icon>
-            <span>{{ s.luogo.nomeAula }} · {{ s.luogo.edificio }} ({{ s.luogo.piano }})</span>
-          </div>
-          <div class="slot-info">
-            <ion-icon name="people-outline"></ion-icon>
-            <span>{{ s.prenotazioniCount }} prenotazion{{ s.prenotazioniCount === 1 ? 'e' : 'i' }}</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="slot-empty" *ngIf="slot.length === 0 && !inCaricamento">
-        <ion-icon name="time-outline"></ion-icon>
-        <h3>Nessuno slot trovato</h3>
-        <p>Prova a modificare i filtri applicati.</p>
-      </div>
+        }
+      }
     </div>
   </div>
 </app-dashboard-layout>

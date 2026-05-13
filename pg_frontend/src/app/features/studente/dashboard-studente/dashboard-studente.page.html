@@ -1,4 +1,4 @@
-<app-dashboard-layout [nomeUtente]="nomeStudente">
+<app-dashboard-layout>
   <!-- HEADER PAGINA -->
   <section class="dashboard-header">
     <h2>Bentornato {{ nomeStudente }},</h2>
@@ -38,8 +38,9 @@
         </div>
 
         <h3>Prossimo ricevimento</h3>
-        
-        <div *ngIf="prossimoRicevimento; else noPrenotazioni" class="next-appointment">
+
+        @if (prossimoRicevimento) {
+        <div class="next-appointment">
           <h4>{{ prossimoRicevimento.docente }}</h4>
           <p>{{ prossimoRicevimento.materia }}</p>
 
@@ -61,22 +62,21 @@
               {{ prossimoRicevimento.luogo }}
             </span>
           </div>
-          
+
           <a routerLink="/dettaglio-prenotazione">
             Vai al dettaglio
             <ion-icon name="arrow-forward-outline"></ion-icon>
           </a>
         </div>
-
-        <ng-template #noPrenotazioni>
-          <div class="no-appointments">
-            <p>Non hai prenotazioni future</p>
-            <a routerLink="/elenco-docenti" class="book-now">
-              Prenota ora ->
-              <ion-icon name="add-circle-outline"></ion-icon>
-            </a>
-          </div>
-        </ng-template>
+        } @else {
+        <div class="no-appointments">
+          <p>Non hai prenotazioni future</p>
+          <a routerLink="/elenco-docenti" class="book-now">
+            Prenota ora
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </a>
+        </div>
+        }
 
       </ion-card-content>
     </ion-card>
@@ -96,7 +96,8 @@
 
       <ion-card-content>
 
-        <div *ngFor="let prenotazione of listaPrenotazioni" class="appointment-item">
+        @for (prenotazione of listaPrenotazioni; track prenotazione.id) {
+        <div class="appointment-item">
 
           <div>
             <h3>{{ prenotazione.docente }}</h3>
@@ -124,10 +125,10 @@
 
           <div class="status-overlay">
             <span class="badge" [ngClass]="{
-                  'success': prenotazione.stato === 'confermata',
-                  'warning': prenotazione.stato === 'in_attesa',
-                  'danger': prenotazione.stato === 'annullata'
-                }">
+                    'success': prenotazione.stato === 'confermata',
+                    'warning': prenotazione.stato === 'in_attesa',
+                    'danger': prenotazione.stato === 'annullata'
+                  }">
               {{ prenotazione.stato === 'confermata' ? 'Confermata' : (prenotazione.stato === 'in_attesa' ? 'In attesa'
               : 'Annullata') }}
             </span>
@@ -144,6 +145,7 @@
           </div>
 
         </div>
+        }
 
       </ion-card-content>
     </ion-card>
@@ -158,23 +160,15 @@
 
       <ion-card-content>
 
+        @for (faq of listaFaq.slice(0, 3); track faq.id) {
         <a routerLink="/bacheca-studente" class="faq-row">
-          <span>Come posso annullare una prenotazione?</span>
+          <span>{{faq.domanda}}</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </a>
-
-        <a routerLink="/bacheca-studente" class="faq-row">
-          <span>Posso caricare documenti?</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </a>
-
-        <a routerLink="/bacheca-studente" class="faq-row">
-          <span>Dove trovo l’ufficio del docente?</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </a>
+        }
 
         <a routerLink="/bacheca-studente" class="faq-link">
-          Vai alla bacheca
+          Vai alla bacheca completa
           <ion-icon name="arrow-forward-outline"></ion-icon>
         </a>
 
@@ -182,5 +176,4 @@
     </ion-card>
 
   </section>
-
 </app-dashboard-layout>

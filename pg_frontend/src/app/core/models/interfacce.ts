@@ -28,6 +28,7 @@ export interface Docente extends Utente {
   iniziali?: string;
   descrizione?: string;
   prossimoSlot?: string;
+  corsoDiStudi: string[];
 }
 
 export interface Amministratore extends Utente {
@@ -35,7 +36,7 @@ export interface Amministratore extends Utente {
 }
 
 export interface Corso {
-  id: string ;
+  id: string;
   nome: string;
   cfu: number;
   anno: number;
@@ -44,7 +45,7 @@ export interface Corso {
 
 // PRENOTAZIONI
 export interface LuogoRicevimento {
-  id: string ;
+  id: string;
   aula: string;
   edificio: string;
   piano: number;
@@ -53,7 +54,7 @@ export interface LuogoRicevimento {
 }
 
 export interface SlotRicevimento {
-  id: string ;
+  id: string;
   docenteId: string | number;
   materia: string;
   data: Date;
@@ -73,7 +74,7 @@ export interface Documento {
 }
 
 export interface Prenotazione {
-  id: string ;
+  id: string;
   studenteId: string;
   slotId?: string | number;
   docente: string;
@@ -89,10 +90,13 @@ export interface Prenotazione {
 
 // BACHECA E NOTIFICHE
 export interface Bacheca {
-  id: string ;
-  messaggio: string;
-  tipo: 'sistema' | 'ufficio' | 'стом';
-  dataPubblicazione: string;
+  id: string;
+  titolo: string;
+  descrizione: string;
+  nomeCorso?: string;
+  idCorso?: string;
+  faqs?: FAQ[];
+  dataUltimoAggiornamento?: string;
 }
 
 export interface FAQ {

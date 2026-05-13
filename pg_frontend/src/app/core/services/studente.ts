@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth';
 import { Observable } from 'rxjs';
-import { Studente } from "../models/interfacce";
+import { Corso, Studente } from "../models/interfacce";
 
 @Injectable({
   providedIn: 'root',
@@ -20,5 +20,9 @@ export class StudenteService {
 
   aggiornaProfilo(matricola: string, dati: Partial<Studente>): Observable<{ messaggio: string }> {
     return this.http.put<{ messaggio: string }>(`${this.api}/${matricola}`, dati);
+  }
+
+  getCorsi(matricola: string): Observable<Corso[]> {
+    return this.http.get<Corso[]>(`${this.api}/${matricola}/corsi`);
   }
 }

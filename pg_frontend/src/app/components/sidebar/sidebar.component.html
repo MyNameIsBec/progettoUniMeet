@@ -10,12 +10,18 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a *ngFor="let voce of vociMenu" 
-       [routerLink]="voce.percorso" 
-       routerLinkActive="active" 
-       [routerLinkActiveOptions]="{exact: voce.esatto || false}">
-      <ion-icon [name]="voce.icona"></ion-icon>
-      <span>{{ voce.etichetta }}</span>
+    @for (voce of vociMenu; track voce.percorso) {
+      <a [routerLink]="voce.percorso" 
+         routerLinkActive="active" 
+         [routerLinkActiveOptions]="{exact: voce.esatto || false}">
+        <ion-icon [name]="voce.icona"></ion-icon>
+        <span>{{ voce.etichetta }}</span>
+      </a>
+    }
+    
+    <a routerLink="/segnalazione" routerLinkActive="active">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <span>Segnalazioni</span>
     </a>
 
     <a routerLink="/login" class="logout-link">

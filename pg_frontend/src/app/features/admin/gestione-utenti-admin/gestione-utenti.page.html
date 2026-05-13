@@ -40,32 +40,37 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let u of utentiFiltrati">
-            <td>
-              <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
-                <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
-                <span>{{ ruoloLabel(u.ruolo) }}</span>
-              </div>
-            </td>
-            <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
-            <td class="email-cell">{{ u.email }}</td>
-            <td class="hide-mobile dettagli-cell">
-              <span *ngIf="u.matricola">{{ u.matricola }}</span>
-              <span *ngIf="u.corsoDiStudi"> · {{ u.corsoDiStudi }}</span>
-              <span *ngIf="u.ufficio">{{ u.ufficio }}</span>
-            </td>
-            <td class="actions-col">
-              <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
-                <ion-icon name="create-outline"></ion-icon>
-              </button>
-              <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="utentiFiltrati.length === 0 && !inCaricamento">
-            <td colspan="5" class="empty-row">Nessun utente trovato</td>
-          </tr>
+          @for (u of utentiFiltrati; track u.id) {
+            <tr>
+              <td>
+                <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
+                  <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
+                  <span>{{ ruoloLabel(u.ruolo) }}</span>
+                </div>
+              </td>
+              <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
+              <td class="email-cell">{{ u.email }}</td>
+              <td class="hide-mobile dettagli-cell">
+                @if (u.matricola) { <span>{{ u.matricola }}</span> }
+                @if (u.corsoDiStudi) { <span> · {{ u.corsoDiStudi }}</span> }
+                @if (u.ufficio) { <span>{{ u.ufficio }}</span> }
+              </td>
+              <td class="actions-col">
+                <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
+                <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            @if (!inCaricamento) {
+              <tr>
+                <td colspan="5" class="empty-row">Nessun utente trovato</td>
+              </tr>
+            }
+          }
         </tbody>
       </table>
     </div>
@@ -96,10 +101,12 @@
               <label>Nome</label>
               <ion-input [(ngModel)]="formDati.nome" placeholder="Nome"></ion-input>
             </div>
-            <div class="field-group" *ngIf="formDati.ruolo !== 'amministratore'">
-              <label>Cognome</label>
-              <ion-input [(ngModel)]="formDati.cognome" placeholder="Cognome"></ion-input>
-            </div>
+            @if (formDati.ruolo !== 'amministratore') {
+              <div class="field-group">
+                <label>Cognome</label>
+                <ion-input [(ngModel)]="formDati.cognome" placeholder="Cognome"></ion-input>
+              </div>
+            }
             <div class="field-group">
               <label>Email</label>
               <ion-input type="email" [(ngModel)]="formDati.email" placeholder="email@univ.it"></ion-input>
@@ -108,18 +115,22 @@
               <label>{{ utenteInModifica ? 'Nuova password (lascia vuoto per non cambiarla)' : 'Password' }}</label>
               <ion-input type="password" [(ngModel)]="formDati.password" placeholder="Minimo 8 caratteri"></ion-input>
             </div>
-            <div class="field-group" *ngIf="formDati.ruolo === 'studente'">
-              <label>Matricola</label>
-              <ion-input [(ngModel)]="formDati.matricola" placeholder="MATxxx"></ion-input>
-            </div>
-            <div class="field-group" *ngIf="formDati.ruolo === 'studente'">
-              <label>Corso di studi</label>
-              <ion-input [(ngModel)]="formDati.corsoDiStudi" placeholder="Informatica"></ion-input>
-            </div>
-            <div class="field-group" *ngIf="formDati.ruolo === 'docente'">
-              <label>Ufficio</label>
-              <ion-input [(ngModel)]="formDati.ufficio" placeholder="Edificio, stanza"></ion-input>
-            </div>
+            @if (formDati.ruolo === 'studente') {
+              <div class="field-group">
+                <label>Matricola</label>
+                <ion-input [(ngModel)]="formDati.matricola" placeholder="MATxxx"></ion-input>
+              </div>
+              <div class="field-group">
+                <label>Corso di studi</label>
+                <ion-input [(ngModel)]="formDati.corsoDiStudi" placeholder="Informatica"></ion-input>
+              </div>
+            }
+            @if (formDati.ruolo === 'docente') {
+              <div class="field-group">
+                <label>Ufficio</label>
+                <ion-input [(ngModel)]="formDati.ufficio" placeholder="Edificio, stanza"></ion-input>
+              </div>
+            }
           </div>
           <div class="modal-actions">
             <ion-button fill="outline" (click)="chiudiModale()">Annulla</ion-button>

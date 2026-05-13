@@ -16,8 +16,8 @@ export class DocenteService {
     return `${this.authService.getApiUrl()}/api/docenti`;
   }
 
-  getElencoDocenti(): Observable<Docente[]> {
-    return this.http.get<Docente[]>(this.api);
+  getDocentiPerCorso(corsoDiStudi: string): Observable<Docente[]> {
+    return this.http.get<Docente[]>(this.api + `/corso/${corsoDiStudi}`);
   }
 
   getDettagliDocente(id: string): Observable<Docente> {

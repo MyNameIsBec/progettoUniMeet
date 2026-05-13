@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import * as icons from 'ionicons/icons';
 import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, 
-  IonBackButton, IonCard, IonCardHeader, IonCardTitle, 
+  IonCard, IonCardHeader, IonCardTitle, 
   IonCardSubtitle, IonCardContent, IonItem, IonLabel, 
   IonIcon, IonButton, IonBadge, IonList, IonSpinner 
 } from '@ionic/angular/standalone';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
 /**
  * Pagina di dettaglio per una singola prenotazione.
@@ -22,10 +22,22 @@ import {
   styleUrls: ['./dettaglio-prenotazione.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, IonContent, IonHeader, IonTitle, 
-    IonToolbar, IonButtons, IonBackButton, IonCard, IonCardHeader, 
-    IonCardTitle, IonCardSubtitle, IonCardContent, IonItem, 
-    IonLabel, IonIcon, IonButton, IonBadge, IonList, IonSpinner
+    CommonModule, 
+    FormsModule, 
+    IonIcon, 
+    IonCard, 
+    IonCardContent, 
+    IonCardHeader, 
+    IonCardTitle, 
+    IonCardSubtitle,
+    IonButton, 
+    IonBadge,
+    IonSpinner,
+    IonList,
+    IonItem,
+    IonLabel,
+    DashboardLayoutComponent,
+    RouterLink
   ]
 })
 export class DettaglioPrenotazionePage implements OnInit {

@@ -1,13 +1,438 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>segnalazione</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="segnalazione-page">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">segnalazione</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <div>
+          <h2>UniMeet</h2>
+          <p>Area Studente</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard-studente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/elenco-docenti">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Docenti</span>
+        </a>
+
+        <a routerLink="/prenota">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Prenota</span>
+        </a>
+
+        <a routerLink="/riepilogo-prenotazioni">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Le mie prenotazioni</span>
+        </a>
+
+        <a routerLink="/bacheca-studente">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>FAQ / Bacheca</span>
+        </a>
+
+        <a routerLink="/notifiche">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span>Notifiche</span>
+        </a>
+
+        <a routerLink="/profilo-studente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/segnalazione" class="active">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>Segnalazione</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-logo">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <strong>UniMeet</strong>
+            <span>Area Studente</span>
+          </div>
+        </div>
+
+        <nav class="mobile-top-menu">
+          <a routerLink="/dashboard-studente">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Home</span>
+          </a>
+
+          <a routerLink="/elenco-docenti">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Docenti</span>
+          </a>
+
+          <a routerLink="/prenota">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>Prenota</span>
+          </a>
+
+          <a routerLink="/riepilogo-prenotazioni">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+            <span>Storico</span>
+          </a>
+
+          <a routerLink="/bacheca-studente">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>FAQ</span>
+          </a>
+        </nav>
+
+        <div class="topbar-actions">
+          <a routerLink="/notifiche" class="notification-btn">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-dot"></span>
+          </a>
+
+          <a routerLink="/profilo-studente" class="user-chip">
+            <div class="avatar">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Alessio</strong>
+              <span>Studente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </a>
+        </div>
+      </header>
+
+      <section class="segnalazione-hero">
+        <div>
+          <span class="eyebrow">Supporto studenti</span>
+          <h1>Segnala un problema</h1>
+          <p>
+            Invia una segnalazione al team UniMeet per problemi tecnici,
+            difficoltà con prenotazioni, notifiche, documenti o dati del profilo.
+          </p>
+        </div>
+
+        <div class="hero-help-card">
+          <div class="hero-help-icon">
+            <ion-icon name="headset-outline"></ion-icon>
+          </div>
+
+          <div>
+            <span>Supporto attivo</span>
+            <strong>Risposta entro 24/48h</strong>
+            <small>Riceverai aggiornamenti via app o email.</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon blue">
+              <ion-icon name="send-outline"></ion-icon>
+            </div>
+
+            <div>
+              <span>Segnalazioni inviate</span>
+              <strong>3</strong>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon yellow">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+
+            <div>
+              <span>In lavorazione</span>
+              <strong>1</strong>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <div class="stat-icon green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+
+            <div>
+              <span>Risolte</span>
+              <strong>2</strong>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </section>
+
+      <section class="segnalazione-grid">
+        <div class="left-column">
+          <ion-card class="form-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="create-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Nuova segnalazione</ion-card-title>
+                  <p>Compila il modulo con più dettagli possibile.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Tipologia problema</label>
+                  <ion-item lines="none">
+                    <ion-select placeholder="Seleziona una categoria" interface="popover">
+                      <ion-select-option value="login">
+                        Accesso / Login
+                      </ion-select-option>
+                      <ion-select-option value="prenotazione">
+                        Prenotazione
+                      </ion-select-option>
+                      <ion-select-option value="notifiche">
+                        Notifiche
+                      </ion-select-option>
+                      <ion-select-option value="documenti">
+                        Documenti caricati
+                      </ion-select-option>
+                      <ion-select-option value="profilo">
+                        Profilo personale
+                      </ion-select-option>
+                      <ion-select-option value="altro">
+                        Altro
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+                <div class="form-field">
+                  <label>Priorità</label>
+                  <ion-item lines="none">
+                    <ion-select value="media" interface="popover">
+                      <ion-select-option value="bassa">
+                        Bassa
+                      </ion-select-option>
+                      <ion-select-option value="media">
+                        Media
+                      </ion-select-option>
+                      <ion-select-option value="alta">
+                        Alta
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+                <div class="form-field full-width">
+                  <label>Oggetto</label>
+                  <ion-item lines="none">
+                    <ion-input placeholder="Scrivi un oggetto breve e chiaro"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="form-field full-width">
+                  <label>Descrizione</label>
+                  <ion-item lines="none" class="textarea-item">
+                    <ion-textarea autoGrow="true" maxlength="1000"
+                      placeholder="Descrivi nel dettaglio il problema o la richiesta..."></ion-textarea>
+                  </ion-item>
+
+                  <div class="field-hint">
+                    Inserisci schermate, messaggi di errore o passaggi che hai già provato.
+                  </div>
+                </div>
+
+                <div class="form-field full-width">
+                  <label>Allegato opzionale</label>
+
+                  <div class="upload-box">
+                    <ion-icon name="cloud-upload-outline"></ion-icon>
+
+                    <div>
+                      <strong>Carica screenshot o documento</strong>
+                      <span>PDF, JPG o PNG - massimo 5MB</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <ion-button fill="outline" class="cancel-btn">
+                  Annulla
+                </ion-button>
+
+                <ion-button class="send-btn">
+                  <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+                  Invia segnalazione
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="history-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="folder-open-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Le tue segnalazioni</ion-card-title>
+                  <p>Controlla lo stato delle richieste inviate.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="report-list">
+                <div class="report-item">
+                  <div class="report-main">
+                    <span class="report-id">#SG-2026-0152</span>
+                    <strong>Problema con prenotazione</strong>
+                    <p>Slot selezionato non confermato correttamente.</p>
+                  </div>
+
+                  <div class="report-meta">
+                    <span class="status working">In lavorazione</span>
+                    <small>12/05/2026</small>
+                  </div>
+                </div>
+
+                <div class="report-item">
+                  <div class="report-main">
+                    <span class="report-id">#SG-2026-0148</span>
+                    <strong>Notifica reminder non ricevuta</strong>
+                    <p>Reminder del ricevimento non arrivato via email.</p>
+                  </div>
+
+                  <div class="report-meta">
+                    <span class="status solved">Risolta</span>
+                    <small>08/05/2026</small>
+                  </div>
+                </div>
+
+                <div class="report-item">
+                  <div class="report-main">
+                    <span class="report-id">#SG-2026-0140</span>
+                    <strong>Errore caricamento documento</strong>
+                    <p>Il file PDF non veniva caricato nella prenotazione.</p>
+                  </div>
+
+                  <div class="report-meta">
+                    <span class="status solved">Risolta</span>
+                    <small>02/05/2026</small>
+                  </div>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <aside class="right-column">
+          <ion-card class="info-card">
+            <ion-card-header>
+              <ion-card-title>Cosa puoi segnalare?</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="info-list">
+                <div class="info-item">
+                  <div class="info-icon blue">
+                    <ion-icon name="calendar-clear-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <strong>Problemi con prenotazioni</strong>
+                    <p>Slot non visibili, errori di conferma o annullamento.</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon green">
+                    <ion-icon name="notifications-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <strong>Notifiche e reminder</strong>
+                    <p>Avvisi non ricevuti o informazioni non aggiornate.</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon yellow">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <strong>Documenti caricati</strong>
+                    <p>Errori nel caricamento o file non associati.</p>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon red">
+                    <ion-icon name="person-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <strong>Dati profilo</strong>
+                    <p>Problemi con email, matricola o corso di studi.</p>
+                  </div>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="tips-card">
+            <ion-card-content>
+              <div class="tips-title">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <strong>Informazioni importanti</strong>
+              </div>
+
+              <ul>
+                <li>Le segnalazioni vengono lette dal team UniMeet.</li>
+                <li>Riceverai una risposta nella sezione notifiche.</li>
+                <li>Allega screenshot se visualizzi messaggi di errore.</li>
+              </ul>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="secure-card">
+            <ion-card-content>
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+
+              <div>
+                <strong>La tua segnalazione è al sicuro</strong>
+                <p>
+                  I dati inviati saranno usati solo per risolvere il problema.
+                </p>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </aside>
+      </section>
+    </main>
+  </div>
 </ion-content>

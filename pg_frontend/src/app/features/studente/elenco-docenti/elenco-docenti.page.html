@@ -1,5 +1,5 @@
-<app-dashboard-layout>
   <!-- PAGE HEADER -->
+  <app-dashboard-layout>
   <section class="page-header">
     <h2>Docenti disponibili</h2>
     <p>
@@ -10,27 +10,28 @@
   <!-- FILTRI -->
   <section class="filters-card">
     <div class="search-field">
-      <ion-icon name="search-outline"></ion-icon>
-      <input type="text" placeholder="Cerca docente o corso...">
+      <ion-icon name="calendar-clear-outline"></ion-icon>
+      <input type="text" placeholder="Cerca docente o corso..." [(ngModel)]="ricerca" (keyup.enter)="cerca()">
+      <ion-button fill="clear" (click)="cerca()" class="search-submit-btn">
+        <ion-icon name="arrow-forward-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </div>
 
     <div class="select-field">
-      <ion-select placeholder="Tutti i corsi" interface="popover">
+      <ion-icon name="filter-outline" class="filter-icon"></ion-icon>
+      <ion-select placeholder="Filtra" interface="popover" (ionChange)="onFilterCorso($event)"
+        [value]="corsoSelezionato">
         <ion-select-option value="tutti">Tutti i corsi</ion-select-option>
-        <ion-select-option value="analisi">Analisi Matematica I</ion-select-option>
-        <ion-select-option value="diritto">Diritto Privato</ion-select-option>
-        <ion-select-option value="economia">Economia Aziendale</ion-select-option>
-        <ion-select-option value="programmazione">Programmazione e Algoritmi</ion-select-option>
+        @if(listaCorsi.length == 0){
+        <ion-select-option>Nessun corso disponibile</ion-select-option>
+        } @else {
+        @for (corso of listaCorsi; track corso.id) {
+        <ion-select-option [value]="corso.id">{{ corso.nome }}</ion-select-option>
+        }
+        }
       </ion-select>
     </div>
 
-    <div class="select-field">
-      <ion-select placeholder="Stato" interface="popover">
-        <ion-select-option value="tutti">Tutti</ion-select-option>
-        <ion-select-option value="disponibile">Disponibile</ion-select-option>
-        <ion-select-option value="non-disponibile">Non disponibile</ion-select-option>
-      </ion-select>
-    </div>
   </section>
 
   <!-- CONTENUTO PRINCIPALE -->
@@ -39,11 +40,10 @@
     <!-- GRIGLIA DOCENTI -->
     <div class="teachers-grid">
 
-      <ion-card *ngFor="let docente of listaDocenti" 
-                [class.disabled-card]="!docente.disponibile" 
-                class="teacher-card">
+      @for (docente of listaDocenti; track docente.id) {
+      <ion-card [class.disabled-card]="!docente.disponibile" class="teacher-card">
         <ion-card-content>
-          
+
           <div class="teacher-header">
             <div class="avatar-circle" [ngClass]="docente.coloreAvatar">
               <span>{{ docente.iniziali }}</span>
@@ -60,10 +60,12 @@
               <ion-icon name="business-outline"></ion-icon>
               <span>{{ docente.ufficio }}</span>
             </div>
-            <div class="info-row" *ngIf="docente.descrizione">
+            @if (docente.descrizione) {
+            <div class="info-row">
               <ion-icon name="information-circle-outline"></ion-icon>
               <span>{{ docente.descrizione }}</span>
             </div>
+            }
           </div>
 
           <div class="next-slot-banner" [ngClass]="{'not-available': !docente.disponibile}">
@@ -82,6 +84,7 @@
 
         </ion-card-content>
       </ion-card>
+      }
 
     </div>
 
@@ -115,5 +118,3 @@
     </aside>
 
   </section>
-
-</app-dashboard-layout>

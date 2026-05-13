@@ -1,19 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonButton
-} from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
+import { FAQ, Bacheca, Studente } from '../../../core/models/interfacce';
+import { BachecaService } from '../../../core/services/bacheca';
+import { AuthService } from '../../../core/services/auth';
+import { StudenteService } from '../../../core/services/studente';
+import { firstValueFrom } from 'rxjs';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { FAQ } from '../../../core/models/interfacce';
 
 export interface LinkUtile {
-  id: string | number;
   titolo: string;
   descrizione: string;
   icona: string;
@@ -38,43 +34,48 @@ export interface LinkUtile {
     DashboardLayoutComponent
   ]
 })
-export class BachecaStudentePage {
-
-  public listaFaq: FAQ[] = [
-    {
-      id: 1,
-      domanda: 'Come posso prenotare un ricevimento?',
-      risposta: 'Per prenotare un ricevimento vai nella sezione Prenota, scegli il docente, seleziona uno slot disponibile e conferma la richiesta.',
-      aperta: true
-    },
-    {
-      id: 2,
-      domanda: 'Posso annullare una prenotazione?',
-      risposta: 'Sì, puoi annullare una prenotazione direttamente dalla tua dashboard o dalla sezione "Le mie prenotazioni" cliccando sul pulsante "Annulla".',
-      aperta: false
-    }
-  ];
+export class BachecaStudentePage implements OnInit {
 
   public collegamentiUtili: LinkUtile[] = [
     {
-      id: 1,
-      titolo: 'Sito ufficiale UniMeet',
+      titolo: 'Sito ufficiale Unipa',
       descrizione: 'Portale ufficiale per tutte le comunicazioni universitarie.',
       icona: 'school-outline',
       colore: 'blue',
-      url: '#'
+      url: 'https://www.unipa.it/'
     },
     {
-      id: 2,
-      titolo: 'Materiale Didattico',
-      descrizione: 'Accedi alle slide e ai documenti caricati dai docenti.',
-      icona: 'library-outline',
+      titolo: 'Portale Studenti',
+      descrizione: 'Accedi alla tua pagina universitaria ',
+      icona: 'file-tray-full-outline',
       colore: 'green',
-      url: '#'
+      url: 'https://immaweb.unipa.it/immaweb/home.seam'
     }
   ];
 
-  constructor() {
+  constructor(
+    private bachecaService: BachecaService,
+    private authService: AuthService,
+    private studenteService: StudenteService
+  ) { }
+
+  public listaFaq: FAQ[] = [];
+
+  async ngOnInit() {
+    try {
+      const user = this.authService.getCurrentUser();
+      if(user != null){
+      const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
+        if (profilo.corsoDiStudi != null) {
+          const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorso(profilo.corsoDiStudi));
+          if (bacheca != null) {
+            this.listaFaq = await firstValueFrom(this.bachecaService.getFaq(bacheca.id));
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Errore durante il caricamento della bacheca', error);
+    }
   }
 
   public invertiStatoFaq(faq: FAQ): void {

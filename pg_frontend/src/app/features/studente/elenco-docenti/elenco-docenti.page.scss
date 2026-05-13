@@ -42,10 +42,16 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 16px;
+    padding: 0 16px; /* Altezza gestita dal min-height */
+    height: 48px;
     background: #f8fafc;
     border: 1px solid #cbd5e1;
     border-radius: 12px;
+
+    ion-icon {
+        color: var(--ion-color-primary);
+        font-size: 20px;
+    }
 }
 
 .search-field input {
@@ -54,17 +60,45 @@
     flex: 1;
     outline: none;
     font-size: 0.95rem;
+    height: 100%;
+}
+
+.search-submit-btn {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 32px;
+    --color: var(--ion-color-primary);
 }
 
 .select-field {
-    min-width: 200px;
+    min-width: 140px;
+    background: #ffffff;
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 12px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.filter-icon {
+    color: var(--ion-color-primary);
+    font-size: 20px;
 }
 
 .select-field ion-select {
-    --background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    --padding-start: 14px;
+    width: 100%;
+    height: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    --placeholder-color: var(--ion-color-primary);
+    --placeholder-opacity: 1;
 }
 
 /* GRIGLIA CONTENUTO */

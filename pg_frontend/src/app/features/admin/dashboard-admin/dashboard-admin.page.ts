@@ -8,7 +8,6 @@ import {
   IonCardContent,
   IonButton,
 } from '@ionic/angular/standalone';
-import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { Admin, AdminStats } from 'src/app/core/services/admin';
 
@@ -25,7 +24,6 @@ import { Admin, AdminStats } from 'src/app/core/services/admin';
     CommonModule,
     FormsModule,
     RouterLink,
-    DashboardLayoutComponent,
   ],
 })
 export class DashboardAdminPage implements OnInit {

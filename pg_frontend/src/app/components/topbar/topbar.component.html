@@ -3,7 +3,7 @@
     <button class="menu-toggle" (click)="toggleMenu()">
       <ion-icon name="menu-outline"></ion-icon>
     </button>
-    
+
     <div class="mobile-logo">
       <ion-icon name="calendar-outline"></ion-icon>
       <div>
@@ -14,7 +14,9 @@
   </div>
 
   <!-- MENU A TENDINA LATERALE (MOBILE ONLY) -->
-  <div class="mobile-dropdown-overlay" *ngIf="menuAperto" (click)="toggleMenu()"></div>
+  @if (menuAperto) {
+  <div class="mobile-dropdown-overlay" (click)="toggleMenu()"></div>
+  }
   <nav class="mobile-top-menu" [class.open]="menuAperto">
     <div class="drawer-header">
       <div class="drawer-logo-container">
@@ -27,15 +29,19 @@
     </div>
 
     <div class="menu-items">
-      <a *ngFor="let voce of vociMenuMobile" 
-         [routerLink]="voce.percorso" 
-         routerLinkActive="active" 
-         [routerLinkActiveOptions]="{exact: voce.esatto || false}"
-         (click)="chiudiMenu()">
+      @for (voce of vociMenuMobile; track voce.percorso) {
+      <a [routerLink]="voce.percorso" routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: voce.esatto || false}" (click)="chiudiMenu()">
         <ion-icon [name]="voce.icona"></ion-icon>
         <span>{{ voce.etichetta }}</span>
       </a>
+      }
       
+      <a routerLink="/segnalazione" routerLinkActive="active" (click)="chiudiMenu()">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>Segnalazioni</span>
+      </a>
+
       <a routerLink="/login" class="mobile-logout" (click)="chiudiMenu()">
         <ion-icon name="log-out-outline"></ion-icon>
         <span>Logout</span>

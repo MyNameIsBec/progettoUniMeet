@@ -1,7 +1,3 @@
-:host {
-  display: block;
-}
-
 .topbar {
   height: 72px;
   background: white;
@@ -10,265 +6,113 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
+  
+  /* Questo assicura che rimanga in alto anche se il contenuto scorre */
   position: sticky;
   top: 0;
-  z-index: 90;
+  z-index: 1000;
+  
+  /* Effetto vetro moderno */
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.85);
 }
 
-/* Header a sinistra (Solo per Mobile) */
-.mobile-header-left {
-  display: none;
+.topbar-left {
+  display: flex;
   align-items: center;
   gap: 16px;
 }
 
 .menu-toggle {
-  background: transparent;
+  display: none;
+  background: none;
   border: none;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #1e293b;
-  border-radius: 8px;
-
-  ion-icon {
-    font-size: 28px;
-  }
-}
-
-.mobile-dropdown-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(2px);
-  z-index: 1000;
-}
-
-.mobile-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  ion-icon {
-    font-size: 28px;
-    color: var(--ion-color-primary);
-  }
-
-  strong {
-    display: block;
-    font-size: 1.1rem;
-    color: #1e293b;
-  }
-
-  span {
-    font-size: 0.7rem;
-    color: #64748b;
-  }
-}
-
-/* TENDINA LATERALE - ULTRA COMPATTA */
-.mobile-top-menu {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 300px;
-  height: 100vh;
-  background: white;
-  z-index: 1001;
-  flex-direction: column;
-  box-shadow: 20px 0 30px -10px rgba(0, 0, 0, 0.05);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-
-  &.open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-}
-
-.drawer-header {
-  padding: 16px 24px 12px;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 24px;
-    right: 24px;
-    height: 1px;
-    background: #f1f5f9;
-  }
-
-  .drawer-logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .main-logo-icon {
-      font-size: 36px;
-      color: #3b82f6;
-    }
-
-    .logo-text {
-      h1 {
-        margin: 0;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #1e293b;
-        line-height: 1.1;
-      }
-      span {
-        font-size: 0.8rem;
-        color: #64748b;
-      }
-    }
-  }
-}
-
-.menu-items {
-  flex: 1;
-  padding: 12px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow-y: hidden;
-
-  a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #64748b;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-
-    ion-icon {
-      font-size: 20px;
-      color: #64748b;
-    }
-
-    &:hover {
-      background: #f8fafc;
-    }
-
-    &.active {
-      background: #eff6ff;
-      color: #3b82f6;
-      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);
-
-      ion-icon {
-        color: #3b82f6;
-      }
-    }
-  }
-
-  .mobile-logout {
-    color: #ef4444;
-    margin-top: 16px;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    
-    ion-icon {
-      font-size: 20px;
-      color: #ef4444;
-    }
-
-    &:hover {
-      background: #fef2f2;
-    }
-  }
-}
-
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-left: auto;
-}
-
-.notification-button {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  font-size: 24px;
   color: #64748b;
-
-  .notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #ef4444;
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid white;
-  }
+  cursor: pointer;
+  padding: 8px;
+  margin-left: -8px;
 }
 
-.student-profile-mini {
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-profile-btn {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 6px 12px;
-  border-radius: 12px;
+  border-radius: 100px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   cursor: pointer;
+  transition: all 0.2s ease;
 
-  .student-avatar-small {
+  &:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .user-info {
+    text-align: right;
+    
+    strong {
+      display: block;
+      font-size: 0.875rem;
+      color: #1e293b;
+    }
+    
+    span {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: capitalize;
+    }
+  }
+
+  .avatar-circle {
     width: 36px;
     height: 36px;
-    background: #eff6ff;
-    border-radius: 10px;
+    border-radius: 50%;
+    background: var(--ion-color-primary);
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+}
+
+.notif-btn {
+  font-size: 22px;
+  color: #64748b;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f1f5f9;
     color: var(--ion-color-primary);
-    font-size: 20px;
   }
 
-  div {
-    strong {
-      display: block;
-      font-size: 0.9rem;
-      color: #1e293b;
-    }
-    span {
-      display: block;
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-  }
-
-  ion-icon[name="chevron-down-outline"] {
-    font-size: 14px;
-    color: #94a3b8;
+  .notif-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border: 2px solid white;
+    border-radius: 50%;
   }
 }
 
@@ -277,19 +121,11 @@
     padding: 0 16px;
   }
 
-  .mobile-header-left {
-    display: flex;
-  }
-
-  .mobile-dropdown-overlay {
+  .menu-toggle {
     display: block;
   }
 
-  .mobile-top-menu {
-    display: flex;
-  }
-
-  .topbar-actions {
+  .user-info {
     display: none;
   }
 }

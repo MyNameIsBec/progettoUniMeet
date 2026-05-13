@@ -5,27 +5,39 @@
   </section>
 
   <section class="riepilogo-content">
-    
-    <div class="filters-bar">
-      <div class="search-box">
+
+    <div class="filters-card">
+      <div class="search-field">
         <ion-icon name="calendar-clear-outline"></ion-icon>
-        <input type="text" placeholder="Cerca per docente o materia...">
+        <input type="text" placeholder="Cerca docente o materia..." [(ngModel)]="ricerca" (keyup.enter)="cerca()">
+        <ion-button fill="clear" (click)="cerca()" class="search-submit-btn">
+          <ion-icon name="arrow-forward-outline" slot="icon-only"></ion-icon>
+        </ion-button>
       </div>
-      <ion-button fill="outline">
-        <ion-icon name="filter-outline" slot="start"></ion-icon>
-        Filtra
-      </ion-button>
+
+      <div class="select-field">
+        <ion-icon name="filter-outline" class="filter-icon"></ion-icon>
+        <ion-select placeholder="Filtra" interface="popover" [value]="statoSelezionato"
+          (ionChange)="onFilterStato($event)">
+          <ion-select-option value="tutti">Tutti gli stati</ion-select-option>
+          <ion-select-option value="confermata">Confermata</ion-select-option>
+          <ion-select-option value="in_attesa">In attesa</ion-select-option>
+          <ion-select-option value="annullata">Annullata</ion-select-option>
+          <ion-select-option value="completata">Completata</ion-select-option>
+        </ion-select>
+      </div>
     </div>
 
     <div class="prenotazioni-list">
-      <ion-card *ngFor="let p of prenotazioni" class="booking-card">
+      @for (p of listaPrenotazioni; track p.id) {
+      <ion-card class="booking-card">
         <ion-card-content>
           <div class="card-header-row">
             <div class="docente-info">
               <h3>{{ p.docente }}</h3>
               <p>{{ p.materia }}</p>
             </div>
-            <ion-badge [color]="p.statoColor">{{ p.stato | uppercase }}</ion-badge>
+            <ion-badge [color]="getColoreStato(p.stato)">{{ p.stato | uppercase }}</ion-badge>
           </div>
 
           <div class="details-grid">
@@ -39,7 +51,7 @@
             </div>
             <div class="detail-item">
               <ion-icon name="location-outline"></ion-icon>
-              <span>{{ p.aula }}</span>
+              <span>{{ p.luogo }}</span>
             </div>
           </div>
 
@@ -52,6 +64,11 @@
           </div>
         </ion-card-content>
       </ion-card>
+      } @empty {
+      <div class="empty-state">
+        <p>Non hai ancora effettuato nessuna prenotazione</p>
+      </div>
+      }
     </div>
 
   </section>

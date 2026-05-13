@@ -8,32 +8,83 @@
   padding: 0 34px 34px;
 }
 
-.filters-bar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-  align-items: center;
+/* FILTRI */
+.filters-card {
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    margin-bottom: 24px;
 }
 
-.search-box {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  height: 48px;
-  ion-icon { color: var(--ion-color-medium); font-size: 20px; }
-  input { 
-    border: none; 
-    outline: none; 
-    width: 100%; 
-    font-size: 15px; 
-    background: transparent !important;
-    color: #0f172a !important;
-  }
+.search-field {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 48px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+
+    ion-icon {
+        color: var(--ion-color-primary);
+        font-size: 20px;
+    }
+}
+
+.search-field input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    outline: none;
+    font-size: 0.95rem;
+    height: 100%;
+}
+
+.search-submit-btn {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    height: 32px;
+    --color: var(--ion-color-primary);
+}
+
+.select-field {
+    min-width: 140px;
+    background: #ffffff;
+    border: 1px solid var(--ion-color-primary);
+    border-radius: 12px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.filter-icon {
+    color: var(--ion-color-primary);
+    font-size: 20px;
+}
+
+.select-field ion-select {
+    width: 100%;
+    height: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    --placeholder-color: var(--ion-color-primary);
+    --placeholder-opacity: 1;
 }
 
 .prenotazioni-list {

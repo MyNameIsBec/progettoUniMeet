@@ -65,6 +65,30 @@ ion-card-title {
     gap: 12px;
 }
 
+.no-faq {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: #64748b;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px dashed #e2e8f0;
+
+    ion-icon {
+        font-size: 48px;
+        color: #cbd5e1;
+        margin-bottom: 12px;
+    }
+
+    p {
+        margin: 0;
+        font-weight: 600;
+    }
+}
+
 .faq-details {
     border: 1px solid #e2e8f0;
     border-radius: 12px;

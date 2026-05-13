@@ -19,6 +19,7 @@ import {
   calendarClearOutline,
   calendarNumberOutline,
   calendarOutline,
+  chatbubbleEllipsesOutline,
   checkmarkCircle,
   checkmarkCircleOutline,
   checkmarkOutline,
@@ -30,6 +31,7 @@ import {
   documentTextOutline,
   eyeOffOutline,
   eyeOutline,
+  fileTrayFullOutline,
   filterOutline,
   folderOutline,
   helpCircleOutline,
@@ -37,6 +39,7 @@ import {
   hourglass,
   hourglassOutline,
   informationCircleOutline,
+  linkOutline,
   locationOutline,
   lockClosedOutline,
   logInOutline,
@@ -46,6 +49,7 @@ import {
   mailOutline,
   mapOutline,
   notificationsOutline,
+  openOutline,
   paperPlaneOutline,
   peopleOutline,
   personAddOutline,
@@ -72,6 +76,7 @@ addIcons({
   calendarClearOutline,
   calendarNumberOutline,
   calendarOutline,
+  chatbubbleEllipsesOutline,
   checkmarkCircle,
   checkmarkCircleOutline,
   checkmarkOutline,
@@ -83,6 +88,7 @@ addIcons({
   documentTextOutline,
   eyeOffOutline,
   eyeOutline,
+  fileTrayFullOutline,
   filterOutline,
   folderOutline,
   helpCircleOutline,
@@ -90,6 +96,7 @@ addIcons({
   hourglass,
   hourglassOutline,
   informationCircleOutline,
+  linkOutline,
   locationOutline,
   lockClosedOutline,
   logInOutline,
@@ -99,6 +106,7 @@ addIcons({
   mailOutline,
   mapOutline,
   notificationsOutline,
+  openOutline,
   paperPlaneOutline,
   peopleOutline,
   personAddOutline,
@@ -112,7 +120,7 @@ addIcons({
   timeOutline,
   trashBinOutline,
   trashOutline
-});
+  });
 
 bootstrapApplication(AppComponent, {
   providers: [

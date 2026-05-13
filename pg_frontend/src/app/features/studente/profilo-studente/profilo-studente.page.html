@@ -1,13 +1,392 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>profilo-studente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="profilo-page">
+  <div class="profile-scroll">
+    <div class="dashboard-layout">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-icon">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">profilo-studente</ion-title>
-    </ion-toolbar>
-  </ion-header>
+          <div>
+            <h2>UniMeet</h2>
+            <p>Area Studente</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a routerLink="/dashboard-studente">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Dashboard</span>
+          </a>
+
+          <a routerLink="/elenco-docenti">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Docenti</span>
+          </a>
+
+          <a routerLink="/prenota">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>Prenota</span>
+          </a>
+
+          <a routerLink="/riepilogo-prenotazioni">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+            <span>Le mie prenotazioni</span>
+          </a>
+
+          <a routerLink="/bacheca-studente">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>FAQ / Bacheca</span>
+          </a>
+
+          <a routerLink="/notifiche">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span>Notifiche</span>
+          </a>
+
+          <a routerLink="/profilo-studente" class="active">
+            <ion-icon name="person-outline"></ion-icon>
+            <span>Profilo</span>
+          </a>
+
+          <a routerLink="/home" class="logout-link">
+            <ion-icon name="log-out-outline"></ion-icon>
+            <span>Logout</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="mobile-logo">
+            <ion-icon name="calendar-outline"></ion-icon>
+
+            <div>
+              <strong>UniMeet</strong>
+              <span>Area Studente</span>
+            </div>
+          </div>
+
+          <nav class="mobile-top-menu">
+            <a routerLink="/dashboard-studente">
+              <ion-icon name="home-outline"></ion-icon>
+              <span>Home</span>
+            </a>
+
+            <a routerLink="/elenco-docenti">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Docenti</span>
+            </a>
+
+            <a routerLink="/prenota">
+              <ion-icon name="calendar-clear-outline"></ion-icon>
+              <span>Prenota</span>
+            </a>
+
+            <a routerLink="/riepilogo-prenotazioni">
+              <ion-icon name="calendar-number-outline"></ion-icon>
+              <span>Storico</span>
+            </a>
+
+            <a routerLink="/bacheca-studente">
+              <ion-icon name="help-circle-outline"></ion-icon>
+              <span>FAQ</span>
+            </a>
+          </nav>
+
+          <div class="topbar-actions">
+            <a routerLink="/notifiche" class="notification-btn">
+              <ion-icon name="notifications-outline"></ion-icon>
+              <span class="notification-dot"></span>
+            </a>
+
+            <a routerLink="/profilo-studente" class="user-chip active">
+              <div class="avatar">
+                <ion-icon name="person-outline"></ion-icon>
+              </div>
+
+              <div>
+                <strong>Alessio</strong>
+                <span>Studente</span>
+              </div>
+
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </a>
+          </div>
+        </header>
+
+        <section class="profile-hero">
+          <div class="hero-text">
+            <span class="eyebrow">Profilo studente</span>
+
+            <h1>Ciao Alessio</h1>
+
+            <p>
+              Gestisci i tuoi dati personali, la sicurezza dell'account e le
+              preferenze per ricevere reminder sui prossimi ricevimenti.
+            </p>
+          </div>
+
+          <div class="profile-status-card">
+            <div class="status-avatar">
+              <ion-icon name="person-circle-outline"></ion-icon>
+            </div>
+
+            <div>
+              <span>Account attivo</span>
+              <strong>Alessio Lombardo</strong>
+              <small>Matricola 0751234</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="profile-grid">
+          <ion-card class="profile-card personal-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="id-card-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Dati personali</ion-card-title>
+                  <p>Informazioni principali del tuo account UniMeet.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Nome</label>
+                  <ion-item lines="none">
+                    <ion-input value="Alessio" placeholder="Inserisci il nome"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="form-field">
+                  <label>Cognome</label>
+                  <ion-item lines="none">
+                    <ion-input value="Lombardo" placeholder="Inserisci il cognome"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="form-field">
+                  <label>Email universitaria</label>
+                  <ion-item lines="none">
+                    <ion-input type="email" value="alessio.lombardo@community.unipa.it"
+                      placeholder="Inserisci email"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="form-field">
+                  <label>Matricola</label>
+                  <ion-item lines="none">
+                    <ion-input value="0751234" readonly="true"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="form-field full-width">
+                  <label>Corso di studi</label>
+                  <ion-item lines="none">
+                    <ion-select value="informatica" interface="popover">
+                      <ion-select-option value="informatica">
+                        Informatica
+                      </ion-select-option>
+
+                      <ion-select-option value="ingegneria-informatica">
+                        Ingegneria Informatica
+                      </ion-select-option>
+
+                      <ion-select-option value="matematica">
+                        Matematica
+                      </ion-select-option>
+
+                      <ion-select-option value="economia">
+                        Economia e Amministrazione Aziendale
+                      </ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="profile-card security-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="lock-closed-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Sicurezza account</ion-card-title>
+                  <p>Controlla password e ultimo accesso.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="security-list">
+                <div class="security-item">
+                  <div>
+                    <span>Password</span>
+                    <strong>Ultima modifica: 12 maggio 2026</strong>
+                  </div>
+
+                  <ion-button fill="clear" size="small">
+                    <ion-icon name="key-outline" slot="start"></ion-icon>
+                    Cambia
+                  </ion-button>
+                </div>
+
+                <div class="security-item">
+                  <div>
+                    <span>Ultimo accesso</span>
+                    <strong>Oggi, 09:42</strong>
+                  </div>
+
+                  <div class="access-badge">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                    <span>Sicuro</span>
+                  </div>
+                </div>
+
+                <div class="security-note">
+                  <ion-icon name="time-outline"></ion-icon>
+
+                  <p>
+                    Per proteggere il tuo account, usa una password diversa da
+                    quella degli altri servizi universitari.
+                  </p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="profile-card notifications-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="notifications-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Preferenze notifiche</ion-card-title>
+                  <p>Decidi come ricevere reminder e aggiornamenti.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="toggle-list">
+                <div class="toggle-row">
+                  <div>
+                    <strong>Reminder ricevimento</strong>
+                    <span>Ricevi un avviso prima dell'appuntamento.</span>
+                  </div>
+
+                  <ion-toggle checked="true"></ion-toggle>
+                </div>
+
+                <div class="toggle-row">
+                  <div>
+                    <strong>Notifiche via app</strong>
+                    <span>Avvisi nella sezione notifiche di UniMeet.</span>
+                  </div>
+
+                  <ion-toggle checked="true"></ion-toggle>
+                </div>
+
+                <div class="toggle-row">
+                  <div>
+                    <strong>Notifiche email</strong>
+                    <span>Ricevi aggiornamenti anche sulla tua email.</span>
+                  </div>
+
+                  <ion-toggle checked="true"></ion-toggle>
+                </div>
+              </div>
+
+              <div class="form-field reminder-field">
+                <label>Tempo promemoria</label>
+
+                <ion-item lines="none">
+                  <ion-select value="24h" interface="popover">
+                    <ion-select-option value="1h">1 ora prima</ion-select-option>
+                    <ion-select-option value="3h">3 ore prima</ion-select-option>
+                    <ion-select-option value="24h">24 ore prima</ion-select-option>
+                    <ion-select-option value="48h">48 ore prima</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </div>
+            </ion-card-content>
+          </ion-card>
+
+          <ion-card class="profile-card activity-card">
+            <ion-card-header>
+              <div class="card-title-row">
+                <div class="card-icon">
+                  <ion-icon name="stats-chart-outline"></ion-icon>
+                </div>
+
+                <div>
+                  <ion-card-title>Riepilogo attività</ion-card-title>
+                  <p>Una panoramica veloce del tuo utilizzo.</p>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="activity-grid">
+                <div class="activity-box">
+                  <span>2</span>
+                  <p>Prenotazioni future</p>
+                </div>
+
+                <div class="activity-box">
+                  <span>8</span>
+                  <p>Ricevimenti completati</p>
+                </div>
+
+                <div class="activity-box">
+                  <span>5</span>
+                  <p>Documenti caricati</p>
+                </div>
+
+                <div class="activity-box">
+                  <span>1</span>
+                  <p>Segnalazioni inviate</p>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </section>
+
+        <section class="profile-actions">
+          <div>
+            <h2>Azioni profilo</h2>
+            <p>Salva le modifiche oppure ripristina i dati precedenti.</p>
+          </div>
+
+          <div class="actions-buttons">
+            <ion-button class="save-btn">
+              <ion-icon name="save-outline" slot="start"></ion-icon>
+              Salva modifiche
+            </ion-button>
+
+            <ion-button fill="outline" class="reset-btn">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Annulla
+            </ion-button>
+
+            <ion-button routerLink="/home" fill="clear" class="logout-btn">
+              <ion-icon name="log-out-outline" slot="start"></ion-icon>
+              Logout
+            </ion-button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
 </ion-content>
