@@ -4,11 +4,9 @@ import { FormsModule } from '@angular/forms';
 import {
   IonIcon, IonSelect, IonSelectOption,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  timeOutline, schoolOutline, calendarOutline, locationOutline,
-  checkmarkCircle, closeCircle, hourglass, peopleOutline,
-} from 'ionicons/icons';
+import { RouterLink } from '@angular/router';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { Admin, SlotGriglia, UtenteUnificato, FiltriSlot } from 'src/app/core/services/admin';
 
 @Component({
@@ -18,7 +16,7 @@ import { Admin, SlotGriglia, UtenteUnificato, FiltriSlot } from 'src/app/core/se
   standalone: true,
   imports: [
     IonIcon, IonSelect, IonSelectOption,
-    CommonModule, FormsModule,
+    CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
 export class GestioneSlotAdminPage implements OnInit {
@@ -30,11 +28,13 @@ export class GestioneSlotAdminPage implements OnInit {
   filtroData = '';
   filtroStato = '';
 
+  vociMenuAdmin: VoceMenuNavigazione[] = [
+    { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
+    { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
+    { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
+  ];
+
   constructor(private admin: Admin) {
-    addIcons({
-      timeOutline, schoolOutline, calendarOutline, locationOutline,
-      checkmarkCircle, closeCircle, hourglass, peopleOutline,
-    });
   }
 
   ngOnInit() {

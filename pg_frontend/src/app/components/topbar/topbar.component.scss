@@ -15,8 +15,43 @@
   z-index: 90;
 }
 
-.mobile-logo {
+/* Header a sinistra (Solo per Mobile) */
+.mobile-header-left {
   display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-toggle {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1e293b;
+  border-radius: 8px;
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+.mobile-dropdown-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+
+.mobile-logo {
+  display: flex;
   align-items: center;
   gap: 12px;
 
@@ -37,8 +72,128 @@
   }
 }
 
+/* TENDINA LATERALE - ULTRA COMPATTA */
 .mobile-top-menu {
   display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: white;
+  z-index: 1001;
+  flex-direction: column;
+  box-shadow: 20px 0 30px -10px rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+.drawer-header {
+  padding: 16px 24px 12px;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: #f1f5f9;
+  }
+
+  .drawer-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .main-logo-icon {
+      font-size: 36px;
+      color: #3b82f6;
+    }
+
+    .logo-text {
+      h1 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.1;
+      }
+      span {
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+    }
+  }
+}
+
+.menu-items {
+  flex: 1;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: hidden;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 20px;
+      color: #64748b;
+    }
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &.active {
+      background: #eff6ff;
+      color: #3b82f6;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);
+
+      ion-icon {
+        color: #3b82f6;
+      }
+    }
+  }
+
+  .mobile-logout {
+    color: #ef4444;
+    margin-top: 16px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    ion-icon {
+      font-size: 20px;
+      color: #ef4444;
+    }
+
+    &:hover {
+      background: #fef2f2;
+    }
+  }
 }
 
 .topbar-actions {
@@ -59,13 +214,6 @@
   justify-content: center;
   position: relative;
   color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #f1f5f9;
-    color: var(--ion-color-primary);
-  }
 
   .notification-badge {
     position: absolute;
@@ -92,11 +240,6 @@
   padding: 6px 12px;
   border-radius: 12px;
   cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #f8fafc;
-  }
 
   .student-avatar-small {
     width: 36px;
@@ -131,56 +274,19 @@
 
 @media (max-width: 991px) {
   .topbar {
-    height: auto;
-    flex-direction: column;
-    padding: 16px;
-    gap: 16px;
+    padding: 0 16px;
   }
 
-  .mobile-logo {
+  .mobile-header-left {
     display: flex;
-    width: 100%;
+  }
+
+  .mobile-dropdown-overlay {
+    display: block;
   }
 
   .mobile-top-menu {
     display: flex;
-    width: 100%;
-    overflow-x: auto;
-    gap: 8px;
-    padding-bottom: 4px;
-
-    a {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: #f8fafc;
-      border-radius: 10px;
-      text-decoration: none;
-      color: #64748b;
-      font-size: 0.85rem;
-      font-weight: 500;
-
-      &.active {
-        background: var(--ion-color-primary);
-        color: white;
-      }
-    }
-
-    .mobile-logout {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: #fef2f2;
-      border-radius: 10px;
-      text-decoration: none;
-      color: #ef4444;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
   }
 
   .topbar-actions {

@@ -8,16 +8,8 @@ import {
   IonCardContent,
   IonButton,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  schoolOutline,
-  personOutline,
-  calendarOutline,
-  timeOutline,
-  calendarNumberOutline,
-  personAddOutline,
-  settingsOutline,
-} from 'ionicons/icons';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { Admin, AdminStats } from 'src/app/core/services/admin';
 
 @Component({
@@ -33,6 +25,7 @@ import { Admin, AdminStats } from 'src/app/core/services/admin';
     CommonModule,
     FormsModule,
     RouterLink,
+    DashboardLayoutComponent,
   ],
 })
 export class DashboardAdminPage implements OnInit {
@@ -44,17 +37,13 @@ export class DashboardAdminPage implements OnInit {
     prenotazioniOggi: 0,
   };
 
-  constructor(private admin: Admin) {
-    addIcons({
-      schoolOutline,
-      personOutline,
-      calendarOutline,
-      timeOutline,
-      calendarNumberOutline,
-      personAddOutline,
-      settingsOutline,
-    });
-  }
+  vociMenuAdmin: VoceMenuNavigazione[] = [
+    { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
+    { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
+    { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
+  ];
+
+  constructor(private admin: Admin) {}
 
   ngOnInit() {
     this.admin.getStatistiche().subscribe((data) => {

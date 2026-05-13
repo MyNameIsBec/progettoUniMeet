@@ -1,26 +1,46 @@
 <header class="topbar">
-  <!-- LOGO MOBILE -->
-  <div class="mobile-logo">
-    <ion-icon name="calendar-outline"></ion-icon>
-    <div>
-      <strong>UniMeet</strong>
-      <span>Area {{ ruoloUtente | titlecase }}</span>
+  <div class="mobile-header-left">
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <ion-icon name="menu-outline"></ion-icon>
+    </button>
+    
+    <div class="mobile-logo">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div>
+        <strong>UniMeet</strong>
+        <span>Area {{ ruoloUtente | titlecase }}</span>
+      </div>
     </div>
   </div>
 
-  <!-- MENU MOBILE -->
-  <nav class="mobile-top-menu">
-    <a *ngFor="let voce of vociMenuMobile" 
-       [routerLink]="voce.percorso" 
-       routerLinkActive="active" 
-       [routerLinkActiveOptions]="{exact: voce.esatto || false}">
-      <ion-icon [name]="voce.icona"></ion-icon>
-      <span>{{ voce.etichetta }}</span>
-    </a>
-    <a routerLink="/login" class="mobile-logout">
-      <ion-icon name="log-out-outline"></ion-icon>
-      <span>Logout</span>
-    </a>
+  <!-- MENU A TENDINA LATERALE (MOBILE ONLY) -->
+  <div class="mobile-dropdown-overlay" *ngIf="menuAperto" (click)="toggleMenu()"></div>
+  <nav class="mobile-top-menu" [class.open]="menuAperto">
+    <div class="drawer-header">
+      <div class="drawer-logo-container">
+        <ion-icon name="calendar" class="main-logo-icon"></ion-icon>
+        <div class="logo-text">
+          <h1>UniMeet</h1>
+          <span>Area {{ ruoloUtente | titlecase }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-items">
+      <a *ngFor="let voce of vociMenuMobile" 
+         [routerLink]="voce.percorso" 
+         routerLinkActive="active" 
+         [routerLinkActiveOptions]="{exact: voce.esatto || false}"
+         (click)="chiudiMenu()">
+        <ion-icon [name]="voce.icona"></ion-icon>
+        <span>{{ voce.etichetta }}</span>
+      </a>
+      
+      <a routerLink="/login" class="mobile-logout" (click)="chiudiMenu()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Logout</span>
+      </a>
+    </div>
   </nav>
 
   <!-- AZIONI DESKTOP -->

@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonButton, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, mailOutline, arrowBackOutline, alertCircleOutline, checkmarkCircleOutline, paperPlaneOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/auth';
 
 @Component({
@@ -31,10 +29,7 @@ export class RecuperaPasswordPage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    addIcons({
-      calendarOutline, mailOutline, arrowBackOutline,
-      alertCircleOutline, checkmarkCircleOutline, paperPlaneOutline
-    });
+
   }
 
   ngOnInit(): void {

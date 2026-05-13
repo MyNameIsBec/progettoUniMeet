@@ -12,7 +12,11 @@ import {
   helpCircleOutline,
   notificationsOutline,
   personOutline,
-  chevronDownOutline
+  chevronDownOutline,
+  menuOutline,
+  closeOutline,
+  logOutOutline,
+  calendar
 } from 'ionicons/icons';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
 
@@ -28,6 +32,8 @@ export class TopbarComponent {
   @Input() nomeUtente: string = 'Alessio Lombardo';
   @Input() vociMenuMobile: VoceMenuNavigazione[] = [];
 
+  menuAperto = false;
+
   constructor() {
     addIcons({
       calendarOutline,
@@ -38,7 +44,19 @@ export class TopbarComponent {
       helpCircleOutline,
       notificationsOutline,
       personOutline,
-      chevronDownOutline
+      chevronDownOutline,
+      menuOutline,
+      closeOutline,
+      logOutOutline,
+      calendar
     });
+  }
+
+  toggleMenu() {
+    this.menuAperto = !this.menuAperto;
+  }
+
+  chiudiMenu() {
+    this.menuAperto = false;
   }
 }

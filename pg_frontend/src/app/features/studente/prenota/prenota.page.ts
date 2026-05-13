@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { addIcons } from 'ionicons';
-import * as icons from 'ionicons/icons';
 import { 
   IonItem, 
   IonSelect, 
@@ -84,25 +82,6 @@ export class PrenotaPage implements OnInit {
   slotFiltrati: SlotRicevimento[] = [];
 
   constructor(private router: Router) {
-    addIcons({
-      calendarOutline: icons.calendarOutline,
-      filterOutline: icons.filterOutline,
-      searchOutline: icons.searchOutline,
-      personCircleOutline: icons.personCircleOutline,
-      bookOutline: icons.bookOutline,
-      timeOutline: icons.timeOutline,
-      lockClosedOutline: icons.lockClosedOutline,
-      locationOutline: icons.locationOutline,
-      businessOutline: icons.businessOutline,
-      mailOutline: icons.mailOutline,
-      chevronBackOutline: icons.chevronBackOutline,
-      chevronForwardOutline: icons.chevronForwardOutline,
-      informationCircleOutline: icons.informationCircleOutline,
-      personOutline: icons.personOutline,
-      hourglassOutline: icons.hourglassOutline,
-      attachOutline: icons.attachOutline,
-      calendarClearOutline: icons.calendarClearOutline
-    });
   }
 
   ngOnInit() {

@@ -9,21 +9,17 @@ import {
   IonCardTitle,
   IonButton
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  helpCircleOutline,
-  chevronForwardOutline,
-  chatbubbleEllipsesOutline,
-  informationCircleOutline,
-  calendarClearOutline,
-  linkOutline,
-  schoolOutline,
-  libraryOutline,
-  bookOutline,
-  openOutline
-} from 'ionicons/icons';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { FAQ, LinkUtile } from '../../../core/models/interfacce';
+import { FAQ } from '../../../core/models/interfacce';
+
+export interface LinkUtile {
+  id: string | number;
+  titolo: string;
+  descrizione: string;
+  icona: string;
+  colore: string;
+  url: string;
+}
 
 @Component({
   selector: 'app-bacheca-studente',
@@ -79,18 +75,6 @@ export class BachecaStudentePage {
   ];
 
   constructor() {
-    addIcons({
-      helpCircleOutline,
-      chevronForwardOutline,
-      chatbubbleEllipsesOutline,
-      informationCircleOutline,
-      calendarClearOutline,
-      linkOutline,
-      schoolOutline,
-      libraryOutline,
-      bookOutline,
-      openOutline
-    });
   }
 
   public invertiStatoFaq(faq: FAQ): void {

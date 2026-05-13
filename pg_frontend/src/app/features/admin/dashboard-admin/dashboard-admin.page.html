@@ -1,83 +1,85 @@
-<div class="dashboard-content">
+<app-dashboard-layout [ruoloUtente]="'amministratore'" [vociMenu]="vociMenuAdmin">
+  <div class="dashboard-content">
 
-  <div class="stats-grid">
-    <ion-card class="stat-card">
-      <ion-card-content>
-        <div class="stat-icon student-icon">
-          <ion-icon name="school-outline"></ion-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.totaleStudenti }}</span>
-          <span class="stat-label">Studenti</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
+    <div class="stats-grid">
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon student-icon">
+            <ion-icon name="school-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totaleStudenti }}</span>
+            <span class="stat-label">Studenti</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-    <ion-card class="stat-card">
-      <ion-card-content>
-        <div class="stat-icon teacher-icon">
-          <ion-icon name="person-outline"></ion-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.totaleDocenti }}</span>
-          <span class="stat-label">Docenti</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon teacher-icon">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totaleDocenti }}</span>
+            <span class="stat-label">Docenti</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-    <ion-card class="stat-card">
-      <ion-card-content>
-        <div class="stat-icon booking-icon">
-          <ion-icon name="calendar-outline"></ion-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.totalePrenotazioni }}</span>
-          <span class="stat-label">Prenotazioni totali</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon booking-icon">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.totalePrenotazioni }}</span>
+            <span class="stat-label">Prenotazioni totali</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-    <ion-card class="stat-card">
-      <ion-card-content>
-        <div class="stat-icon slot-icon">
-          <ion-icon name="time-outline"></ion-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.slotAttivi }}</span>
-          <span class="stat-label">Slot attivi</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon slot-icon">
+            <ion-icon name="time-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.slotAttivi }}</span>
+            <span class="stat-label">Slot attivi</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
 
-    <ion-card class="stat-card">
-      <ion-card-content>
-        <div class="stat-icon today-icon">
-          <ion-icon name="calendar-number-outline"></ion-icon>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.prenotazioniOggi }}</span>
-          <span class="stat-label">Prenotazioni oggi</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
-
-  <div class="quick-actions">
-    <h3>Azioni rapide</h3>
-    <div class="actions-row">
-      <ion-button routerLink="/dashboard-admin/gestione-utenti" color="primary">
-        <ion-icon name="person-add-outline" slot="start"></ion-icon>
-        Crea utente
-      </ion-button>
-      <ion-button routerLink="/dashboard-admin/gestione-slot-admin" color="primary" fill="outline">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
-        Gestisci slot
-      </ion-button>
-      <ion-button color="primary" fill="outline">
-        <ion-icon name="settings-outline" slot="start"></ion-icon>
-        Impostazioni
-      </ion-button>
+      <ion-card class="stat-card">
+        <ion-card-content>
+          <div class="stat-icon today-icon">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stats.prenotazioniOggi }}</span>
+            <span class="stat-label">Prenotazioni oggi</span>
+          </div>
+        </ion-card-content>
+      </ion-card>
     </div>
-  </div>
 
-</div>
+    <div class="quick-actions">
+      <h3>Azioni rapide</h3>
+      <div class="actions-row">
+        <ion-button routerLink="/gestione-utenti-admin" color="primary">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Crea utente
+        </ion-button>
+        <ion-button routerLink="/gestione-slot-admin" color="primary" fill="outline">
+          <ion-icon name="time-outline" slot="start"></ion-icon>
+          Gestisci slot
+        </ion-button>
+        <ion-button color="primary" fill="outline">
+          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          Impostazioni
+        </ion-button>
+      </div>
+    </div>
+
+  </div>
+</app-dashboard-layout>

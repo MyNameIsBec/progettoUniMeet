@@ -8,28 +8,26 @@ export interface VoceMenuNavigazione {
 
 // UTENTI
 export interface Utente {
-  id: string | number;
+  id: string;
   nome: string;
-  cognome?: string;
+  cognome: string;
   email: string;
-  ruolo?: 'studente' | 'docente' | 'admin';
-  avatar?: string;
+  ruolo: 'studente' | 'docente' | 'admin';
 }
 
 export interface Studente extends Utente {
-  matricola?: string;
-  corsoDiStudi?: string;
+  matricola: string;
+  corsoDiStudi: string;
 }
 
 export interface Docente extends Utente {
   ufficio: string;
-  bio?: string;
-  iniziali?: string;
-  coloreAvatar?: string;
-  materia?: string;
-  prossimoSlot?: string;
+  materia: string;
   disponibile?: boolean;
+  coloreAvatar?: string;
+  iniziali?: string;
   descrizione?: string;
+  prossimoSlot?: string;
 }
 
 export interface Amministratore extends Utente {
@@ -37,25 +35,25 @@ export interface Amministratore extends Utente {
 }
 
 export interface Corso {
-  id: string | number;
+  id: string ;
   nome: string;
   cfu: number;
   anno: number;
-  docenteId: string | number;
+  docenteId: string;
 }
 
 // PRENOTAZIONI
 export interface LuogoRicevimento {
-  id: string | number;
+  id: string ;
   aula: string;
   edificio: string;
   piano: number;
-  latitudine?: number;
-  longitudine?: number;
+  latitudine: number;
+  longitudine: number;
 }
 
 export interface SlotRicevimento {
-  id: string | number;
+  id: string ;
   docenteId: string | number;
   materia: string;
   data: Date;
@@ -66,7 +64,7 @@ export interface SlotRicevimento {
 }
 
 export interface Documento {
-  id: string | number;
+  id: string;
   nomeFile: string;
   tipo: string;
   dimensione: number;
@@ -75,8 +73,8 @@ export interface Documento {
 }
 
 export interface Prenotazione {
-  id?: string | number;
-  studenteId?: string | number;
+  id: string ;
+  studenteId: string;
   slotId?: string | number;
   docente: string;
   materia: string;
@@ -91,33 +89,18 @@ export interface Prenotazione {
 
 // BACHECA E NOTIFICHE
 export interface Bacheca {
-  id: string | number;
+  id: string ;
   messaggio: string;
   tipo: 'sistema' | 'ufficio' | 'стом';
   dataPubblicazione: string;
 }
 
 export interface FAQ {
-  id: number;
+  id: string | number;
   domanda: string;
   risposta: string;
   aperta: boolean;
   dataPubblicazione?: string;
 }
 
-export interface LinkUtile {
-  id: number;
-  titolo: string;
-  descrizione: string;
-  icona: string;
-  colore: string;
-  url: string;
-}
 
-export interface Notifica {
-  id: string;
-  tipo: 'reminder' | 'sistema' | 'annullamento';
-  dataInvio: string;
-  messaggio: string;
-  letta: boolean;
-}

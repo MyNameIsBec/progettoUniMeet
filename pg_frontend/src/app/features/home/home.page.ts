@@ -1,13 +1,6 @@
 
 import { Component, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonContent, IonButton, IonIcon, IonCard, IonCardContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  calendarOutline, logInOutline, schoolOutline, calendarClearOutline,
-  createOutline, notificationsOutline, documentTextOutline, personOutline,
-  calendarNumberOutline, peopleOutline, checkmarkCircleOutline, folderOutline, timeOutline
-} from 'ionicons/icons';
-
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -24,11 +17,6 @@ export class HomePage implements AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({
-      calendarOutline, logInOutline, schoolOutline, calendarClearOutline,
-      createOutline, notificationsOutline, documentTextOutline, personOutline,
-      calendarNumberOutline, peopleOutline, checkmarkCircleOutline, folderOutline, timeOutline
-    });
   }
 
 

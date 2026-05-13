@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, IonButton, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, lockClosedOutline, eyeOutline, eyeOffOutline, alertCircleOutline, checkmarkCircleOutline, arrowBackOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/auth';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
@@ -40,13 +38,7 @@ export class ResetPasswordPage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    addIcons({
-      calendarOutline, lockClosedOutline, eyeOutline, eyeOffOutline,
-      alertCircleOutline, checkmarkCircleOutline, arrowBackOutline,
-      shieldCheckmarkOutline
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.tokenString = this.route.snapshot.queryParams['token'] ?? '';
@@ -83,7 +75,7 @@ export class ResetPasswordPage implements OnInit {
   }
 
   get hasUppercase(): boolean { return /[A-Z]/.test(this.password?.value ?? ''); }
-  get hasNumber(): boolean    { return /[0-9]/.test(this.password?.value ?? ''); }
+  get hasNumber(): boolean { return /[0-9]/.test(this.password?.value ?? ''); }
 
   get etichettaForzaPassword(): string {
     return ['', 'Debole', 'Discreta', 'Buona', 'Ottima'][this.forzaPassword];

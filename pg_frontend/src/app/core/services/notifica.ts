@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Observable, interval, switchMap, startWith } from "rxjs";
-import { Notifica } from '../models/interfacce';
+export interface Notifica {
+  id: string;
+  tipo: 'reminder' | 'sistema' | 'annullamento';
+  dataInvio: string;
+  messaggio: string;
+  letta: boolean;
+}
 import { AuthService } from './auth';
 
 @Injectable({

@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, logInOutline, eyeOutline, eyeOffOutline, mailOutline, lockClosedOutline, alertCircleOutline, arrowBackOutline } from 'ionicons/icons';
 import { AuthService } from '../../../core/services/auth';
 
 @Component({
@@ -27,12 +25,7 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {
-    addIcons({
-      calendarOutline, logInOutline, eyeOutline, eyeOffOutline,
-      mailOutline, lockClosedOutline, alertCircleOutline, arrowBackOutline
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.urlDiRitorno = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';

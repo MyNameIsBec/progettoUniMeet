@@ -1,0 +1,134 @@
+<app-dashboard-layout [ruoloUtente]="'amministratore'" [vociMenu]="vociMenuAdmin">
+  <div class="utenti-content">
+    <div class="toolbar-row">
+      <div class="filter-chips">
+        <ion-chip [class.active]="!filtroRuolo" (click)="onFiltroRuolo('')">
+          <ion-label>Tutti</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroRuolo === 'studente'" (click)="onFiltroRuolo('studente')">
+          <ion-label>Studenti</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroRuolo === 'docente'" (click)="onFiltroRuolo('docente')">
+          <ion-label>Docenti</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroRuolo === 'amministratore'" (click)="onFiltroRuolo('amministratore')">
+          <ion-label>Admin</ion-label>
+        </ion-chip>
+      </div>
+      <ion-button fill="solid" class="crea-btn" (click)="apriModaleCrea()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Crea utente
+      </ion-button>
+    </div>
+
+    <ion-searchbar
+      placeholder="Cerca per nome, email o matricola..."
+      [debounce]="300"
+      (ionInput)="onSearchChange($event)"
+      class="search-bar">
+    </ion-searchbar>
+
+    <div class="table-wrap">
+      <table class="utenti-table">
+        <thead>
+          <tr>
+            <th>Ruolo</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th class="hide-mobile">Dettagli</th>
+            <th class="actions-col">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of utentiFiltrati">
+            <td>
+              <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
+                <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
+                <span>{{ ruoloLabel(u.ruolo) }}</span>
+              </div>
+            </td>
+            <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
+            <td class="email-cell">{{ u.email }}</td>
+            <td class="hide-mobile dettagli-cell">
+              <span *ngIf="u.matricola">{{ u.matricola }}</span>
+              <span *ngIf="u.corsoDiStudi"> · {{ u.corsoDiStudi }}</span>
+              <span *ngIf="u.ufficio">{{ u.ufficio }}</span>
+            </td>
+            <td class="actions-col">
+              <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
+                <ion-icon name="create-outline"></ion-icon>
+              </button>
+              <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="utentiFiltrati.length === 0 && !inCaricamento">
+            <td colspan="5" class="empty-row">Nessun utente trovato</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ion-modal [isOpen]="mostraModale" (didDismiss)="chiudiModale()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ modaleTitolo }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="chiudiModale()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="modal-content">
+          <div class="form-grid">
+            <div class="field-group">
+              <label>Ruolo</label>
+              <ion-select [(ngModel)]="formDati.ruolo" [disabled]="!!utenteInModifica">
+                <ion-select-option value="studente">Studente</ion-select-option>
+                <ion-select-option value="docente">Docente</ion-select-option>
+                <ion-select-option value="amministratore">Amministratore</ion-select-option>
+              </ion-select>
+            </div>
+            <div class="field-group">
+              <label>Nome</label>
+              <ion-input [(ngModel)]="formDati.nome" placeholder="Nome"></ion-input>
+            </div>
+            <div class="field-group" *ngIf="formDati.ruolo !== 'amministratore'">
+              <label>Cognome</label>
+              <ion-input [(ngModel)]="formDati.cognome" placeholder="Cognome"></ion-input>
+            </div>
+            <div class="field-group">
+              <label>Email</label>
+              <ion-input type="email" [(ngModel)]="formDati.email" placeholder="email@univ.it"></ion-input>
+            </div>
+            <div class="field-group">
+              <label>{{ utenteInModifica ? 'Nuova password (lascia vuoto per non cambiarla)' : 'Password' }}</label>
+              <ion-input type="password" [(ngModel)]="formDati.password" placeholder="Minimo 8 caratteri"></ion-input>
+            </div>
+            <div class="field-group" *ngIf="formDati.ruolo === 'studente'">
+              <label>Matricola</label>
+              <ion-input [(ngModel)]="formDati.matricola" placeholder="MATxxx"></ion-input>
+            </div>
+            <div class="field-group" *ngIf="formDati.ruolo === 'studente'">
+              <label>Corso di studi</label>
+              <ion-input [(ngModel)]="formDati.corsoDiStudi" placeholder="Informatica"></ion-input>
+            </div>
+            <div class="field-group" *ngIf="formDati.ruolo === 'docente'">
+              <label>Ufficio</label>
+              <ion-input [(ngModel)]="formDati.ufficio" placeholder="Edificio, stanza"></ion-input>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <ion-button fill="outline" (click)="chiudiModale()">Annulla</ion-button>
+            <ion-button (click)="salvaUtente()">
+              {{ utenteInModifica ? 'Salva modifiche' : 'Crea utente' }}
+            </ion-button>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </div>
+</app-dashboard-layout>

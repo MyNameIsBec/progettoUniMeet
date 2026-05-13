@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, personAddOutline, eyeOutline, eyeOffOutline, mailOutline, lockClosedOutline, personOutline, alertCircleOutline, arrowBackOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import { AuthService, RegistrazioneStudente } from '../../../core/services/auth';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
@@ -34,11 +32,7 @@ export class RegistrazionePage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    addIcons({
-      calendarOutline, personAddOutline, eyeOutline, eyeOffOutline,
-      mailOutline, lockClosedOutline, personOutline,
-      alertCircleOutline, arrowBackOutline, checkmarkCircleOutline
-    });
+
   }
 
   ngOnInit(): void {

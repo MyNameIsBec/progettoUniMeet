@@ -2,16 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonCard, IonCardContent, IonButton, IonBadge } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { 
-  calendarOutline, 
-  timeOutline, 
-  locationOutline, 
-  personOutline, 
-  chevronForwardOutline,
-  calendarClearOutline,
-  filterOutline
-} from 'ionicons/icons';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
 @Component({
@@ -46,15 +36,6 @@ export class RiepilogoPrenotazioniPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({
-      calendarOutline,
-      timeOutline,
-      locationOutline,
-      personOutline,
-      chevronForwardOutline,
-      calendarClearOutline,
-      filterOutline
-    });
   }
 
   ngOnInit() {}

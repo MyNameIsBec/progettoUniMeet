@@ -3,15 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  IonContent, IonLabel, IonIcon, IonButton, IonSearchbar,
-  IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonButtons,
-  IonHeader, IonTitle, IonToolbar,
+  IonLabel, IonIcon, IonButton, IonSearchbar,
+  IonModal, IonInput, IonSelect, IonSelectOption, IonChip,
+  IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  peopleOutline, schoolOutline, personOutline, shieldCheckmarkOutline,
-  createOutline, trashOutline, addOutline, closeOutline, searchOutline,
-} from 'ionicons/icons';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { Admin, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services/admin';
 
 @Component({
@@ -20,10 +17,10 @@ import { Admin, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services
   styleUrls: ['./gestione-utenti.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonLabel, IonIcon, IonButton, IonSearchbar,
-    IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonButtons,
-    IonHeader, IonTitle, IonToolbar,
-    CommonModule, FormsModule,
+    IonLabel, IonIcon, IonButton, IonSearchbar,
+    IonModal, IonInput, IonSelect, IonSelectOption, IonChip,
+    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
+    CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
 export class GestioneUtentiPage implements OnInit {
@@ -38,11 +35,13 @@ export class GestioneUtentiPage implements OnInit {
   utenteInModifica: UtenteUnificato | null = null;
   formDati: CreaUtenteRequest = this.formVuoto();
 
+  vociMenuAdmin: VoceMenuNavigazione[] = [
+    { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
+    { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
+    { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
+  ];
+
   constructor(private admin: Admin) {
-    addIcons({
-      peopleOutline, schoolOutline, personOutline, shieldCheckmarkOutline,
-      createOutline, trashOutline, addOutline, closeOutline, searchOutline,
-    });
   }
 
   ngOnInit() {
