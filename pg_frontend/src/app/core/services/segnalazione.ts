@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth';
 import { Observable } from 'rxjs';
 
 export interface Segnalazione {
@@ -10,31 +9,33 @@ export interface Segnalazione {
   data_invio: string;
   stato: string;
   matricola_studente: string;
+  studente?: {
+    nome: string;
+    cognome: string;
+    email: string;
+  };
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class SegnalazioneService {
-  constructor(private http: HttpClient, private authService: AuthService) { }
-
-  private get api(): string {
-    return `${this.authService.getApiUrl()}/api/segnalazioni`;
-  }
+  constructor(private http: HttpClient) {}
 
   inviaSegnalazione(oggetto: string, descrizione: string, matricola_studente: string): Observable<Segnalazione> {
-    return this.http.post<Segnalazione>(`${this.api}`, { oggetto, descrizione, matricola_studente });
+    return this.http.post<Segnalazione>('api/segnalazioni', { oggetto, descrizione, matricola_studente });
   }
 
   getSegnalazioniByStudente(matricola: string): Observable<Segnalazione[]> {
-    return this.http.get<Segnalazione[]>(`${this.api}/studente/${matricola}`);
+    return this.http.get<Segnalazione[]>(`api/segnalazioni/studente/${matricola}`);
   }
 
-  getAllSegnalazioni(): Observable<Segnalazione[]> {
-    return this.http.get<Segnalazione[]>(`${this.api}/admin/all`);
+  getAllSegnalazioni(stato?: string): Observable<Segnalazione[]> {
+    const params = stato ? `?stato=${stato}` : '';
+    return this.http.get<Segnalazione[]>(`api/segnalazioni/admin/all${params}`);
   }
 
   aggiornaStato(id: string, stato: string): Observable<Segnalazione> {
-    return this.http.patch<Segnalazione>(`${this.api}/${id}/stato`, { stato });
+    return this.http.patch<Segnalazione>(`api/segnalazioni/${id}/stato`, { stato });
   }
 }

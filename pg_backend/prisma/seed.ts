@@ -204,6 +204,46 @@ async function main() {
     console.log(`  ${d.file} (${(d.dim / 1024).toFixed(0)} KB)`);
   }
 
+  // ──────────────────────────── SEGNALAZIONE ────────────────────────────
+  console.log('\n── Segnalazione ──');
+  const segnalazioni = [
+    { oggetto: 'Errore nel caricamento documento', descrizione: 'Quando provo a caricare un PDF per la prenotazione del 15/05, ricevo un errore 500.', stato: 'APERTA', studente: 'MAT001' },
+    { oggetto: 'Slot non visibili nel calendario', descrizione: 'Non riesco a vedere gli slot del Prof. Verdi per la prossima settimana.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
+    { oggetto: 'Notifica di conferma non ricevuta', descrizione: 'La prenotazione del 18/05 è stata confermata ma non ho ricevuto la notifica.', stato: 'APERTA', studente: 'MAT003' },
+    { oggetto: 'Problema accesso area personale', descrizione: 'Dopo il login vengo reindirizzato alla home invece che alla dashboard.', stato: 'CHIUSA', studente: 'MAT004' },
+    { oggetto: 'Richiesta chiarimenti esonero', descrizione: 'Vorrei maggiori informazioni sulle modalità di esonero per Basi di Dati.', stato: 'CHIUSA', studente: 'MAT005' },
+    { oggetto: 'Errore modifica profilo', descrizione: 'Quando provo ad aggiornare il mio corso di studi, il sistema non salva le modifiche.', stato: 'APERTA', studente: 'MAT001' },
+    { oggetto: 'Doppia prenotazione involontaria', descrizione: 'Ho prenotato due volte lo stesso slot per errore. Come posso cancellarne una?', stato: 'IN_LAVORAZIONE', studente: 'MAT003' },
+    { oggetto: 'Documento allegato non visualizzato', descrizione: 'Il file caricato per la prenotazione del 22/05 non viene mostrato nella schermata di dettaglio.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
+  ];
+  for (const s of segnalazioni) {
+    await prisma.segnalazione.create({
+      data: {
+        oggetto: s.oggetto,
+        descrizione: s.descrizione,
+        stato: s.stato,
+        matricola_studente: s.studente,
+      },
+    });
+    console.log(`  [${s.stato}] ${s.oggetto} — ${s.studente}`);
+  }
+
+  // ──────────────────────────── GIORNI BLOCCATI ────────────────────────────
+  console.log('\n── GiornoBloccato ──');
+  const giorniBloccati = [
+    { data: '2026-04-25', motivo: 'Festa della Liberazione' },
+    { data: '2026-05-01', motivo: 'Festa del Lavoro' },
+    { data: '2026-06-02', motivo: 'Festa della Repubblica' },
+  ];
+  for (const g of giorniBloccati) {
+    await prisma.giornoBloccato.upsert({
+      where: { data: new Date(g.data) },
+      update: {},
+      create: { data: new Date(g.data), motivo: g.motivo },
+    });
+    console.log(`  ${g.data} — ${g.motivo}`);
+  }
+
   // ──────────────────────────── NOTIFICA ────────────────────────────
   console.log('\n── Notifica ──');
   const notifiche = [

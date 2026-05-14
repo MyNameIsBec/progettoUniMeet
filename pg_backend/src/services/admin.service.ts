@@ -34,17 +34,24 @@ export interface SlotGriglia {
 }
 
 export async function getStats(): Promise<AdminStats> {
+  const oggi = new Date();
+  oggi.setHours(0, 0, 0, 0);
+  const domani = new Date(oggi);
+  domani.setDate(domani.getDate() + 1);
+
   const [totaleStudenti, totaleDocenti, totalePrenotazioni, slotAttivi, prenotazioniOggi] =
     await Promise.all([
       prisma.studente.count(),
       prisma.docente.count(),
       prisma.prenotazione.count(),
-      prisma.slotRicevimento.count({ where: { disponibilita: true } }),
+      prisma.slotRicevimento.count(),
       prisma.prenotazione.count({
         where: {
-          data_prenotazione: {
-            gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            lt: new Date(new Date().setHours(23, 59, 59, 999)),
+          slot: {
+            data: {
+              gte: oggi,
+              lt: domani,
+            },
           },
         },
       }),
@@ -202,6 +209,174 @@ export async function deleteUser(id: string): Promise<void> {
   } else {
     await prisma.amministratore.delete({ where: { id_admin: id } });
   }
+}
+
+export interface SlotDate {
+  data: string;
+  conteggio: number;
+}
+
+export async function getSlotDate(): Promise<SlotDate[]> {
+  const result = await prisma.slotRicevimento.groupBy({
+    by: ['data'],
+    _count: { id_slot: true },
+    orderBy: { data: 'asc' },
+  });
+
+  return result.map((r) => ({
+    data: r.data.toISOString().split('T')[0] ?? '',
+    conteggio: r._count.id_slot,
+  }));
+}
+
+export interface CreaSlotRequest {
+  docenteId: string;
+  data: string;
+  oraInizio: string;
+  oraFine: string;
+  disponibilita?: boolean;
+  luogo?: { nomeAula: string; edificio: string; piano: string } | null;
+}
+
+export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
+  const slot = await prisma.slotRicevimento.create({
+    data: {
+      data: new Date(data.data),
+      ora_inizio: data.oraInizio as any,
+      ora_fine: data.oraFine as any,
+      disponibilita: data.disponibilita ?? true,
+      id_docente: data.docenteId,
+      ...(!data.luogo ? {} : {
+        luogo: {
+          create: {
+            nome_aula: data.luogo.nomeAula,
+            edificio: data.luogo.edificio,
+            piano: data.luogo.piano,
+          },
+        },
+      }),
+    },
+    include: {
+      docente: { select: { id_docente: true, nome: true, cognome: true, email: true } },
+      luogo: { select: { nome_aula: true, edificio: true, piano: true } },
+    },
+  });
+
+  const fmtDate = (d: Date) => d.toISOString().split('T')[0] ?? '';
+  const fmtTime = (d: Date) => (d.toISOString().split('T')[1] ?? '').substring(0, 5);
+
+  return {
+    id: slot.id_slot,
+    docente: {
+      id: slot.docente.id_docente, nome: slot.docente.nome,
+      cognome: slot.docente.cognome, email: slot.docente.email,
+    },
+    data: fmtDate(slot.data),
+    oraInizio: fmtTime(slot.ora_inizio),
+    oraFine: fmtTime(slot.ora_fine),
+    disponibilita: slot.disponibilita,
+    luogo: slot.luogo
+      ? { nomeAula: slot.luogo.nome_aula, edificio: slot.luogo.edificio, piano: slot.luogo.piano }
+      : null,
+    prenotazioniCount: 0,
+  };
+}
+
+export async function modificaSlot(idSlot: string, data: any): Promise<void> {
+  const row = await prisma.slotRicevimento.findUnique({
+    where: { id_slot: idSlot },
+    include: { luogo: true },
+  });
+  if (!row) throw new Error('Slot not found');
+
+  const updateData: any = {};
+  if (data.data) updateData.data = new Date(data.data);
+  if (data.oraInizio) updateData.ora_inizio = data.oraInizio as any;
+  if (data.oraFine) updateData.ora_fine = data.oraFine as any;
+  if (data.disponibilita !== undefined) updateData.disponibilita = data.disponibilita;
+  if (data.docenteId) updateData.id_docente = data.docenteId;
+
+  if (Object.keys(updateData).length > 0) {
+    await prisma.slotRicevimento.update({
+      where: { id_slot: idSlot },
+      data: updateData,
+    });
+  }
+
+  if (data.luogo) {
+    if (row.luogo) {
+      await prisma.luogoRicevimento.update({
+        where: { id_luogo: row.luogo.id_luogo },
+        data: {
+          nome_aula: data.luogo.nomeAula,
+          edificio: data.luogo.edificio,
+          piano: data.luogo.piano,
+        },
+      });
+    } else {
+      await prisma.luogoRicevimento.create({
+        data: {
+          nome_aula: data.luogo.nomeAula,
+          edificio: data.luogo.edificio,
+          piano: data.luogo.piano,
+          id_slot: idSlot,
+        },
+      });
+    }
+  }
+}
+
+export async function eliminaSlot(idSlot: string): Promise<void> {
+  const slot = await prisma.slotRicevimento.findUnique({
+    where: { id_slot: idSlot },
+  });
+  if (!slot) throw new Error('Slot not found');
+
+  await prisma.luogoRicevimento.deleteMany({ where: { id_slot: idSlot } });
+  await prisma.prenotazione.deleteMany({ where: { id_slot: idSlot } });
+  await prisma.slotRicevimento.delete({ where: { id_slot: idSlot } });
+}
+
+export interface GiornoBloccato {
+  id: string;
+  data: string;
+  motivo: string;
+  creatoIl: Date;
+}
+
+export async function getGiorniBloccati(): Promise<GiornoBloccato[]> {
+  const rows = await prisma.giornoBloccato.findMany({
+    orderBy: { data: 'asc' },
+  });
+  return rows.map((r) => ({
+    id: r.id_giorno,
+    data: r.data.toISOString().split('T')[0] ?? '',
+    motivo: r.motivo,
+    creatoIl: r.creato_il,
+  }));
+}
+
+export async function bloccaGiorno(data: string, motivo?: string): Promise<GiornoBloccato> {
+  const existing = await prisma.giornoBloccato.findUnique({
+    where: { data: new Date(data) },
+  });
+  if (existing) throw new Error('Giorno già bloccato');
+
+  const row = await prisma.giornoBloccato.create({
+    data: { data: new Date(data), motivo: motivo ?? 'Festivo' },
+  });
+  return {
+    id: row.id_giorno,
+    data: row.data.toISOString().split('T')[0] ?? '',
+    motivo: row.motivo,
+    creatoIl: row.creato_il,
+  };
+}
+
+export async function sbloccaGiorno(id: string): Promise<void> {
+  const row = await prisma.giornoBloccato.findUnique({ where: { id_giorno: id } });
+  if (!row) throw new Error('Giorno non trovato');
+  await prisma.giornoBloccato.delete({ where: { id_giorno: id } });
 }
 
 export async function getSlotGlobali(filtri?: {

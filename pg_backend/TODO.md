@@ -38,6 +38,18 @@
 ## Fase 7 — API Notifiche
 - [ ] CRUD Notifiche
 
+## Fase 10 — Segnalazioni (Completata)
+- [x] API backend: service, controller, validators, routes
+- [x] Pagina admin frontend: tabella, filtri stato, cambio stato inline
+- [x] Voce menu "Segnalazioni" nel pannello admin
+
+## Fase 11 — Blocca giorni (Completata)
+- [x] Modello DB `GiornoBloccato` (data, motivo)
+- [x] API backend: `GET/POST/DELETE /admin/giorni-bloccati`
+- [x] Pagina admin frontend `gestione-calendario`
+- [x] Voce menu "Calendario" nel pannello admin
+- [x] Seed giorni festivi di test
+
 ## Fase 8 — Amministratore (Dashboard)
 - [x] Statistiche (utenze, prenotazioni, corsi)
 - [x] API gestione utenti (lista, crea, modifica, elimina)
@@ -46,5 +58,78 @@
 - [x] Pagina Gestione Slot Admin frontend (filtri, griglia slot)
 - [x] Aggiustare le scritte che non si vedono nei form
 - [ ] Permettere all'amministratore di gestire le prenotazioni (eliminarle o modificarle)
-- [ ] Consentire all'amministratore di bloccare determinati giorni dal calendario (es. festivi)
+- [ ] → Spostato in Fase 11 (Blocca giorni)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
+
+---
+
+## Piano dettagliato Fase 11 — Blocca giorni
+
+### Backend
+
+**Modello DB (`prisma/schema.prisma`):**
+```prisma
+model GiornoBloccato {
+  id_giorno String   @id @default(uuid())
+  data      DateTime @db.Date
+  motivo    String   @default("Festivo")
+  creato_il DateTime @default(now())
+  @@unique([data])
+}
+```
+
+**Service (`admin.service.ts`):**
+- `getGiorniBloccati()` → Prisma findMany ord. data
+- `bloccaGiorno(data, motivo?)` → Prisma create (gestire unique constraint violato → 409)
+- `sbloccaGiorno(id)` → Prisma delete
+
+**Controller (`admin.controller.ts`):**
+- `getGiorniBloccati` → 200
+- `bloccaGiorno` → 201 (409 se data già bloccata)
+- `sbloccaGiorno` → 204 (404 se non trovato)
+
+**Routes (`admin.routes.ts`):**
+- `GET    /api/admin/giorni-bloccati`
+- `POST   /api/admin/giorni-bloccati`
+- `DELETE /api/admin/giorni-bloccati/:id`
+
+**Validators (`admin.validators.ts`):**
+- `bloccaGiornoSchema`: body `data` (notEmpty, isISO8601), `motivo` (optional, trim)
+
+**Seed (`seed.ts`):**
+- 2026-04-25 "Festa della Liberazione", 2026-05-01 "Festa del Lavoro", 2026-06-02 "Festa della Repubblica"
+
+### Frontend
+
+**Service (`admin.ts` frontend):**
+```ts
+export interface GiornoBloccato {
+  id: string; data: string; motivo: string; creatoIl: string;
+}
+getGiorniBloccati(): Observable<GiornoBloccato[]>
+bloccaGiorno(dati: { data: string; motivo?: string }): Observable<GiornoBloccato>
+sbloccaGiorno(id: string): Observable<void>
+```
+
+**Nuova pagina `features/admin/gestione-calendario/`:**
+- Componente standalone con `DashboardLayout`
+- Tabella giorni bloccati (data formattata, motivo, azioni)
+- Badge "Bloccato" con icona lock
+- Pulsante "Blocca giorno" → modale con date picker + motivo
+- Bottone elimina su ogni riga con conferma
+- Stili coerenti (border-radius 18px, ombre, palette blue)
+
+**Rotta (`app.routes.ts`):**
+```ts
+{ path: 'gestione-calendario', canActivate: [authGuard, roleGuard('amministratore')],
+  loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage) }
+```
+
+**Menu admin** — 5 file da modificare:
+- `dashboard-layout.component.ts`
+- `dashboard-admin.page.ts`
+- `gestione-utenti/gestione-utenti.page.ts`
+- `gestione-slot-admin/gestione-slot-admin.page.ts`
+- `gestione-segnalazioni/gestione-segnalazioni.page.ts`
+
+Aggiungere: `{ etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' }`

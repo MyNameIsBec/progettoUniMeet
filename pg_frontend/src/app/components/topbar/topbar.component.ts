@@ -17,6 +17,7 @@ import {
   closeOutline,
   logOutOutline,
   alertCircleOutline,
+  flagOutline,
   calendar
 } from 'ionicons/icons';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
@@ -54,6 +55,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
       closeOutline,
       logOutOutline,
       alertCircleOutline,
+      flagOutline,
       calendar
     });
   }

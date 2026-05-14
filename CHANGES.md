@@ -269,6 +269,92 @@
 
 ---
 
+---
+
+## Admin Segnalazioni — backend API + frontend pagina gestione
+
+**Data:** 14/05/2026
+
+**Modifica:** Implementata la gestione delle segnalazioni per l'amministratore: CRUD backend completo (service, controller, validators, routes) e pagina frontend admin con tabella, filtri per stato e cambio stato inline.
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/segnalazioni.service.ts`
+- `createSegnalazione(data)` — crea segnalazione con validazione studente esistente
+- `getSegnalazioniByStudente(matricola)` — lista dello studente
+- `getAllSegnalazioni(stato?)` — tutte con join su studente, filtro opzionale `?stato=`
+- `aggiornaStatoSegnalazione(id, stato)` — cambio stato con validazione (APERTA/IN_LAVORAZIONE/CHIUSA)
+
+#### `pg_backend/src/validators/segnalazioni.validators.ts`
+- `creaSegnalazioneSchema` — oggetto, descrizione, matricola_studente obbligatori
+- `aggiornaStatoSchema` — stato in `['APERTA', 'IN_LAVORAZIONE', 'CHIUSA']`
+
+### Backend — file modificati
+
+#### `pg_backend/src/controllers/segnalazioni.controller.ts`
+- Riscritto con 4 handler: `createSegnalazione`, `getSegnalazioniByStudente`, `getAllSegnalazioni`, `aggiornaStatoSegnalazione`
+
+#### `pg_backend/src/routes/segnalazioni.routes.ts`
+- `POST /api/segnalazioni` — crea segnalazione (autenticato)
+- `GET /api/segnalazioni/studente/:matricola` — segnalazioni studente (autenticato)
+- `GET /api/segnalazioni/admin/all` — tutte con filtro `?stato=` (admin)
+- `PATCH /api/segnalazioni/:id/stato` — cambia stato (admin)
+
+#### `pg_backend/src/app.ts`
+- Registrate le rotte `segnalazioniRoutes`
+
+### Frontend — nuovi file
+
+#### `pg_frontend/src/app/features/admin/gestione-segnalazioni/`
+- Componente standalone con tabella segnalazioni, chip filtro (Tutte/Aperte/In lavorazione/Chiuse)
+- Badge colorati per stato, select inline per cambio stato
+- Stile coerente con le altre pagine admin
+
+### Frontend — file modificati
+
+#### `pg_frontend/src/app/core/services/segnalazione.ts`
+- URL relativi via interceptor (rimossa dipendenza da `AuthService.getApiUrl()`)
+- `getAllSegnalazioni(stato?)` — parametro `?stato=` opzionale
+- `Segnalazione` interface estesa con `studente?` per response admin
+
+#### `pg_frontend/src/app/app.routes.ts`
+- Aggiunta rotta `/gestione-segnalazioni` con `authGuard` + `roleGuard('amministratore')`
+
+#### `pg_frontend/src/app/components/topbar/topbar.component.ts`
+- Rimosso link hardcodato a `/segnalazione` (rotta studente) nel menu mobile
+- Registrata icona `flag-outline` in `addIcons`
+
+#### Pagine admin (4 file):
+- `dashboard-admin.page.ts`, `gestione-utenti.page.ts`, `gestione-slot-admin.page.ts`, `dashboard-layout.component.ts`
+- Aggiunta voce menu "Segnalazioni" con icona `flag-outline`
+
+### Bug fix
+
+#### `pg_frontend/src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.ts`
+- Aggiunto import mancante `ActivatedRoute` da `@angular/router`
+- Dichiarate proprietà mancanti della classe (`slot`, `docenti`, `dateDisponibili`, filtri, modale)
+- Aggiunti import Ionic mancanti (`IonModal`, `IonHeader`, `IonToolbar`, `IonTitle`, `IonButtons`, `IonContent`)
+
+---
+
+## Pianificazione Blocca Giorni — documentata Fase 11
+
+**Data:** 14/05/2026
+
+**Modifica:** Documentato il piano di implementazione per la funzionalità "Blocca giorni dal calendario (festivi)" in DOCUMENTAZIONE.md e TODO.md. Aggiunta Fase 11 in TODO.md con piano dettagliato di backend e frontend. Da implementare al prossimo sessione di lavoro.
+
+### File modificati
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- Aggiunta sezione "Blocca giorni — Piano implementazione" con modello DB, backend API, frontend, rotte, menu, e riepilogo file
+
+#### `pg_backend/TODO.md`
+- Aggiunta Fase 11 — Blocca giorni (Pianificato) con 5 task
+- Aggiunto piano dettagliato con specifiche tecniche per ogni file
+- Riferimento incrociato dalla Fase 8 alla Fase 11
+
+---
+
 # ✅ Completato
 
 Tutte le fasi A–E sono state implementate in questo changeset.

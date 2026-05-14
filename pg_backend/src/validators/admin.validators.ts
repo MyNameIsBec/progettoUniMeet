@@ -28,6 +28,11 @@ export const slotFiltriSchema = [
   query('stato').optional().isIn(['libero', 'occupato', 'tutti']),
 ];
 
+export const bloccaGiornoSchema = [
+  body('data').isString().notEmpty().withMessage('Data obbligatoria (YYYY-MM-DD)'),
+  body('motivo').optional().isString().trim(),
+];
+
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

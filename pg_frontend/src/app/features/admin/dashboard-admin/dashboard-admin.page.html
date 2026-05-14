@@ -1,4 +1,5 @@
-  <div class="dashboard-content">
+<app-dashboard-layout [ruoloUtente]="'amministratore'" [vociMenu]="vociMenuAdmin">
+  <div class="admin-dashboard">
 
     <div class="stats-grid">
       <ion-card class="stat-card">
@@ -65,19 +66,16 @@
     <div class="quick-actions">
       <h3>Azioni rapide</h3>
       <div class="actions-row">
-        <ion-button routerLink="/gestione-utenti-admin" color="primary">
+        <ion-button [routerLink]="['/gestione-utenti-admin']" [queryParams]="{crea: true}" color="primary">
           <ion-icon name="person-add-outline" slot="start"></ion-icon>
           Crea utente
         </ion-button>
-        <ion-button routerLink="/gestione-slot-admin" color="primary" fill="outline">
+        <ion-button [routerLink]="['/gestione-slot-admin']" [queryParams]="{stato: 'occupato', data: oggi}" color="primary" fill="outline">
           <ion-icon name="time-outline" slot="start"></ion-icon>
           Gestisci slot
-        </ion-button>
-        <ion-button color="primary" fill="outline">
-          <ion-icon name="settings-outline" slot="start"></ion-icon>
-          Impostazioni
         </ion-button>
       </div>
     </div>
 
   </div>
+</app-dashboard-layout>

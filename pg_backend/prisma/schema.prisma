@@ -144,3 +144,12 @@ model Notifica {
   matricola_studente String
   studente           Studente @relation(fields: [matricola_studente], references: [matricola])
 }
+
+model GiornoBloccato {
+  id_giorno String   @id @default(uuid())
+  data      DateTime @db.Date
+  motivo    String   @default("Festivo")
+  creato_il DateTime @default(now())
+
+  @@unique([data])
+}

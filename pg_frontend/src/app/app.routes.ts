@@ -126,6 +126,16 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard('amministratore')],
     loadComponent: () => import('./features/admin/gestione-slot-admin/gestione-slot-admin.page').then(m => m.GestioneSlotAdminPage),
   },
+  {
+    path: 'gestione-segnalazioni',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-segnalazioni/gestione-segnalazioni.page').then(m => m.GestioneSegnalazioniPage),
+  },
+  {
+    path: 'gestione-calendario',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage),
+  },
 
   // --- LANDING ---
   {

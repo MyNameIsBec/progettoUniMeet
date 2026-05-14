@@ -5,6 +5,7 @@ import adminRoutes from './routes/admin.routes';
 import studentiRoutes from './routes/studenti.routes';
 import docentiRoutes from './routes/docenti.routes';
 import prenotazioniRoutes from './routes/prenotazioni.routes';
+import segnalazioniRoutes from './routes/segnalazioni.routes';
 
 
 const app = express();
@@ -15,5 +16,6 @@ app.use('/api', adminRoutes);
 app.use('/api', studentiRoutes);
 app.use('/api', docentiRoutes);
 app.use('/api', prenotazioniRoutes);
+app.use('/api', segnalazioniRoutes);
 
 export default app;

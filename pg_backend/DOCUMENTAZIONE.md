@@ -176,7 +176,8 @@ npx prisma generate
 | `studenti.service.ts` | Profilo studente (GET, PUT) |
 | `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche |
 | `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA) |
-| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD) |
+| `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD), slot globali (CRUD + filtri + date disponibili) |
 | `corsi.service.ts` | *(da implementare)* CRUD corsi, associazione corso ↔ docente |
 | `bacheca.service.ts` | *(da implementare)* CRUD bacheca (una per corso) |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
@@ -307,12 +308,28 @@ Endpoint admin (`admin.routes.ts`):
 
 | Endpoint | Metodo | Descrizione |
 |----------|--------|-------------|
-| `/api/admin/stats` | GET | Statistiche dashboard |
+| `/api/admin/stats` | GET | Statistiche dashboard. `prenotazioniOggi` conta prenotazioni il cui slot cade oggi (non per data creazione). `slotAttivi` conta tutti gli slot (non solo quelli liberi). |
 | `/api/admin/utenti` | GET | Lista utenti unificata (filtro `?ruolo=`) |
 | `/api/admin/utenti` | POST | Creazione utente |
 | `/api/admin/utenti/:id` | PUT | Modifica utente |
 | `/api/admin/utenti/:id` | DELETE | Eliminazione utente |
+| `/api/admin/slot-date` | GET | Date disponibili degli slot (raggruppate per data con conteggio) |
 | `/api/admin/slot` | GET | Lista slot globali (filtri `?docenteId=&data=&stato=`) |
+| `/api/admin/slot` | POST | Crea slot (body: `{ docenteId, data, oraInizio, oraFine, disponibilita?, luogo? }`) |
+| `/api/admin/slot/:idSlot` | PUT | Modifica slot (stessi campi del create, tutti opzionali) |
+| `/api/admin/slot/:idSlot` | DELETE | Elimina slot (cancella in cascata luogo e prenotazioni associate) |
+| `/api/admin/giorni-bloccati` | GET | Lista giorni bloccati |
+| `/api/admin/giorni-bloccati` | POST | Blocca un giorno (body: `{ data, motivo? }`) |
+| `/api/admin/giorni-bloccati/:id` | DELETE | Sblocca un giorno |
+
+Endpoint segnalazioni (`segnalazioni.routes.ts`):
+
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/segnalazioni` | POST | JWT | Crea segnalazione (body: `{ oggetto, descrizione, matricola_studente }`) |
+| `/api/segnalazioni/studente/:matricola` | GET | JWT | Segnalazioni di uno studente |
+| `/api/segnalazioni/admin/all` | GET | Admin | Tutte le segnalazioni con dati studente (filtro `?stato=`) |
+| `/api/segnalazioni/:id/stato` | PATCH | Admin | Aggiorna stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) |
 
 ---
 
@@ -351,6 +368,7 @@ File validator aggiuntivo:
 | `studenti.validators.ts` | Aggiornamento profilo studente |
 | `docenti.validators.ts` | Creazione/modifica slot, filtri mese |
 | `prenotazioni.validators.ts` | Creazione prenotazione, aggiornamento stato |
+| `segnalazioni.validators.ts` | Creazione segnalazione, aggiornamento stato |
 | `corsi.validators.ts` | *(da implementare)* Creazione/modifica corsi |
 | `documenti.validators.ts` | *(da implementare)* Upload documenti |
 
@@ -461,8 +479,10 @@ Il backend è allineato con il `AuthService` Angular esistente:
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
 | 6 | CRUD Prenotazione, gestione stato | ✅ |
 | 7 | CRUD Notifiche | ❌ |
-| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali | ✅ |
+| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali (CRUD completo + filtri) | ✅ |
 | 9 | CRUD Documenti (upload/download per prenotazioni) | ❌ |
+| 10 | CRUD Segnalazioni: backend (routes, controller, service, validators) + frontend admin (pagina gestione) | ✅ |
+| 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin gestione-calendario | ✅ |
 
 ### Dettaglio API ancora da implementare
 
@@ -487,6 +507,12 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - `PUT /api/notifiche/:id/letta` — segna come letta (autenticato)
 - `DELETE /api/notifiche/:id` — elimina notifica (autenticato)
 
+#### Fase 10 ✅ — Segnalazioni (`segnalazioni.routes.ts`, `segnalazioni.controller.ts`, `segnalazioni.service.ts`, `segnalazioni.validators.ts`)
+- `POST /api/segnalazioni` — crea segnalazione (autenticato)
+- `GET /api/segnalazioni/studente/:matricola` — segnalazioni di uno studente (autenticato)
+- `GET /api/segnalazioni/admin/all` — tutte le segnalazioni con dati studente (admin, filtro `?stato=`)
+- `PATCH /api/segnalazioni/:id/stato` — cambia stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) (admin)
+
 #### Fase 9 — Documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`)
 - `POST /api/documenti/upload` — carica file (multipart, autenticato)
 - `GET /api/documenti/:id` — scarica file (autenticato)
@@ -495,6 +521,94 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ### Task aggiuntivi
 
+- [x] Amministratore: CRUD slot (creare, modificare, eliminare slot dalla dashboard)
+- [x] Amministratore: gestione segnalazioni (tabella, filtri, cambio stato)
 - [ ] Amministratore: gestire prenotazioni (eliminarle o modificarle)
-- [ ] Amministratore: bloccare giorni dal calendario (es. festivi)
+- [x] Amministratore: bloccare giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
+
+---
+## Blocca giorni — Piano implementazione
+
+### Modello DB (`prisma/schema.prisma`)
+```prisma
+model GiornoBloccato {
+  id_giorno String   @id @default(uuid())
+  data      DateTime @db.Date
+  motivo    String   @default("Festivo")
+  creato_il DateTime @default(now())
+
+  @@unique([data])
+}
+```
+
+### Backend
+
+#### `services/admin.service.ts` — Aggiungere:
+- `getGiorniBloccati()` — lista giorni bloccati ordinati per data
+- `bloccaGiorno(data, motivo?)` — inserisce giorno bloccato (errore se già bloccato)
+- `sbloccaGiorno(id)` — elimina giorno bloccato
+
+#### `controllers/admin.controller.ts` — Aggiungere 3 handler:
+- `getGiorniBloccati` — GET
+- `bloccaGiorno` — POST (body: `{ data, motivo? }`)
+- `sbloccaGiorno` — DELETE
+
+#### `routes/admin.routes.ts` — Aggiungere:
+- `GET /api/admin/giorni-bloccati` — lista
+- `POST /api/admin/giorni-bloccati` — blocca (con validatore)
+- `DELETE /api/admin/giorni-bloccati/:id` — sblocca
+
+#### `validators/admin.validators.ts` — Aggiungere:
+- `bloccaGiornoSchema` — `data` obbligatoria (`YYYY-MM-DD`), `motivo` opzionale
+
+#### `prisma/seed.ts` — Aggiungere giorni di test:
+- 2026-04-25: "Festa della Liberazione"
+- 2026-05-01: "Festa del Lavoro"
+- 2026-06-02: "Festa della Repubblica"
+
+### Frontend
+
+#### `services/admin.ts` — Aggiungere:
+- Interfaccia `GiornoBloccato { id, data, motivo, creatoIl }`
+- `getGiorniBloccati(): Observable<GiornoBloccato[]>`
+- `bloccaGiorno(dati): Observable<GiornoBloccato>`
+- `sbloccaGiorno(id): Observable<void>`
+
+#### Nuova pagina `features/admin/gestione-calendario/` (standalone):
+- Header con menu admin laterale (voce "Calendario")
+- Tabella/card dei giorni bloccati con data, motivo, azioni
+- Pulsante "Blocca giorno" + modale con date picker e motivo
+- Bottone elimina su ogni riga con conferma
+- Design coerente con altre pagine admin (stessa palette, border-radius 18px, ombre)
+
+#### `app.routes.ts` — Aggiungere:
+```ts
+{
+  path: 'gestione-calendario',
+  canActivate: [authGuard, roleGuard('amministratore')],
+  loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage),
+}
+```
+
+#### Menu admin — Aggiungere "Calendario" con icona `calendar-outline`:
+- `dashboard-layout.component.ts`
+- `dashboard-admin.page.ts`
+- `gestione-utenti/gestione-utenti.page.ts`
+- `gestione-slot-admin/gestione-slot-admin.page.ts`
+- `gestione-segnalazioni/gestione-segnalazioni.page.ts`
+
+### File da creare/modificare (riepilogo)
+
+| File | Azione |
+|------|--------|
+| `prisma/schema.prisma` | Aggiungere modello `GiornoBloccato` |
+| `prisma/seed.ts` | Aggiungere 3 giorni test |
+| `services/admin.service.ts` | 3 funzioni nuove |
+| `controllers/admin.controller.ts` | 3 handler nuovi |
+| `routes/admin.routes.ts` | 3 rotte nuove |
+| `validators/admin.validators.ts` | Schema validazione |
+| `services/admin.ts` (frontend) | Interface + 3 metodi |
+| `features/admin/gestione-calendario/*` (3 file) | Nuova pagina |
+| `app.routes.ts` | Nuova rotta |
+| 5 file menu admin | Aggiungere voce "Calendario" |
