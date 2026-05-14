@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import {
   IonContent,
@@ -23,8 +24,8 @@ import {
   personOutline,
   logOutOutline,
   notificationsOutline,
-  chevronDownOutline,
   chevronBackOutline,
+  chevronForwardOutline,
   checkmarkCircleOutline,
   bookOutline,
   timeOutline,
@@ -41,20 +42,26 @@ import {
   closeCircleOutline
 } from 'ionicons/icons';
 
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+
 @Component({
   selector: 'app-dettaglio-prenotazione',
   templateUrl: './dettaglio-prenotazione.page.html',
   styleUrls: ['./dettaglio-prenotazione.page.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
+
     IonContent,
     IonIcon,
     IonCard,
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonButton
+    IonButton,
+
+    DashboardLayoutComponent
   ]
 })
 export class DettaglioPrenotazionePage {
@@ -69,8 +76,8 @@ export class DettaglioPrenotazionePage {
       personOutline,
       logOutOutline,
       notificationsOutline,
-      chevronDownOutline,
       chevronBackOutline,
+      chevronForwardOutline,
       checkmarkCircleOutline,
       bookOutline,
       timeOutline,
