@@ -204,25 +204,89 @@ async function main() {
     console.log(`  ${d.file} (${(d.dim / 1024).toFixed(0)} KB)`);
   }
 
-  // ──────────────────────────── NOTIFICA ────────────────────────────
-  console.log('\n── Notifica ──');
-  const notifiche = [
-    { msg: 'La prenotazione per il ricevimento del 15/05/2026 è stata confermata.', tipo: 'CONFERMA_PRENOTAZIONE' },
-    { msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO' },
-    { msg: 'La prenotazione per il ricevimento del 18/05/2026 è stata rifiutata.', tipo: 'RIFIUTO_PRENOTAZIONE' },
-    { msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE' },
-    { msg: 'Ricevimento del 22/05 annullato per impegni istituzionali.', tipo: 'CANCELLAZIONE_SLOT' },
+  // ──────────────────────────── SEGNALAZIONE ────────────────────────────
+  console.log('\n── Segnalazione ──');
+  const segnalazioni = [
+    { oggetto: 'Errore nel caricamento documento', descrizione: 'Quando provo a caricare un PDF per la prenotazione del 15/05, ricevo un errore 500.', stato: 'APERTA', studente: 'MAT001' },
+    { oggetto: 'Slot non visibili nel calendario', descrizione: 'Non riesco a vedere gli slot del Prof. Verdi per la prossima settimana.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
+    { oggetto: 'Notifica di conferma non ricevuta', descrizione: 'La prenotazione del 18/05 è stata confermata ma non ho ricevuto la notifica.', stato: 'APERTA', studente: 'MAT003' },
+    { oggetto: 'Problema accesso area personale', descrizione: 'Dopo il login vengo reindirizzato alla home invece che alla dashboard.', stato: 'CHIUSA', studente: 'MAT004' },
+    { oggetto: 'Richiesta chiarimenti esonero', descrizione: 'Vorrei maggiori informazioni sulle modalità di esonero per Basi di Dati.', stato: 'CHIUSA', studente: 'MAT005' },
+    { oggetto: 'Errore modifica profilo', descrizione: 'Quando provo ad aggiornare il mio corso di studi, il sistema non salva le modifiche.', stato: 'APERTA', studente: 'MAT001' },
+    { oggetto: 'Doppia prenotazione involontaria', descrizione: 'Ho prenotato due volte lo stesso slot per errore. Come posso cancellarne una?', stato: 'IN_LAVORAZIONE', studente: 'MAT003' },
+    { oggetto: 'Documento allegato non visualizzato', descrizione: 'Il file caricato per la prenotazione del 22/05 non viene mostrato nella schermata di dettaglio.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
   ];
-  for (const n of notifiche) {
-    await prisma.notifica.create({
-      data: { 
-        titolo: 'Avviso di Sistema',
-        messaggio: n.msg, 
-        tipo: n.tipo,
-        matricola_studente: 'MAT001'
+  for (const s of segnalazioni) {
+    await prisma.segnalazione.create({
+      data: {
+        oggetto: s.oggetto,
+        descrizione: s.descrizione,
+        stato: s.stato,
+        matricola_studente: s.studente,
       },
     });
-    console.log(`  [${n.tipo}] ${n.msg.substring(0, 60)}...`);
+    console.log(`  [${s.stato}] ${s.oggetto} — ${s.studente}`);
+  }
+
+  // ──────────────────────────── GIORNI BLOCCATI ────────────────────────────
+  console.log('\n── GiornoBloccato ──');
+  const giorniBloccati = [
+    { data: '2026-04-25', motivo: 'Festa della Liberazione' },
+    { data: '2026-05-01', motivo: 'Festa del Lavoro' },
+    { data: '2026-06-02', motivo: 'Festa della Repubblica' },
+  ];
+  for (const g of giorniBloccati) {
+    await prisma.giornoBloccato.upsert({
+      where: { data: new Date(g.data) },
+      update: {},
+      create: { data: new Date(g.data), motivo: g.motivo },
+    });
+    console.log(`  ${g.data} — ${g.motivo}`);
+  }
+
+  // ──────────────────────────── NOTIFICA ────────────────────────────
+  console.log('\n── Notifica ──');
+
+  const notificheStudente = [
+    { titolo: 'Conferma Ricevimento', msg: 'Il ricevimento del 15/05/2026 con il Prof. Verdi è stato confermato.', tipo: 'CONFERMA' },
+    { titolo: 'Nuovo Materiale', msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO' },
+    { titolo: 'Ricevimento Rifiutato', msg: 'La richiesta di ricevimento per il 18/05/2026 è stata rifiutata.', tipo: 'RIFIUTO' },
+    { titolo: 'Appelli Estivi', msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE' },
+    { titolo: 'Slot Annullato', msg: 'Il ricevimento del 22/05/2026 è stato annullato.', tipo: 'CANCELLAZIONE' },
+  ];
+  for (const n of notificheStudente) {
+    await prisma.notifica.create({
+      data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: 'MAT001', destinatario_ruolo: 'STUDENTE' },
+    });
+    console.log(`  [STUDENTE] ${n.titolo}`);
+  }
+
+  const docente = await prisma.docente.findFirst();
+  if (docente) {
+    const notificheDocente = [
+      { titolo: 'Nuova Prenotazione', msg: 'Lo studente Mario Rossi ha prenotato un ricevimento per il 15/05/2026.', tipo: 'NUOVA_PRENOTAZIONE' },
+      { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento con uno studente domani alle 10:00.', tipo: 'PROMEMORIA' },
+    ];
+    for (const n of notificheDocente) {
+      await prisma.notifica.create({
+        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: docente.id_docente, destinatario_ruolo: 'DOCENTE' },
+      });
+      console.log(`  [DOCENTE] ${n.titolo}`);
+    }
+  }
+
+  const admin = await prisma.amministratore.findFirst();
+  if (admin) {
+    const notificheAdmin = [
+      { titolo: 'Nuova Segnalazione', msg: 'È stata aperta una nuova segnalazione da uno studente.', tipo: 'SEGNALAZIONE' },
+      { titolo: 'Report Settimanale', msg: 'Il report settimanale delle prenotazioni è disponibile.', tipo: 'SISTEMA' },
+    ];
+    for (const n of notificheAdmin) {
+      await prisma.notifica.create({
+        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: admin.id_admin, destinatario_ruolo: 'AMMINISTRATORE' },
+      });
+      console.log(`  [AMMINISTRATORE] ${n.titolo}`);
+    }
   }
 
   console.log('\n✅ Seed completato con successo!');

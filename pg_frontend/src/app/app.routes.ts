@@ -64,7 +64,7 @@ export const routes: Routes = [
   },
   {
     path: 'notifiche',
-    canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard],
     loadComponent: () => import('./features/studente/notifiche/notifiche.page').then(m => m.NotifichePage)
   },
   {
@@ -125,6 +125,16 @@ export const routes: Routes = [
     path: 'gestione-slot-admin',
     canActivate: [authGuard, roleGuard('amministratore')],
     loadComponent: () => import('./features/admin/gestione-slot-admin/gestione-slot-admin.page').then(m => m.GestioneSlotAdminPage),
+  },
+  {
+    path: 'gestione-segnalazioni',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-segnalazioni/gestione-segnalazioni.page').then(m => m.GestioneSegnalazioniPage),
+  },
+  {
+    path: 'gestione-calendario',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage),
   },
 
   // --- LANDING ---

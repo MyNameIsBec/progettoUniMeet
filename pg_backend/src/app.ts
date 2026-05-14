@@ -5,7 +5,10 @@ import adminRoutes from './routes/admin.routes';
 import studentiRoutes from './routes/studenti.routes';
 import docentiRoutes from './routes/docenti.routes';
 import prenotazioniRoutes from './routes/prenotazioni.routes';
-
+import notificheRoutes from './routes/notifiche.routes';
+import segnalazioniRoutes from './routes/segnalazioni.routes';
+import corsiRoutes from './routes/corsi.routes';
+import bachecheRoutes from './routes/bacheche.routes';
 
 const app = express();
 app.use(cors());
@@ -15,5 +18,9 @@ app.use('/api', adminRoutes);
 app.use('/api', studentiRoutes);
 app.use('/api', docentiRoutes);
 app.use('/api', prenotazioniRoutes);
+app.use('/api', notificheRoutes);
+app.use('/api', segnalazioniRoutes);
+app.use('/api', corsiRoutes);
+app.use('/api', bachecheRoutes);
 
 export default app;

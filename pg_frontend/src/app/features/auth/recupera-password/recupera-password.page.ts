@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { IonContent, IonButton, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService } from '../../../core/services/auth';
 
@@ -52,9 +53,9 @@ export class RecuperaPasswordPage implements OnInit {
         this.emailInviata = true;
         this.emailDestinazione = this.email.value;
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         this.inCaricamento = false;
-        this.errorMessage = err.message;
+        this.errorMessage = err.error?.error || 'Errore durante l\'invio della richiesta';
       }
     });
   }

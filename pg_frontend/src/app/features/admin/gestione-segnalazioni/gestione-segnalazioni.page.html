@@ -1,0 +1,76 @@
+<app-dashboard-layout [ruoloUtente]="'amministratore'" [vociMenu]="vociMenuAdmin">
+  <div class="segnalazioni-content">
+    <div class="toolbar-row">
+      <div class="filter-chips">
+        <ion-chip [class.active]="!filtroStato" (click)="onFiltroStato('')">
+          <ion-label>Tutte</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'APERTA'" (click)="onFiltroStato('APERTA')">
+          <ion-label>Aperte</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'IN_LAVORAZIONE'" (click)="onFiltroStato('IN_LAVORAZIONE')">
+          <ion-label>In lavorazione</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'CHIUSA'" (click)="onFiltroStato('CHIUSA')">
+          <ion-label>Chiuse</ion-label>
+        </ion-chip>
+      </div>
+      <span class="count-badge">{{ segnalazioni.length }} segnalazion{{ segnalazioni.length === 1 ? 'e' : 'i' }}</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="segnalazioni-table">
+        <thead>
+          <tr>
+            <th>Stato</th>
+            <th>Oggetto</th>
+            <th>Studente</th>
+            <th class="hide-mobile">Email</th>
+            <th class="hide-mobile">Data invio</th>
+            <th class="actions-col">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of segnalazioni; track s.id_segnalazione) {
+            <tr>
+              <td>
+                <div class="stato-badge" [class]="'stato-' + s.stato.toLowerCase()">
+                  <ion-icon [name]="statoIcona(s.stato)"></ion-icon>
+                  <span>{{ statoLabel(s.stato) }}</span>
+                </div>
+              </td>
+              <td class="oggetto-cell">
+                <strong>{{ s.oggetto }}</strong>
+                <p>{{ s.descrizione }}</p>
+              </td>
+              <td class="studente-cell">
+                {{ s.studente?.nome }} {{ s.studente?.cognome }}
+                <span class="matricola">{{ s.matricola_studente }}</span>
+              </td>
+              <td class="hide-mobile email-cell">{{ s.studente?.email }}</td>
+              <td class="hide-mobile data-cell">{{ s.data_invio | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="actions-col">
+                <ion-select
+                  [value]="s.stato"
+                  (ionChange)="cambiaStato(s, $event.detail.value)"
+                  interface="popover"
+                  class="stato-select"
+                >
+                  <ion-select-option value="APERTA">Aperta</ion-select-option>
+                  <ion-select-option value="IN_LAVORAZIONE">In lavorazione</ion-select-option>
+                  <ion-select-option value="CHIUSA">Chiusa</ion-select-option>
+                </ion-select>
+              </td>
+            </tr>
+          } @empty {
+            @if (!inCaricamento) {
+              <tr>
+                <td colspan="6" class="empty-row">Nessuna segnalazione trovata</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-dashboard-layout>

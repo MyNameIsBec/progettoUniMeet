@@ -1,5 +1,165 @@
 # CHANGES
 
+## Backend Notifiche multi-ruolo (Fase 7) + fix campanella admin — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Notifiche con supporto multi-ruolo (studente, docente, amministratore). Aggiornato schema DB, creati service/controller/routes/validators, aperta rotta `/notifiche` a tutti gli autenticati.
+
+### Backend — schema DB
+
+#### `prisma/schema.prisma`
+- `Notifica`: rimosso `matricola_studente` + relazione con `Studente`
+- Aggiunti `destinatario_id` (String) e `destinatario_ruolo` (String: STUDENTE, DOCENTE, AMMINISTRATORE)
+- Rimosso `notifiche` da `Studente` (non più necessaria)
+
+#### Migrazione: `20260514133349_notifiche_multi_ruolo`
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/notifiche.service.ts`
+- `getNotifiche(destinatarioId, ruolo?)` — filtra per ID destinatario + ruolo opzionale
+- `createNotifica(data)` — crea notifica per qualsiasi ruolo
+- `segnaComeLetta(id)` — marca singola notifica
+- `segnaTutteComeLette(destinatarioId)` — marca tutto come letto
+- `cancellaNotificheLette(destinatarioId)` — elimina notifiche lette
+
+#### `pg_backend/src/validators/notifiche.validators.ts`
+- `creaNotificaSchema` — titolo, messaggio, tipo, destinatarioId, destinatarioRuolo
+
+### Backend — file implementati (erano vuoti)
+
+#### `pg_backend/src/controllers/notifiche.controller.ts`
+- 5 handler: getNotifiche, createNotifica, segnaComeLetta, segnaTutteComeLette, cancellaNotificheLette
+
+#### `pg_backend/src/routes/notifiche.routes.ts`
+- `GET /api/notifiche/:destinatarioId`, `POST /api/notifiche`, `PATCH /api/notifiche/:id/letta`, `POST /api/notifiche/:destinatarioId/letta-tutte`, `DELETE /api/notifiche/:destinatarioId/lette`
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Registrate `notificheRoutes`
+
+#### `pg_backend/prisma/seed.ts`
+- Notifiche per tutti e 3 i ruoli: 5 per studente (MAT001), 2 per docente, 2 per admin
+
+### Frontend — file modificati
+
+#### `pg_frontend/src/app/core/services/notifica.ts`
+- Interfaccia Notifica: `matricola_studente` → `destinatarioId` + `destinatarioRuolo`
+- `getNotifiche(matricola)` → `getNotifiche(destinatarioId)`
+
+#### `pg_frontend/src/app/app.routes.ts`
+- Rotta `/notifiche`: `roleGuard('studente')` → solo `authGuard`
+
+#### `pg_frontend/src/app/features/studente/notifiche/notifiche.page.html`
+- `n.data_invio` → `n.dataInvio` (camelCase, nuovo field name)
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 7 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- Tabella services/validators/Fasi aggiornate
+- Sezione endpoint notifiche aggiunta
+
+## Backend Bacheca/FAQ (Fase 4) — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Bacheca e FAQ (service, controller, validators, routes) con 6 endpoint.
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/bacheca.service.ts`
+- `getBachecaByCorso(idCorso)` — restituisce bacheca + FAQ; se non esiste, la crea automaticamente
+- `updateBacheca(idCorso, data)` — aggiorna titolo/descrizione
+- `getFaqByBacheca(idCorso)` — FAQ ordinate per data discendente
+- `createFaq(idCorso, data)` — crea FAQ con validazione bacheca esistente
+- `updateFaq(id, data)` — modifica domanda/risposta
+- `deleteFaq(id)` — elimina FAQ
+
+#### `pg_backend/src/controllers/bacheca.controller.ts`
+- 6 handler HTTP con gestione errori 404/500
+
+#### `pg_backend/src/routes/bacheche.routes.ts`
+- `GET /api/bacheche/:idCorso` — pubblico
+- `PUT /api/bacheche/:idCorso` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `GET /api/bacheche/:idCorso/faq` — pubblico
+- `POST /api/bacheche/:idCorso/faq` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `PUT /api/faq/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `DELETE /api/faq/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+
+#### `pg_backend/src/validators/bacheca.validators.ts`
+- `aggiornaBachecaSchema`, `creaFaqSchema`, `modificaFaqSchema`
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Importate e registrate `bachecheRoutes`
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 4 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- `bacheca.service.ts`: aggiornato a ✅
+- Fase 4 tabella: ❌ → ✅
+- Dettaglio API Fase 4 rimosso da "Da implementare"
+- Auth endpoint bacheca aggiornato con ruoli esatti
+
+## Backend Corsi (Fase 3) + fix getApiUrl — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Corsi (service, controller, validators, routes) con 5 endpoint. Fixato bug `getApiUrl` senza parentesi in 2 service frontend.
+
+### Bug fix
+
+#### `pg_frontend/src/app/core/services/bacheca.ts`
+- `getApiUrl` → `getApiUrl()` (mancavano le parentesi, restituiva la funzione invece del valore)
+
+#### `pg_frontend/src/app/core/services/documento.ts`
+- Stesso fix: `getApiUrl` → `getApiUrl()`
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/corsi.service.ts`
+- `getCorsi(docenteId?)` — lista corsi con filtro opzionale per docente
+- `getCorsoById(id)` — dettagli con docente incluso
+- `createCorso(data)` — creazione con mapping camelCase → snake_case
+- `updateCorso(id, data)` — modifica parziale (solo campi forniti)
+- `deleteCorso(id)` — elimina in cascata FAQ e bacheca associate
+
+#### `pg_backend/src/controllers/corsi.controller.ts`
+- 5 handler HTTP: `getCorsi`, `getCorsoById`, `createCorso` (201), `updateCorso`, `deleteCorso` (204)
+- Gestione errori: 404 se corso non trovato, 500 per errori interni
+
+#### `pg_backend/src/routes/corsi.routes.ts`
+- `GET /api/corsi` — pubblico (filtro `?docenteId=`)
+- `GET /api/corsi/:id` — pubblico
+- `POST /api/corsi` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `PUT /api/corsi/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `DELETE /api/corsi/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+
+#### `pg_backend/src/validators/corsi.validators.ts`
+- `creaCorsoSchema` — nomeCorso, anno (2000-2100), cfu (1-30), idDocente
+- `modificaCorsoSchema` — tutti opzionali
+- `corsiFiltriSchema` — query `?docenteId=` opzionale
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Importate e registrate `corsiRoutes` su `/api`
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 3 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- `corsi.service.ts`: aggiornato a ✅
+- `corsi.validators.ts`: aggiornato a ✅
+- Fase 3 tabella: ❌ → ✅
+- Tabella endpoint spostata da "Da implementare" a "✅ Fase 3 completata"
+- Dettaglio API Fase 3 rimosso dalla sezione "Da implementare"
+
 ## Setup DB cross-platform — setup-db.js, diagnostica PostgreSQL, README/TODO/DOC
 
 **Data:** 11/05/2026
@@ -266,6 +426,92 @@
 - `baseUrl` cambiato da `https://localhost:3000` a `http://localhost:5000`
 - Aggiunto controllo `isAbsolute` per non prependere baseUrl se l'URL è già assoluto (es. usato da `AuthService.setURL()`)
 - Aggiunto `req.url.replace(/^\//, '')` per evitare doppi slash quando l'URL inizia con `/`
+
+---
+
+---
+
+## Admin Segnalazioni — backend API + frontend pagina gestione
+
+**Data:** 14/05/2026
+
+**Modifica:** Implementata la gestione delle segnalazioni per l'amministratore: CRUD backend completo (service, controller, validators, routes) e pagina frontend admin con tabella, filtri per stato e cambio stato inline.
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/segnalazioni.service.ts`
+- `createSegnalazione(data)` — crea segnalazione con validazione studente esistente
+- `getSegnalazioniByStudente(matricola)` — lista dello studente
+- `getAllSegnalazioni(stato?)` — tutte con join su studente, filtro opzionale `?stato=`
+- `aggiornaStatoSegnalazione(id, stato)` — cambio stato con validazione (APERTA/IN_LAVORAZIONE/CHIUSA)
+
+#### `pg_backend/src/validators/segnalazioni.validators.ts`
+- `creaSegnalazioneSchema` — oggetto, descrizione, matricola_studente obbligatori
+- `aggiornaStatoSchema` — stato in `['APERTA', 'IN_LAVORAZIONE', 'CHIUSA']`
+
+### Backend — file modificati
+
+#### `pg_backend/src/controllers/segnalazioni.controller.ts`
+- Riscritto con 4 handler: `createSegnalazione`, `getSegnalazioniByStudente`, `getAllSegnalazioni`, `aggiornaStatoSegnalazione`
+
+#### `pg_backend/src/routes/segnalazioni.routes.ts`
+- `POST /api/segnalazioni` — crea segnalazione (autenticato)
+- `GET /api/segnalazioni/studente/:matricola` — segnalazioni studente (autenticato)
+- `GET /api/segnalazioni/admin/all` — tutte con filtro `?stato=` (admin)
+- `PATCH /api/segnalazioni/:id/stato` — cambia stato (admin)
+
+#### `pg_backend/src/app.ts`
+- Registrate le rotte `segnalazioniRoutes`
+
+### Frontend — nuovi file
+
+#### `pg_frontend/src/app/features/admin/gestione-segnalazioni/`
+- Componente standalone con tabella segnalazioni, chip filtro (Tutte/Aperte/In lavorazione/Chiuse)
+- Badge colorati per stato, select inline per cambio stato
+- Stile coerente con le altre pagine admin
+
+### Frontend — file modificati
+
+#### `pg_frontend/src/app/core/services/segnalazione.ts`
+- URL relativi via interceptor (rimossa dipendenza da `AuthService.getApiUrl()`)
+- `getAllSegnalazioni(stato?)` — parametro `?stato=` opzionale
+- `Segnalazione` interface estesa con `studente?` per response admin
+
+#### `pg_frontend/src/app/app.routes.ts`
+- Aggiunta rotta `/gestione-segnalazioni` con `authGuard` + `roleGuard('amministratore')`
+
+#### `pg_frontend/src/app/components/topbar/topbar.component.ts`
+- Rimosso link hardcodato a `/segnalazione` (rotta studente) nel menu mobile
+- Registrata icona `flag-outline` in `addIcons`
+
+#### Pagine admin (4 file):
+- `dashboard-admin.page.ts`, `gestione-utenti.page.ts`, `gestione-slot-admin.page.ts`, `dashboard-layout.component.ts`
+- Aggiunta voce menu "Segnalazioni" con icona `flag-outline`
+
+### Bug fix
+
+#### `pg_frontend/src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.ts`
+- Aggiunto import mancante `ActivatedRoute` da `@angular/router`
+- Dichiarate proprietà mancanti della classe (`slot`, `docenti`, `dateDisponibili`, filtri, modale)
+- Aggiunti import Ionic mancanti (`IonModal`, `IonHeader`, `IonToolbar`, `IonTitle`, `IonButtons`, `IonContent`)
+
+---
+
+## Pianificazione Blocca Giorni — documentata Fase 11
+
+**Data:** 14/05/2026
+
+**Modifica:** Documentato il piano di implementazione per la funzionalità "Blocca giorni dal calendario (festivi)" in DOCUMENTAZIONE.md e TODO.md. Aggiunta Fase 11 in TODO.md con piano dettagliato di backend e frontend. Da implementare al prossimo sessione di lavoro.
+
+### File modificati
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- Aggiunta sezione "Blocca giorni — Piano implementazione" con modello DB, backend API, frontend, rotte, menu, e riepilogo file
+
+#### `pg_backend/TODO.md`
+- Aggiunta Fase 11 — Blocca giorni (Pianificato) con 5 task
+- Aggiunto piano dettagliato con specifiche tecniche per ogni file
+- Riferimento incrociato dalla Fase 8 alla Fase 11
 
 ---
 

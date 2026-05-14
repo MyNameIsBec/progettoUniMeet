@@ -1,0 +1,87 @@
+<app-dashboard-layout [ruoloUtente]="'amministratore'" [vociMenu]="vociMenuAdmin">
+  <div class="calendario-content">
+    <div class="toolbar-row">
+      <span class="page-title">Giorni bloccati</span>
+      <ion-button (click)="apriModale()">
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        Blocca giorno
+      </ion-button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="calendario-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Motivo</th>
+            <th class="hide-mobile">Bloccato il</th>
+            <th class="actions-col">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (g of giorniBloccati; track g.id) {
+            <tr>
+              <td>
+                <div class="data-badge">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>{{ formattaData(g.data) }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="motivo-badge">
+                  <ion-icon name="lock-closed-outline"></ion-icon>
+                  <span>{{ g.motivo }}</span>
+                </div>
+              </td>
+              <td class="hide-mobile data-cell">{{ g.creatoIl | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="actions-col">
+                <ion-button fill="clear" color="danger" size="small" (click)="confermaSblocca(g)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
+          } @empty {
+            @if (!inCaricamento) {
+              <tr>
+                <td colspan="4" class="empty-row">Nessun giorno bloccato</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ion-modal [isOpen]="mostraModale" (didDismiss)="chiudiModale()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="chiudiModale()">Annulla</ion-button>
+          </ion-buttons>
+          <ion-title>Blocca giorno</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="salvaGiorno()" [disabled]="!formData">
+              <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+              Blocca
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="modal-body">
+          <ion-datetime presentation="date" [(ngModel)]="formData" locale="it-IT" min="2026-01-01" max="2046-12-31"></ion-datetime>
+
+          @if (formData) {
+            <div class="selected-day-label">{{ formattaData(formData) }}</div>
+          }
+
+          <ion-item lines="none" class="motivo-item">
+            <ion-label position="stacked">Motivo (opzionale)</ion-label>
+            <ion-input [(ngModel)]="formMotivo" placeholder="es. Festivo, Sciopero..."></ion-input>
+          </ion-item>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</app-dashboard-layout>

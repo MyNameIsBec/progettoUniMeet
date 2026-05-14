@@ -14,9 +14,9 @@ export class ErroriService {
     if (err.status == 0) {
       msg = "Errore di connessione al server";
     } else if (err.status == 400) {
-      msg = err.error?.msg || "Dati non validi";
+      msg = err.error?.error || err.error?.errors?.[0]?.msg || "Dati non validi";
     } else if (err.status == 401) {
-      msg = "Sessione scaduta. Effettua il login";
+      msg = err.error?.error || "Sessione scaduta. Effettua il login";
     } else if (err.status == 403) {
       msg = "Accesso negato";
     } else if (err.status == 404) {

@@ -10,7 +10,7 @@ export class BachecaService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private get api(): string {
-    return `${this.authService.getApiUrl}/api/bacheca`;
+    return `${this.authService.getApiUrl()}/api/bacheca`;
   }
 
   getBacheche(): Observable<Bacheca[]> {

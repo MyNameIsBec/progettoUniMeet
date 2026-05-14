@@ -1,7 +1,7 @@
-.dashboard-content {
+.admin-dashboard {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 34px 8%;
+  padding: 24px 8%;
 }
 
 .stats-grid {
@@ -110,7 +110,7 @@ ion-button {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-content {
+  .admin-dashboard {
     padding: 24px 6%;
   }
 }

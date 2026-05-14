@@ -176,11 +176,12 @@ npx prisma generate
 | `studenti.service.ts` | Profilo studente (GET, PUT) |
 | `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche |
 | `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA) |
-| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD) |
-| `corsi.service.ts` | *(da implementare)* CRUD corsi, associazione corso ↔ docente |
-| `bacheca.service.ts` | *(da implementare)* CRUD bacheca (una per corso) |
+| `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD), slot globali (CRUD + filtri + date disponibili) |
+| `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
+| `bacheca.service.ts` | ✅ CRUD bacheca (una per corso), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
-| `notifiche.service.ts` | *(da implementare)* CRUD notifiche |
+| `notifiche.service.ts` | ✅ CRUD notifiche multi-ruolo (studente, docente, admin) |
 
 ---
 
@@ -262,7 +263,7 @@ Endpoint prenotazioni (`prenotazioni.routes.ts`):
 | `/api/prenotazioni/docente/:idDocente` | GET | JWT | Prenotazioni del docente |
 | `/api/prenotazioni/:id/stato` | PUT | JWT | Aggiorna stato prenotazione |
 
-### Da implementare — API future
+### ✅ Fase 3 completata — Corsi
 
 Endpoint corsi (`corsi.routes.ts`):
 
@@ -270,49 +271,61 @@ Endpoint corsi (`corsi.routes.ts`):
 |----------|--------|------|-------------|
 | `/api/corsi` | GET | - | Elenco corsi (filtro `?docenteId=`) |
 | `/api/corsi/:id` | GET | - | Dettagli corso con docente |
-| `/api/corsi` | POST | JWT | Crea corso |
-| `/api/corsi/:id` | PUT | JWT | Modifica corso |
-| `/api/corsi/:id` | DELETE | JWT | Elimina corso |
+| `/api/corsi` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea corso |
+| `/api/corsi/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica corso |
+| `/api/corsi/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina corso |
+
+### ✅ Fase 4 completata — Bacheca e FAQ
 
 Endpoint bacheca (`bacheche.routes.ts`):
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
 | `/api/bacheche/:idCorso` | GET | - | Bacheca di un corso (con FAQ) |
-| `/api/bacheche/:idCorso` | PUT | JWT | Aggiorna bacheca |
+| `/api/bacheche/:idCorso` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
 | `/api/bacheche/:idCorso/faq` | GET | - | FAQ della bacheca |
-| `/api/bacheche/:idCorso/faq` | POST | JWT | Crea FAQ |
-| `/api/faq/:id` | PUT | JWT | Modifica FAQ |
-| `/api/faq/:id` | DELETE | JWT | Elimina FAQ |
+| `/api/bacheche/:idCorso/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
+| `/api/faq/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica FAQ |
+| `/api/faq/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina FAQ |
+
+### ✅ Fase 7 completata — Notifiche
 
 Endpoint notifiche (`notifiche.routes.ts`):
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/notifiche` | GET | JWT | Elenco notifiche |
+| `/api/notifiche/:destinatarioId` | GET | JWT | Elenco notifiche per destinatario (filtro `?ruolo=`) |
 | `/api/notifiche` | POST | JWT | Crea notifica |
-| `/api/notifiche/:id/letta` | PUT | JWT | Segna come letta |
-| `/api/notifiche/:id` | DELETE | JWT | Elimina notifica |
-
-Endpoint documenti (`documenti.routes.ts`):
-
-| Endpoint | Metodo | Auth | Descrizione |
-|----------|--------|------|-------------|
-| `/api/documenti/upload` | POST | JWT | Carica file (multipart) |
-| `/api/documenti/:id` | GET | JWT | Scarica file |
-| `/api/prenotazioni/:id/documenti` | GET | JWT | Documenti di una prenotazione |
-| `/api/documenti/:id` | DELETE | JWT | Elimina documento |
+| `/api/notifiche/:id/letta` | PATCH | JWT | Segna come letta |
+| `/api/notifiche/:destinatarioId/letta-tutte` | POST | JWT | Segna tutte come lette |
+| `/api/notifiche/:destinatarioId/lette` | DELETE | JWT | Cancella notifiche lette |
 
 Endpoint admin (`admin.routes.ts`):
 
 | Endpoint | Metodo | Descrizione |
 |----------|--------|-------------|
-| `/api/admin/stats` | GET | Statistiche dashboard |
+| `/api/admin/stats` | GET | Statistiche dashboard. `prenotazioniOggi` conta prenotazioni il cui slot cade oggi (non per data creazione). `slotAttivi` conta tutti gli slot (non solo quelli liberi). |
 | `/api/admin/utenti` | GET | Lista utenti unificata (filtro `?ruolo=`) |
 | `/api/admin/utenti` | POST | Creazione utente |
 | `/api/admin/utenti/:id` | PUT | Modifica utente |
 | `/api/admin/utenti/:id` | DELETE | Eliminazione utente |
+| `/api/admin/slot-date` | GET | Date disponibili degli slot (raggruppate per data con conteggio) |
 | `/api/admin/slot` | GET | Lista slot globali (filtri `?docenteId=&data=&stato=`) |
+| `/api/admin/slot` | POST | Crea slot (body: `{ docenteId, data, oraInizio, oraFine, disponibilita?, luogo? }`) |
+| `/api/admin/slot/:idSlot` | PUT | Modifica slot (stessi campi del create, tutti opzionali) |
+| `/api/admin/slot/:idSlot` | DELETE | Elimina slot (cancella in cascata luogo e prenotazioni associate) |
+| `/api/admin/giorni-bloccati` | GET | Lista giorni bloccati |
+| `/api/admin/giorni-bloccati` | POST | Blocca un giorno (body: `{ data, motivo? }`) |
+| `/api/admin/giorni-bloccati/:id` | DELETE | Sblocca un giorno |
+
+Endpoint segnalazioni (`segnalazioni.routes.ts`):
+
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/segnalazioni` | POST | JWT | Crea segnalazione (body: `{ oggetto, descrizione, matricola_studente }`) |
+| `/api/segnalazioni/studente/:matricola` | GET | JWT | Segnalazioni di uno studente |
+| `/api/segnalazioni/admin/all` | GET | Admin | Tutte le segnalazioni con dati studente (filtro `?stato=`) |
+| `/api/segnalazioni/:id/stato` | PATCH | Admin | Aggiorna stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) |
 
 ---
 
@@ -351,7 +364,10 @@ File validator aggiuntivo:
 | `studenti.validators.ts` | Aggiornamento profilo studente |
 | `docenti.validators.ts` | Creazione/modifica slot, filtri mese |
 | `prenotazioni.validators.ts` | Creazione prenotazione, aggiornamento stato |
-| `corsi.validators.ts` | *(da implementare)* Creazione/modifica corsi |
+| `segnalazioni.validators.ts` | Creazione segnalazione, aggiornamento stato |
+| `corsi.validators.ts` | ✅ Creazione/modifica corsi |
+| `bacheca.validators.ts` | ✅ Aggiornamento bacheca, creazione/modifica FAQ |
+| `notifiche.validators.ts` | ✅ Creazione notifiche multi-ruolo |
 | `documenti.validators.ts` | *(da implementare)* Upload documenti |
 
 ---
@@ -450,42 +466,23 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ---
 
-## TODO — 8 fasi di implementazione
+## TODO — 11 fasi di implementazione
 
 | Fase | Cosa implementare | Stato |
 |------|-------------------|-------|
 | 1 | Setup DB, script `setup-db.sh`/`setup-db.js`, migrazioni, seed dati | ✅ |
 | 2 | Auth: login JWT, middleware, profile, refresh, cambio/reset password, register admin | ✅ |
-| 3 | CRUD Corsi, associazione corso ↔ docente | ❌ |
-| 4 | CRUD Bacheca e FAQ | ❌ |
+| 3 | CRUD Corsi, associazione corso ↔ docente | ✅ |
+| 4 | CRUD Bacheca e FAQ | ✅ |
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
 | 6 | CRUD Prenotazione, gestione stato | ✅ |
-| 7 | CRUD Notifiche | ❌ |
-| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali | ✅ |
+| 7 | CRUD Notifiche (multi-ruolo: studente, docente, admin) | ✅ |
+| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali (CRUD completo + filtri) | ✅ |
 | 9 | CRUD Documenti (upload/download per prenotazioni) | ❌ |
+| 10 | CRUD Segnalazioni: backend (routes, controller, service, validators) + frontend admin (pagina gestione) | ✅ |
+| 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin gestione-calendario | ✅ |
 
 ### Dettaglio API ancora da implementare
-
-#### Fase 3 — Corsi (`corsi.routes.ts`, `corsi.controller.ts`, `corsi.service.ts`, `corsi.validators.ts`)
-- `GET /api/corsi` — elenco con filtro `?docenteId=`
-- `GET /api/corsi/:id` — dettagli con docente
-- `POST /api/corsi` — crea corso (autenticato)
-- `PUT /api/corsi/:id` — modifica corso (autenticato)
-- `DELETE /api/corsi/:id` — elimina corso (autenticato)
-
-#### Fase 4 — Bacheca e FAQ (`bacheche.routes.ts`, `bacheca.controller.ts`, `bacheca.service.ts`, plus `faq` nello stesso modulo)
-- `GET /api/bacheche/:idCorso` — bacheca di un corso (con FAQ)
-- `PUT /api/bacheche/:idCorso` — aggiorna bacheca (autenticato)
-- `GET /api/bacheche/:idCorso/faq` — FAQ di una bacheca
-- `POST /api/bacheche/:idCorso/faq` — crea FAQ (autenticato)
-- `PUT /api/faq/:id` — modifica FAQ (autenticato)
-- `DELETE /api/faq/:id` — elimina FAQ (autenticato)
-
-#### Fase 7 — Notifiche (`notifiche.routes.ts`, `notifiche.controller.ts`, `notifiche.service.ts`)
-- `GET /api/notifiche` — elenco notifiche (autenticato)
-- `POST /api/notifiche` — crea notifica (autenticato)
-- `PUT /api/notifiche/:id/letta` — segna come letta (autenticato)
-- `DELETE /api/notifiche/:id` — elimina notifica (autenticato)
 
 #### Fase 9 — Documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`)
 - `POST /api/documenti/upload` — carica file (multipart, autenticato)
@@ -495,6 +492,12 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ### Task aggiuntivi
 
+- [x] Amministratore: CRUD slot (creare, modificare, eliminare slot dalla dashboard)
+- [x] Amministratore: gestione segnalazioni (tabella, filtri, cambio stato)
 - [ ] Amministratore: gestire prenotazioni (eliminarle o modificarle)
-- [ ] Amministratore: bloccare giorni dal calendario (es. festivi)
+- [x] Amministratore: bloccare giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
+
+---
+
+> **Nota:** La pianificazione dettagliata della Fase 11 (Blocca giorni) è stata rimossa in quanto già implementata. Vedi sezione API admin per gli endpoint `/api/admin/giorni-bloccati`.

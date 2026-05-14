@@ -1,0 +1,180 @@
+.calendario-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 8%;
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.table-wrap {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  overflow-x: auto;
+}
+
+.calendario-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendario-table th {
+  text-align: left;
+  padding: 16px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafcff;
+}
+
+.calendario-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #0f172a;
+  vertical-align: middle;
+}
+
+.calendario-table tr:last-child td {
+  border-bottom: none;
+}
+
+.calendario-table tr:hover td {
+  background: #f8faff;
+}
+
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.data-badge ion-icon {
+  font-size: 18px;
+  color: #2563eb;
+}
+
+.motivo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.motivo-badge ion-icon {
+  font-size: 14px;
+}
+
+.data-cell {
+  color: #64748b;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.actions-col {
+  width: 80px;
+  text-align: right;
+}
+
+.empty-row {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 20px !important;
+  font-style: italic;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.motivo-item {
+  width: 100%;
+  max-width: 360px;
+  margin-top: 8px;
+}
+
+.selected-day-label {
+  margin: 12px 0 4px;
+  padding: 10px 20px;
+  background: #f0f4ff;
+  border-radius: 12px;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+ion-datetime {
+  --background: #ffffff;
+  --wheel-fade-background-rgb: 255, 255, 255;
+  color: #000000;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+ion-datetime::part(calendar-day) {
+  color: #000000;
+}
+
+ion-datetime::part(calendar-day today) {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+ion-datetime::part(calendar-day active) {
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 50%;
+}
+
+@media (max-width: 760px) {
+  .hide-mobile {
+    display: none;
+  }
+
+  .calendario-content {
+    padding: 16px 4%;
+  }
+}
+
+@media (max-width: 560px) {
+  .calendario-content {
+    padding: 12px 3%;
+  }
+
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .calendario-table th,
+  .calendario-table td {
+    padding: 10px 12px;
+  }
+}

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonLabel, IonIcon, IonButton, IonSearchbar,
   IonModal, IonInput, IonSelect, IonSelectOption, IonChip,
@@ -39,13 +39,18 @@ export class GestioneUtentiPage implements OnInit {
     { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
     { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
     { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
+    { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },
+    { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
   ];
 
-  constructor(private admin: Admin) {
+  constructor(private admin: Admin, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
     this.caricaUtenti();
+    if (this.route.snapshot.queryParams['crea'] === 'true') {
+      this.apriModaleCrea();
+    }
   }
 
   formVuoto(): CreaUtenteRequest {
@@ -166,6 +171,10 @@ export class GestioneUtentiPage implements OnInit {
     if (confirm(`Eliminare ${utente.nome} ${utente.cognome}? L'operazione è irreversibile.`)) {
       this.admin.eliminaUtente(utente.id).subscribe({
         next: () => this.caricaUtenti(this.filtroRuolo || undefined),
+        error: (err) => {
+          const msg = err.error?.error || 'Errore durante l\'eliminazione';
+          alert(msg);
+        },
       });
     }
   }

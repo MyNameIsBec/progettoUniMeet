@@ -43,6 +43,27 @@ export interface SlotGriglia {
   prenotazioniCount: number;
 }
 
+export interface SlotDate {
+  data: string;
+  conteggio: number;
+}
+
+export interface CreaSlotRequest {
+  docenteId: string;
+  data: string;
+  oraInizio: string;
+  oraFine: string;
+  disponibilita: boolean;
+  luogo: { nomeAula: string; edificio: string; piano: string };
+}
+
+export interface GiornoBloccato {
+  id: string;
+  data: string;
+  motivo: string;
+  creatoIl: string;
+}
+
 export interface FiltriSlot {
   docenteId?: string;
   data?: string;
@@ -74,6 +95,34 @@ export class Admin {
 
   eliminaUtente(id: string): Observable<void> {
     return this.http.delete<void>(`api/admin/utenti/${id}`);
+  }
+
+  getSlotDate(): Observable<SlotDate[]> {
+    return this.http.get<SlotDate[]>('api/admin/slot-date');
+  }
+
+  creaSlot(dati: CreaSlotRequest): Observable<SlotGriglia> {
+    return this.http.post<SlotGriglia>('api/admin/slot', dati);
+  }
+
+  modificaSlot(idSlot: string, dati: Partial<CreaSlotRequest>): Observable<any> {
+    return this.http.put(`api/admin/slot/${idSlot}`, dati);
+  }
+
+  eliminaSlot(idSlot: string): Observable<void> {
+    return this.http.delete<void>(`api/admin/slot/${idSlot}`);
+  }
+
+  getGiorniBloccati(): Observable<GiornoBloccato[]> {
+    return this.http.get<GiornoBloccato[]>('api/admin/giorni-bloccati');
+  }
+
+  bloccaGiorno(dati: { data: string; motivo?: string }): Observable<GiornoBloccato> {
+    return this.http.post<GiornoBloccato>('api/admin/giorni-bloccati', dati);
+  }
+
+  sbloccaGiorno(id: string): Observable<void> {
+    return this.http.delete<void>(`api/admin/giorni-bloccati/${id}`);
   }
 
   getSlotGlobali(filtri?: FiltriSlot): Observable<SlotGriglia[]> {
