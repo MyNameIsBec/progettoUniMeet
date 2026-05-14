@@ -73,7 +73,7 @@ export interface FiltriSlot {
 @Injectable({
   providedIn: 'root',
 })
-export class Admin {
+export class AdminService {
   constructor(private http: HttpClient) { }
 
   getStatistiche(): Observable<AdminStats> {

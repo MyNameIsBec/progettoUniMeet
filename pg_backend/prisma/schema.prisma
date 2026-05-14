@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-//
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,17 +6,15 @@ datasource db {
   provider = "postgresql"
 }
 
-// --- ATTORI ---
-
 model Studente {
-  matricola       String         @id
-  nome            String
-  cognome         String
-  email           String         @unique
-  password        String
-  corso_di_studi  String
-  prenotazioni    Prenotazione[]
-  segnalazioni    Segnalazione[]
+  matricola      String         @id
+  nome           String
+  cognome        String
+  email          String         @unique
+  password       String
+  corso_di_studi String
+  prenotazioni   Prenotazione[]
+  segnalazioni   Segnalazione[]
 }
 
 model Segnalazione {
@@ -36,43 +28,42 @@ model Segnalazione {
 }
 
 model Docente {
-  id_docente       String             @id @default(uuid())
+  id_docente       String            @id @default(uuid())
   nome             String
   cognome          String
-  email            String             @unique
+  email            String            @unique
   password         String
   ufficio          String
+  materia          String?
   corsi            Corso[]
   slot_ricevimento SlotRicevimento[]
 }
 
 model Amministratore {
-  id_admin        String @id @default(uuid())
-  nome            String
-  email           String @unique
-  password        String
+  id_admin String @id @default(uuid())
+  nome     String
+  email    String @unique
+  password String
 }
 
-// --- DIDATTICA E INFORMAZIONI ---
-
 model Corso {
-  id_corso        String   @id @default(uuid())
-  nome_corso      String
-  anno            Int
-  cfu             Int
-  id_docente      String
-  docente         Docente  @relation(fields: [id_docente], references: [id_docente])
-  bacheca         Bacheca?
+  id_corso   String   @id @default(uuid())
+  nome_corso String
+  anno       Int
+  cfu        Int
+  id_docente String
+  bacheca    Bacheca?
+  docente    Docente  @relation(fields: [id_docente], references: [id_docente])
 }
 
 model Bacheca {
-  id_bacheca             String   @id @default(uuid())
-  titolo                 String
-  descrizione            String
+  id_bacheca                String   @id @default(uuid())
+  titolo                    String
+  descrizione               String
   data_ultimo_aggiornamento DateTime @updatedAt
-  id_corso               String   @unique
-  corso                  Corso    @relation(fields: [id_corso], references: [id_corso])
-  faqs                   FAQ[]
+  id_corso                  String   @unique
+  corso                     Corso    @relation(fields: [id_corso], references: [id_corso])
+  faqs                      FAQ[]
 }
 
 model FAQ {
@@ -85,52 +76,50 @@ model FAQ {
   bacheca            Bacheca  @relation(fields: [id_bacheca], references: [id_bacheca])
 }
 
-// --- RICEVIMENTO E PRENOTAZIONI ---
-
 model SlotRicevimento {
-  id_slot         String          @id @default(uuid())
-  data            DateTime        @db.Date
-  ora_inizio      DateTime        @db.Time
-  ora_fine        DateTime        @db.Time
-  disponibilita   Boolean         @default(true)
-  id_docente      String
-  docente         Docente         @relation(fields: [id_docente], references: [id_docente])
-  luogo           LuogoRicevimento?
-  prenotazioni    Prenotazione[]
+  id_slot       String            @id @default(uuid())
+  data          DateTime          @db.Date
+  ora_inizio    DateTime          @db.Time(6)
+  ora_fine      DateTime          @db.Time(6)
+  disponibilita Boolean           @default(true)
+  id_docente    String
+  luogo         LuogoRicevimento?
+  prenotazioni  Prenotazione[]
+  docente       Docente           @relation(fields: [id_docente], references: [id_docente])
 }
 
 model LuogoRicevimento {
-  id_luogo        String          @id @default(uuid())
-  nome_aula       String
-  edificio        String
-  piano           String
-  latitudine      Float?
-  longitudine     Float?
-  id_slot         String          @unique
-  slot            SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
+  id_luogo    String          @id @default(uuid())
+  nome_aula   String
+  edificio    String
+  piano       String
+  latitudine  Float?
+  longitudine Float?
+  id_slot     String          @unique
+  slot        SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
 }
 
 model Prenotazione {
-  id_prenotazione    String      @id @default(uuid())
-  data_prenotazione  DateTime    @default(now())
+  id_prenotazione    String          @id @default(uuid())
+  data_prenotazione  DateTime        @default(now())
   argomento          String
-  stato_prenotazione String      @default("IN_ATTESA")
+  stato_prenotazione String          @default("IN_ATTESA")
   matricola_studente String
-  studente           Studente    @relation(fields: [matricola_studente], references: [matricola])
   id_slot            String
-  slot               SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
   documenti          Documento[]
+  slot               SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
+  studente           Studente        @relation(fields: [matricola_studente], references: [matricola])
 }
 
 model Documento {
-  id_documento      String       @id @default(uuid())
-  nome_file         String
-  tipo_file         String
-  dimensione        Int
-  data_caricamento  DateTime     @default(now())
-  percorso_file     String
-  id_prenotazione   String
-  prenotazione      Prenotazione @relation(fields: [id_prenotazione], references: [id_prenotazione])
+  id_documento     String       @id @default(uuid())
+  nome_file        String
+  tipo_file        String
+  dimensione       Int
+  data_caricamento DateTime     @default(now())
+  percorso_file    String
+  id_prenotazione  String
+  prenotazione     Prenotazione @relation(fields: [id_prenotazione], references: [id_prenotazione])
 }
 
 model Notifica {
@@ -140,15 +129,13 @@ model Notifica {
   data_invio         DateTime @default(now())
   tipo               String
   letta              Boolean  @default(false)
-  destinatario_id    String
-  destinatario_ruolo String   // STUDENTE, DOCENTE, AMMINISTRATORE
+  destinatario_id    String?
+  destinatario_ruolo String?
 }
 
 model GiornoBloccato {
   id_giorno String   @id @default(uuid())
-  data      DateTime @db.Date
+  data      DateTime @unique @db.Date
   motivo    String   @default("Festivo")
   creato_il DateTime @default(now())
-
-  @@unique([data])
 }

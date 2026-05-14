@@ -2,24 +2,6 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  calendarOutline,
-  homeOutline,
-  peopleOutline,
-  calendarClearOutline,
-  calendarNumberOutline,
-  helpCircleOutline,
-  notificationsOutline,
-  personOutline,
-  chevronDownOutline,
-  menuOutline,
-  closeOutline,
-  logOutOutline,
-  alertCircleOutline,
-  flagOutline,
-  calendar
-} from 'ionicons/icons';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
 import { AuthService } from '../../core/services/auth';
 import { Subscription } from 'rxjs';
@@ -40,28 +22,9 @@ export class TopbarComponent implements OnInit, OnDestroy {
   
   private userSub: Subscription | null = null;
 
-  constructor(private auth: AuthService) {
-    addIcons({
-      calendarOutline,
-      homeOutline,
-      peopleOutline,
-      calendarClearOutline,
-      calendarNumberOutline,
-      helpCircleOutline,
-      notificationsOutline,
-      personOutline,
-      chevronDownOutline,
-      menuOutline,
-      closeOutline,
-      logOutOutline,
-      alertCircleOutline,
-      flagOutline,
-      calendar
-    });
-  }
+  constructor(private auth: AuthService) { }
 
   ngOnInit() {
-    // Sincronizzazione reattiva del nome utente e del ruolo direttamente dal servizio
     this.userSub = this.auth.currentUser$.subscribe(user => {
       if (user) {
         this.nomeUtente = `${user.nome} ${user.cognome}`;

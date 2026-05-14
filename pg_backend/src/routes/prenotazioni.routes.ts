@@ -5,6 +5,7 @@ import {
   getPrenotazioniStudente,
   getPrenotazioniDocente,
   aggiornaStatoPrenotazione,
+  getPrenotazioneById,
 } from '../controllers/prenotazioni.controller';
 import {
   creaPrenotazioneSchema,
@@ -19,6 +20,7 @@ router.post('/prenotazioni', authenticate, creaPrenotazioneSchema, handleValidat
 router.delete('/prenotazioni/:id', authenticate, annullaPrenotazione);
 router.get('/prenotazioni/studente/:matricolaStudente', authenticate, getPrenotazioniStudente);
 router.get('/prenotazioni/docente/:idDocente', authenticate, getPrenotazioniDocente);
+router.get('/prenotazioni/:id', authenticate, getPrenotazioneById);
 router.put('/prenotazioni/:id/stato', authenticate, aggiornaStatoSchema, handleValidationErrors, aggiornaStatoPrenotazione);
 
 export default router;

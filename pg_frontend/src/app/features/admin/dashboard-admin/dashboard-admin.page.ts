@@ -10,7 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { VoceMenuNavigazione } from '../../../core/models/interfacce';
-import { Admin, AdminStats } from 'src/app/core/services/admin';
+import { AdminService, AdminStats } from 'src/app/core/services/admin';
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -47,7 +47,7 @@ export class DashboardAdminPage implements OnInit {
     { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
   ];
 
-  constructor(private admin: Admin) {}
+  constructor(private admin: AdminService) { }
 
   ngOnInit() {
     this.admin.getStatistiche().subscribe((data) => {

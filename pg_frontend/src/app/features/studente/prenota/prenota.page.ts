@@ -2,23 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonItem, IonSelect, IonSelectOption, IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonInput, IonTextarea, IonSpinner, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/angular/standalone';
+import { IonItem, IonSelect, IonSelectOption, IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonInput, IonTextarea, IonSpinner, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonFooter } from '@ionic/angular/standalone';
 import { DocenteService } from '../../../core/services/docente';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { AuthService } from '../../../core/services/auth';
 import { Docente, SlotRicevimento } from '../../../core/models/interfacce';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { Admin, GiornoBloccato } from '../../../core/services/admin';
+import { AdminService, GiornoBloccato } from '../../../core/services/admin';
 
 @Component({
   selector: 'app-prenota',
   templateUrl: './prenota.page.html',
   styleUrls: ['./prenota.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonItem, IonSelect, IonSelectOption, IonButton, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonInput, IonTextarea, IonSpinner, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, DashboardLayoutComponent]
+  imports: [CommonModule, FormsModule, IonItem, IonSelect, IonSelectOption, IonButton, IonIcon, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonInput, IonTextarea, IonSpinner, IonModal, IonHeader, IonToolbar, IonButtons, IonContent, DashboardLayoutComponent]
 })
 export class PrenotaPage implements OnInit {
-  
+
   dataSelezionata: string = new Date().toISOString().split('T')[0];
   dataInizioSettimana: Date = new Date();
   giorniSettimana: Date[] = [];
@@ -28,20 +28,26 @@ export class PrenotaPage implements OnInit {
   docenteSelezionato: Docente | null = null;
   slotSelezionato: SlotRicevimento | null = null;
   giorniBloccati: GiornoBloccato[] = [];
-  prenotazioneForm = { 
-    tipologia: 'chiarimenti', 
-    descrizione: '' 
+  prenotazioneForm = {
+    tipologia: 'chiarimenti',
+    descrizione: ''
   };
   inCaricamento = false;
-  salvataggioInCorso = false;
+  isBookingInProgress = false;
+  fileSelezionati: File[] = [];
   mostraModalePrenotazione = false;
 
-  constructor(private docenteService: DocenteService, private prenotazioneService: PrenotazioneService, private authService: AuthService, private adminService: Admin, private router: Router) {}
+  constructor(private docenteService: DocenteService, private prenotazioneService: PrenotazioneService, private authService: AuthService, private adminService: AdminService, private router: Router) { }
 
   async ngOnInit() {
     this.impostaSettimanaCorrente();
     await this.caricaDocenti();
     this.caricaGiorniBloccati();
+  }
+
+  chiudiModale() {
+    this.mostraModalePrenotazione = false;
+    this.slotSelezionato = null;
   }
 
   impostaSettimanaCorrente() {
@@ -100,8 +106,8 @@ export class PrenotaPage implements OnInit {
 
   caricaGiorniBloccati() {
     this.adminService.getGiorniBloccati().subscribe({
-      next: (giorni) => this.giorniBloccati = giorni,
-      error: (err) => console.error('Errore caricamento giorni bloccati:', err)
+      next: (giorni: any) => this.giorniBloccati = giorni,
+      error: (err: any) => console.error('Errore caricamento giorni bloccati:', err)
     });
   }
 
@@ -119,7 +125,7 @@ export class PrenotaPage implements OnInit {
     this.docenteSelezionato = this.elencoDocenti.find(d => String(d.id) === String(id)) || null;
     this.filtriRicerca.docenteId = id;
     this.slotSelezionato = null;
-    
+
     if (this.docenteSelezionato) {
       this.caricaSlots(id);
     } else {
@@ -142,7 +148,7 @@ export class PrenotaPage implements OnInit {
   }
 
   getSlotsGiorno(giorno: Date): SlotRicevimento[] {
-    return this.tuttiGliSlot.filter(s => 
+    return this.tuttiGliSlot.filter(s =>
       s.data.toDateString() === giorno.toDateString()
     );
   }
@@ -152,39 +158,57 @@ export class PrenotaPage implements OnInit {
     this.mostraModalePrenotazione = true;
   }
 
+  preparaModale() {
+    this.isBookingInProgress = false;
+    this.fileSelezionati = [];
+    this.prenotazioneForm.descrizione = '';
+  }
+
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        this.fileSelezionati.push(files[i]);
+      }
+    }
+  }
+
+  rimuoviFile(index: number) {
+    this.fileSelezionati.splice(index, 1);
+  }
+
   async prenota() {
-    if (!this.slotSelezionato || !this.prenotazioneForm.descrizione) {
-      alert('Seleziona uno slot e inserisci una descrizione.');
+    if (!this.slotSelezionato || !this.prenotazioneForm.tipologia) {
+      alert('Seleziona uno slot e un argomento.');
       return;
     }
 
     const user = this.authService.getCurrentUser();
     if (!user) return;
 
-    this.salvataggioInCorso = true;
-    
-    const nuovaPrenotazione = {
-      studenteId: user.id,
-      slotId: this.slotSelezionato.id,
-      docente: this.ottieniNomeDocente(this.slotSelezionato.docenteId),
-      materia: this.slotSelezionato.materia,
-      data: this.slotSelezionato.data.toISOString().split('T')[0],
-      ora: this.slotSelezionato.oraInizio,
-      luogo: `${this.slotSelezionato.luogo.aula}, ${this.slotSelezionato.luogo.edificio}`,
-      argomento: this.prenotazioneForm.tipologia,
-      descrizione: this.prenotazioneForm.descrizione,
-      stato: 'in_attesa' as const
-    };
+    this.isBookingInProgress = true;
 
-    this.prenotazioneService.createPrenotazione(nuovaPrenotazione).subscribe({
+    // Usiamo FormData per inviare i file
+    const formData = new FormData();
+    formData.append('matricolaStudente', user.id);
+    formData.append('idSlot', this.slotSelezionato.id.toString());
+    formData.append('argomento', this.prenotazioneForm.tipologia);
+    formData.append('descrizione', this.prenotazioneForm.descrizione || '');
+
+    // Aggiungiamo i file selezionati
+    this.fileSelezionati.forEach((file, index) => {
+      formData.append('files', file); // 'files' è il nome del campo che il backend si aspetta
+    });
+
+    this.prenotazioneService.createPrenotazione(formData).subscribe({
       next: () => {
-        this.salvataggioInCorso = false;
+        this.isBookingInProgress = false;
         alert('Prenotazione effettuata con successo!');
-        this.router.navigate(['/riepilogo-prenotazioni']);
+        this.chiudiModale();
       },
       error: (err) => {
         console.error('Errore prenotazione', err);
-        this.salvataggioInCorso = false;
+        this.isBookingInProgress = false;
         alert('Errore durante la prenotazione: ' + (err.error?.error || 'Riprova più tardi.'));
       }
     });

@@ -55,7 +55,7 @@ export interface LuogoRicevimento {
 
 export interface SlotRicevimento {
   id: string;
-  docenteId: string | number;
+  docenteId: string;
   materia: string;
   data: Date;
   oraInizio: string;
@@ -77,16 +77,17 @@ export interface Documento {
 export interface Prenotazione {
   id: string;
   studenteId: string;
-  slotId?: string | number;
+  slotId?: string;
   docente: string;
   materia: string;
   data: string;
   ora: string;
-  luogo: string;
   argomento?: string;
   descrizione?: string;
   stato: 'in_attesa' | 'confermata' | 'completata' | 'annullata';
   documenti?: Documento[];
+  luogo: string;
+  luogoRicevimento?: LuogoRicevimento;
 }
 
 // BACHECA E NOTIFICHE
@@ -101,7 +102,7 @@ export interface Bacheca {
 }
 
 export interface FAQ {
-  id: string | number;
+  id: string;
   domanda: string;
   risposta: string;
   aperta: boolean;

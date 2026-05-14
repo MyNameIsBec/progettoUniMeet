@@ -12,8 +12,7 @@
   <nav class="sidebar-nav">
     @for (voce of vociMenu; track voce.percorso) {
       <a [routerLink]="voce.percorso" 
-         routerLinkActive="active" 
-         [routerLinkActiveOptions]="{exact: voce.esatto || false}">
+         [class.active]="isLinkActive(voce)">
         <ion-icon [name]="voce.icona"></ion-icon>
         <span>{{ voce.etichetta }}</span>
       </a>

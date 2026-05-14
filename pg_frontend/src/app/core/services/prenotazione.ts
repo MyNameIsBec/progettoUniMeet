@@ -12,27 +12,27 @@ export class PrenotazioneService {
     return `${this.authService.getApiUrl()}/api/prenotazioni`;
   }
 
-  createPrenotazione(prenotazione: Partial<Prenotazione>): Observable<Prenotazione> {
+  createPrenotazione(prenotazione: Partial<Prenotazione> | FormData): Observable<Prenotazione> {
     return this.http.post<Prenotazione>(this.api, prenotazione);
   }
 
-  annullaPrenotazione(id: number): Observable<void> {
+  annullaPrenotazione(id: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
 
-  getPrenotazioniStudente(matricolaStudente: string | number): Observable<Prenotazione[]> {
+  getPrenotazioniStudente(matricolaStudente: string): Observable<Prenotazione[]> {
     return this.http.get<Prenotazione[]>(`${this.api}/studente/${matricolaStudente}`);
   }
 
-  getPrenotazioneById(id: string | number): Observable<Prenotazione> {
+  getPrenotazioneById(id: string): Observable<Prenotazione> {
     return this.http.get<Prenotazione>(`${this.api}/${id}`);
   }
 
-  getPrenotazioniDocente(idDocente: string | number): Observable<Prenotazione[]> {
+  getPrenotazioniDocente(idDocente: string): Observable<Prenotazione[]> {
     return this.http.get<Prenotazione[]>(`${this.api}/docente/${idDocente}`);
   }
 
-  aggiornaStatoPrenotazione(id: number, stato: Prenotazione['stato']): Observable<Prenotazione> {
+  aggiornaStatoPrenotazione(id: string, stato: Prenotazione['stato']): Observable<Prenotazione> {
     return this.http.put<Prenotazione>(`${this.api}/${id}/stato`, { stato });
   }
 

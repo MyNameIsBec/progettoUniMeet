@@ -9,7 +9,7 @@ import {
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { VoceMenuNavigazione } from '../../../core/models/interfacce';
-import { Admin, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services/admin';
+import { AdminService, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services/admin';
 
 @Component({
   selector: 'app-gestione-utenti',
@@ -43,7 +43,7 @@ export class GestioneUtentiPage implements OnInit {
     { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
   ];
 
-  constructor(private admin: Admin, private route: ActivatedRoute) {
+  constructor(private admin: AdminService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {

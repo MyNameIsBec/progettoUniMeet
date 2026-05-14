@@ -7,7 +7,7 @@ import {
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { VoceMenuNavigazione } from '../../../core/models/interfacce';
-import { Admin, GiornoBloccato } from 'src/app/core/services/admin';
+import { AdminService, GiornoBloccato } from 'src/app/core/services/admin';
 
 @Component({
   selector: 'app-gestione-calendario',
@@ -36,7 +36,7 @@ export class GestioneCalendarioPage implements OnInit {
     { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
   ];
 
-  constructor(private admin: Admin) { }
+  constructor(private admin: AdminService) { }
 
   ngOnInit() {
     this.caricaGiorni();

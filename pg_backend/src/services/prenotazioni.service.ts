@@ -134,3 +134,30 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
     stato: updated.stato_prenotazione.toLowerCase(),
   };
 }
+
+
+export async function getPrenotazioneById(id: string) {
+  const prenotazione = await prisma.prenotazione.findUnique({
+    where: { id_prenotazione: id },
+    include: {
+      studente: { select: { matricola: true, nome: true, cognome: true } },
+      slot: {
+        include: { docente: true, luogo: true },
+      },
+    },
+  });
+
+  if (!prenotazione) throw new Error('Prenotazione not found');
+
+  return {
+    id: prenotazione.id_prenotazione,
+    studenteId: prenotazione.matricola_studente,
+    slotId: prenotazione.id_slot,
+    docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
+    data: prenotazione.slot.data.toISOString().split('T')[0],
+    ora: `${prenotazione.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+    luogo: prenotazione.slot.luogo?.nome_aula ?? '',
+    argomento: prenotazione.argomento,
+    stato: prenotazione.stato_prenotazione.toLowerCase(),
+  };
+}

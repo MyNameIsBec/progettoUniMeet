@@ -59,3 +59,16 @@ export async function aggiornaStatoPrenotazione(req: Request, res: Response) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+export async function getPrenotazioneById(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const prenotazione = await prenotazioniService.getPrenotazioneById(id);
+    return res.status(200).json(prenotazione);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione non trovata') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}

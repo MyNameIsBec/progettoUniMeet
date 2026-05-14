@@ -4,8 +4,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { calendarOutline, personAddOutline, eyeOutline, eyeOffOutline, mailOutline, lockClosedOutline, personOutline, alertCircleOutline, arrowBackOutline, checkmarkCircleOutline, schoolOutline } from 'ionicons/icons';
 import { AuthService, UserSession } from '../../../core/services/auth';
 
 function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
@@ -34,13 +32,7 @@ export class RegistrazionePage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
-  ) {
-    addIcons({
-      calendarOutline, personAddOutline, eyeOutline, eyeOffOutline,
-      mailOutline, lockClosedOutline, personOutline,
-      alertCircleOutline, arrowBackOutline, checkmarkCircleOutline, schoolOutline
-    });
-  }
+  ) { }
 
   ngOnInit(): void {
     this.registrazioneForm = this.fb.group(
