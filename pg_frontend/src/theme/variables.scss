@@ -94,14 +94,6 @@
 /* Dark mode palette overrides if needed */
 @media (prefers-color-scheme: dark) {
   body {
-    /* 
-    --ion-background-color: #020617;
-    --ion-background-color-rgb: 2, 6, 23;
-
-    --ion-text-color: #f8fafc;
-    --ion-text-color-rgb: 248, 250, 252;
-    */
-
     --ion-color-primary: #3b82f6;
     --ion-color-primary-rgb: 59, 130, 246;
 
@@ -115,5 +107,297 @@
     --ion-color-step-400: #e2e8f0;
     --ion-color-step-450: #f1f5f9;
     --ion-color-step-500: #f8fafc;
+  }
+}
+
+body.dark {
+  /* PREMIUM MIDNIGHT BLUE THEME */
+  --ion-background-color: #020617 !important;
+  /* Extremely deep blue */
+  --ion-background-color-rgb: 2, 6, 23 !important;
+  --ion-text-color: #f8fafc !important;
+  --ion-text-color-rgb: 248, 250, 252 !important;
+
+  --ion-color-step-50: #0f172a;
+  --ion-color-step-100: #1e293b;
+  --ion-color-step-150: #334155;
+  --ion-color-step-200: #475569;
+  --ion-color-step-250: #64748b;
+  --ion-color-step-300: #94a3b8;
+  --ion-color-step-350: #cbd5e1;
+  --ion-color-step-400: #e2e8f0;
+  --ion-color-step-450: #f1f5f9;
+  --ion-color-step-500: #f8fafc;
+
+  --ion-card-background: #0f172a;
+  --ion-item-background: #0f172a;
+  --ion-toolbar-background: #020617;
+
+  /* PREMIUM COMPONENT DARK OVERRIDES */
+  .premium-card,
+  .profile-card,
+  .form-card,
+  .history-card,
+  .stat-card,
+  .interface-card,
+  .personal-card,
+  .security-card,
+  .notifications-card,
+  .activity-card,
+  .profile-actions,
+  ion-card {
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.1) !important;
+    /* Subtle blue border */
+    color: #f1f5f9 !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+
+    ion-card-title {
+      color: #ffffff !important;
+    }
+
+    p {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .premium-hero {
+    background:
+      radial-gradient(circle at top right, rgba(37, 99, 235, 0.2), transparent 50%),
+      linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
+    border-color: rgba(37, 99, 235, 0.15) !important;
+
+    h1,
+    h2 {
+      color: #ffffff !important;
+    }
+
+    p {
+      color: #94a3b8 !important;
+    }
+
+    .eyebrow {
+      background: rgba(37, 99, 235, 0.25) !important;
+      color: #60a5fa !important;
+    }
+  }
+
+  .hero-status-card {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+
+    strong {
+      color: #ffffff !important;
+    }
+
+    .hero-status-icon {
+      background: #2563eb !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .topbar {
+    background: rgba(2, 6, 23, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(20px) !important;
+
+    .student-profile-mini {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+
+      strong {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .sidebar {
+    background: #020617 !important;
+    border-right-color: rgba(255, 255, 255, 0.05) !important;
+
+    .sidebar-nav a {
+      color: #94a3b8 !important;
+
+      &:hover,
+      &.active {
+        background: #2563eb !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  /* FORMS & INPUTS - VIBRANT DARK */
+  ion-item {
+    --background: rgba(255, 255, 255, 0.02) !important;
+    --color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+  }
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --color: #ffffff !important;
+  }
+
+  /* ACCENT CARDS - VIBRANT COLORS */
+  .stat-card div strong,
+  .summary-number strong {
+    color: #ffffff !important;
+  }
+
+  .summary-card h3,
+  .summary-card h4,
+  .appointments-card ion-card-title,
+  .faq-card ion-card-title {
+    color: #ffffff !important;
+    font-weight: 900 !important;
+  }
+
+  .summary-card,
+  .appointments-card,
+  .faq-card,
+  .appointment-item,
+  .faq-row {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+
+    h3,
+    h4,
+    strong {
+      color: #ffffff !important;
+    }
+
+    p,
+    span {
+      color: #cbd5e1 !important;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-color: #2563eb !important;
+    }
+  }
+
+  .faq-link {
+    background: #2563eb !important;
+    color: #ffffff !important;
+
+    ion-icon {
+      color: #ffffff !important;
+    }
+
+    &:hover {
+      background: #1d4ed8 !important;
+    }
+  }
+
+
+  /* FORMS, FILTERS & CARDS - NO WHITE */
+  .security-item,
+  .toggle-row,
+  .activity-box,
+  .report-item,
+  .summary-card,
+  .appointments-card,
+  .faq-card,
+  .appointment-item,
+  .faq-row,
+  .faq-link,
+  .filters-card,
+  .teacher-card,
+  .info-card,
+  .selection-card,
+  .form-card,
+  .history-card,
+  .notifications-list-card,
+  .management-card,
+  .filters-row,
+  .calendar-card {
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.1) !important;
+
+    h3,
+    h4,
+    strong,
+    ion-card-title {
+      color: #ffffff !important;
+    }
+
+    p,
+    span {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .search-field,
+  .select-field,
+  .guide-step span,
+  .custom-field ion-item,
+  .filter-button,
+  .management-row {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+
+    input {
+      color: #ffffff !important;
+    }
+
+    ion-select,
+    ion-input,
+    ion-textarea {
+      color: #ffffff !important;
+      --color: #ffffff !important;
+    }
+
+    &.active {
+      background: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #2563eb !important;
+    }
+
+    &:hover {
+      border-color: #2563eb !important;
+    }
+  }
+
+  .filter-button {
+    padding: 8px 20px !important;
+    font-weight: 700 !important;
+  }
+
+  .teacher-header h3 {
+    color: #ffffff !important;
+  }
+
+  .next-slot-banner {
+    background: rgba(34, 197, 94, 0.1) !important;
+    color: #4ade80 !important;
+    border: 1px solid rgba(34, 197, 94, 0.2) !important;
+
+    &.not-available {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: #94a3b8 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+
+  .status-overlay .badge {
+    &.success {
+      background: rgba(34, 197, 94, 0.2) !important;
+      color: #4ade80 !important;
+    }
+
+    &.warning {
+      background: rgba(234, 179, 8, 0.2) !important;
+      color: #fde047 !important;
+    }
+
+    &.danger {
+      background: rgba(239, 68, 68, 0.2) !important;
+      color: #f87171 !important;
+    }
   }
 }

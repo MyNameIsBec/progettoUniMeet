@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { TopbarComponent } from '../topbar/topbar.component';
-import { IonContent, IonRouterOutlet } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
 import { AuthService } from '../../core/services/auth';
 
@@ -11,11 +11,11 @@ import { AuthService } from '../../core/services/auth';
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss'],
   standalone: true,
-  imports: [CommonModule, SidebarComponent, TopbarComponent, IonContent, IonRouterOutlet]
+  imports: [CommonModule, SidebarComponent, TopbarComponent, IonContent]
 })
 export class DashboardLayoutComponent {
-  @Input() ruoloUtente: string = 'studente';
-  @Input() nomeUtente: string = 'Alessio Lombardo';
+  @Input() ruoloUtente: string = '';
+  @Input() nomeUtente: string = '';
 
   @Input() vociMenu: VoceMenuNavigazione[] = [];
 
@@ -49,7 +49,7 @@ export class DashboardLayoutComponent {
           { etichetta: 'Prenota', percorso: '/prenota', icona: 'calendar-clear-outline' },
           { etichetta: 'Le mie prenotazioni', percorso: '/riepilogo-prenotazioni', icona: 'calendar-number-outline' },
           { etichetta: 'FAQ / Bacheca', percorso: '/bacheca-studente', icona: 'help-circle-outline' },
-          { etichetta: 'Profilo', percorso: '/profilo-studente', icona: 'person-outline' },
+          { etichetta: 'Segnalazione', percorso: '/segnalazione', icona: 'alert-circle-outline' },
         ];
       }
     }

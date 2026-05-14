@@ -3,24 +3,6 @@
   color: #0f172a;
 }
 
-/* HEADER */
-.page-header {
-  padding: 34px 34px 18px;
-}
-
-.page-header h2 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 34px;
-  font-weight: 800;
-}
-
-.page-header p {
-  margin: 8px 0 0;
-  color: #475569;
-  font-size: 18px;
-  line-height: 1.6;
-}
 
 /* CARD BASE */
 .selection-card,
@@ -522,5 +504,23 @@ ion-card-title {
   .teacher-actions,
   .appointment-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+.confirm-button {
+  --background: var(--ion-color-primary);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+
+  .selection-card,
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .selection-form {
+    border-right: none;
+    border-bottom: 1px solid var(--ion-color-step-150);
   }
 }

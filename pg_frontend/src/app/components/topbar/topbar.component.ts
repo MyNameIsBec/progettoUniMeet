@@ -16,6 +16,7 @@ import {
   menuOutline,
   closeOutline,
   logOutOutline,
+  alertCircleOutline,
   calendar
 } from 'ionicons/icons';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
@@ -48,6 +49,7 @@ export class TopbarComponent {
       menuOutline,
       closeOutline,
       logOutOutline,
+      alertCircleOutline,
       calendar
     });
   }

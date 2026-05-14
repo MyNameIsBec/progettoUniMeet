@@ -36,6 +36,8 @@ import {
   saveOutline,
   statsChartOutline,
   timeOutline,
+  moonOutline,
+  sunnyOutline
 } from 'ionicons/icons';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
@@ -62,7 +64,12 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
   styleUrls: ['./profilo-studente.page.scss'],
 })
 export class ProfiloStudentePage {
+  isDarkMode = false;
+
   constructor() {
+    // Check current theme
+    this.isDarkMode = document.body.classList.contains('dark');
+
     addIcons({
       calendarOutline,
       calendarClearOutline,
@@ -83,6 +90,15 @@ export class ProfiloStudentePage {
       statsChartOutline,
       saveOutline,
       refreshOutline,
+      moonOutline,
+      sunnyOutline
     });
+  }
+
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    document.body.classList.toggle('dark', this.isDarkMode);
+    // Optional: save to local storage
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 }

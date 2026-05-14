@@ -1,374 +1,362 @@
 :host {
-    font-family: Arial, sans-serif;
-    color: #0f172a;
+    --background-page: #f8fbff;
+    --primary-blue: #2563eb;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    color: var(--text-dark);
 }
 
 /* HEADER */
-.dashboard-header {
-    padding: 34px 34px 18px;
-}
-
-.dashboard-header h2 {
-    margin: 0;
-    color: #0f172a;
-    font-size: 34px;
-    font-weight: 800;
-}
-
-.dashboard-header p {
-    margin: 6px 0 0;
-    color: #475569;
-    font-size: 18px;
-}
 
 /* SUMMARY */
 .summary-grid {
-    margin: 0 34px 24px;
+    margin: 0 34px 32px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 28px;
 }
 
-.summary-card ion-card-content {
-    min-height: 250px;
+.summary-card {
+    margin: 0;
+    border-radius: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
+    }
+
+    ion-card-content {
+        padding: 32px;
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+    }
 }
 
 .summary-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 18px;
-}
+    margin-bottom: 24px;
 
-.summary-icon ion-icon {
-    font-size: 30px;
-    color: #ffffff;
-}
+    ion-icon {
+        font-size: 32px;
+        color: #ffffff;
+    }
 
-.summary-icon.blue {
-    background: #2563eb;
-}
+    &.blue {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+    }
 
-.summary-icon.green {
-    background: #16a34a;
+    &.green {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        box-shadow: 0 8px 16px rgba(22, 163, 74, 0.25);
+    }
 }
 
 .summary-card h3 {
-    margin: 0 0 24px;
-    color: #0f172a;
-    font-size: 18px;
-    font-weight: 800;
+    margin: 0 0 16px;
+    color: var(--text-dark);
+    font-size: 1.25rem;
+    font-weight: 850;
+    letter-spacing: -0.02em;
 }
 
 .summary-number {
     display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 28px;
-}
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: auto;
 
-.summary-number strong {
-    color: #0f172a;
-    font-size: 42px;
-    font-weight: 800;
-    line-height: 1;
-}
+    strong {
+        color: var(--text-dark);
+        font-size: 3.5rem;
+        font-weight: 950;
+        line-height: 1;
+        letter-spacing: -0.05em;
+    }
 
-.summary-number span {
-    color: #475569;
-    font-size: 15px;
+    span {
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 700;
+    }
 }
 
 .summary-card a,
-.faq-link,
-.section-title-row a {
-    color: #2563eb;
+.faq-link {
+    color: var(--primary-blue);
     text-decoration: none;
     font-weight: 800;
+    font-size: 1rem;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    margin-top: 24px;
+    transition: gap 0.2s ease;
+
+    &:hover {
+        gap: 12px;
+    }
 }
 
 .next-appointment {
-    margin-bottom: 20px;
-}
+    h4 {
+        margin: 0 0 4px;
+        color: var(--text-dark);
+        font-size: 1.4rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+    }
 
-.next-appointment h4 {
-    margin: 0 0 6px;
-    color: #0f172a;
-    font-size: 20px;
-    font-weight: 800;
-}
+    p {
+        margin: 0 0 16px;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
 
-.next-appointment p {
-    margin: 0 0 12px;
-    color: #475569;
-    font-weight: 700;
-}
+    div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
 
-.next-appointment div {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 8px;
-}
+    span {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 750;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
 
-.next-appointment span {
-    color: #64748b;
-    font-size: 14px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* SEZIONI */
-.dashboard-section {
-    margin: 0 34px 24px;
-    padding: 24px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
-}
-
-.section-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-}
-
-.section-title-row h2 {
-    margin: 0;
-    color: #0f172a;
-    font-size: 25px;
-    font-weight: 800;
-}
-
-/* TEACHERS */
-.teachers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-}
-
-.teacher-card ion-card-content {
-    padding: 20px;
-}
-
-.teacher-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 22px;
-}
-
-.teacher-avatar {
-    flex: 0 0 58px;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #eaf2ff;
-}
-
-.teacher-avatar ion-icon {
-    font-size: 28px;
-    color: #2563eb;
-}
-
-.teacher-avatar.blue-light {
-    background: #eaf2ff;
-}
-
-.teacher-avatar.green-light {
-    background: #eafaf0;
-}
-
-.teacher-avatar.green-light ion-icon {
-    color: #16a34a;
-}
-
-.teacher-avatar.purple-light {
-    background: #f3e8ff;
-}
-
-.teacher-avatar.purple-light ion-icon {
-    color: #7c3aed;
-}
-
-.teacher-header h3 {
-    margin: 0 0 4px;
-    color: #2563eb;
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.teacher-header p {
-    margin: 0 0 9px;
-    color: #334155;
-    font-weight: 700;
-}
-
-.teacher-header span {
-    display: block;
-    color: #64748b;
-    font-size: 14px;
-    margin-top: 6px;
-}
-
-.teacher-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+        ion-icon {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+    }
 }
 
 /* BOTTOM GRID */
 .dashboard-bottom-grid {
-    margin: 0 34px 34px;
+    margin: 0 34px 48px;
     display: grid;
-    grid-template-columns: 1.25fr 0.9fr;
-    gap: 24px;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 32px;
     align-items: start;
+}
+
+.appointments-card,
+.faq-card {
+    margin: 0;
+    border-radius: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.05);
+
+    ion-card-header {
+        padding: 32px 32px 16px;
+
+        ion-card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            letter-spacing: -0.04em;
+
+            ion-icon {
+                color: var(--primary-blue);
+                font-size: 28px;
+            }
+        }
+    }
+
+    ion-card-content {
+        padding: 16px 32px 32px;
+    }
 }
 
 .appointment-item {
     position: relative;
-    padding: 18px;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    margin-bottom: 16px;
-}
+    padding: 24px;
+    background: #f8fbff;
+    border: 1px solid #eef4ff;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
 
-.appointment-item h3 {
-    margin: 0 0 4px;
-    color: #0f172a;
-    font-size: 18px;
-    font-weight: 800;
-}
+    &:hover {
+        border-color: #dbeafe;
+    }
 
-.appointment-item p {
-    margin: 0 0 12px;
-    color: #475569;
-    font-weight: 700;
+    h3 {
+        margin: 0 0 6px;
+        color: var(--text-dark);
+        font-size: 1.25rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+    }
+
+    p {
+        margin: 0 0 18px;
+        color: var(--text-muted);
+        font-size: 1rem;
+        font-weight: 700;
+    }
 }
 
 .appointment-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    margin-bottom: 8px;
+    gap: 20px;
+    margin-bottom: 12px;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #475569;
+        font-weight: 800;
+        font-size: 0.95rem;
+    }
+
+    ion-icon {
+        color: var(--primary-blue);
+        font-size: 1.15rem;
+    }
 }
 
-.appointment-meta span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #64748b;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.appointment-meta ion-icon {
-    color: #2563eb;
-}
-
-.status {
+.status-overlay {
     position: absolute;
-    top: 18px;
-    right: 18px;
-    padding: 7px 12px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 800;
-}
+    top: 24px;
+    right: 24px;
 
-.status.confirmed {
-    background: #dcfce7;
-    color: #166534;
-}
+    .badge {
+        padding: 8px 14px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
 
-.status.waiting {
-    background: #ffedd5;
-    color: #c2410c;
+        &.success {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        &.warning {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        &.danger {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+    }
 }
 
 .appointment-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: 24px;
+
+    ion-button {
+        --border-radius: 14px;
+        --padding-top: 12px;
+        --padding-bottom: 12px;
+        font-weight: 800;
+        text-transform: none;
+        height: 48px;
+    }
 }
 
 .faq-row {
-    min-height: 54px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0 16px;
-    margin-bottom: 12px;
-    color: #0f172a;
+    min-height: 64px;
+    background: #f8fbff;
+    border: 1px solid #eef4ff;
+    border-radius: 18px;
+    padding: 0 20px;
+    margin-bottom: 14px;
+    color: var(--text-dark);
     text-decoration: none;
-    font-weight: 800;
+    font-weight: 850;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #ffffff;
+        border-color: #dbeafe;
+        color: var(--primary-blue);
+        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.04);
+
+        ion-icon {
+            color: var(--primary-blue);
+            transform: translateX(4px);
+        }
+    }
+
+    ion-icon {
+        color: var(--text-muted);
+        transition: all 0.2s ease;
+    }
 }
 
-.faq-row ion-icon {
-    color: #64748b;
+.faq-link {
+    width: 100%;
+    justify-content: center;
+    padding: 16px;
+    border-radius: 16px;
+    background: #eff6ff;
+    margin-top: 12px;
 }
 
 /* RESPONSIVE */
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
 
     .summary-grid,
-    .teachers-grid,
     .dashboard-bottom-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        padding: 34px 24px;
     }
 }
 
 @media (max-width: 700px) {
-    .dashboard-header {
-        padding: 28px 18px 14px;
-        text-align: center;
+    .dashboard-header h2 {
+        font-size: 2rem;
     }
 
     .summary-grid,
-    .dashboard-section,
     .dashboard-bottom-grid {
-        margin-left: 18px;
-        margin-right: 18px;
+        margin-left: 16px;
+        margin-right: 16px;
     }
 
-    .summary-card ion-card-content {
-        min-height: 260px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .summary-number {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .teacher-actions,
     .appointment-actions {
         grid-template-columns: 1fr;
     }
 
-    .status {
+    .status-overlay {
         position: static;
-        display: inline-block;
-        margin: 8px 0 0;
+        margin-bottom: 16px;
+        display: block;
     }
 }

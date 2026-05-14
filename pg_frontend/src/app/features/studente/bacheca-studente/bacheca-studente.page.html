@@ -1,11 +1,23 @@
 <app-dashboard-layout>
   <!-- PAGE HEADER -->
-  <section class="page-header">
-    <h2>FAQ e informazioni utili</h2>
-    <p>
-      Qui trovi le risposte alle domande più comuni e alcuni collegamenti utili
-      ai servizi dell’Università degli Studi di Palermo.
-    </p>
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Informazioni</span>
+      <h1>FAQ e Bacheca</h1>
+      <p>Qui trovi le risposte alle domande più comuni, le comunicazioni del tuo corso e i collegamenti utili ai servizi
+        universitari.</p>
+    </div>
+
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="information-circle-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Centro Risorse</span>
+        <strong>FAQ e Documenti</strong>
+        <small>Informazioni utili UniPa</small>
+      </div>
+    </div>
   </section>
 
   <!-- MAIN GRID -->
@@ -22,24 +34,24 @@
 
       <ion-card-content>
         <div class="faq-list">
-          
+
           @if (listaFaq.length === 0) {
-            <div class="no-faq">
-              <ion-icon name="information-circle-outline"></ion-icon>
-              <p>Non ci sono comunicazioni o FAQ per questo corso.</p>
-            </div>
+          <div class="no-faq">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <p>Non ci sono comunicazioni o FAQ per questo corso.</p>
+          </div>
           }
 
           @for (faq of listaFaq; track faq.id) {
-            <details [open]="faq.aperta" class="faq-details">
-              <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
-                <span>{{ faq.domanda }}</span>
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </summary>
-              <div class="faq-content">
-                {{ faq.risposta }}
-              </div>
-            </details>
+          <details [open]="faq.aperta" class="faq-details">
+            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
+              <span>{{ faq.domanda }}</span>
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </summary>
+            <div class="faq-content">
+              {{ faq.risposta }}
+            </div>
+          </details>
           }
 
         </div>
@@ -104,19 +116,18 @@
         <div class="useful-links-grid">
 
           @for (link of collegamentiUtili; track link.titolo) {
-            <a class="useful-link" [href]="link.url" target="_blank"
-              rel="noopener noreferrer">
-              <div class="useful-link-icon" [ngClass]="link.colore">
-                <ion-icon [name]="link.icona"></ion-icon>
-              </div>
+          <a class="useful-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
+            <div class="useful-link-icon" [ngClass]="link.colore">
+              <ion-icon [name]="link.icona"></ion-icon>
+            </div>
 
-              <div>
-                <h3>{{ link.titolo }}</h3>
-                <p>{{ link.descrizione }}</p>
-              </div>
+            <div>
+              <h3>{{ link.titolo }}</h3>
+              <p>{{ link.descrizione }}</p>
+            </div>
 
-              <ion-icon name="open-outline" class="open-icon"></ion-icon>
-            </a>
+            <ion-icon name="open-outline" class="open-icon"></ion-icon>
+          </a>
           }
 
         </div>

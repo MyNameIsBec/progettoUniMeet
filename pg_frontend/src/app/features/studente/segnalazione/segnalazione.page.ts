@@ -6,7 +6,6 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonContent,
   IonIcon,
   IonInput,
   IonItem,
@@ -46,7 +45,6 @@ import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/da
   selector: 'app-segnalazione',
   standalone: true,
   imports: [
-    IonContent,
     IonIcon,
     IonCard,
     IonCardHeader,

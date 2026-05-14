@@ -1,8 +1,22 @@
 <app-dashboard-layout>
   <!-- HEADER PAGINA -->
-  <section class="dashboard-header">
-    <h2>Bentornato {{ nomeStudente }},</h2>
-    <p>Ecco un riepilogo dei tuoi impegni universitari</p>
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Dashboard</span>
+      <h1>Bentornato {{ nomeStudente }}</h1>
+      <p>Ecco un riepilogo dei tuoi impegni universitari e delle prossime attività.</p>
+    </div>
+
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="grid-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Panoramica</span>
+        <strong>Riepilogo Attività</strong>
+        <small>Gestione rapida dei servizi</small>
+      </div>
+    </div>
   </section>
 
   <!-- CARD RIEPILOGO -->
@@ -71,7 +85,7 @@
         } @else {
         <div class="no-appointments">
           <p>Non hai prenotazioni future</p>
-          <a routerLink="/elenco-docenti" class="book-now">
+          <a routerLink="/prenota" class="book-now">
             Prenota ora
             <ion-icon name="arrow-forward-outline"></ion-icon>
           </a>

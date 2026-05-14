@@ -11,6 +11,8 @@ import {
   IonButton
 } from '@ionic/angular/standalone';
 
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
+
 import { addIcons } from 'ionicons';
 
 import {
@@ -50,7 +52,8 @@ import {
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    IonButton
+    IonButton,
+    DashboardLayoutComponent
   ]
 })
 export class NotifichePage {

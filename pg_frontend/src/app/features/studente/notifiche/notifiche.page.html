@@ -1,418 +1,187 @@
-<ion-content [fullscreen]="true" class="notifiche-page">
+<app-dashboard-layout>
+  <!-- PAGE HEADER -->
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Centro Avvisi</span>
+      <h1>Le tue notifiche</h1>
+      <p>Rimani aggiornato sui tuoi ricevimenti, leggi i messaggi dei docenti e gestisci i promemoria per i tuoi
+        appuntamenti.</p>
+    </div>
 
-  <div class="dashboard-layout">
-
-    <!-- SIDEBAR DESKTOP -->
-    <aside class="sidebar">
-
-      <div class="sidebar-logo">
-        <div class="logo-row">
-          <ion-icon name="calendar-outline"></ion-icon>
-
-          <div>
-            <h1>UniMeet</h1>
-            <span>Area Studente</span>
-          </div>
-        </div>
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="mail-outline"></ion-icon>
       </div>
+      <div class="status-details">
+        <span>Centro Avvisi</span>
+        <strong>Promemoria e Messaggi</strong>
+        <small>Comunicazioni dai docenti</small>
+      </div>
+    </div>
+  </section>
 
-      <nav class="sidebar-nav">
-
-        <a routerLink="/dashboard-studente">
-          <ion-icon name="home-outline"></ion-icon>
-          <span>Dashboard</span>
-        </a>
-
-        <a routerLink="/elenco-docenti">
-          <ion-icon name="people-outline"></ion-icon>
-          <span>Docenti</span>
-        </a>
-
-        <a routerLink="/prenota">
-          <ion-icon name="calendar-clear-outline"></ion-icon>
-          <span>Prenota</span>
-        </a>
-
-        <a routerLink="/riepilogo-prenotazioni">
-          <ion-icon name="calendar-number-outline"></ion-icon>
-          <span>Le mie prenotazioni</span>
-        </a>
-
-        <a routerLink="/bacheca-studente">
-          <ion-icon name="help-circle-outline"></ion-icon>
-          <span>FAQ / Bacheca</span>
-        </a>
-
-        <a routerLink="/notifiche" class="active">
-          <ion-icon name="notifications-outline"></ion-icon>
-          <span>Notifiche</span>
-        </a>
-
-        <a routerLink="/profilo-studente">
-          <ion-icon name="person-outline"></ion-icon>
-          <span>Profilo</span>
-        </a>
-
-        <a routerLink="/home" class="logout-link">
-          <ion-icon name="log-out-outline"></ion-icon>
-          <span>Logout</span>
-        </a>
-
-      </nav>
-
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-
-      <!-- TOPBAR -->
-      <header class="topbar">
-
-        <!-- LOGO MOBILE -->
-        <div class="mobile-logo">
-          <ion-icon name="calendar-outline"></ion-icon>
-
-          <div>
-            <strong>UniMeet</strong>
-            <span>Area Studente</span>
-          </div>
+  <!-- RIEPILOGO -->
+  <section class="notifications-summary-grid">
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon blue">
+          <ion-icon name="mail-unread-outline"></ion-icon>
         </div>
+        <div>
+          <span>Non lette</span>
+          <strong>3</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
 
-        <!-- MENU MOBILE -->
-        <nav class="mobile-top-menu">
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon orange">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div>
+          <span>Reminder</span>
+          <strong>2</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
 
-          <a routerLink="/dashboard-studente">
-            <ion-icon name="home-outline"></ion-icon>
-            <span>Dashboard</span>
-          </a>
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon green">
+          <ion-icon name="megaphone-outline"></ion-icon>
+        </div>
+        <div>
+          <span>Aggiornamenti</span>
+          <strong>1</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </section>
 
-          <a routerLink="/elenco-docenti">
-            <ion-icon name="people-outline"></ion-icon>
-            <span>Docenti</span>
-          </a>
+  <!-- FILTRI -->
+  <section class="filters-row">
+    <button class="filter-button active">Tutte</button>
+    <button class="filter-button">Non lette</button>
+    <button class="filter-button">Reminder</button>
+    <button class="filter-button">Aggiornamenti</button>
+  </section>
 
-          <a routerLink="/prenota">
-            <ion-icon name="calendar-clear-outline"></ion-icon>
-            <span>Prenota</span>
-          </a>
-
-          <a routerLink="/riepilogo-prenotazioni">
-            <ion-icon name="calendar-number-outline"></ion-icon>
-            <span>Prenotazioni</span>
-          </a>
-
-          <a routerLink="/bacheca-studente">
-            <ion-icon name="help-circle-outline"></ion-icon>
-            <span>FAQ</span>
-          </a>
-
-        </nav>
-
-        <!-- PROFILO DESKTOP -->
-        <div class="topbar-actions">
-
-          <div class="student-profile-mini">
-            <div class="student-avatar-small">
-              <ion-icon name="person-outline"></ion-icon>
+  <!-- CONTENUTO PRINCIPALE -->
+  <section class="notifications-layout">
+    <div class="left-column">
+      <ion-card class="notifications-list-card">
+        <ion-card-content>
+          <!-- NOTIFICA 1 -->
+          <div class="notification-item unread">
+            <span class="unread-dot"></span>
+            <div class="notification-icon blue">
+              <ion-icon name="notifications-outline"></ion-icon>
             </div>
-
-            <div>
-              <strong>Alessio Lombardo</strong>
-              <span>Studente</span>
+            <div class="notification-content">
+              <h3>Reminder ricevimento</h3>
+              <p>
+                Ti ricordiamo il ricevimento con <strong>Prof. Mario Rossi</strong>
+                il <strong>12 Giugno 2026</strong> alle <strong>10:30</strong>.
+              </p>
+              <small>Oggi, 09:00</small>
             </div>
-
-            <ion-icon name="chevron-down-outline"></ion-icon>
+            <ion-button fill="clear" color="primary">
+              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+            </ion-button>
           </div>
 
-        </div>
-
-      </header>
-
-      <!-- NOTIFICA IN ALTO A DESTRA, FUORI DALLA NAVBAR -->
-      <button class="floating-notification-button" routerLink="/notifiche">
-        <ion-icon name="notifications-outline"></ion-icon>
-        <span>3</span>
-      </button>
-
-      <!-- PAGE HEADER -->
-      <section class="page-header">
-        <h2>Notifiche</h2>
-        <p>
-          Visualizza promemoria, aggiornamenti e comunicazioni relative ai tuoi ricevimenti.
-        </p>
-      </section>
-
-      <!-- RIEPILOGO -->
-      <section class="notifications-summary-grid">
-
-        <ion-card class="summary-card">
-          <ion-card-content>
-
-            <div class="summary-icon blue">
-              <ion-icon name="mail-unread-outline"></ion-icon>
+          <!-- NOTIFICA 2 -->
+          <div class="notification-item unread">
+            <span class="unread-dot"></span>
+            <div class="notification-icon green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
             </div>
-
-            <div>
-              <h3>Non lette</h3>
-              <strong>3</strong>
+            <div class="notification-content">
+              <h3>Prenotazione confermata</h3>
+              <p>
+                La tua prenotazione con <strong>Prof.ssa Laura Bianchi</strong>
+                è stata confermata.
+              </p>
+              <small>Ieri, 15:42</small>
             </div>
+            <ion-button fill="clear" color="primary">
+              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
 
-          </ion-card-content>
-        </ion-card>
-
-        <ion-card class="summary-card">
-          <ion-card-content>
-
-            <div class="summary-icon orange">
+          <!-- NOTIFICA 3 -->
+          <div class="notification-item">
+            <div class="notification-icon orange">
               <ion-icon name="time-outline"></ion-icon>
             </div>
-
-            <div>
-              <h3>Reminder</h3>
-              <strong>2</strong>
-            </div>
-
-          </ion-card-content>
-        </ion-card>
-
-        <ion-card class="summary-card">
-          <ion-card-content>
-
-            <div class="summary-icon green">
-              <ion-icon name="megaphone-outline"></ion-icon>
-            </div>
-
-            <div>
-              <h3>Aggiornamenti</h3>
-              <strong>1</strong>
-            </div>
-
-          </ion-card-content>
-        </ion-card>
-
-      </section>
-
-      <!-- FILTRI -->
-      <section class="filters-row">
-
-        <button class="filter-button active">
-          Tutte
-        </button>
-
-        <button class="filter-button">
-          Non lette
-        </button>
-
-        <button class="filter-button">
-          Reminder
-        </button>
-
-        <button class="filter-button">
-          Aggiornamenti
-        </button>
-
-      </section>
-
-      <!-- CONTENUTO PRINCIPALE -->
-      <section class="notifications-layout">
-
-        <!-- LISTA NOTIFICHE -->
-        <ion-card class="notifications-list-card">
-
-          <ion-card-content>
-
-            <!-- NOTIFICA 1 -->
-            <div class="notification-item unread">
-
-              <span class="unread-dot"></span>
-
-              <div class="notification-icon blue">
-                <ion-icon name="notifications-outline"></ion-icon>
-              </div>
-
-              <div class="notification-content">
-                <h3>Reminder ricevimento</h3>
-                <p>
-                  Ti ricordiamo il ricevimento con <strong>Prof. Mario Rossi</strong>
-                  il <strong>12 Giugno 2026</strong> alle <strong>10:30</strong>
-                  in Edificio A, Piano 2.
-                </p>
-              </div>
-
-              <div class="notification-meta">
-                <span>Oggi, 09:00</span>
-
-                <ion-button fill="outline" routerLink="/dettaglio-prenotazione">
-                  Vedi dettagli
-                  <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-                </ion-button>
-              </div>
-
-            </div>
-
-            <!-- NOTIFICA 2 -->
-            <div class="notification-item unread">
-
-              <span class="unread-dot"></span>
-
-              <div class="notification-icon green">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>
-              </div>
-
-              <div class="notification-content">
-                <h3>Prenotazione confermata</h3>
-                <p>
-                  La tua prenotazione con <strong>Prof.ssa Laura Bianchi</strong>
-                  è stata confermata.
-                </p>
-              </div>
-
-              <div class="notification-meta">
-                <span>Ieri, 15:42</span>
-
-                <ion-button fill="outline" routerLink="/riepilogo-prenotazioni">
-                  Apri prenotazione
-                  <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-                </ion-button>
-              </div>
-
-            </div>
-
-            <!-- NOTIFICA 3 -->
-            <div class="notification-item">
-
-              <div class="notification-icon orange">
-                <ion-icon name="time-outline"></ion-icon>
-              </div>
-
-              <div class="notification-content">
-                <h3>Ricevimento modificato</h3>
-                <p>
-                  Il docente ha aggiornato l’orario del ricevimento.
-                  Nuovo orario: <strong>11:00 - 11:30</strong>.
-                </p>
-              </div>
-
-              <div class="notification-meta">
-                <span>10 Giugno 2026, 11:10</span>
-
-                <ion-button fill="outline" routerLink="/dettaglio-prenotazione">
-                  Vedi dettagli
-                  <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-                </ion-button>
-              </div>
-
-            </div>
-
-            <!-- NOTIFICA 4 -->
-            <div class="notification-item">
-
-              <div class="notification-icon purple">
-                <ion-icon name="document-text-outline"></ion-icon>
-              </div>
-
-              <div class="notification-content">
-                <h3>Documento disponibile</h3>
-                <p>
-                  È stato caricato un nuovo documento allegato alla prenotazione.
-                </p>
-              </div>
-
-              <div class="notification-meta">
-                <span>9 Giugno 2026, 17:25</span>
-
-                <ion-button fill="outline" routerLink="/riepilogo-prenotazioni">
-                  Apri documento
-                  <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-                </ion-button>
-              </div>
-
-            </div>
-
-            <!-- NOTIFICA 5 -->
-            <div class="notification-item">
-
-              <div class="notification-icon red">
-                <ion-icon name="close-circle-outline"></ion-icon>
-              </div>
-
-              <div class="notification-content">
-                <h3>Prenotazione annullata</h3>
-                <p>
-                  La prenotazione con <strong>Prof. Giuseppe Verdi</strong>
-                  è stata annullata.
-                </p>
-              </div>
-
-              <div class="notification-meta">
-                <span>8 Giugno 2026, 08:50</span>
-
-                <ion-button fill="outline" routerLink="/riepilogo-prenotazioni">
-                  Vedi dettagli
-                  <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
-                </ion-button>
-              </div>
-
-            </div>
-
-          </ion-card-content>
-
-        </ion-card>
-
-        <!-- COLONNA DESTRA -->
-        <aside class="notifications-side-column">
-
-          <ion-card class="management-card">
-            <ion-card-header>
-              <ion-card-title>
-                Gestione notifiche
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-
-              <button class="management-row">
-                <ion-icon name="mail-open-outline"></ion-icon>
-                <span>Segna tutte come lette</span>
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </button>
-
-              <button class="management-row">
-                <ion-icon name="trash-outline"></ion-icon>
-                <span>Cancella notifiche lette</span>
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </button>
-
-              <button class="management-row">
-                <ion-icon name="settings-outline"></ion-icon>
-                <span>Preferenze promemoria</span>
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </button>
-
-            </ion-card-content>
-          </ion-card>
-
-          <ion-card class="info-card">
-            <ion-card-content>
-
-              <div class="info-icon">
-                <ion-icon name="information-circle-outline"></ion-icon>
-              </div>
-
+            <div class="notification-content">
+              <h3>Ricevimento modificato</h3>
               <p>
-                I promemoria vengono inviati prima dell’orario del ricevimento
-                per aiutarti a non dimenticare il tuo appuntamento.
+                Il docente ha aggiornato l’orario del ricevimento.
+                Nuovo orario: <strong>11:00 - 11:30</strong>.
               </p>
+              <small>10 Giugno 2026, 11:10</small>
+            </div>
+            <ion-button fill="clear" color="primary">
+              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
 
-            </ion-card-content>
-          </ion-card>
+          <!-- NOTIFICA 4 -->
+          <div class="notification-item">
+            <div class="notification-icon purple">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <div class="notification-content">
+              <h3>Documento disponibile</h3>
+              <p>
+                È stato caricato un nuovo documento allegato alla prenotazione.
+              </p>
+              <small>9 Giugno 2026, 17:25</small>
+            </div>
+            <ion-button fill="clear" color="primary">
+              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
 
-        </aside>
+    <aside class="right-column">
+      <ion-card class="management-card">
+        <ion-card-header>
+          <ion-card-title>Gestione</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <button class="management-row">
+            <ion-icon name="mail-open-outline"></ion-icon>
+            <span>Segna tutte come lette</span>
+            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+          </button>
+          <button class="management-row">
+            <ion-icon name="trash-outline"></ion-icon>
+            <span>Cancella notifiche lette</span>
+            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+          </button>
+          <button class="management-row">
+            <ion-icon name="settings-outline"></ion-icon>
+            <span>Preferenze</span>
+            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+          </button>
+        </ion-card-content>
+      </ion-card>
 
-      </section>
-
-    </main>
-
-  </div>
-
-</ion-content>
+      <ion-card class="info-card">
+        <ion-card-content>
+          <div class="info-icon">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+          <p>
+            I promemoria ti aiutano a non dimenticare i tuoi appuntamenti universitari.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </aside>
+  </section>
+</app-dashboard-layout>
