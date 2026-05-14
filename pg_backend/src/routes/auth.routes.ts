@@ -8,6 +8,7 @@ import {
   refreshToken,
   changePassword,
   forgotPassword,
+  verificaCodice,
   resetPassword,
 } from '../controllers/auth.controller';
 import {
@@ -17,6 +18,7 @@ import {
   adminRegistrationSchema,
   changePasswordSchema,
   forgotPasswordSchema,
+  verificaCodiceSchema,
   resetPasswordSchema,
   refreshTokenSchema,
   handleValidationErrors,
@@ -28,6 +30,7 @@ const router = Router();
 router.post('/login', loginSchema, handleValidationErrors, login);
 router.post('/registrazione', studenteRegistrationSchema, handleValidationErrors, registerStudente);
 router.post('/recupera-password', forgotPasswordSchema, handleValidationErrors, forgotPassword);
+router.post('/auth/verifica-codice', verificaCodiceSchema, handleValidationErrors, verificaCodice);
 router.post('/reset-password', resetPasswordSchema, handleValidationErrors, resetPassword);
 
 router.post('/auth/register/studente', studenteRegistrationSchema, handleValidationErrors, registerStudente);

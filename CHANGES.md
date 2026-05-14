@@ -1,5 +1,84 @@
 # CHANGES
 
+## Recupero password con codice di verifica 6 cifre — 14/05/2026
+
+**Modifica:** Sostituito il sistema JWT-link per il reset password con un sistema a codice di verifica 6 cifre inviato via email. Il codice è riutilizzabile per futura autenticazione a due fattori (2FA). Implementata UI multi-step sulla pagina `recupera-password`.
+
+### Backend — Nuovi file
+
+#### `pg_backend/src/services/email.service.ts`
+- Servizio email con nodemailer (SMTP configurabile via `.env`)
+- Se SMTP non configurato, logga l'email in console (utile per sviluppo)
+- `sendEmail(to, subject, html)` — invio generico
+- `sendCodiceVerifica(email, codice, tipo)` — invio codice con template HTML brandizzato
+
+#### `pg_backend/src/services/codice-verifica.service.ts`
+- `generaCodice()` → 6 cifre casuali via `crypto.randomInt`
+- `creaCodice(email, tipo)` → hash bcrypt, salva su DB, restituisce plain-code
+- `verificaCodice(email, codice, tipo)` → confronta hash senza consumare (per 2FA)
+- `consumaCodice(email, codice, tipo)` → confronta hash e marca come usato
+
+### Backend — Modificati
+
+#### `pg_backend/prisma/schema.prisma`
+- Nuovo modello `CodiceVerifica` con campi: id, email, codice (hash), tipo, scadenza, usato, creato_il
+- Indice composto su `(email, tipo)`
+
+#### `pg_backend/src/services/auth.service.ts`
+- `forgotPassword(email)` ora genera codice 6 cifre + invia via email (anziché JWT link)
+- Nuova funzione `verificaCodice(email, codice)` — verifica senza consumare
+- `resetPassword(email, codice, nuovaPassword)` — consuma codice + aggiorna password
+
+#### `pg_backend/src/controllers/auth.controller.ts`
+- Nuovo handler `verificaCodice` (200/401)
+- `resetPassword` ora accetta `{ email, codice, nuovaPassword }`
+
+#### `pg_backend/src/validators/auth.validators.ts`
+- Nuovo `verificaCodiceSchema`: email + codice
+- Aggiornato `resetPasswordSchema`: email + codice + nuovaPassword
+
+#### `pg_backend/src/routes/auth.routes.ts`
+- Nuova route `POST /api/auth/verifica-codice`
+
+#### `pg_backend/.env`
+- Aggiunte variabili SMTP: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`
+- Valori di default per sviluppo (SMTP non configurato → log console)
+
+### Frontend — Modificati
+
+#### `pg_frontend/src/app/core/services/auth.ts`
+- Nuovo metodo `verificaCodice(email, codice): Observable<{ valido: boolean }>`
+- `confermaResetPassword` ora accetta `(email, codice, nuovaPassword)`
+
+#### `pg_frontend/src/app/features/auth/recupera-password/recupera-password.page.ts`
+- Riscritto con 4-step flow: `email → codice → password → completato`
+- Step 1: form email (esistente)
+- Step 2: input codice 6 cifre con validazione pattern
+- Step 3: nuova password + conferma con strength meter, eye toggle, pwd-rules
+- Step 4: stato di completamento
+
+#### `pg_frontend/src/app/features/auth/reset-password/reset-password.page.ts`
+- Aggiornato a nuova API: legge `email` + `codice` da query params invece di `token`
+
+### Database
+
+#### Nuova migrazione: `20260514182735_add_codice_verifica`
+- Tabella `CodiceVerifica`
+- Aggiunte colonne `Notifica` mancanti (titolo, letta, destinatario_id, destinatario_ruolo) con gestione dati esistenti
+- Tabella `Segnalazione`
+- Tabella `GiornoBloccato`
+
+### Test end-to-end
+
+```
+POST /api/recupera-password  →  codice 6 cifre (log/email) ✅
+POST /api/auth/verifica-codice  →  { valido: true } (non consuma) ✅
+POST /api/reset-password  →  password cambiata (consuma codice) ✅
+POST /api/login  →  login con nuova password ✅
+```
+
+---
+
 ## Backend Notifiche multi-ruolo (Fase 7) + fix campanella admin — 14/05/2026
 
 **Modifica:** Implementato backend CRUD Notifiche con supporto multi-ruolo (studente, docente, amministratore). Aggiornato schema DB, creati service/controller/routes/validators, aperta rotta `/notifiche` a tutti gli autenticati.

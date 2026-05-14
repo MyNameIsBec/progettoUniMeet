@@ -13,8 +13,9 @@
 - [x] `getProfile(userId, ruolo)` — Restituisce dati profilo
 - [x] `refreshToken(token)` — Verifica refresh token, emette nuovo access token
 - [x] `changePassword(userId, ruolo, oldPassword, newPassword)` — Cambio password
-- [x] `forgotPassword(email)` — Genera reset token (15 min)
-- [x] `resetPassword(token, nuovaPassword)` — Resetta password con token
+- [x] `forgotPassword(email)` — Genera codice 6 cifre (15 min), invia via email
+- [x] `verificaCodice(email, codice)` — Verifica codice senza consumarlo (riusabile per 2FA)
+- [x] `resetPassword(email, codice, nuovaPassword)` — Consuma codice, resetta password
 - [x] Middleware `authenticate` — Protegge le rotte (verifica JWT, estrae utente)
 - [x] `registerAdmin(data)` — Registrazione amministratore
 
@@ -60,8 +61,7 @@
 - [x] Pagina Gestione Utenti frontend (tabella, ricerca, CRUD)
 - [x] Pagina Gestione Slot Admin frontend (filtri, griglia slot)
 - [x] Aggiustare le scritte che non si vedono nei form
-- [ ] Permettere all'amministratore di gestire le prenotazioni (eliminarle o modificarle)
-- [ ] → Spostato in Fase 11 (Blocca giorni)
+- [ ] Amministratore: gestire le prenotazioni (eliminarle o modificarle)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
 
 ---

@@ -139,3 +139,15 @@ model GiornoBloccato {
   motivo    String   @default("Festivo")
   creato_il DateTime @default(now())
 }
+
+model CodiceVerifica {
+  id        String   @id @default(uuid())
+  email     String
+  codice    String
+  tipo      String   @default("reset_password") // reset_password | 2fa
+  scadenza  DateTime
+  usato     Boolean  @default(false)
+  creato_il DateTime @default(now())
+
+  @@index([email, tipo])
+}
