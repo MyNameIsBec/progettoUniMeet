@@ -1,5 +1,103 @@
 # CHANGES
 
+## Backend Bacheca/FAQ (Fase 4) — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Bacheca e FAQ (service, controller, validators, routes) con 6 endpoint.
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/bacheca.service.ts`
+- `getBachecaByCorso(idCorso)` — restituisce bacheca + FAQ; se non esiste, la crea automaticamente
+- `updateBacheca(idCorso, data)` — aggiorna titolo/descrizione
+- `getFaqByBacheca(idCorso)` — FAQ ordinate per data discendente
+- `createFaq(idCorso, data)` — crea FAQ con validazione bacheca esistente
+- `updateFaq(id, data)` — modifica domanda/risposta
+- `deleteFaq(id)` — elimina FAQ
+
+#### `pg_backend/src/controllers/bacheca.controller.ts`
+- 6 handler HTTP con gestione errori 404/500
+
+#### `pg_backend/src/routes/bacheche.routes.ts`
+- `GET /api/bacheche/:idCorso` — pubblico
+- `PUT /api/bacheche/:idCorso` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `GET /api/bacheche/:idCorso/faq` — pubblico
+- `POST /api/bacheche/:idCorso/faq` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `PUT /api/faq/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `DELETE /api/faq/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+
+#### `pg_backend/src/validators/bacheca.validators.ts`
+- `aggiornaBachecaSchema`, `creaFaqSchema`, `modificaFaqSchema`
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Importate e registrate `bachecheRoutes`
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 4 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- `bacheca.service.ts`: aggiornato a ✅
+- Fase 4 tabella: ❌ → ✅
+- Dettaglio API Fase 4 rimosso da "Da implementare"
+- Auth endpoint bacheca aggiornato con ruoli esatti
+
+## Backend Corsi (Fase 3) + fix getApiUrl — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Corsi (service, controller, validators, routes) con 5 endpoint. Fixato bug `getApiUrl` senza parentesi in 2 service frontend.
+
+### Bug fix
+
+#### `pg_frontend/src/app/core/services/bacheca.ts`
+- `getApiUrl` → `getApiUrl()` (mancavano le parentesi, restituiva la funzione invece del valore)
+
+#### `pg_frontend/src/app/core/services/documento.ts`
+- Stesso fix: `getApiUrl` → `getApiUrl()`
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/corsi.service.ts`
+- `getCorsi(docenteId?)` — lista corsi con filtro opzionale per docente
+- `getCorsoById(id)` — dettagli con docente incluso
+- `createCorso(data)` — creazione con mapping camelCase → snake_case
+- `updateCorso(id, data)` — modifica parziale (solo campi forniti)
+- `deleteCorso(id)` — elimina in cascata FAQ e bacheca associate
+
+#### `pg_backend/src/controllers/corsi.controller.ts`
+- 5 handler HTTP: `getCorsi`, `getCorsoById`, `createCorso` (201), `updateCorso`, `deleteCorso` (204)
+- Gestione errori: 404 se corso non trovato, 500 per errori interni
+
+#### `pg_backend/src/routes/corsi.routes.ts`
+- `GET /api/corsi` — pubblico (filtro `?docenteId=`)
+- `GET /api/corsi/:id` — pubblico
+- `POST /api/corsi` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `PUT /api/corsi/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+- `DELETE /api/corsi/:id` — JWT + authorize(DOCENTE, AMMINISTRATORE)
+
+#### `pg_backend/src/validators/corsi.validators.ts`
+- `creaCorsoSchema` — nomeCorso, anno (2000-2100), cfu (1-30), idDocente
+- `modificaCorsoSchema` — tutti opzionali
+- `corsiFiltriSchema` — query `?docenteId=` opzionale
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Importate e registrate `corsiRoutes` su `/api`
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 3 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- `corsi.service.ts`: aggiornato a ✅
+- `corsi.validators.ts`: aggiornato a ✅
+- Fase 3 tabella: ❌ → ✅
+- Tabella endpoint spostata da "Da implementare" a "✅ Fase 3 completata"
+- Dettaglio API Fase 3 rimosso dalla sezione "Da implementare"
+
 ## Setup DB cross-platform — setup-db.js, diagnostica PostgreSQL, README/TODO/DOC
 
 **Data:** 11/05/2026

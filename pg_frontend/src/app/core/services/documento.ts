@@ -10,7 +10,7 @@ export class DocumentoService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private get api(): string {
-    return `${this.authService.getApiUrl}/api/documenti`;
+    return `${this.authService.getApiUrl()}/api/documenti`;
   }
 
   caricaDocumento(idPrenotazione: string, file: File): Observable<Documento> {

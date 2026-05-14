@@ -18,13 +18,13 @@
 - [x] Middleware `authenticate` — Protegge le rotte (verifica JWT, estrae utente)
 - [x] `registerAdmin(data)` — Registrazione amministratore
 
-## Fase 3 — API Corsi
-- [ ] CRUD Corsi (solo Docente/Admin crea/modifica)
-- [ ] Associazione Corso ↔ Docente
+## Fase 3 — API Corsi ✅
+- [x] CRUD Corsi (solo Docente/Admin crea/modifica)
+- [x] Associazione Corso ↔ Docente
 
-## Fase 4 — API Bacheca e FAQ
-- [ ] CRUD Bacheca (una per corso)
-- [ ] CRUD FAQ (associate a una bacheca)
+## Fase 4 — API Bacheca e FAQ ✅
+- [x] CRUD Bacheca (una per corso)
+- [x] CRUD FAQ (associate a una bacheca)
 
 ## Fase 5 — API Ricevimento
 - [ ] CRUD SlotRicevimento (Docente crea i propri slot)

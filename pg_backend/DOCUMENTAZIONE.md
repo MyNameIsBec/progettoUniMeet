@@ -178,8 +178,8 @@ npx prisma generate
 | `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA) |
 | `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
 | `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD), slot globali (CRUD + filtri + date disponibili) |
-| `corsi.service.ts` | *(da implementare)* CRUD corsi, associazione corso ↔ docente |
-| `bacheca.service.ts` | *(da implementare)* CRUD bacheca (una per corso) |
+| `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
+| `bacheca.service.ts` | ✅ CRUD bacheca (una per corso), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
 | `notifiche.service.ts` | *(da implementare)* CRUD notifiche |
 
@@ -263,7 +263,7 @@ Endpoint prenotazioni (`prenotazioni.routes.ts`):
 | `/api/prenotazioni/docente/:idDocente` | GET | JWT | Prenotazioni del docente |
 | `/api/prenotazioni/:id/stato` | PUT | JWT | Aggiorna stato prenotazione |
 
-### Da implementare — API future
+### ✅ Fase 3 completata — Corsi
 
 Endpoint corsi (`corsi.routes.ts`):
 
@@ -271,38 +271,22 @@ Endpoint corsi (`corsi.routes.ts`):
 |----------|--------|------|-------------|
 | `/api/corsi` | GET | - | Elenco corsi (filtro `?docenteId=`) |
 | `/api/corsi/:id` | GET | - | Dettagli corso con docente |
-| `/api/corsi` | POST | JWT | Crea corso |
-| `/api/corsi/:id` | PUT | JWT | Modifica corso |
-| `/api/corsi/:id` | DELETE | JWT | Elimina corso |
+| `/api/corsi` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea corso |
+| `/api/corsi/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica corso |
+| `/api/corsi/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina corso |
+
+### ✅ Fase 4 completata — Bacheca e FAQ
 
 Endpoint bacheca (`bacheche.routes.ts`):
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
 | `/api/bacheche/:idCorso` | GET | - | Bacheca di un corso (con FAQ) |
-| `/api/bacheche/:idCorso` | PUT | JWT | Aggiorna bacheca |
+| `/api/bacheche/:idCorso` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
 | `/api/bacheche/:idCorso/faq` | GET | - | FAQ della bacheca |
-| `/api/bacheche/:idCorso/faq` | POST | JWT | Crea FAQ |
-| `/api/faq/:id` | PUT | JWT | Modifica FAQ |
-| `/api/faq/:id` | DELETE | JWT | Elimina FAQ |
-
-Endpoint notifiche (`notifiche.routes.ts`):
-
-| Endpoint | Metodo | Auth | Descrizione |
-|----------|--------|------|-------------|
-| `/api/notifiche` | GET | JWT | Elenco notifiche |
-| `/api/notifiche` | POST | JWT | Crea notifica |
-| `/api/notifiche/:id/letta` | PUT | JWT | Segna come letta |
-| `/api/notifiche/:id` | DELETE | JWT | Elimina notifica |
-
-Endpoint documenti (`documenti.routes.ts`):
-
-| Endpoint | Metodo | Auth | Descrizione |
-|----------|--------|------|-------------|
-| `/api/documenti/upload` | POST | JWT | Carica file (multipart) |
-| `/api/documenti/:id` | GET | JWT | Scarica file |
-| `/api/prenotazioni/:id/documenti` | GET | JWT | Documenti di una prenotazione |
-| `/api/documenti/:id` | DELETE | JWT | Elimina documento |
+| `/api/bacheche/:idCorso/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
+| `/api/faq/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica FAQ |
+| `/api/faq/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina FAQ |
 
 Endpoint admin (`admin.routes.ts`):
 
@@ -369,7 +353,9 @@ File validator aggiuntivo:
 | `docenti.validators.ts` | Creazione/modifica slot, filtri mese |
 | `prenotazioni.validators.ts` | Creazione prenotazione, aggiornamento stato |
 | `segnalazioni.validators.ts` | Creazione segnalazione, aggiornamento stato |
-| `corsi.validators.ts` | *(da implementare)* Creazione/modifica corsi |
+| `corsi.validators.ts` | ✅ Creazione/modifica corsi |
+| `bacheca.validators.ts` | ✅ Aggiornamento bacheca, creazione/modifica FAQ |
+| `notifiche.validators.ts` | *(da implementare)* Creazione notifiche |
 | `documenti.validators.ts` | *(da implementare)* Upload documenti |
 
 ---
@@ -468,14 +454,14 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ---
 
-## TODO — 8 fasi di implementazione
+## TODO — 11 fasi di implementazione
 
 | Fase | Cosa implementare | Stato |
 |------|-------------------|-------|
 | 1 | Setup DB, script `setup-db.sh`/`setup-db.js`, migrazioni, seed dati | ✅ |
 | 2 | Auth: login JWT, middleware, profile, refresh, cambio/reset password, register admin | ✅ |
-| 3 | CRUD Corsi, associazione corso ↔ docente | ❌ |
-| 4 | CRUD Bacheca e FAQ | ❌ |
+| 3 | CRUD Corsi, associazione corso ↔ docente | ✅ |
+| 4 | CRUD Bacheca e FAQ | ✅ |
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
 | 6 | CRUD Prenotazione, gestione stato | ✅ |
 | 7 | CRUD Notifiche | ❌ |
@@ -486,22 +472,9 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 ### Dettaglio API ancora da implementare
 
-#### Fase 3 — Corsi (`corsi.routes.ts`, `corsi.controller.ts`, `corsi.service.ts`, `corsi.validators.ts`)
-- `GET /api/corsi` — elenco con filtro `?docenteId=`
-- `GET /api/corsi/:id` — dettagli con docente
-- `POST /api/corsi` — crea corso (autenticato)
-- `PUT /api/corsi/:id` — modifica corso (autenticato)
-- `DELETE /api/corsi/:id` — elimina corso (autenticato)
-
-#### Fase 4 — Bacheca e FAQ (`bacheche.routes.ts`, `bacheca.controller.ts`, `bacheca.service.ts`, plus `faq` nello stesso modulo)
-- `GET /api/bacheche/:idCorso` — bacheca di un corso (con FAQ)
-- `PUT /api/bacheche/:idCorso` — aggiorna bacheca (autenticato)
-- `GET /api/bacheche/:idCorso/faq` — FAQ di una bacheca
-- `POST /api/bacheche/:idCorso/faq` — crea FAQ (autenticato)
-- `PUT /api/faq/:id` — modifica FAQ (autenticato)
-- `DELETE /api/faq/:id` — elimina FAQ (autenticato)
-
-#### Fase 7 — Notifiche (`notifiche.routes.ts`, `notifiche.controller.ts`, `notifiche.service.ts`)
+#### Fase 7 — Notifiche ⚠️ controller/routes esistenti ma vuoti
+- `notifiche.controller.ts` e `notifiche.routes.ts` esistono come file vuoti
+- Manca: `notifiche.service.ts`, `notifiche.validators.ts`
 - `GET /api/notifiche` — elenco notifiche (autenticato)
 - `POST /api/notifiche` — crea notifica (autenticato)
 - `PUT /api/notifiche/:id/letta` — segna come letta (autenticato)
@@ -528,87 +501,5 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
 
 ---
-## Blocca giorni — Piano implementazione
 
-### Modello DB (`prisma/schema.prisma`)
-```prisma
-model GiornoBloccato {
-  id_giorno String   @id @default(uuid())
-  data      DateTime @db.Date
-  motivo    String   @default("Festivo")
-  creato_il DateTime @default(now())
-
-  @@unique([data])
-}
-```
-
-### Backend
-
-#### `services/admin.service.ts` — Aggiungere:
-- `getGiorniBloccati()` — lista giorni bloccati ordinati per data
-- `bloccaGiorno(data, motivo?)` — inserisce giorno bloccato (errore se già bloccato)
-- `sbloccaGiorno(id)` — elimina giorno bloccato
-
-#### `controllers/admin.controller.ts` — Aggiungere 3 handler:
-- `getGiorniBloccati` — GET
-- `bloccaGiorno` — POST (body: `{ data, motivo? }`)
-- `sbloccaGiorno` — DELETE
-
-#### `routes/admin.routes.ts` — Aggiungere:
-- `GET /api/admin/giorni-bloccati` — lista
-- `POST /api/admin/giorni-bloccati` — blocca (con validatore)
-- `DELETE /api/admin/giorni-bloccati/:id` — sblocca
-
-#### `validators/admin.validators.ts` — Aggiungere:
-- `bloccaGiornoSchema` — `data` obbligatoria (`YYYY-MM-DD`), `motivo` opzionale
-
-#### `prisma/seed.ts` — Aggiungere giorni di test:
-- 2026-04-25: "Festa della Liberazione"
-- 2026-05-01: "Festa del Lavoro"
-- 2026-06-02: "Festa della Repubblica"
-
-### Frontend
-
-#### `services/admin.ts` — Aggiungere:
-- Interfaccia `GiornoBloccato { id, data, motivo, creatoIl }`
-- `getGiorniBloccati(): Observable<GiornoBloccato[]>`
-- `bloccaGiorno(dati): Observable<GiornoBloccato>`
-- `sbloccaGiorno(id): Observable<void>`
-
-#### Nuova pagina `features/admin/gestione-calendario/` (standalone):
-- Header con menu admin laterale (voce "Calendario")
-- Tabella/card dei giorni bloccati con data, motivo, azioni
-- Pulsante "Blocca giorno" + modale con date picker e motivo
-- Bottone elimina su ogni riga con conferma
-- Design coerente con altre pagine admin (stessa palette, border-radius 18px, ombre)
-
-#### `app.routes.ts` — Aggiungere:
-```ts
-{
-  path: 'gestione-calendario',
-  canActivate: [authGuard, roleGuard('amministratore')],
-  loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage),
-}
-```
-
-#### Menu admin — Aggiungere "Calendario" con icona `calendar-outline`:
-- `dashboard-layout.component.ts`
-- `dashboard-admin.page.ts`
-- `gestione-utenti/gestione-utenti.page.ts`
-- `gestione-slot-admin/gestione-slot-admin.page.ts`
-- `gestione-segnalazioni/gestione-segnalazioni.page.ts`
-
-### File da creare/modificare (riepilogo)
-
-| File | Azione |
-|------|--------|
-| `prisma/schema.prisma` | Aggiungere modello `GiornoBloccato` |
-| `prisma/seed.ts` | Aggiungere 3 giorni test |
-| `services/admin.service.ts` | 3 funzioni nuove |
-| `controllers/admin.controller.ts` | 3 handler nuovi |
-| `routes/admin.routes.ts` | 3 rotte nuove |
-| `validators/admin.validators.ts` | Schema validazione |
-| `services/admin.ts` (frontend) | Interface + 3 metodi |
-| `features/admin/gestione-calendario/*` (3 file) | Nuova pagina |
-| `app.routes.ts` | Nuova rotta |
-| 5 file menu admin | Aggiungere voce "Calendario" |
+> **Nota:** La pianificazione dettagliata della Fase 11 (Blocca giorni) è stata rimossa in quanto già implementata. Vedi sezione API admin per gli endpoint `/api/admin/giorni-bloccati`.
