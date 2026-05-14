@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import {
   IonIcon,
@@ -28,12 +28,14 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
   imports: [CommonModule, RouterLink, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent]
 })
 
-export class DashboardStudentePage {
+export class DashboardStudentePage implements OnInit, OnDestroy {
   public nomeStudente: string = 'Studente';
   public prossimoRicevimento: Prenotazione | null = null;
   public listaPrenotazioni: Prenotazione[] = [];
   public listaFaq: FAQ[] = [];
   idStudenteCorrente: string = '';
+  
+  private userSub: Subscription | null = null;
 
   constructor(
     private prenotazioneService: PrenotazioneService,
@@ -43,13 +45,25 @@ export class DashboardStudentePage {
   ) { }
 
   async ngOnInit() {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.idStudenteCorrente = user.id;
-      this.nomeStudente = user.nome;
+    this.userSub = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.nomeStudente = user.nome;
+        this.idStudenteCorrente = user.id;
+        this.caricaDatiDashboard(user.id);
+      }
+    });
+  }
 
+  ngOnDestroy() {
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
+  }
+
+  private async caricaDatiDashboard(matricola: string) {
+    try {
       // Recupera il profilo completo per conoscere il corso di studi
-      const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
+      const profilo = await firstValueFrom(this.studenteService.getProfilo(matricola));
       
       if (profilo.corsoDiStudi) {
         // Carica le FAQ specifiche del corso
@@ -58,13 +72,15 @@ export class DashboardStudentePage {
           this.listaFaq = bacheca.faqs;
         }
       }
-    }
 
-    this.listaPrenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(this.idStudenteCorrente));
+      this.listaPrenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(matricola));
 
-    // Imposta il prossimo ricevimento (il primo della lista se presente)
-    if (this.listaPrenotazioni.length > 0) {
-      this.prossimoRicevimento = this.listaPrenotazioni[0];
+      // Imposta il prossimo ricevimento (il primo della lista se presente)
+      if (this.listaPrenotazioni.length > 0) {
+        this.prossimoRicevimento = this.listaPrenotazioni[0];
+      }
+    } catch (err) {
+      console.error('Errore caricamento dati dashboard', err);
     }
   }
 }

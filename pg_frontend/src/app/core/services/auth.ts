@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap} from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 
 export type UserRole = 'studente' | 'docente' | 'amministratore' | 'guest';
 
@@ -25,7 +25,8 @@ export interface RegistrazioneStudente {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = '';
-  private currentUser: UserSession | null = null;
+  private currentUserSubject = new BehaviorSubject<UserSession | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
     this.loadSessionFromStorage();
@@ -46,14 +47,14 @@ export class AuthService {
     ).pipe(
       tap(session => {
         session.role = session.role.toLowerCase() as UserRole;
-        this.currentUser = session;
+        this.currentUserSubject.next(session);
         this.saveSessionToStorage(session);
       })
     );
   }
 
   logout(): void {
-    this.currentUser = null;
+    this.currentUserSubject.next(null);
     localStorage.removeItem('unimeet_session');
   }
 
@@ -64,10 +65,19 @@ export class AuthService {
     ).pipe(
       tap(session => {
         session.role = session.role.toLowerCase() as UserRole;
-        this.currentUser = session;
+        this.currentUserSubject.next(session);
         this.saveSessionToStorage(session);
       })
     );
+  }
+
+  updateUser(data: Partial<UserSession>): void {
+    const current = this.currentUserSubject.value;
+    if (current) {
+      const updated = { ...current, ...data };
+      this.currentUserSubject.next(updated);
+      this.saveSessionToStorage(updated);
+    }
   }
 
   richiediResetPassword(email: string): Observable<{ messaggio: string }> {
@@ -85,15 +95,15 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.currentUser !== null;
+    return this.currentUserSubject.value !== null;
   }
 
   getCurrentUser(): UserSession | null {
-    return this.currentUser;
+    return this.currentUserSubject.value;
   }
 
   getRole(): UserRole {
-    return this.currentUser?.role ?? 'guest';
+    return this.currentUserSubject.value?.role ?? 'guest';
   }
 
   hasRole(requiredRole: UserRole): boolean {
@@ -101,7 +111,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.currentUser?.token ?? null;
+    return this.currentUserSubject.value?.token ?? null;
   }
 
   isStudente(): boolean { return this.hasRole('studente'); }
@@ -118,7 +128,7 @@ export class AuthService {
       try {
         const session = JSON.parse(raw) as UserSession;
         session.role = session.role.toLowerCase() as UserRole;
-        this.currentUser = session;
+        this.currentUserSubject.next(session);
       } catch {
         localStorage.removeItem('unimeet_session');
       }

@@ -25,4 +25,12 @@ export class StudenteService {
   getCorsi(matricola: string): Observable<Corso[]> {
     return this.http.get<Corso[]>(`${this.api}/${matricola}/corsi`);
   }
+
+  cambiaPassword(matricola: string, vecchiaPw: string, nuovaPw: string): Observable<{ messaggio: string }> {
+    return this.http.post<{ messaggio: string }>(`${this.api}/${matricola}/cambia-password`, { vecchiaPw, nuovaPw });
+  }
+
+  eliminaAccount(matricola: string): Observable<{ messaggio: string }> {
+    return this.http.delete<{ messaggio: string }>(`${this.api}/${matricola}`);
+  }
 }

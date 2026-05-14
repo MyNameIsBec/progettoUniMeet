@@ -102,13 +102,26 @@
               <div class="form-field full-width">
                 <label>Allegato opzionale</label>
 
-                <div class="upload-box">
-                  <ion-icon name="cloud-upload-outline"></ion-icon>
+                <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none"
+                  accept=".pdf,.jpg,.jpeg,.png">
 
-                  <div>
-                    <strong>Carica screenshot o documento</strong>
-                    <span>PDF, JPG o PNG - massimo 5MB</span>
-                  </div>
+                <div class="upload-box" (click)="fileInput.click()" [class.has-file]="selectedFile">
+                  @if (selectedFile) {
+                    <ion-icon name="document-text-outline" color="primary"></ion-icon>
+                    <div>
+                      <strong>{{ selectedFile.name }}</strong>
+                      <span>{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB - Clicca per cambiare</span>
+                    </div>
+                    <ion-button fill="clear" color="danger" (click)="$event.stopPropagation(); selectedFile = null">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  } @else {
+                    <ion-icon name="cloud-upload-outline"></ion-icon>
+                    <div>
+                      <strong>Carica screenshot o documento</strong>
+                      <span>PDF, JPG o PNG - massimo 5MB</span>
+                    </div>
+                  }
                 </div>
               </div>
             </div>

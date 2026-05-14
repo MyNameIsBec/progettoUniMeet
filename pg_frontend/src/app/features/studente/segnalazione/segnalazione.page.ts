@@ -16,6 +16,8 @@ import { AuthService } from 'src/app/core/services/auth';
 
 export class SegnalazionePage implements OnInit {
   segnalazioni: Segnalazione[] = [];
+  selectedFile: File | null = null;
+  invioInCorso: boolean = false;
 
   form = {
     oggetto: '',
@@ -28,12 +30,21 @@ export class SegnalazionePage implements OnInit {
     risolte: 0
   };
 
-  invioInCorso: boolean = false;
-
   constructor(private segnalazioneService: SegnalazioneService, private authService: AuthService) { }
 
   ngOnInit() {
     this.caricaSegnalazioni();
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Il file è troppo grande. Massimo 5MB.');
+        return;
+      }
+      this.selectedFile = file;
+    }
   }
 
   caricaSegnalazioni() {
@@ -78,6 +89,7 @@ export class SegnalazionePage implements OnInit {
     ).subscribe({
       next: () => {
         this.form = { oggetto: '', descrizione: '' };
+        this.selectedFile = null;
         this.invioInCorso = false;
         this.caricaSegnalazioni();
       },
