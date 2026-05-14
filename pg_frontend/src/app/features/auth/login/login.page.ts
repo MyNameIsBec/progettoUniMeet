@@ -17,7 +17,6 @@ export class LoginPage implements OnInit {
 
   loginForm!: FormGroup;
   inCaricamento = false;
-  mostraPassword = false;
   errorMessage = '';
   private urlDiRitorno = '/dashboard';
 
@@ -41,9 +40,7 @@ export class LoginPage implements OnInit {
   get email() { return this.loginForm.get('email')!; }
   get password() { return this.loginForm.get('password')!; }
 
-  cambiaVisibilitaPassword(): void {
-    this.mostraPassword = !this.mostraPassword;
-  }
+
 
   effettuaLogin(): void {
     if (this.loginForm.invalid) { this.loginForm.markAllAsTouched(); return; }
@@ -51,9 +48,8 @@ export class LoginPage implements OnInit {
     this.inCaricamento = true;
     this.errorMessage = '';
 
-    const { email, password } = this.loginForm.value;
-
-    this.authService.login(email, password).subscribe({
+    const { email, password, rememberMe } = this.loginForm.value;
+    this.authService.login(email, password, rememberMe).subscribe({
       next: () => {
         this.inCaricamento = false;
         const role = this.authService.getCurrentUser()?.role;

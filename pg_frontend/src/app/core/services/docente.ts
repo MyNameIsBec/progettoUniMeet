@@ -17,7 +17,8 @@ export class DocenteService {
   }
 
   getDocentiPerCorso(corsoDiStudi: string): Observable<Docente[]> {
-    return this.http.get<Docente[]>(this.api + `/corso/${corsoDiStudi}`);
+    // Il backend attualmente non ha l'endpoint specifico per corso, usiamo quello generale
+    return this.http.get<Docente[]>(this.api);
   }
 
   getDettagliDocente(id: string): Observable<Docente> {

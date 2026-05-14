@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -38,7 +38,6 @@ import { StudenteService } from '../../../core/services/studente';
     IonSelect,
     IonSelectOption,
     IonToggle,
-    RouterLink,
     DashboardLayoutComponent,
   ],
   templateUrl: './profilo-studente.page.html',

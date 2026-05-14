@@ -29,15 +29,15 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
       if (user) {
         this.ruoloUtente = user.role;
         this.nomeUtente = `${user.nome} ${user.cognome}`;
-        this.configuraMenu(user.role);
+        if (!this.vociMenu || this.vociMenu.length === 0) {
+          this.configuraMenu(user.role);
+        }
       }
     });
   }
 
   ngOnDestroy() {
-    if (this.userSub) {
-      this.userSub.unsubscribe();
-    }
+    if (this.userSub) this.userSub.unsubscribe();
   }
 
   private configuraMenu(role: string) {

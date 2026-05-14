@@ -74,7 +74,7 @@ export interface FiltriSlot {
   providedIn: 'root',
 })
 export class Admin {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getStatistiche(): Observable<AdminStats> {
     return this.http.get<AdminStats>('api/admin/stats');

@@ -40,7 +40,7 @@ export class AuthService {
     return this.apiUrl;
   }
 
-  login(email: string, password: string): Observable<UserSession> {
+  login(email: string, password: string, rememberMe: boolean = false): Observable<UserSession> {
     return this.http.post<UserSession>(
       `${this.apiUrl}/api/login`,
       { email, password }
@@ -48,7 +48,7 @@ export class AuthService {
       tap(session => {
         session.role = session.role.toLowerCase() as UserRole;
         this.currentUserSubject.next(session);
-        this.saveSessionToStorage(session);
+        this.saveSessionToStorage(session, rememberMe);
       })
     );
   }
@@ -56,6 +56,7 @@ export class AuthService {
   logout(): void {
     this.currentUserSubject.next(null);
     localStorage.removeItem('unimeet_session');
+    sessionStorage.removeItem('unimeet_session');
   }
 
   registraStudente(dati: RegistrazioneStudente): Observable<UserSession> {
@@ -118,12 +119,13 @@ export class AuthService {
   isDocente(): boolean  { return this.hasRole('docente'); }
   isAdmin(): boolean    { return this.hasRole('amministratore'); }
 
-  private saveSessionToStorage(session: UserSession): void {
-    localStorage.setItem('unimeet_session', JSON.stringify(session));
+  private saveSessionToStorage(session: UserSession, persist: boolean = true): void {
+    const storage = persist ? localStorage : sessionStorage;
+    storage.setItem('unimeet_session', JSON.stringify(session));
   }
 
   private loadSessionFromStorage(): void {
-    const raw = localStorage.getItem('unimeet_session');
+    const raw = localStorage.getItem('unimeet_session') || sessionStorage.getItem('unimeet_session');
     if (raw) {
       try {
         const session = JSON.parse(raw) as UserSession;
@@ -131,6 +133,7 @@ export class AuthService {
         this.currentUserSubject.next(session);
       } catch {
         localStorage.removeItem('unimeet_session');
+        sessionStorage.removeItem('unimeet_session');
       }
     }
   }

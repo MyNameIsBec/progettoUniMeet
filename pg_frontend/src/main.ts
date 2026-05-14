@@ -7,6 +7,11 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { intercettoreAutenticazione } from './app/core/interceptors/auth-interceptor';
 import { addIcons } from 'ionicons';
+import { registerLocaleData } from '@angular/common';
+import localeIt from '@angular/common/locales/it';
+import { LOCALE_ID } from '@angular/core';
+
+registerLocaleData(localeIt);
 
 import {
   addOutline,
@@ -73,6 +78,11 @@ import {
   shieldCheckmarkOutline,
   shieldOutline,
   statsChartOutline,
+  keyOutline,
+  moonOutline,
+  refreshOutline,
+  saveOutline,
+  sunnyOutline,
   timeOutline,
   trashBinOutline,
   trashOutline
@@ -143,10 +153,15 @@ addIcons({
   shieldCheckmarkOutline,
   shieldOutline,
   statsChartOutline,
+  keyOutline,
+  moonOutline,
+  refreshOutline,
+  saveOutline,
+  sunnyOutline,
   timeOutline,
   trashBinOutline,
   trashOutline
-  });
+});
 
 // Inizializza il tema scuro se salvato nelle preferenze
 const savedTheme = localStorage.getItem('theme');
@@ -157,8 +172,9 @@ if (savedTheme === 'dark') {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: LOCALE_ID, useValue: 'it-IT' },
     provideIonicAngular(),
-    provideRouter(routes, withPreloading(PreloadAllModules)), 
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(withInterceptors([intercettoreAutenticazione])),
   ],
 });

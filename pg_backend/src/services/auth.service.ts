@@ -224,7 +224,9 @@ export async function changePassword(
   }
 }
 
-export async function forgotPassword(email: string): Promise<{ messaggio: string; resetToken?: string }> {
+import { sendResetPasswordEmail } from './email.service';
+
+export async function forgotPassword(email: string): Promise<{ messaggio: string }> {
   let user: any = await prisma.studente.findUnique({ where: { email } });
   let ruolo: Ruolo = 'STUDENTE';
 
@@ -241,7 +243,9 @@ export async function forgotPassword(email: string): Promise<{ messaggio: string
   const id = ruolo === 'STUDENTE' ? user.matricola : ruolo === 'DOCENTE' ? user.id_docente : user.id_admin;
   const resetToken = jwt.sign({ id, email, ruolo }, JWT_SECRET, { expiresIn: '15m' as any });
 
-  return { messaggio: "Se l'email esiste, riceverai un link per il reset della password.", resetToken };
+  await sendResetPasswordEmail(email, resetToken);
+
+  return { messaggio: "Se l'email esiste, riceverai un link per il reset della password." };
 }
 
 export async function resetPassword(token: string, nuovaPassword: string): Promise<{ messaggio: string }> {

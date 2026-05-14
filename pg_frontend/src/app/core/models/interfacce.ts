@@ -60,7 +60,8 @@ export interface SlotRicevimento {
   data: Date;
   oraInizio: string;
   oraFine: string;
-  stato: 'disponibile' | 'occupato' | 'non_prenotabile';
+  disponibilita: boolean;
+  stato?: 'disponibile' | 'occupato' | 'non_prenotabile';
   luogo: LuogoRicevimento;
 }
 

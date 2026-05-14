@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import {
   IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
   IonItem, IonLabel, IonInput, IonDatetime,
@@ -18,7 +17,7 @@ import { Admin, GiornoBloccato } from 'src/app/core/services/admin';
   imports: [
     IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
     IonItem, IonLabel, IonInput, IonDatetime,
-    CommonModule, FormsModule, RouterLink, DashboardLayoutComponent,
+    CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
 export class GestioneCalendarioPage implements OnInit {
@@ -37,7 +36,7 @@ export class GestioneCalendarioPage implements OnInit {
     { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
   ];
 
-  constructor(private admin: Admin) {}
+  constructor(private admin: Admin) { }
 
   ngOnInit() {
     this.caricaGiorni();

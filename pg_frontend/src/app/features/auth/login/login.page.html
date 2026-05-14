@@ -38,11 +38,8 @@
           <label class="field-label">Password</label>
           <div class="field-wrap" [class.has-error]="password.invalid && password.touched">
             <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
-            <ion-input [type]="mostraPassword ? 'text' : 'password'" formControlName="password"
+            <ion-input type="password" formControlName="password"
               placeholder="Inserisci la password" class="field-input"></ion-input>
-            <button type="button" class="eye-btn" (click)="cambiaVisibilitaPassword()">
-              <ion-icon [name]="mostraPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-            </button>
           </div>
           @if (password.invalid && password.touched) {
             <span class="field-error-msg">

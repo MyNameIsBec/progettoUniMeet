@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
-  IonIcon, IonButton, IonSelect, IonSelectOption, IonSearchbar,
-  IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonItem, IonLabel,
+  IonIcon, IonButton, IonSelect, IonSelectOption,
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
@@ -17,10 +16,9 @@ import { Admin, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from 'src/a
   styleUrls: ['./gestione-slot-admin.page.scss'],
   standalone: true,
   imports: [
-    IonIcon, IonButton, IonSelect, IonSelectOption, IonSearchbar,
-    IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonItem, IonLabel,
+    IonIcon, IonButton, IonSelect, IonSelectOption,
     IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
-    CommonModule, FormsModule, RouterLink, DashboardLayoutComponent,
+    CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
 export class GestioneSlotAdminPage implements OnInit {

@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import {
-  IonIcon, IonButton, IonSelect, IonSelectOption, IonChip, IonLabel,
+  IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel,
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { VoceMenuNavigazione } from '../../../core/models/interfacce';
@@ -15,8 +14,8 @@ import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnala
   styleUrls: ['./gestione-segnalazioni.page.scss'],
   standalone: true,
   imports: [
-    IonIcon, IonButton, IonSelect, IonSelectOption, IonChip, IonLabel,
-    CommonModule, FormsModule, RouterLink, DashboardLayoutComponent,
+    IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel,
+    CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
 export class GestioneSegnalazioniPage implements OnInit {
