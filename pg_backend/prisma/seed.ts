@@ -246,23 +246,47 @@ async function main() {
 
   // ──────────────────────────── NOTIFICA ────────────────────────────
   console.log('\n── Notifica ──');
-  const notifiche = [
-    { msg: 'La prenotazione per il ricevimento del 15/05/2026 è stata confermata.', tipo: 'CONFERMA_PRENOTAZIONE' },
-    { msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO' },
-    { msg: 'La prenotazione per il ricevimento del 18/05/2026 è stata rifiutata.', tipo: 'RIFIUTO_PRENOTAZIONE' },
-    { msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE' },
-    { msg: 'Ricevimento del 22/05 annullato per impegni istituzionali.', tipo: 'CANCELLAZIONE_SLOT' },
+
+  const notificheStudente = [
+    { titolo: 'Conferma Ricevimento', msg: 'Il ricevimento del 15/05/2026 con il Prof. Verdi è stato confermato.', tipo: 'CONFERMA' },
+    { titolo: 'Nuovo Materiale', msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO' },
+    { titolo: 'Ricevimento Rifiutato', msg: 'La richiesta di ricevimento per il 18/05/2026 è stata rifiutata.', tipo: 'RIFIUTO' },
+    { titolo: 'Appelli Estivi', msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE' },
+    { titolo: 'Slot Annullato', msg: 'Il ricevimento del 22/05/2026 è stato annullato.', tipo: 'CANCELLAZIONE' },
   ];
-  for (const n of notifiche) {
+  for (const n of notificheStudente) {
     await prisma.notifica.create({
-      data: { 
-        titolo: 'Avviso di Sistema',
-        messaggio: n.msg, 
-        tipo: n.tipo,
-        matricola_studente: 'MAT001'
-      },
+      data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: 'MAT001', destinatario_ruolo: 'STUDENTE' },
     });
-    console.log(`  [${n.tipo}] ${n.msg.substring(0, 60)}...`);
+    console.log(`  [STUDENTE] ${n.titolo}`);
+  }
+
+  const docente = await prisma.docente.findFirst();
+  if (docente) {
+    const notificheDocente = [
+      { titolo: 'Nuova Prenotazione', msg: 'Lo studente Mario Rossi ha prenotato un ricevimento per il 15/05/2026.', tipo: 'NUOVA_PRENOTAZIONE' },
+      { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento con uno studente domani alle 10:00.', tipo: 'PROMEMORIA' },
+    ];
+    for (const n of notificheDocente) {
+      await prisma.notifica.create({
+        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: docente.id_docente, destinatario_ruolo: 'DOCENTE' },
+      });
+      console.log(`  [DOCENTE] ${n.titolo}`);
+    }
+  }
+
+  const admin = await prisma.amministratore.findFirst();
+  if (admin) {
+    const notificheAdmin = [
+      { titolo: 'Nuova Segnalazione', msg: 'È stata aperta una nuova segnalazione da uno studente.', tipo: 'SEGNALAZIONE' },
+      { titolo: 'Report Settimanale', msg: 'Il report settimanale delle prenotazioni è disponibile.', tipo: 'SISTEMA' },
+    ];
+    for (const n of notificheAdmin) {
+      await prisma.notifica.create({
+        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: admin.id_admin, destinatario_ruolo: 'AMMINISTRATORE' },
+      });
+      console.log(`  [AMMINISTRATORE] ${n.titolo}`);
+    }
   }
 
   console.log('\n✅ Seed completato con successo!');

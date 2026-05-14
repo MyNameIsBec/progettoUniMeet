@@ -197,18 +197,55 @@ export async function updateUser(id: string, data: any): Promise<UtenteUnificato
   };
 }
 
-export async function deleteUser(id: string): Promise<void> {
+export async function deleteUser(id: string, adminId?: string): Promise<void> {
   const found = await trovaUtentePerId(id);
   if (!found) throw new Error('User not found');
 
-  if (found.tabella === 'studente') {
-    await prisma.prenotazione.deleteMany({ where: { matricola_studente: id } });
-    await prisma.studente.delete({ where: { matricola: id } });
-  } else if (found.tabella === 'docente') {
-    await prisma.docente.delete({ where: { id_docente: id } });
-  } else {
-    await prisma.amministratore.delete({ where: { id_admin: id } });
+  if (adminId && found.tabella === 'amministratore' && (found.dati as any).id_admin === adminId) {
+    throw new Error('Cannot delete your own account');
   }
+
+  await prisma.$transaction(async (tx) => {
+    if (found.tabella === 'studente') {
+      await tx.documento.deleteMany({
+        where: { prenotazione: { matricola_studente: id } },
+      });
+      await tx.prenotazione.deleteMany({ where: { matricola_studente: id } });
+      await tx.segnalazione.deleteMany({ where: { matricola_studente: id } });
+      await tx.notifica.deleteMany({ where: { destinatario_id: id } });
+      await tx.studente.delete({ where: { matricola: id } });
+    } else if (found.tabella === 'docente') {
+      const corsi = await tx.corso.findMany({ where: { id_docente: id } });
+      for (const corso of corsi) {
+        const bacheca = await tx.bacheca.findUnique({ where: { id_corso: corso.id_corso } });
+        if (bacheca) {
+          await tx.fAQ.deleteMany({ where: { id_bacheca: bacheca.id_bacheca } });
+          await tx.bacheca.delete({ where: { id_corso: corso.id_corso } });
+        }
+      }
+      await tx.corso.deleteMany({ where: { id_docente: id } });
+
+      const slotIds = (await tx.slotRicevimento.findMany({
+        where: { id_docente: id },
+        select: { id_slot: true },
+      })).map(s => s.id_slot);
+
+      if (slotIds.length > 0) {
+        await tx.documento.deleteMany({
+          where: { prenotazione: { id_slot: { in: slotIds } } },
+        });
+        await tx.prenotazione.deleteMany({ where: { id_slot: { in: slotIds } } });
+        await tx.luogoRicevimento.deleteMany({ where: { id_slot: { in: slotIds } } });
+        await tx.slotRicevimento.deleteMany({ where: { id_docente: id } });
+      }
+
+      await tx.notifica.deleteMany({ where: { destinatario_id: id } });
+      await tx.docente.delete({ where: { id_docente: id } });
+    } else {
+      await tx.notifica.deleteMany({ where: { destinatario_id: id } });
+      await tx.amministratore.delete({ where: { id_admin: id } });
+    }
+  });
 }
 
 export interface SlotDate {

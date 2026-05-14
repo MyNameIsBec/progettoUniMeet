@@ -22,7 +22,6 @@ model Studente {
   password        String
   corso_di_studi  String
   prenotazioni    Prenotazione[]
-  notifiche       Notifica[]
   segnalazioni    Segnalazione[]
 }
 
@@ -139,10 +138,10 @@ model Notifica {
   titolo             String
   messaggio          String
   data_invio         DateTime @default(now())
-  tipo               String   // es. "REMINDER", "CONFERMA", "MODIFICA", "DOCUMENTO"
+  tipo               String
   letta              Boolean  @default(false)
-  matricola_studente String
-  studente           Studente @relation(fields: [matricola_studente], references: [matricola])
+  destinatario_id    String
+  destinatario_ruolo String   // STUDENTE, DOCENTE, AMMINISTRATORE
 }
 
 model GiornoBloccato {

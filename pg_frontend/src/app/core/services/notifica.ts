@@ -6,10 +6,11 @@ export interface Notifica {
   id: string;
   titolo: string;
   messaggio: string;
-  data_invio: string;
+  dataInvio: string;
   tipo: string;
   letta: boolean;
-  matricola_studente: string;
+  destinatarioId: string;
+  destinatarioRuolo: string;
 }
 import { AuthService } from './auth';
 
@@ -23,26 +24,26 @@ export class NotificaService {
     return `${this.authService.getApiUrl()}/api/notifiche`;
   }
 
-  getNotifiche(matricola: string): Observable<Notifica[]> {
-    return this.http.get<Notifica[]>(`${this.api}/${matricola}`)
+  getNotifiche(destinatarioId: string): Observable<Notifica[]> {
+    return this.http.get<Notifica[]>(`${this.api}/${destinatarioId}`)
   }
 
   segnaComeLetta(id: string): Observable<void> {
     return this.http.patch<void>(`${this.api}/${id}/letta`, {})
   }
 
-  segnaTutteComeLette(matricola: string): Observable<void> {
-    return this.http.post<void>(`${this.api}/${matricola}/letta-tutte`, {})
+  segnaTutteComeLette(destinatarioId: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/${destinatarioId}/letta-tutte`, {})
   }
 
-  cancellaNotificheLette(matricola: string): Observable<void> {
-    return this.http.delete<void>(`${this.api}/${matricola}/lette`)
+  cancellaNotificheLette(destinatarioId: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${destinatarioId}/lette`)
   }
 
-  interrogaServer(matricola: string): Observable<Notifica[]> {
+  interrogaServer(destinatarioId: string): Observable<Notifica[]> {
     return interval(30000).pipe(
       startWith(0),
-      switchMap(() => this.getNotifiche(matricola))
+      switchMap(() => this.getNotifiche(destinatarioId))
     )
   }
 

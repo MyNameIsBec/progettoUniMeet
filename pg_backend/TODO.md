@@ -35,8 +35,11 @@
 - [ ] Gestione stato: IN_ATTESA → CONFERMATO / RIFIUTATO
 - [ ] Upload Documenti associati a una prenotazione
 
-## Fase 7 — API Notifiche
-- [ ] CRUD Notifiche
+## Fase 7 — API Notifiche ✅ (multi-ruolo)
+- [x] CRUD Notifiche (studente, docente, amministratore)
+- [x] Schema: `destinatario_id` + `destinatario_ruolo` invece di solo `matricola_studente`
+- [x] Migrazione applicata
+- [x] Frontend: rotta `/notifiche` aperta a tutti gli autenticati
 
 ## Fase 10 — Segnalazioni (Completata)
 - [x] API backend: service, controller, validators, routes

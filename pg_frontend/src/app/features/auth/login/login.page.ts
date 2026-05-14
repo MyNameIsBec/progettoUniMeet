@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService } from '../../../core/services/auth';
 
@@ -32,7 +33,7 @@ export class LoginPage implements OnInit {
 
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       rememberMe: [false]
     });
   }
@@ -65,9 +66,9 @@ export class LoginPage implements OnInit {
               : '/dashboard-studente';
         this.router.navigateByUrl(target);
       },
-      error: (err: Error) => {
+      error: (err: HttpErrorResponse) => {
         this.inCaricamento = false;
-        this.errorMessage = err.message;
+        this.errorMessage = err.error?.error || 'Errore durante il login';
       }
     });
   }

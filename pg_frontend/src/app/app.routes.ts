@@ -64,7 +64,7 @@ export const routes: Routes = [
   },
   {
     path: 'notifiche',
-    canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard],
     loadComponent: () => import('./features/studente/notifiche/notifiche.page').then(m => m.NotifichePage)
   },
   {

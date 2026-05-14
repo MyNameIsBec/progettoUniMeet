@@ -171,6 +171,10 @@ export class GestioneUtentiPage implements OnInit {
     if (confirm(`Eliminare ${utente.nome} ${utente.cognome}? L'operazione è irreversibile.`)) {
       this.admin.eliminaUtente(utente.id).subscribe({
         next: () => this.caricaUtenti(this.filtroRuolo || undefined),
+        error: (err) => {
+          const msg = err.error?.error || 'Errore durante l\'eliminazione';
+          alert(msg);
+        },
       });
     }
   }

@@ -1,5 +1,67 @@
 # CHANGES
 
+## Backend Notifiche multi-ruolo (Fase 7) + fix campanella admin — 14/05/2026
+
+**Modifica:** Implementato backend CRUD Notifiche con supporto multi-ruolo (studente, docente, amministratore). Aggiornato schema DB, creati service/controller/routes/validators, aperta rotta `/notifiche` a tutti gli autenticati.
+
+### Backend — schema DB
+
+#### `prisma/schema.prisma`
+- `Notifica`: rimosso `matricola_studente` + relazione con `Studente`
+- Aggiunti `destinatario_id` (String) e `destinatario_ruolo` (String: STUDENTE, DOCENTE, AMMINISTRATORE)
+- Rimosso `notifiche` da `Studente` (non più necessaria)
+
+#### Migrazione: `20260514133349_notifiche_multi_ruolo`
+
+### Backend — nuovi file
+
+#### `pg_backend/src/services/notifiche.service.ts`
+- `getNotifiche(destinatarioId, ruolo?)` — filtra per ID destinatario + ruolo opzionale
+- `createNotifica(data)` — crea notifica per qualsiasi ruolo
+- `segnaComeLetta(id)` — marca singola notifica
+- `segnaTutteComeLette(destinatarioId)` — marca tutto come letto
+- `cancellaNotificheLette(destinatarioId)` — elimina notifiche lette
+
+#### `pg_backend/src/validators/notifiche.validators.ts`
+- `creaNotificaSchema` — titolo, messaggio, tipo, destinatarioId, destinatarioRuolo
+
+### Backend — file implementati (erano vuoti)
+
+#### `pg_backend/src/controllers/notifiche.controller.ts`
+- 5 handler: getNotifiche, createNotifica, segnaComeLetta, segnaTutteComeLette, cancellaNotificheLette
+
+#### `pg_backend/src/routes/notifiche.routes.ts`
+- `GET /api/notifiche/:destinatarioId`, `POST /api/notifiche`, `PATCH /api/notifiche/:id/letta`, `POST /api/notifiche/:destinatarioId/letta-tutte`, `DELETE /api/notifiche/:destinatarioId/lette`
+
+### Backend — file modificati
+
+#### `pg_backend/src/app.ts`
+- Registrate `notificheRoutes`
+
+#### `pg_backend/prisma/seed.ts`
+- Notifiche per tutti e 3 i ruoli: 5 per studente (MAT001), 2 per docente, 2 per admin
+
+### Frontend — file modificati
+
+#### `pg_frontend/src/app/core/services/notifica.ts`
+- Interfaccia Notifica: `matricola_studente` → `destinatarioId` + `destinatarioRuolo`
+- `getNotifiche(matricola)` → `getNotifiche(destinatarioId)`
+
+#### `pg_frontend/src/app/app.routes.ts`
+- Rotta `/notifiche`: `roleGuard('studente')` → solo `authGuard`
+
+#### `pg_frontend/src/app/features/studente/notifiche/notifiche.page.html`
+- `n.data_invio` → `n.dataInvio` (camelCase, nuovo field name)
+
+### Documentazione
+
+#### `pg_backend/TODO.md`
+- Fase 7 segnata come completata ✅
+
+#### `pg_backend/DOCUMENTAZIONE.md`
+- Tabella services/validators/Fasi aggiornate
+- Sezione endpoint notifiche aggiunta
+
 ## Backend Bacheca/FAQ (Fase 4) — 14/05/2026
 
 **Modifica:** Implementato backend CRUD Bacheca e FAQ (service, controller, validators, routes) con 6 endpoint.

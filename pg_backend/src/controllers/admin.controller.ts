@@ -48,11 +48,15 @@ export async function modificaUtente(req: Request, res: Response) {
 export async function eliminaUtente(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
-    await adminService.deleteUser(id);
+    const adminId = req.user?.id;
+    await adminService.deleteUser(id, adminId);
     return res.status(204).send();
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'User not found') {
       return res.status(404).json({ error: err.message });
+    }
+    if (err instanceof Error && err.message === 'Cannot delete your own account') {
+      return res.status(403).json({ error: err.message });
     }
     return res.status(500).json({ error: 'Internal server error' });
   }

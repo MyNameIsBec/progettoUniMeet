@@ -181,7 +181,7 @@ npx prisma generate
 | `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
 | `bacheca.service.ts` | ✅ CRUD bacheca (una per corso), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
-| `notifiche.service.ts` | *(da implementare)* CRUD notifiche |
+| `notifiche.service.ts` | ✅ CRUD notifiche multi-ruolo (studente, docente, admin) |
 
 ---
 
@@ -288,6 +288,18 @@ Endpoint bacheca (`bacheche.routes.ts`):
 | `/api/faq/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica FAQ |
 | `/api/faq/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina FAQ |
 
+### ✅ Fase 7 completata — Notifiche
+
+Endpoint notifiche (`notifiche.routes.ts`):
+
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/notifiche/:destinatarioId` | GET | JWT | Elenco notifiche per destinatario (filtro `?ruolo=`) |
+| `/api/notifiche` | POST | JWT | Crea notifica |
+| `/api/notifiche/:id/letta` | PATCH | JWT | Segna come letta |
+| `/api/notifiche/:destinatarioId/letta-tutte` | POST | JWT | Segna tutte come lette |
+| `/api/notifiche/:destinatarioId/lette` | DELETE | JWT | Cancella notifiche lette |
+
 Endpoint admin (`admin.routes.ts`):
 
 | Endpoint | Metodo | Descrizione |
@@ -355,7 +367,7 @@ File validator aggiuntivo:
 | `segnalazioni.validators.ts` | Creazione segnalazione, aggiornamento stato |
 | `corsi.validators.ts` | ✅ Creazione/modifica corsi |
 | `bacheca.validators.ts` | ✅ Aggiornamento bacheca, creazione/modifica FAQ |
-| `notifiche.validators.ts` | *(da implementare)* Creazione notifiche |
+| `notifiche.validators.ts` | ✅ Creazione notifiche multi-ruolo |
 | `documenti.validators.ts` | *(da implementare)* Upload documenti |
 
 ---
@@ -464,27 +476,13 @@ Il backend è allineato con il `AuthService` Angular esistente:
 | 4 | CRUD Bacheca e FAQ | ✅ |
 | 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
 | 6 | CRUD Prenotazione, gestione stato | ✅ |
-| 7 | CRUD Notifiche | ❌ |
+| 7 | CRUD Notifiche (multi-ruolo: studente, docente, admin) | ✅ |
 | 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali (CRUD completo + filtri) | ✅ |
 | 9 | CRUD Documenti (upload/download per prenotazioni) | ❌ |
 | 10 | CRUD Segnalazioni: backend (routes, controller, service, validators) + frontend admin (pagina gestione) | ✅ |
 | 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin gestione-calendario | ✅ |
 
 ### Dettaglio API ancora da implementare
-
-#### Fase 7 — Notifiche ⚠️ controller/routes esistenti ma vuoti
-- `notifiche.controller.ts` e `notifiche.routes.ts` esistono come file vuoti
-- Manca: `notifiche.service.ts`, `notifiche.validators.ts`
-- `GET /api/notifiche` — elenco notifiche (autenticato)
-- `POST /api/notifiche` — crea notifica (autenticato)
-- `PUT /api/notifiche/:id/letta` — segna come letta (autenticato)
-- `DELETE /api/notifiche/:id` — elimina notifica (autenticato)
-
-#### Fase 10 ✅ — Segnalazioni (`segnalazioni.routes.ts`, `segnalazioni.controller.ts`, `segnalazioni.service.ts`, `segnalazioni.validators.ts`)
-- `POST /api/segnalazioni` — crea segnalazione (autenticato)
-- `GET /api/segnalazioni/studente/:matricola` — segnalazioni di uno studente (autenticato)
-- `GET /api/segnalazioni/admin/all` — tutte le segnalazioni con dati studente (admin, filtro `?stato=`)
-- `PATCH /api/segnalazioni/:id/stato` — cambia stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) (admin)
 
 #### Fase 9 — Documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`)
 - `POST /api/documenti/upload` — carica file (multipart, autenticato)
