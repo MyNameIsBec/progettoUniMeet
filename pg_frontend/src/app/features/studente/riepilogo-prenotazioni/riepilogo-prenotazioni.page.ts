@@ -9,12 +9,14 @@ import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { firstValueFrom } from 'rxjs';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-riepilogo-prenotazioni',
   templateUrl: './riepilogo-prenotazioni.page.html',
   styleUrls: ['./riepilogo-prenotazioni.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonIcon, IonCard, IonCardContent, IonButton, IonBadge, IonSelect, IonSelectOption, DashboardLayoutComponent]
+  imports: [CommonModule, FormsModule, RouterLink, IonIcon, IonCard, IonCardContent, IonButton, IonBadge, IonSelect, IonSelectOption, DashboardLayoutComponent]
 })
 export class RiepilogoPrenotazioniPage implements OnInit {
   public listaPrenotazioni: Prenotazione[] = [];

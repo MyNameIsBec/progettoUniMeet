@@ -24,6 +24,10 @@ export class PrenotazioneService {
     return this.http.get<Prenotazione[]>(`${this.api}/studente/${matricolaStudente}`);
   }
 
+  getPrenotazioneById(id: string | number): Observable<Prenotazione> {
+    return this.http.get<Prenotazione>(`${this.api}/${id}`);
+  }
+
   getPrenotazioniDocente(idDocente: string | number): Observable<Prenotazione[]> {
     return this.http.get<Prenotazione[]>(`${this.api}/docente/${idDocente}`);
   }

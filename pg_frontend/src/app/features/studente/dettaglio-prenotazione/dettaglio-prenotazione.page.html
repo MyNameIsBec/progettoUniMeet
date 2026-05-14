@@ -1,99 +1,455 @@
-<app-dashboard-layout>
-  <section class="page-header">
-    <div class="header-with-back">
-      <ion-button fill="clear" routerLink="/riepilogo-prenotazioni" class="back-btn">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-      <div>
-        <h2>Dettaglio Prenotazione</h2>
-        <p>Informazioni complete sull'appuntamento selezionato.</p>
+<ion-content [fullscreen]="true" class="dettaglio-page">
+
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <h1>UniMeet</h1>
+            <span>Area Studente</span>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <div class="ion-padding content-body">
+      <nav class="sidebar-nav">
 
-    @if (isLoading) {
-      <div class="loading-container">
-        <ion-spinner name="crescent" color="primary"></ion-spinner>
-        <p>Caricamento in corso...</p>
-      </div>
-    }
+        <a routerLink="/dashboard-studente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
 
-    <!-- Contenuto principale -->
-    @if (!isLoading && booking) {
-      <div class="booking-detail-wrapper">
-        
-        <div class="status-banner">
-          <ion-badge [color]="getStatusColor(booking.stato)">
-            {{ booking.stato | uppercase }}
-          </ion-badge>
-          <span class="booking-id">Prenotazione #{{ booking.id }}</span>
+        <a routerLink="/elenco-docenti">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Docenti</span>
+        </a>
+
+        <a routerLink="/prenota">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Prenota</span>
+        </a>
+
+        <a routerLink="/riepilogo-prenotazioni" class="active">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Le mie prenotazioni</span>
+        </a>
+
+        <a routerLink="/bacheca-studente">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>FAQ / Bacheca</span>
+        </a>
+
+        <a routerLink="/notifiche">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span>Notifiche</span>
+        </a>
+
+        <a routerLink="/profilo-studente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <!-- LOGO MOBILE -->
+        <div class="mobile-logo">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <strong>UniMeet</strong>
+            <span>Area Studente</span>
+          </div>
         </div>
 
-        <ion-card class="main-info-card">
-          <ion-card-header>
-            <div class="teacher-info">
-              <div class="avatar-circle">
-                <ion-icon name="person"></ion-icon>
+        <!-- MENU MOBILE -->
+        <nav class="mobile-top-menu">
+
+          <a routerLink="/dashboard-studente">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Dashboard</span>
+          </a>
+
+          <a routerLink="/elenco-docenti">
+            <ion-icon name="people-outline"></ion-icon>
+            <span>Docenti</span>
+          </a>
+
+          <a routerLink="/prenota">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>Prenota</span>
+          </a>
+
+          <a routerLink="/riepilogo-prenotazioni" class="active">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+            <span>Prenotazioni</span>
+          </a>
+
+          <a routerLink="/bacheca-studente">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>FAQ</span>
+          </a>
+
+        </nav>
+
+        <!-- AZIONI DESKTOP -->
+        <div class="topbar-actions">
+
+          <button class="notification-button" routerLink="/notifiche">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-badge">3</span>
+          </button>
+
+          <div class="student-profile-mini">
+            <div class="student-avatar-small">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Alessio Lombardo</strong>
+              <span>Studente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- PAGE HEADER -->
+      <section class="page-header">
+        <a routerLink="/riepilogo-prenotazioni" class="back-link">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          Torna alle prenotazioni
+        </a>
+
+        <h2>Dettaglio prenotazione</h2>
+        <p>
+          Consulta tutte le informazioni relative al tuo ricevimento universitario.
+        </p>
+      </section>
+
+      <!-- STATO PRENOTAZIONE -->
+      <section class="status-section">
+
+        <ion-card class="status-card confirmed">
+          <ion-card-content>
+
+            <div class="status-main">
+              <div class="status-icon">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
               </div>
-              <div class="text-info">
-                <ion-card-title>{{ booking.docente }}</ion-card-title>
-                <ion-card-subtitle>{{ booking.materia }}</ion-card-subtitle>
+
+              <div>
+                <span class="status-label">Stato prenotazione</span>
+                <h3>Prenotazione confermata</h3>
+                <p>Il tuo ricevimento è stato confermato dal docente.</p>
               </div>
             </div>
-          </ion-card-header>
 
-          <ion-card-content>
-            <ion-list lines="none">
-              <ion-item>
-                <ion-icon slot="start" name="calendar" color="primary"></ion-icon>
-                <ion-label>
-                  <h3>Data appuntamento</h3>
-                  <p>{{ booking.data | date:'fullDate':'':'it-IT' }}</p>
-                </ion-label>
-              </ion-item>
+            <div class="status-info">
+              <div>
+                <span>Codice</span>
+                <strong>PREN-2026-001</strong>
+              </div>
 
-              <ion-item>
-                <ion-icon slot="start" name="time" color="primary"></ion-icon>
-                <ion-label>
-                  <h3>Fascia oraria</h3>
-                  <p>{{ booking.oraInizio }} - {{ booking.oraFine }} (30 min)</p>
-                </ion-label>
-              </ion-item>
+              <div>
+                <span>Creata il</span>
+                <strong>10/06/2026</strong>
+              </div>
+            </div>
 
-              <ion-item>
-                <ion-icon slot="start" name="location" color="primary"></ion-icon>
-                <ion-label>
-                  <h3>Luogo / Aula</h3>
-                  <p>{{ booking.ufficio }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
           </ion-card-content>
         </ion-card>
 
-        <div class="notes-section">
-          <h4 class="section-title">Le tue note</h4>
-          <ion-card class="note-card">
+      </section>
+
+      <!-- CONTENUTO PRINCIPALE -->
+      <section class="detail-layout">
+
+        <!-- COLONNA SINISTRA -->
+        <div class="detail-left-column">
+
+          <!-- INFORMAZIONI RICEVIMENTO -->
+          <ion-card class="detail-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="calendar-outline"></ion-icon>
+                Informazioni ricevimento
+              </ion-card-title>
+            </ion-card-header>
+
             <ion-card-content>
-              <p>{{ booking.noteStudente || 'Nessuna nota inserita.' }}</p>
+
+              <div class="info-grid">
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="person-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Docente</span>
+                    <strong>Prof. Mario Rossi</strong>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="book-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Corso</span>
+                    <strong>Basi di Dati</strong>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="calendar-clear-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Data</span>
+                    <strong>12 Giugno 2026</strong>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="time-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Orario</span>
+                    <strong>10:30 - 11:00</strong>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="hourglass-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Durata</span>
+                    <strong>30 minuti</strong>
+                  </div>
+                </div>
+
+                <div class="info-item">
+                  <div class="info-icon">
+                    <ion-icon name="location-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <span>Luogo</span>
+                    <strong>Edificio A, Piano 2, Aula 201</strong>
+                  </div>
+                </div>
+
+              </div>
+
             </ion-card-content>
           </ion-card>
+
+          <!-- ARGOMENTO -->
+          <ion-card class="detail-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                Argomento del ricevimento
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="topic-box">
+                <span>Tipologia argomento</span>
+                <strong>Chiarimenti esame</strong>
+
+                <p>
+                  Ho bisogno di chiarimenti su alcuni esercizi svolti in vista
+                  dell’esame scritto, in particolare sulle query SQL con join
+                  e sulle forme normali.
+                </p>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- DOCUMENTI -->
+          <ion-card class="detail-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="document-text-outline"></ion-icon>
+                Documenti caricati
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="documents-list">
+
+                <div class="document-item">
+                  <div class="document-icon pdf">
+                    <ion-icon name="document-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <h3>esercizi_basi_dati.pdf</h3>
+                    <p>PDF · 1.2 MB · caricato il 10/06/2026</p>
+                  </div>
+
+                  <div class="document-actions">
+                    <ion-button fill="outline">
+                      Visualizza
+                    </ion-button>
+
+                    <ion-button fill="clear">
+                      <ion-icon name="download-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+
+                <div class="document-item">
+                  <div class="document-icon doc">
+                    <ion-icon name="document-attach-outline"></ion-icon>
+                  </div>
+
+                  <div>
+                    <h3>appunti_query_sql.docx</h3>
+                    <p>DOCX · 850 KB · caricato il 10/06/2026</p>
+                  </div>
+
+                  <div class="document-actions">
+                    <ion-button fill="outline">
+                      Visualizza
+                    </ion-button>
+
+                    <ion-button fill="clear">
+                      <ion-icon name="download-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
         </div>
 
-        <div class="actions-footer">
-          <ion-button expand="block" color="danger" fill="outline" (click)="annullaPrenotazione()">
-            <ion-icon slot="start" name="close"></ion-icon>
-            Annulla Appuntamento
-          </ion-button>
-          <p class="disclaimer">
-            <ion-icon name="alert"></ion-icon>
-            Puoi annullare fino a 24 ore prima dell'incontro.
-          </p>
-        </div>
+        <!-- COLONNA DESTRA -->
+        <aside class="detail-right-column">
 
-      </div>
-    }
+          <!-- MAPPA -->
+          <ion-card class="map-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="map-outline"></ion-icon>
+                Posizione ricevimento
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="fake-map">
+                <div class="map-grid-bg"></div>
+
+                <div class="map-pin">
+                  <ion-icon name="location-outline"></ion-icon>
+                </div>
+
+                <div class="student-dot">
+                  <ion-icon name="navigate-outline"></ion-icon>
+                </div>
+              </div>
+
+              <div class="location-details">
+                <h3>Edificio A</h3>
+                <p>Piano 2 · Aula 201</p>
+
+                <div>
+                  <ion-icon name="walk-outline"></ion-icon>
+                  <span>Circa 4 minuti dalla tua posizione</span>
+                </div>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- AZIONI -->
+          <ion-card class="actions-card">
+            <ion-card-header>
+              <ion-card-title>
+                Azioni
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <ion-button expand="block" routerLink="/riepilogo-prenotazioni">
+                <ion-icon name="calendar-number-outline" slot="start"></ion-icon>
+                Torna alle prenotazioni
+              </ion-button>
+
+              <ion-button expand="block" fill="outline">
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                Aggiungi al calendario
+              </ion-button>
+
+              <ion-button expand="block" fill="outline" color="danger">
+                <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                Annulla prenotazione
+              </ion-button>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- PROMEMORIA -->
+          <ion-card class="reminder-card">
+            <ion-card-content>
+
+              <div class="reminder-icon">
+                <ion-icon name="notifications-outline"></ion-icon>
+              </div>
+
+              <div>
+                <h3>Promemoria attivo</h3>
+                <p>
+                  Riceverai una notifica prima del ricevimento con data, orario
+                  e aula.
+                </p>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+        </aside>
+
+      </section>
+
+    </main>
+
   </div>
-</app-dashboard-layout>
+
+</ion-content>
