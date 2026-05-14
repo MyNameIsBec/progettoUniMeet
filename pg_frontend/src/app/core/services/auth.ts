@@ -88,10 +88,17 @@ export class AuthService {
     );
   }
 
-  confermaResetPassword(token: string, nuovaPassword: string): Observable<{ messaggio: string }> {
+  verificaCodice(email: string, codice: string): Observable<{ valido: boolean }> {
+    return this.http.post<{ valido: boolean }>(
+      `${this.apiUrl}/api/auth/verifica-codice`,
+      { email, codice }
+    );
+  }
+
+  confermaResetPassword(email: string, codice: string, nuovaPassword: string): Observable<{ messaggio: string }> {
     return this.http.post<{ messaggio: string }>(
       `${this.apiUrl}/api/reset-password`,
-      { token, nuovaPassword }
+      { email, codice, nuovaPassword }
     );
   }
 

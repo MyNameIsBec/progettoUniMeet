@@ -31,7 +31,8 @@ export class ResetPasswordPage implements OnInit {
   mostraPassword = false;
   mostraConfermaPassword = false;
   tokenValido = true;
-  private tokenString = '';
+  private email = '';
+  private codice = '';
 
   constructor(
     private fb: FormBuilder,
@@ -41,9 +42,10 @@ export class ResetPasswordPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.tokenString = this.route.snapshot.queryParams['token'] ?? '';
+    this.email = this.route.snapshot.queryParams['email'] ?? '';
+    this.codice = this.route.snapshot.queryParams['codice'] ?? '';
 
-    if (!this.tokenString) {
+    if (!this.email || !this.codice) {
       this.tokenValido = false;
       return;
     }
@@ -91,7 +93,7 @@ export class ResetPasswordPage implements OnInit {
     this.inCaricamento = true;
     this.errorMessage = '';
 
-    this.authService.confermaResetPassword(this.tokenString, this.password.value).subscribe({
+    this.authService.confermaResetPassword(this.email, this.codice, this.password.value).subscribe({
       next: () => {
         this.inCaricamento = false;
         this.resetCompletato = true;

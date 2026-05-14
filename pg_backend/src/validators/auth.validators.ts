@@ -1,6 +1,14 @@
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
+export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
+
 export const loginSchema = [
   body('email').isEmail().normalizeEmail(),
   body('password').isString().notEmpty(),
@@ -38,19 +46,19 @@ export const forgotPasswordSchema = [
   body('email').isEmail().normalizeEmail(),
 ];
 
+export const verificaCodiceSchema = [
+  body('email').isEmail().withMessage('Email non valida').normalizeEmail(),
+  body('codice').isString().notEmpty().withMessage('Codice richiesto'),
+  handleValidationErrors,
+];
+
 export const resetPasswordSchema = [
-  body('token').isString().notEmpty(),
-  body('nuovaPassword').isString().isLength({ min: 8 }),
+  body('email').isEmail().withMessage('Email non valida').normalizeEmail(),
+  body('codice').isString().notEmpty().withMessage('Codice richiesto'),
+  body('nuovaPassword').isString().isLength({ min: 8 }).withMessage('La password deve essere di almeno 8 caratteri'),
+  handleValidationErrors,
 ];
 
 export const refreshTokenSchema = [
   body('refreshToken').isString().notEmpty(),
 ];
-
-export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-};

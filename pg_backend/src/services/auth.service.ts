@@ -224,7 +224,8 @@ export async function changePassword(
   }
 }
 
-import { sendResetPasswordEmail } from './email.service';
+import { sendCodiceVerifica } from './email.service';
+import { creaCodice, verificaCodice as verificaCodiceDb, consumaCodice } from './codice-verifica.service';
 
 export async function forgotPassword(email: string): Promise<{ messaggio: string }> {
   let user: any = await prisma.studente.findUnique({ where: { email } });
@@ -240,30 +241,44 @@ export async function forgotPassword(email: string): Promise<{ messaggio: string
   }
   if (!user) throw new Error('User not found');
 
-  const id = ruolo === 'STUDENTE' ? user.matricola : ruolo === 'DOCENTE' ? user.id_docente : user.id_admin;
-  const resetToken = jwt.sign({ id, email, ruolo }, JWT_SECRET, { expiresIn: '15m' as any });
+  const codice = await creaCodice(email, 'reset_password');
+  await sendCodiceVerifica(email, codice, 'reset_password');
 
-  await sendResetPasswordEmail(email, resetToken);
-
-  return { messaggio: "Se l'email esiste, riceverai un link per il reset della password." };
+  return { messaggio: "Se l'email esiste, riceverai un codice di verifica per il reset della password." };
 }
 
-export async function resetPassword(token: string, nuovaPassword: string): Promise<{ messaggio: string }> {
-  let payload: { id: string; email: string; ruolo: Ruolo };
-  try {
-    payload = jwt.verify(token, JWT_SECRET) as { id: string; email: string; ruolo: Ruolo };
-  } catch {
-    throw new Error('Invalid or expired reset token');
+export async function verificaCodice(email: string, codice: string): Promise<{ valido: boolean }> {
+  const valido = await verificaCodiceDb(email, codice, 'reset_password');
+  if (!valido) throw new Error('Codice non valido o scaduto');
+  return { valido: true };
+}
+
+export async function resetPassword(email: string, codice: string, nuovaPassword: string): Promise<{ messaggio: string }> {
+  const valido = await consumaCodice(email, codice, 'reset_password');
+  if (!valido) throw new Error('Codice non valido o scaduto');
+
+  let user: any = await prisma.studente.findUnique({ where: { email } });
+  let ruolo: Ruolo = 'STUDENTE';
+
+  if (!user) {
+    user = await prisma.docente.findUnique({ where: { email } });
+    ruolo = 'DOCENTE';
   }
+  if (!user) {
+    user = await prisma.amministratore.findUnique({ where: { email } });
+    ruolo = 'AMMINISTRATORE';
+  }
+  if (!user) throw new Error('User not found');
 
   const hashed = await bcrypt.hash(nuovaPassword, SALT_ROUNDS);
+  const id = ruolo === 'STUDENTE' ? user.matricola : ruolo === 'DOCENTE' ? user.id_docente : user.id_admin;
 
-  if (payload.ruolo === 'STUDENTE') {
-    await prisma.studente.update({ where: { matricola: payload.id }, data: { password: hashed } });
-  } else if (payload.ruolo === 'DOCENTE') {
-    await prisma.docente.update({ where: { id_docente: payload.id }, data: { password: hashed } });
+  if (ruolo === 'STUDENTE') {
+    await prisma.studente.update({ where: { matricola: id }, data: { password: hashed } });
+  } else if (ruolo === 'DOCENTE') {
+    await prisma.docente.update({ where: { id_docente: id }, data: { password: hashed } });
   } else {
-    await prisma.amministratore.update({ where: { id_admin: payload.id }, data: { password: hashed } });
+    await prisma.amministratore.update({ where: { id_admin: id }, data: { password: hashed } });
   }
 
   return { messaggio: 'Password reimpostata con successo.' };

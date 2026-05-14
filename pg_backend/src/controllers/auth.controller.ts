@@ -99,18 +99,34 @@ export async function forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     const result = await authService.forgotPassword(email);
     return res.status(200).json(result);
-  } catch {
-    return res.status(200).json({ messaggio: "Se l'email esiste, riceverai un link per il reset della password." });
+  } catch (err) {
+    if (err instanceof Error && err.message === 'User not found') {
+      return res.status(200).json({ messaggio: "Se l'email esiste, riceverai un codice di verifica per il reset della password." });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function verificaCodice(req: Request, res: Response) {
+  try {
+    const { email, codice } = req.body;
+    const result = await authService.verificaCodice(email, codice);
+    return res.status(200).json(result);
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Codice non valido o scaduto') {
+      return res.status(401).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
 export async function resetPassword(req: Request, res: Response) {
   try {
-    const { token, nuovaPassword } = req.body;
-    const result = await authService.resetPassword(token, nuovaPassword);
+    const { email, codice, nuovaPassword } = req.body;
+    const result = await authService.resetPassword(email, codice, nuovaPassword);
     return res.status(200).json(result);
   } catch (err) {
-    if (err instanceof Error && err.message === 'Invalid or expired reset token') {
+    if (err instanceof Error && err.message === 'Codice non valido o scaduto') {
       return res.status(401).json({ error: err.message });
     }
     return res.status(500).json({ error: 'Internal server error' });

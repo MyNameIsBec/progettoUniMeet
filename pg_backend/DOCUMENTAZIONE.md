@@ -182,6 +182,8 @@ npx prisma generate
 | `bacheca.service.ts` | ✅ CRUD bacheca (una per corso), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
 | `notifiche.service.ts` | ✅ CRUD notifiche multi-ruolo (studente, docente, admin) |
+| `email.service.ts` | ✅ Invio email con nodemailer (logga in console se SMTP non configurato) |
+| `codice-verifica.service.ts` | ✅ Generazione, verifica e consumo codici 6 cifre (riusabile per 2FA) |
 
 ---
 
@@ -225,8 +227,9 @@ Le routes vengono montate in `app.ts` su prefisso `/api`. Esempio per auth (`aut
 |----------|--------|-------------|
 | `/api/login` | POST | Login unificato (Studente/Docente/Admin) |
 | `/api/registrazione` | POST | Registrazione studente |
-| `/api/recupera-password` | POST | Richiedi reset password |
-| `/api/reset-password` | POST | Conferma reset con token |
+| `/api/recupera-password` | POST | Richiedi reset password (invia codice 6 cifre via email) |
+| `/api/auth/verifica-codice` | POST | Verifica codice senza consumarlo (riusabile per 2FA) |
+| `/api/reset-password` | POST | Conferma reset con email + codice + nuova password |
 | `/api/auth/register/studente` | POST | Registrazione studente (alternativo) |
 | `/api/auth/register/docente` | POST | Registrazione docente |
 | `/api/auth/register/admin` | POST | Registrazione amministratore |
@@ -452,11 +455,12 @@ File validator aggiuntivo:
 Il backend è allineato con il `AuthService` Angular esistente:
 
 | Angular chiama | Backend risponde |
-|---|---|
+|---|---|---|
 | `POST /api/login` | `{ id, nome, cognome, email, role, token }` |
 | `POST /api/registrazione` | `{ id, nome, cognome, email, role, token }` (JWT, auto-login) |
-| `POST /api/recupera-password` | `{ messaggio: "...", resetToken }` |
-| `POST /api/reset-password` | `{ messaggio: "Password reimpostata con successo." }` |
+| `POST /api/recupera-password` | `{ messaggio: "..." }` (invia codice 6 cifre via email) |
+| `POST /api/auth/verifica-codice` | `{ valido: true }` o 401 (non consuma il codice) |
+| `POST /api/reset-password` | `{ messaggio: "Password reimpostata con successo." }` (consuma il codice) |
 
 **Convenzioni:**
 - **Porta**: backend su `5000` (Angular chiama `ip:5000`)
@@ -497,6 +501,74 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - [ ] Amministratore: gestire prenotazioni (eliminarle o modificarle)
 - [x] Amministratore: bloccare giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
+
+---
+
+## Flusso di una richiesta (recupero password con codice di verifica)
+
+```
+  POST /api/recupera-password  (body: { email })
+       │
+       ▼
+  [service: forgotPassword(email)]
+       │
+       ├── Cerca Studente → Docente → Amministratore per email
+       ├── Se non trovato → { messaggio } (stessa risposta, sicurezza)
+       ├── Se trovato → creaCodice(email, 'reset_password')
+       │     ├── Codice 6 cifre casuali (crypto.randomInt)
+       │     ├── Hash bcrypt del codice salvato su DB (tabella CodiceVerifica)
+       │     └── Scadenza: 15 minuti
+       └── sendCodiceVerifica(email, codice, 'reset_password')
+             ├── Se SMTP configurato → invia email HTML con codice
+             └── Se SMTP non configurato → logga il codice in console
+       │
+       ▼
+  200 { messaggio: "Se l'email esiste, riceverai un codice..." }
+
+  ─── (l'utente inserisce il codice nel form) ───
+
+  POST /api/auth/verifica-codice  (body: { email, codice })
+       │
+       ▼
+  [service: verificaCodice(email, codice, 'reset_password')]
+       │
+       ├── Cerca CodiceVerifica per email + tipo + non scaduto + non usato
+       ├── bcrypt.compare(codice, record.codice)
+       │   ├── Non matcha → 401 Codice non valido o scaduto
+       │   └── Matcha → { valido: true }
+       │
+       ※ NON consuma il codice (riusabile per futura autenticazione 2FA)
+       │
+       ▼
+  200 { valido: true }
+
+  ─── (l'utente inserisce nuova password + conferma) ───
+
+  POST /api/reset-password  (body: { email, codice, nuovaPassword })
+       │
+       ▼
+  [service: resetPassword(email, codice, nuovaPassword)]
+       │
+       ├── consumaCodice(email, codice, 'reset_password')
+       │   ├── Matcha → marca record come usato = true
+       │   └── Non matcha → 401 Codice non valido o scaduto
+       ├── Trova utente per email (Studente/Docente/Admin)
+       ├── bcrypt.hash(nuovaPassword)
+       └── Update password sulla tabella corrispondente
+       │
+       ▼
+  200 { messaggio: "Password reimpostata con successo." }
+```
+
+### Vantaggi del sistema a codice rispetto al JWT link
+
+| Aspetto | JWT link (precedente) | Codice 6 cifre (attuale) |
+|---------|----------------------|-------------------------|
+| Consegna | Link via email (può essere bloccato) | Codice via email, visibile subito |
+| UX mobile | Scomodo (aprire link su telefono) | Comodo (copia/incolla codice) |
+| Riutilizzabilità | Solo reset password | Stesso sistema per futura 2FA |
+| Scadenza | JWT 15 min (non revocabile) | DB 15 min (revocabile, invalidabile) |
+| Sicurezza | Crittografato (JWT firmato) | Hash bcrypt + scadenza DB |
 
 ---
 
