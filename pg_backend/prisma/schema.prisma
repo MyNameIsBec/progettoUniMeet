@@ -22,6 +22,18 @@ model Studente {
   password        String
   corso_di_studi  String
   prenotazioni    Prenotazione[]
+  notifiche       Notifica[]
+  segnalazioni    Segnalazione[]
+}
+
+model Segnalazione {
+  id_segnalazione    String   @id @default(uuid())
+  oggetto            String
+  descrizione        String
+  data_invio         DateTime @default(now())
+  stato              String   @default("APERTA")
+  matricola_studente String
+  studente           Studente @relation(fields: [matricola_studente], references: [matricola])
 }
 
 model Docente {
@@ -123,8 +135,12 @@ model Documento {
 }
 
 model Notifica {
-  id_notifica String   @id @default(uuid())
-  messaggio   String
-  data_invio  DateTime @default(now())
-  tipo        String
+  id_notifica        String   @id @default(uuid())
+  titolo             String
+  messaggio          String
+  data_invio         DateTime @default(now())
+  tipo               String   // es. "REMINDER", "CONFERMA", "MODIFICA", "DOCUMENTO"
+  letta              Boolean  @default(false)
+  matricola_studente String
+  studente           Studente @relation(fields: [matricola_studente], references: [matricola])
 }

@@ -228,8 +228,31 @@
         margin: 0;
 
         &.send-btn {
-            --background: var(--primary-blue);
-            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+            --background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --color: #ffffff;
+            --box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+            margin-top: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            &::part(native) {
+                background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            }
+
+            &:hover:not([disabled]) {
+                transform: translateY(-2px);
+                --box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+            }
+
+            &:active:not([disabled]) {
+                transform: scale(0.98);
+            }
+
+            &[disabled] {
+                --background: #e2e8f0;
+                --color: #94a3b8;
+                --box-shadow: none;
+                opacity: 0.7;
+            }
         }
 
         &.cancel-btn {

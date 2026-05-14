@@ -29,7 +29,7 @@
         </div>
         <div>
           <span>Non lette</span>
-          <strong>3</strong>
+          <strong>{{ info.nonLette }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -40,8 +40,8 @@
           <ion-icon name="time-outline"></ion-icon>
         </div>
         <div>
-          <span>Reminder</span>
-          <strong>2</strong>
+          <span>Promemoria</span>
+          <strong>{{ info.promemoria }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -53,7 +53,7 @@
         </div>
         <div>
           <span>Aggiornamenti</span>
-          <strong>1</strong>
+          <strong>{{ info.aggiornamenti }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -61,10 +61,14 @@
 
   <!-- FILTRI -->
   <section class="filters-row">
-    <button class="filter-button active">Tutte</button>
-    <button class="filter-button">Non lette</button>
-    <button class="filter-button">Reminder</button>
-    <button class="filter-button">Aggiornamenti</button>
+    @for (f of ['Tutte', 'Non lette', 'Promemoria', 'Aggiornamenti']; track f) {
+      <button 
+        class="filter-button" 
+        [class.active]="filtroAttivo === f"
+        (click)="applicaFiltri(f)">
+        {{ f }}
+      </button>
+    }
   </section>
 
   <!-- CONTENUTO PRINCIPALE -->
@@ -72,78 +76,34 @@
     <div class="left-column">
       <ion-card class="notifications-list-card">
         <ion-card-content>
-          <!-- NOTIFICA 1 -->
-          <div class="notification-item unread">
-            <span class="unread-dot"></span>
-            <div class="notification-icon blue">
-              <ion-icon name="notifications-outline"></ion-icon>
+          @if (filtriNotifiche.length === 0) {
+            <div class="empty-state">
+              <ion-icon name="notifications-off-outline"></ion-icon>
+              <p>Non ci sono notifiche da visualizzare</p>
             </div>
-            <div class="notification-content">
-              <h3>Reminder ricevimento</h3>
-              <p>
-                Ti ricordiamo il ricevimento con <strong>Prof. Mario Rossi</strong>
-                il <strong>12 Giugno 2026</strong> alle <strong>10:30</strong>.
-              </p>
-              <small>Oggi, 09:00</small>
-            </div>
-            <ion-button fill="clear" color="primary">
-              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-
-          <!-- NOTIFICA 2 -->
-          <div class="notification-item unread">
-            <span class="unread-dot"></span>
-            <div class="notification-icon green">
-              <ion-icon name="checkmark-circle-outline"></ion-icon>
-            </div>
-            <div class="notification-content">
-              <h3>Prenotazione confermata</h3>
-              <p>
-                La tua prenotazione con <strong>Prof.ssa Laura Bianchi</strong>
-                è stata confermata.
-              </p>
-              <small>Ieri, 15:42</small>
-            </div>
-            <ion-button fill="clear" color="primary">
-              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-
-          <!-- NOTIFICA 3 -->
-          <div class="notification-item">
-            <div class="notification-icon orange">
-              <ion-icon name="time-outline"></ion-icon>
-            </div>
-            <div class="notification-content">
-              <h3>Ricevimento modificato</h3>
-              <p>
-                Il docente ha aggiornato l’orario del ricevimento.
-                Nuovo orario: <strong>11:00 - 11:30</strong>.
-              </p>
-              <small>10 Giugno 2026, 11:10</small>
-            </div>
-            <ion-button fill="clear" color="primary">
-              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
-
-          <!-- NOTIFICA 4 -->
-          <div class="notification-item">
-            <div class="notification-icon purple">
-              <ion-icon name="document-text-outline"></ion-icon>
-            </div>
-            <div class="notification-content">
-              <h3>Documento disponibile</h3>
-              <p>
-                È stato caricato un nuovo documento allegato alla prenotazione.
-              </p>
-              <small>9 Giugno 2026, 17:25</small>
-            </div>
-            <ion-button fill="clear" color="primary">
-              <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </div>
+          } @else {
+            @for (n of filtriNotifiche; track n.id) {
+              <div 
+                class="notification-item" 
+                [class.unread]="!n.letta"
+                (click)="segnaComeLetta(n)">
+                @if (!n.letta) {
+                  <span class="unread-dot"></span>
+                }
+                <div class="notification-icon" [ngClass]="getIconColor(n.tipo)">
+                  <ion-icon [name]="getIconName(n.tipo)"></ion-icon>
+                </div>
+                <div class="notification-content">
+                  <h3>{{ n.titolo }}</h3>
+                  <p>{{ n.messaggio }}</p>
+                  <small>{{ n.data_invio | date:'dd/MM/yyyy HH:mm' }}</small>
+                </div>
+                <ion-button fill="clear" color="primary">
+                  <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          }
         </ion-card-content>
       </ion-card>
     </div>
@@ -154,20 +114,13 @@
           <ion-card-title>Gestione</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <button class="management-row">
+          <button class="management-row" (click)="segnaTutteComeLette()">
             <ion-icon name="mail-open-outline"></ion-icon>
             <span>Segna tutte come lette</span>
-            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
           </button>
-          <button class="management-row">
+          <button class="management-row" (click)="cancellaNotificheLette()">
             <ion-icon name="trash-outline"></ion-icon>
             <span>Cancella notifiche lette</span>
-            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
-          </button>
-          <button class="management-row">
-            <ion-icon name="settings-outline"></ion-icon>
-            <span>Preferenze</span>
-            <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
           </button>
         </ion-card-content>
       </ion-card>

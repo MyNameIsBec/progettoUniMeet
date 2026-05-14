@@ -6,6 +6,7 @@ import studentiRoutes from './routes/studenti.routes';
 import docentiRoutes from './routes/docenti.routes';
 import prenotazioniRoutes from './routes/prenotazioni.routes';
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());

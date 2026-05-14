@@ -28,7 +28,7 @@
 
         <div>
           <span>Segnalazioni inviate</span>
-          <strong>3</strong>
+          <strong>{{ info.totali }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -41,7 +41,7 @@
 
         <div>
           <span>In lavorazione</span>
-          <strong>1</strong>
+          <strong>{{ info.aperte }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -54,7 +54,7 @@
 
         <div>
           <span>Risolte</span>
-          <strong>2</strong>
+          <strong>{{ info.risolte }}</strong>
         </div>
       </ion-card-content>
     </ion-card>
@@ -77,93 +77,58 @@
         </ion-card-header>
 
         <ion-card-content>
-          <div class="form-grid">
-            <div class="form-field">
-              <label>Tipologia problema</label>
-              <ion-item lines="none">
-                <ion-select placeholder="Seleziona una categoria" interface="popover">
-                  <ion-select-option value="login">
-                    Accesso / Login
-                  </ion-select-option>
-                  <ion-select-option value="prenotazione">
-                    Prenotazione
-                  </ion-select-option>
-                  <ion-select-option value="notifiche">
-                    Notifiche
-                  </ion-select-option>
-                  <ion-select-option value="documenti">
-                    Documenti caricati
-                  </ion-select-option>
-                  <ion-select-option value="profilo">
-                    Profilo personale
-                  </ion-select-option>
-                  <ion-select-option value="altro">
-                    Altro
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-            </div>
-
-            <div class="form-field">
-              <label>Priorità</label>
-              <ion-item lines="none">
-                <ion-select value="media" interface="popover">
-                  <ion-select-option value="bassa">
-                    Bassa
-                  </ion-select-option>
-                  <ion-select-option value="media">
-                    Media
-                  </ion-select-option>
-                  <ion-select-option value="alta">
-                    Alta
-                  </ion-select-option>
-                </ion-select>
-              </ion-item>
-            </div>
-
-            <div class="form-field full-width">
-              <label>Oggetto</label>
-              <ion-item lines="none">
-                <ion-input placeholder="Scrivi un oggetto breve e chiaro"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="form-field full-width">
-              <label>Descrizione</label>
-              <ion-item lines="none" class="textarea-item">
-                <ion-textarea autoGrow="true" maxlength="1000"
-                  placeholder="Descrivi nel dettaglio il problema o la richiesta..."></ion-textarea>
-              </ion-item>
-
-              <div class="field-hint">
-                Inserisci schermate, messaggi di errore o passaggi che hai già provato.
+          <form (ngSubmit)="inviaSegnalazione()" #segnalazioneForm="ngForm">
+            <div class="form-grid">
+              <div class="form-field full-width">
+                <label>Oggetto</label>
+                <ion-item lines="none">
+                  <ion-input [(ngModel)]="form.oggetto" name="oggetto" placeholder="Scrivi un oggetto breve e chiaro"
+                    required></ion-input>
+                </ion-item>
               </div>
-            </div>
 
-            <div class="form-field full-width">
-              <label>Allegato opzionale</label>
+              <div class="form-field full-width">
+                <label>Descrizione</label>
+                <ion-item lines="none" class="textarea-item">
+                  <ion-textarea [(ngModel)]="form.descrizione" name="descrizione" autoGrow="true" maxlength="1000"
+                    placeholder="Descrivi nel dettaglio il problema o la richiesta..." required></ion-textarea>
+                </ion-item>
 
-              <div class="upload-box">
-                <ion-icon name="cloud-upload-outline"></ion-icon>
+                <div class="field-hint">
+                  Inserisci schermate, messaggi di errore o passaggi che hai già provato.
+                </div>
+              </div>
 
-                <div>
-                  <strong>Carica screenshot o documento</strong>
-                  <span>PDF, JPG o PNG - massimo 5MB</span>
+              <div class="form-field full-width">
+                <label>Allegato opzionale</label>
+
+                <div class="upload-box">
+                  <ion-icon name="cloud-upload-outline"></ion-icon>
+
+                  <div>
+                    <strong>Carica screenshot o documento</strong>
+                    <span>PDF, JPG o PNG - massimo 5MB</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="form-actions">
-            <ion-button fill="outline" class="cancel-btn">
-              Annulla
-            </ion-button>
+            <div class="form-actions">
+              <ion-button fill="outline" class="cancel-btn" (click)="form = { oggetto: '', descrizione: '' }" [disabled]="invioInCorso">
+                Annulla
+              </ion-button>
 
-            <ion-button class="send-btn">
-              <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
-              Invia segnalazione
-            </ion-button>
-          </div>
+              <ion-button type="submit" class="send-btn" [disabled]="!segnalazioneForm.form.valid || invioInCorso">
+                @if (invioInCorso) {
+                  <ion-icon name="time-outline" slot="start"></ion-icon>
+                  Invio in corso...
+                } @else {
+                  <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
+                  Invia segnalazione
+                }
+              </ion-button>
+            </div>
+          </form>
         </ion-card-content>
       </ion-card>
 
@@ -183,44 +148,28 @@
 
         <ion-card-content>
           <div class="report-list">
+            @if (segnalazioni.length === 0) {
+            <div class="empty-state-small">
+              <p>Non hai ancora inviato segnalazioni.</p>
+            </div>
+            } @else {
+            @for (s of segnalazioni; track s.id_segnalazione) {
             <div class="report-item">
               <div class="report-main">
-                <span class="report-id">#SG-2026-0152</span>
-                <strong>Problema con prenotazione</strong>
-                <p>Slot selezionato non confermato correttamente.</p>
+                <span class="report-id">#{{ s.id_segnalazione.substring(0,8).toUpperCase() }}</span>
+                <strong>{{ s.oggetto }}</strong>
+                <p>{{ s.descrizione }}</p>
               </div>
 
               <div class="report-meta">
-                <span class="status working">In lavorazione</span>
-                <small>12/05/2026</small>
+                <span class="status" [ngClass]="s.stato.toLowerCase()">
+                  {{ s.stato | titlecase }}
+                </span>
+                <small>{{ s.data_invio | date:'dd/MM/yyyy' }}</small>
               </div>
             </div>
-
-            <div class="report-item">
-              <div class="report-main">
-                <span class="report-id">#SG-2026-0148</span>
-                <strong>Notifica reminder non ricevuta</strong>
-                <p>Reminder del ricevimento non arrivato via email.</p>
-              </div>
-
-              <div class="report-meta">
-                <span class="status solved">Risolta</span>
-                <small>08/05/2026</small>
-              </div>
-            </div>
-
-            <div class="report-item">
-              <div class="report-main">
-                <span class="report-id">#SG-2026-0140</span>
-                <strong>Errore caricamento documento</strong>
-                <p>Il file PDF non veniva caricato nella prenotazione.</p>
-              </div>
-
-              <div class="report-meta">
-                <span class="status solved">Risolta</span>
-                <small>02/05/2026</small>
-              </div>
-            </div>
+            }
+            }
           </div>
         </ion-card-content>
       </ion-card>

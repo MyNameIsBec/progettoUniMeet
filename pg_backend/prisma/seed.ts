@@ -215,7 +215,12 @@ async function main() {
   ];
   for (const n of notifiche) {
     await prisma.notifica.create({
-      data: { messaggio: n.msg, tipo: n.tipo },
+      data: { 
+        titolo: 'Avviso di Sistema',
+        messaggio: n.msg, 
+        tipo: n.tipo,
+        matricola_studente: 'MAT001'
+      },
     });
     console.log(`  [${n.tipo}] ${n.msg.substring(0, 60)}...`);
   }
