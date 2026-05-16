@@ -33,6 +33,7 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
   public prossimoRicevimento: Prenotazione | null = null;
   public listaPrenotazioni: Prenotazione[] = [];
   public listaFaq: FAQ[] = [];
+  public totaleConfermate: number = 0;
   idStudenteCorrente: string = '';
   
   private userSub: Subscription | null = null;
@@ -54,10 +55,20 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
     });
   }
 
+  ionViewWillEnter() {
+    if (this.idStudenteCorrente) {
+      this.caricaDatiDashboard(this.idStudenteCorrente);
+    }
+  }
+
   ngOnDestroy() {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
+  }
+
+  get prenotazioniFutureCount(): number {
+    return this.totaleConfermate;
   }
 
   private async caricaDatiDashboard(matricola: string) {
@@ -73,12 +84,35 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
         }
       }
 
-      this.listaPrenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(matricola));
+      const tutte = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(matricola));
+      
+      // 0. Conteggio totale confermate
+      this.totaleConfermate = tutte.filter(p => p.stato === 'confermata').length;
 
-      // Imposta il prossimo ricevimento (il primo della lista se presente)
-      if (this.listaPrenotazioni.length > 0) {
-        this.prossimoRicevimento = this.listaPrenotazioni[0];
-      }
+      // 1. Lista visualizzata: Confermate o In attesa, ordinate per data DECRESCENTE (la più recente al posto 0)
+      this.listaPrenotazioni = tutte
+        .filter(p => p.stato === 'confermata' || p.stato === 'in_attesa')
+        .sort((a, b) => {
+          const dateTimeA = new Date(`${a.data}T${a.ora}`).getTime();
+          const dateTimeB = new Date(`${b.data}T${b.ora}`).getTime();
+          return dateTimeB - dateTimeA; // Ordine decrescente (Newest first)
+        })
+        .slice(0, 3);
+
+      // 2. Prossima prenotazione CONFERMATA più vicina (futura)
+      const oggi = new Date();
+      oggi.setHours(0, 0, 0, 0);
+
+      const futureConfermate = tutte
+        .filter(p => p.stato === 'confermata' && new Date(p.data) >= oggi)
+        .sort((a, b) => {
+          const dateTimeA = new Date(`${a.data}T${a.ora}`).getTime();
+          const dateTimeB = new Date(`${b.data}T${b.ora}`).getTime();
+          return dateTimeA - dateTimeB; // Ordine crescente per trovare la più vicina
+        });
+
+      this.prossimoRicevimento = futureConfermate.length > 0 ? futureConfermate[0] : null;
+
     } catch (err) {
       console.error('Errore caricamento dati dashboard', err);
     }

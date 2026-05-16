@@ -162,7 +162,7 @@
 
               <div class="topic-box">
                 <span>Motivazione indicata</span>
-                <h3>{{ prenotazione.argomento || prenotazione.materia }}</h3>
+                <h3>{{ getArgomentoLabel(prenotazione.argomento) || prenotazione.materia }}</h3>
                 <p>
                   {{ prenotazione.descrizione || 'Nessuna nota aggiuntiva fornita per questo ricevimento.' }}
                 </p>
@@ -189,7 +189,7 @@
                     <p>{{ doc.tipo | uppercase }} · {{ (doc.dimensione / 1024 / 1024) | number:'1.1-1' }} MB</p>
                   </div>
                   <div class="document-actions">
-                    <ion-button fill="outline">Visualizza</ion-button>
+                    <ion-button fill="outline" (click)="apriDocumento(doc.percorso)">Visualizza</ion-button>
                   </div>
                 </div>
                 }

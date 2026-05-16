@@ -41,5 +41,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "exclude": ["prisma.config.ts", "prisma.config.js", "prisma/seed.ts", "node_modules", "dist"]
+  "exclude": ["prisma.config.ts", "prisma.config.js", "prisma/seed.ts", "node_modules", "dist", "scratch"]
 }

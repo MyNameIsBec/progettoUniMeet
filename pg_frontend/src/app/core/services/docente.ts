@@ -16,9 +16,11 @@ export class DocenteService {
     return `${this.authService.getApiUrl()}/api/docenti`;
   }
 
-  getDocentiPerCorso(corsoDiStudi: string): Observable<Docente[]> {
-    // Il backend attualmente non ha l'endpoint specifico per corso, usiamo quello generale
-    return this.http.get<Docente[]>(this.api);
+  getDocentiPerCorso(corso?: string, search?: string): Observable<Docente[]> {
+    let params = new HttpParams();
+    if (corso) params = params.set('corso', corso);
+    if (search) params = params.set('search', search);
+    return this.http.get<Docente[]>(this.api, { params });
   }
 
   getDettagliDocente(id: string): Observable<Docente> {

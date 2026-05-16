@@ -44,7 +44,7 @@
           Seleziona data
         </label>
         <ion-item lines="none">
-          <ion-input type="date" [value]="dataSelezionata" (ionChange)="quandoDataSelezionata($event)"></ion-input>
+          <ion-input type="date" [value]="dataInizioSettimana.toISOString().split('T')[0]" (ionChange)="quandoDataSelezionata($event)"></ion-input>
         </ion-item>
       </div>
     </div>
@@ -127,11 +127,12 @@
                   <ion-icon name="lock-closed-outline"></ion-icon>
                 </div>
                 } @else {
-                @for (slot of getSlotsGiornoEOra(giorno, ora); track slot.id) {
+                @let slot = getSlotGiornoEOra(giorno, ora);
+                @if (slot) {
                 <button class="slot" [class.available]="slot.disponibilita" [class.occupied]="!slot.disponibilita"
                   [class.selected]="slotSelezionato?.id === slot.id" [disabled]="!slot.disponibilita"
                   (click)="selezionaSlot(slot)">
-                  <strong>{{ slot.oraInizio }}</strong>
+                  <strong>{{ slot.oraInizio }} - {{ slot.oraFine }}</strong>
                 </button>
                 }
                 }
@@ -183,7 +184,7 @@
 
   <!-- MODALE DETTAGLI PRENOTAZIONE -->
   <ion-modal [isOpen]="mostraModalePrenotazione" (didDismiss)="mostraModalePrenotazione = false"
-    (ionModalWillPresent)="preparaModale()" class="booking-modal">
+    class="booking-modal">
     <ng-template>
       <div class="modal-root-native">
         <!-- HEADER FISSO -->
@@ -211,11 +212,11 @@
             <div class="hero-accent"></div>
             <div class="slot-main-info">
               <div class="teacher-avatar">
-                {{ (ottieniNomeDocente(slotSelezionato.docenteId).substring(0,1) || 'D') }}
+                {{ docenteSelezionato?.nome?.[0] }}{{ docenteSelezionato?.cognome?.[0] }}
               </div>
               <div class="slot-text-info">
                 <h3>Prenotazione Ricevimento</h3>
-                <p>{{ ottieniNomeDocente(slotSelezionato.docenteId) }}</p>
+                <p>Prof. {{ docenteSelezionato?.nome }} {{ docenteSelezionato?.cognome }}</p>
               </div>
             </div>
             
@@ -226,7 +227,7 @@
               </div>
               <div class="detail-pill">
                 <ion-icon name="time-outline"></ion-icon>
-                <span>{{ slotSelezionato.oraInizio }}</span>
+                <span>{{ slotSelezionato.oraInizio }} - {{ slotSelezionato.oraFine }}</span>
               </div>
               <div class="detail-pill location">
                 <ion-icon name="location-outline"></ion-icon>

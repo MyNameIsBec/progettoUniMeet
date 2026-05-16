@@ -7,11 +7,9 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-  IonButton,
-  IonSelect,
-  IonSelectOption
+  IonButton
 } from '@ionic/angular/standalone';
-import { Corso, Docente } from '../../../core/models/interfacce';
+import { Docente } from '../../../core/models/interfacce';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
 import { DocenteService } from '../../../core/services/docente';
@@ -34,32 +32,30 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
     IonCardHeader,
     IonCardTitle,
     IonButton,
-    IonSelect,
-    IonSelectOption,
     FormsModule,
     DashboardLayoutComponent
   ]
 })
 export class ElencoDocentiPage {
   public listaDocenti: Docente[] = [];
-  public docentiOriginali: Docente[] = []; // Necessario per non perdere i dati durante il filtraggio
-  public listaCorsi: Corso[] = [];
-
+  public docentiOriginali: Docente[] = []; 
   public ricerca: string = '';
-  public corsoSelezionato: string = 'tutti';
 
   constructor(private authService: AuthService, private studenteService: StudenteService, private docenteService: DocenteService) {
   }
+
+  private mioCorso: string = '';
 
   async ngOnInit() {
     try {
       const user = this.authService.getCurrentUser();
       if (user != null) {
+        await this.caricaDocenti(); 
+        
         const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
-        if (profilo.corsoDiStudi != null) {
-          this.docentiOriginali = await firstValueFrom(this.docenteService.getDocentiPerCorso(profilo.corsoDiStudi));
-          this.listaDocenti = [...this.docentiOriginali];
-          this.listaCorsi = await firstValueFrom(this.studenteService.getCorsi(profilo.matricola));
+        if (profilo && profilo.corsoDiStudi) {
+          this.mioCorso = profilo.corsoDiStudi;
+          this.cerca(); // Filtra inizialmente per il mio corso o mostra tutto
         }
       }
     }
@@ -68,25 +64,32 @@ export class ElencoDocentiPage {
     }
   }
 
+  async caricaDocenti() {
+    try {
+      // Passiamo stringa vuota per caricare tutti i docenti
+      const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso('', this.ricerca));
+      this.listaDocenti = docenti.map(d => ({ 
+        ...d, 
+        iniziali: d.iniziali || `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??'
+      }));
+      this.docentiOriginali = [...this.listaDocenti];
+    } catch (error) {
+      console.error('Errore caricamento docenti', error);
+    }
+  }
+
   cerca() {
-    this.applicaFiltri();
-  }
+    if (!this.ricerca) {
+      this.listaDocenti = [...this.docentiOriginali];
+      return;
+    }
 
-  onFilterCorso(event: any) {
-    this.corsoSelezionato = event.detail.value;
-    this.applicaFiltri();
-  }
-
-  applicaFiltri() {
-    this.listaDocenti = this.docentiOriginali.filter(docente => {
-      const filtroRicerca = !this.ricerca ||
-        docente.nome.toLowerCase().includes(this.ricerca.toLowerCase()) ||
-        docente.materia.toLowerCase().includes(this.ricerca.toLowerCase());
-
-      const filtroCorso = this.corsoSelezionato === 'tutti' ||
-        (docente.corsoDiStudi && docente.corsoDiStudi.includes(this.corsoSelezionato));
-
-      return filtroRicerca && filtroCorso;
+    const term = this.ricerca.toLowerCase().trim();
+    const searchTerms = term.split(/\s+/);
+    
+    this.listaDocenti = this.docentiOriginali.filter(d => {
+      const fullString = `${d.nome} ${d.cognome} ${d.materia}`.toLowerCase();
+      return searchTerms.every(t => fullString.includes(t));
     });
   }
 }

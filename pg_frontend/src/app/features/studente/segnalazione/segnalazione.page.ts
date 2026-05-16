@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonInput, IonItem, IonTextarea, } from '@ionic/angular/standalone';
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonInput, IonItem, IonTextarea } from '@ionic/angular/standalone';
+import { AlertController, ToastController } from '@ionic/angular';
 import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-segnalazione',
@@ -30,7 +32,52 @@ export class SegnalazionePage implements OnInit {
     risolte: 0
   };
 
-  constructor(private segnalazioneService: SegnalazioneService, private authService: AuthService) { }
+  constructor(
+    private segnalazioneService: SegnalazioneService, 
+    private authService: AuthService,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) { }
+
+  async eliminaSegnalazione(id: string) {
+    const alert = await this.alertController.create({
+      header: 'Conferma Eliminazione',
+      message: 'Vuoi eliminare questa segnalazione dallo storico? Questa azione è irreversibile.',
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Elimina',
+          cssClass: 'delete-button-confirm',
+          handler: () => {
+            console.log('Tentativo eliminazione segnalazione ID:', id);
+            this.segnalazioneService.eliminaSegnalazione(id).subscribe({
+              next: async () => {
+                console.log('Eliminazione segnalazione riuscita sul backend');
+                this.caricaSegnalazioni();
+                const toast = await this.toastController.create({
+                  message: 'Segnalazione eliminata con successo',
+                  duration: 2000,
+                  color: 'success',
+                  position: 'bottom'
+                });
+                await toast.present();
+              },
+              error: async (err) => {
+                console.error('Errore durante l\'eliminazione segnalazione', err);
+                const toast = await this.toastController.create({
+                  message: 'Errore durante l\'eliminazione: ' + (err.error?.error || 'Server error'),
+                  duration: 3000,
+                  color: 'danger'
+                });
+                await toast.present();
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
 
   ngOnInit() {
     this.caricaSegnalazioni();

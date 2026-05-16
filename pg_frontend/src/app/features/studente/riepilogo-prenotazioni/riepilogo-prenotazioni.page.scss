@@ -154,6 +154,13 @@ ion-badge {
     --padding-bottom: 6px;
 }
 
+.status-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
 .details-grid {
     display: flex;
     gap: 28px;
@@ -178,6 +185,7 @@ ion-badge {
 .card-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     border-top: 1px solid #f1f5f9;
     padding-top: 20px;
 
@@ -187,6 +195,21 @@ ion-badge {
         --padding-start: 16px;
         --padding-end: 16px;
         font-size: 0.95rem;
+    }
+
+    .delete-card-btn {
+        --color: #ef4444;
+        --padding-start: 8px;
+        --padding-end: 8px;
+        margin-left: auto; /* Push to the far right */
+        
+        ion-icon {
+            font-size: 22px;
+        }
+
+        &:hover {
+            --color: #dc2626;
+        }
     }
 }
 

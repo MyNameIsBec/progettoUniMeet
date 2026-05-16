@@ -1,45 +1,99 @@
 import { prisma } from '../prisma/client';
+import path from 'path';
 
-export async function createPrenotazione(data: {
-  matricolaStudente: string;
-  idSlot: string;
-  argomento: string;
-}) {
+export async function createPrenotazione(
+  data: {
+    matricolaStudente: string;
+    idSlot: string;
+    argomento: string;
+    descrizione?: string;
+  },
+  files?: Express.Multer.File[]
+) {
+  const matricola = data.matricolaStudente?.trim();
+  const idSlot = data.idSlot?.trim();
+
   const slot = await prisma.slotRicevimento.findUnique({
-    where: { id_slot: data.idSlot },
+    where: { id_slot: idSlot },
     include: { docente: true },
   });
   if (!slot) throw new Error('Slot not found');
   if (!slot.disponibilita) throw new Error('Slot non disponibile');
 
-  const prenotazione = await prisma.prenotazione.create({
-    data: {
-      matricola_studente: data.matricolaStudente,
-      id_slot: data.idSlot,
-      argomento: data.argomento,
-    },
-    include: {
-      studente: { select: { matricola: true, nome: true, cognome: true } },
-      slot: {
-        include: {
-          docente: { select: { id_docente: true, nome: true, cognome: true } },
-          luogo: true,
-        },
-      },
-    },
+  const studente = await prisma.studente.findUnique({
+    where: { matricola: matricola },
   });
+  if (!studente) {
+    throw new Error('Studente non trovato');
+  }
 
-  return {
-    id: prenotazione.id_prenotazione,
-    studenteId: prenotazione.matricola_studente,
-    slotId: prenotazione.id_slot,
-    docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
-    data: prenotazione.slot.data.toISOString().split('T')[0],
-    ora: `${prenotazione.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
-    luogo: prenotazione.slot.luogo?.nome_aula ?? '',
-    argomento: prenotazione.argomento,
-    stato: prenotazione.stato_prenotazione.toLowerCase(),
+  const createData: Record<string, unknown> = {
+    matricola_studente: matricola,
+    id_slot: idSlot,
+    argomento: data.argomento,
+    descrizione: data.descrizione ?? '',
   };
+
+  if (files && files.length > 0) {
+    createData.documenti = {
+      createMany: {
+        data: files.map((f) => ({
+          nome_file: f.originalname,
+          tipo_file: f.mimetype,
+          dimensione: f.size,
+          percorso_file: f.filename,
+        })),
+      },
+    };
+  }
+
+
+  
+  try {
+    const p = await prisma.prenotazione.create({
+      data: createData as any,
+      include: {
+        studente: { select: { matricola: true, nome: true, cognome: true } },
+        slot: {
+          include: {
+            docente: { select: { id_docente: true, nome: true, cognome: true, materia: true } },
+            luogo: true,
+          },
+        },
+        documenti: true,
+      },
+    }) as any;
+
+    // Aggiorniamo la disponibilità dello slot a false dopo la prenotazione
+    await prisma.slotRicevimento.update({
+      where: { id_slot: idSlot },
+      data: { disponibilita: false }
+    });
+    
+    return {
+      id: p.id_prenotazione,
+      studenteId: p.matricola_studente,
+      slotId: p.id_slot,
+      docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
+      materia: p.slot.docente.materia ?? '',
+      data: p.slot.data.toISOString().split('T')[0],
+      ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+      luogo: p.slot.luogo?.nome_aula ?? '',
+      argomento: p.argomento,
+      descrizione: p.descrizione,
+      stato: p.stato_prenotazione.toLowerCase(),
+      documenti: p.documenti?.map((d: any) => ({
+        id: d.id_documento,
+        nomeFile: d.nome_file,
+        tipo: d.tipo_file,
+        dimensione: d.dimensione,
+        dataCaricamento: d.data_caricamento.toISOString(),
+        percorso: d.percorso_file ? `/uploads/${d.percorso_file.split(/[\\/]/).pop()}` : '',
+      })) ?? [],
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function annullaPrenotazione(id: string) {
@@ -50,6 +104,26 @@ export async function annullaPrenotazione(id: string) {
     where: { id_prenotazione: id },
     data: { stato_prenotazione: 'ANNULLATA' },
   });
+
+  // Ripristiniamo la disponibilità dello slot
+  await prisma.slotRicevimento.update({
+    where: { id_slot: prenotazione.id_slot },
+    data: { disponibilita: true }
+  });
+}
+
+export async function eliminaPrenotazione(id: string) {
+  const prenotazione = await prisma.prenotazione.findUnique({ where: { id_prenotazione: id } });
+  if (!prenotazione) throw new Error('Prenotazione not found');
+
+  // Cancelliamo prima i documenti associati per evitare errori di vincolo (se non in cascade)
+  await prisma.documento.deleteMany({
+    where: { id_prenotazione: id }
+  });
+
+  await prisma.prenotazione.delete({
+    where: { id_prenotazione: id }
+  });
 }
 
 export async function getPrenotazioniStudente(matricolaStudente: string) {
@@ -58,7 +132,7 @@ export async function getPrenotazioniStudente(matricolaStudente: string) {
     include: {
       slot: {
         include: {
-          docente: { select: { id_docente: true, nome: true, cognome: true } },
+          docente: { select: { id_docente: true, nome: true, cognome: true, materia: true } },
           luogo: true,
         },
       },
@@ -71,6 +145,7 @@ export async function getPrenotazioniStudente(matricolaStudente: string) {
     studenteId: p.matricola_studente,
     slotId: p.id_slot,
     docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
+    materia: p.slot.docente.materia ?? '',
     data: p.slot.data.toISOString().split('T')[0],
     ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
     luogo: p.slot.luogo?.nome_aula ?? '',
@@ -144,6 +219,7 @@ export async function getPrenotazioneById(id: string) {
       slot: {
         include: { docente: true, luogo: true },
       },
+      documenti: true,
     },
   });
 
@@ -154,10 +230,20 @@ export async function getPrenotazioneById(id: string) {
     studenteId: prenotazione.matricola_studente,
     slotId: prenotazione.id_slot,
     docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
+    materia: prenotazione.slot.docente.materia ?? '',
     data: prenotazione.slot.data.toISOString().split('T')[0],
     ora: `${prenotazione.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
     luogo: prenotazione.slot.luogo?.nome_aula ?? '',
     argomento: prenotazione.argomento,
+    descrizione: prenotazione.descrizione,
     stato: prenotazione.stato_prenotazione.toLowerCase(),
+    documenti: prenotazione.documenti.map((d) => ({
+      id: d.id_documento,
+      nomeFile: d.nome_file,
+      tipo: d.tipo_file,
+      dimensione: d.dimensione,
+      dataCaricamento: d.data_caricamento.toISOString(),
+      percorso: d.percorso_file ? `/uploads/${d.percorso_file.split(/[\\/]/).pop()}` : '',
+    })),
   };
 }

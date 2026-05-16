@@ -116,3 +116,13 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
     },
   };
 }
+export async function eliminaSegnalazione(id: string) {
+  const segnalazione = await prisma.segnalazione.findUnique({
+    where: { id_segnalazione: id },
+  });
+  if (!segnalazione) throw new Error('Segnalazione not found');
+
+  await prisma.segnalazione.delete({
+    where: { id_segnalazione: id },
+  });
+}

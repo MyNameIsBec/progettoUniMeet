@@ -23,7 +23,6 @@ export interface Studente extends Utente {
 export interface Docente extends Utente {
   ufficio: string;
   materia: string;
-  disponibile?: boolean;
   coloreAvatar?: string;
   iniziali?: string;
   descrizione?: string;
@@ -62,7 +61,7 @@ export interface SlotRicevimento {
   oraFine: string;
   disponibilita: boolean;
   stato?: 'disponibile' | 'occupato' | 'non_prenotabile';
-  luogo: LuogoRicevimento;
+  luogo?: LuogoRicevimento;
 }
 
 export interface Documento {

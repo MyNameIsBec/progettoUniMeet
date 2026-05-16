@@ -1,21 +1,45 @@
 import { prisma } from '../prisma/client';
 
-export async function getElencoDocenti() {
+export async function getElencoDocenti(filtri?: { corso?: string; search?: string }) {
+  const where: any = {};
+
+  if (filtri?.corso && filtri.corso !== 'tutti') {
+    where.corso_di_studi = { contains: filtri.corso, mode: 'insensitive' };
+  }
+
+  if (filtri?.search) {
+    const terms = filtri.search.trim().toLowerCase().split(/\s+/);
+    where.AND = terms.map(term => ({
+      OR: [
+        { nome: { contains: term, mode: 'insensitive' } },
+        { cognome: { contains: term, mode: 'insensitive' } }
+      ]
+    }));
+  }
+
   const docenti = await prisma.docente.findMany({
+    where,
     select: {
       id_docente: true,
       nome: true,
       cognome: true,
       email: true,
       ufficio: true,
-    },
+      materia: true,
+      corso_di_studi: true,
+    } as any,
   });
+
   return docenti.map((d) => ({
     id: d.id_docente,
     nome: d.nome,
     cognome: d.cognome,
     email: d.email,
     ufficio: d.ufficio,
+    materia: d.materia || 'N/D',
+    corsoDiStudi: d.corso_di_studi ? [d.corso_di_studi] : [],
+    iniziali: `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??',
+    coloreAvatar: 'blue'
   }));
 }
 
@@ -88,6 +112,30 @@ export async function creaSlot(idDocente: string, data: {
   oraFine: string;
   luogo?: { nomeAula: string; edificio: string; piano: string };
 }) {
+  const dataSlot = new Date(data.data);
+  const existing = await prisma.slotRicevimento.findFirst({
+    where: {
+      id_docente: idDocente,
+      data: dataSlot
+    }
+  });
+
+  if (existing) {
+    throw new Error('Il docente ha già uno slot programmato per questa data. Massimo uno slot al giorno.');
+  }
+
+  // Verifica durata: massimo 1 ora
+  const startStr = `${data.data}T${data.oraInizio}`;
+  const endStr = `${data.data}T${data.oraFine}`;
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  const diffMs = end.getTime() - start.getTime();
+  const diffMin = diffMs / (1000 * 60);
+
+  if (diffMin > 60) {
+    throw new Error('La durata dello slot non può superare 1 ora.');
+  }
+
   const slot = await prisma.slotRicevimento.create({
     data: {
       data: new Date(data.data),

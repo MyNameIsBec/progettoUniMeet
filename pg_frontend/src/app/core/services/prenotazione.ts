@@ -20,6 +20,10 @@ export class PrenotazioneService {
     return this.http.delete<void>(`${this.api}/${id}`);
   }
 
+  eliminaPrenotazione(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}/fisico`);
+  }
+
   getPrenotazioniStudente(matricolaStudente: string): Observable<Prenotazione[]> {
     return this.http.get<Prenotazione[]>(`${this.api}/studente/${matricolaStudente}`);
   }

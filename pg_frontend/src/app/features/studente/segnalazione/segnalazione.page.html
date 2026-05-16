@@ -179,6 +179,12 @@
                   {{ s.stato | titlecase }}
                 </span>
                 <small>{{ s.data_invio | date:'dd/MM/yyyy' }}</small>
+                
+                @if (s.stato === 'CHIUSA') {
+                <ion-button fill="clear" color="danger" (click)="eliminaSegnalazione(s.id_segnalazione)" class="delete-report-btn">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                }
               </div>
             </div>
             }

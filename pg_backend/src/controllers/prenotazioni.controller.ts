@@ -3,7 +3,8 @@ import * as prenotazioniService from '../services/prenotazioni.service';
 
 export async function createPrenotazione(req: Request, res: Response) {
   try {
-    const prenotazione = await prenotazioniService.createPrenotazione(req.body);
+    const files = req.files as Express.Multer.File[] | undefined;
+    const prenotazione = await prenotazioniService.createPrenotazione(req.body, files);
     return res.status(201).json(prenotazione);
   } catch (err: unknown) {
     if (err instanceof Error && (err.message === 'Slot not found' || err.message === 'Slot non disponibile')) {
@@ -17,6 +18,19 @@ export async function annullaPrenotazione(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
     await prenotazioniService.annullaPrenotazione(id);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function eliminaPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    await prenotazioniService.eliminaPrenotazione(id);
     return res.status(204).send();
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Prenotazione not found') {

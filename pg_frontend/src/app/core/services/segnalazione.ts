@@ -38,4 +38,8 @@ export class SegnalazioneService {
   aggiornaStato(id: string, stato: string): Observable<Segnalazione> {
     return this.http.patch<Segnalazione>(`api/segnalazioni/${id}/stato`, { stato });
   }
+
+  eliminaSegnalazione(id: string): Observable<void> {
+    return this.http.delete<void>(`api/segnalazioni/${id}`);
+  }
 }

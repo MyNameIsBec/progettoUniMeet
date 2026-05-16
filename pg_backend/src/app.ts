@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import studentiRoutes from './routes/studenti.routes';
@@ -13,6 +14,9 @@ import bachecheRoutes from './routes/bacheche.routes';
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const uploadsPath = path.join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 app.use('/api', authRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', studentiRoutes);

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonCard, IonCardContent, IonButton, IonBadge, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
+import { AlertController, ToastController } from '@ionic/angular';
 import { Prenotazione } from 'src/app/core/models/interfacce';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
@@ -25,7 +26,56 @@ export class RiepilogoPrenotazioniPage implements OnInit {
   public ricerca: string = '';
   public statoSelezionato: string = 'tutti';
 
-  constructor(private authService: AuthService, private prenotazioneService: PrenotazioneService, private studenteService: StudenteService) {
+  constructor(
+    private authService: AuthService, 
+    private prenotazioneService: PrenotazioneService, 
+    private studenteService: StudenteService,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {
+  }
+
+  async eliminaPrenotazione(id: string) {
+    const alert = await this.alertController.create({
+      header: 'Conferma Eliminazione',
+      message: 'Sei sicuro di voler eliminare questa prenotazione dallo storico? Questa azione è irreversibile.',
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Elimina',
+          cssClass: 'delete-button-confirm',
+          handler: () => {
+            console.log('Tentativo eliminazione prenotazione ID:', id);
+            this.prenotazioneService.eliminaPrenotazione(id).subscribe({
+              next: async () => {
+                console.log('Eliminazione riuscita sul backend');
+                this.prenotazioniOriginali = [...this.prenotazioniOriginali.filter(p => p.id !== id)];
+                this.listaPrenotazioni = [...this.prenotazioniOriginali];
+                this.applicaFiltri();
+                
+                const toast = await this.toastController.create({
+                  message: 'Prenotazione eliminata con successo',
+                  duration: 2000,
+                  color: 'success',
+                  position: 'bottom'
+                });
+                await toast.present();
+              },
+              error: async (err) => {
+                console.error('Errore durante l\'eliminazione', err);
+                const toast = await this.toastController.create({
+                  message: 'Errore durante l\'eliminazione: ' + (err.error?.error || 'Server error'),
+                  duration: 3000,
+                  color: 'danger'
+                });
+                await toast.present();
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   async ngOnInit() {
@@ -33,6 +83,11 @@ export class RiepilogoPrenotazioniPage implements OnInit {
       const user = this.authService.getCurrentUser();
       if (user != null) {
         this.prenotazioniOriginali = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(user.id));
+        this.prenotazioniOriginali.sort((a, b) => {
+          const cmp = b.data.localeCompare(a.data);
+          if (cmp !== 0) return cmp;
+          return (b.ora || '').localeCompare(a.ora || '');
+        });
         this.listaPrenotazioni = [...this.prenotazioniOriginali];
       }
     }

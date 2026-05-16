@@ -13,6 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
+import { AuthService } from '../../../core/services/auth';
 import { Prenotazione } from '../../../core/models/interfacce';
 
 @Component({
@@ -40,7 +41,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   private map: L.Map | undefined;
   private userMarker: L.Marker | undefined;
   private meetingMarker: L.Marker | undefined;
-  
+
   // Icona Verde per l'utente
   private userIcon = L.divIcon({
     className: 'custom-marker user-location',
@@ -58,6 +59,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   });
 
   private prenotazioneService = inject(PrenotazioneService);
+  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -89,7 +91,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
 
   private initMap() {
     if (this.map) return;
-    
+
     const container = document.getElementById('map');
     if (!container) {
       console.warn('Contenitore mappa non trovato, riprovo tra 200ms...');
@@ -98,7 +100,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
     }
 
     this.map = L.map('map', {
-      zoomControl: false 
+      zoomControl: false
     }).setView([38.1156, 13.3614], 13);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -110,7 +112,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
     L.control.zoom({
       position: 'bottomright'
     }).addTo(this.map);
-    
+
     // Forza il ricalcolo delle dimensioni
     setTimeout(() => {
       if (this.map) {
@@ -125,7 +127,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
     // 1. Gestione Marker Utente (Posizione attuale)
     this.trackUserLocation().then(coords => {
       if (!coords || !this.map) return;
-      
+
       const userLatLng: L.LatLngExpression = [coords.latitude, coords.longitude];
       if (this.userMarker) this.map.removeLayer(this.userMarker);
 
@@ -164,7 +166,10 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
 
   private async trackUserLocation() {
     try {
-      const coordinates = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+      const coordinates = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 5000
+      });
       return coordinates.coords;
     } catch (error) {
       console.error('Errore GPS:', error);
@@ -174,7 +179,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
 
   private fitMapBounds() {
     if (!this.map || !this.meetingMarker) return;
-    
+
     if (this.userMarker) {
       const group = L.featureGroup([this.userMarker, this.meetingMarker]);
       this.map.fitBounds(group.getBounds().pad(0.5));
@@ -189,7 +194,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
       next: (data) => {
         this.prenotazione = data;
         this.loading = false;
-        
+
         // Aspettiamo che Angular renderizzi il div#map
         setTimeout(() => {
           this.initMap();
@@ -233,6 +238,17 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
     return labels[stato] || stato;
   }
 
+  getArgomentoLabel(argomento: string | undefined): string {
+    const labels: Record<string, string> = {
+      'chiarimenti': 'Chiarimenti Lezione',
+      'tesi': 'Discussione Tesi',
+      'progetto': 'Revisione Progetto',
+      'esame': 'Info Esame',
+      'altro': 'Altro',
+    };
+    return labels[argomento || ''] || argomento || 'Generale';
+  }
+
   getStatoColor(stato: string): string {
     const colors: Record<string, string> = {
       'confermata': 'success',
@@ -241,5 +257,15 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
       'completata': 'medium'
     };
     return colors[stato] || 'primary';
+  }
+
+  apriDocumento(percorso: string) {
+    if (!percorso) return;
+    
+    // Safety: estraiamo solo il nome del file se per qualche motivo arriva il percorso completo
+    const nomeFile = percorso.split(/[\\/]/).pop();
+    const url = this.authService.getApiUrl() + '/uploads/' + nomeFile;
+    
+    window.open(url, '_blank');
   }
 }

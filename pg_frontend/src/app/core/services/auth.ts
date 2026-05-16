@@ -22,9 +22,11 @@ export interface RegistrazioneStudente {
   corsoDiStudi: string;
 }
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = '';
+  private apiUrl = environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<UserSession | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

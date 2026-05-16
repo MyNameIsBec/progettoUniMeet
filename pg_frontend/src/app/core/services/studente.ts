@@ -22,10 +22,6 @@ export class StudenteService {
     return this.http.put<{ messaggio: string }>(`${this.api}/${matricola}`, dati);
   }
 
-  getCorsi(matricola: string): Observable<Corso[]> {
-    return this.http.get<Corso[]>(`${this.api}/${matricola}/corsi`);
-  }
-
   cambiaPassword(matricola: string, vecchiaPw: string, nuovaPw: string): Observable<{ messaggio: string }> {
     return this.http.post<{ messaggio: string }>(`${this.api}/${matricola}/cambia-password`, { vecchiaPw, nuovaPw });
   }

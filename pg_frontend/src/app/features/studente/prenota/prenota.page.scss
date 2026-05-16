@@ -332,14 +332,14 @@ ion-card-title {
 
 .slot {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 38px;
-  margin: 0 auto;
+  height: 100%;
+  min-height: 44px;
+  margin: 0;
   padding: 2px;
-  border-radius: 4px;
-  border: 1.5px solid #000000; /* Bordi neri richiesti */
-  font-size: 10px;
-  font-weight: 900;
+  border-radius: 0; /* Quadratino */
+  border: 1px solid #000000;
+  font-size: 8.5px;
+  font-weight: 950;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -361,11 +361,11 @@ ion-card-title {
 }
 
 .slot.occupied {
-  background: #fff7ed;
-  color: #c2410c;
+  background: #fef08a !important; /* Yellow for occupied */
+  color: #854d0e !important;
   border-color: #000000;
-  opacity: 0.8;
-  text-decoration: line-through;
+  opacity: 1;
+  text-decoration: none; /* Removed line-through */
   cursor: not-allowed;
 }
 
@@ -377,11 +377,11 @@ ion-card-title {
 }
 
 .slot.selected {
-  background: #2563eb !important;
-  color: #ffffff !important;
-  border-color: #000000;
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  background: #ffffff !important; /* White background for selection */
+  color: #000000 !important;
+  border: 3px solid #000000 !important; /* Thick black border for selection */
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 5;
 }
 
@@ -432,8 +432,8 @@ ion-card-title {
 }
 
 .occupied-dot {
-  background: #fff7ed;
-  border: 1px solid #c2410c;
+  background: #fef08a;
+  border: 1px solid #000000;
 }
 
 .blocked-dot {
@@ -442,8 +442,8 @@ ion-card-title {
 }
 
 .selected-dot {
-  background: #2563eb;
-  border: 1px solid #1e40af;
+  background: #ffffff;
+  border: 2px solid #000000;
 }
 
 /* IMPORTANTE */

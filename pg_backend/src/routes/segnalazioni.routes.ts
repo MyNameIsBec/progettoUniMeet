@@ -4,6 +4,7 @@ import {
   getSegnalazioniByStudente,
   getAllSegnalazioni,
   aggiornaStatoSegnalazione,
+  eliminaSegnalazione,
 } from '../controllers/segnalazioni.controller';
 import {
   creaSegnalazioneSchema,
@@ -43,6 +44,12 @@ router.patch(
   aggiornaStatoSchema,
   handleValidationErrors,
   aggiornaStatoSegnalazione,
+);
+
+router.delete(
+  '/segnalazioni/:id',
+  authenticate,
+  eliminaSegnalazione
 );
 
 export default router;

@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
 import * as docentiService from '../services/docenti.service';
 
-export async function getElencoDocenti(_req: Request, res: Response) {
+export async function getElencoDocenti(req: Request, res: Response) {
   try {
-    const docenti = await docentiService.getElencoDocenti();
+    const { corso, search } = req.query;
+    const docenti = await docentiService.getElencoDocenti({ 
+      corso: corso as string, 
+      search: search as string 
+    });
     return res.status(200).json(docenti);
-  } catch {
+  } catch (err) {
+    console.error('Error fetching docenti:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -39,8 +44,8 @@ export async function creaSlot(req: Request, res: Response) {
     const idDocente = req.params.idDocente as string;
     const slot = await docentiService.creaSlot(idDocente, req.body);
     return res.status(201).json(slot);
-  } catch {
-    return res.status(500).json({ error: 'Internal server error' });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Internal server error' });
   }
 }
 

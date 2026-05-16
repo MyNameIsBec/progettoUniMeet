@@ -49,3 +49,15 @@ export async function aggiornaStatoSegnalazione(req: Request, res: Response) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+export async function eliminaSegnalazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    await segnalazioniService.eliminaSegnalazione(id);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Segnalazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
