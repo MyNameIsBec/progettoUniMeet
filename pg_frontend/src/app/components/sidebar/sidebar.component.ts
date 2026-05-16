@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
+import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,7 +16,10 @@ export class SidebarComponent {
   @Input() ruoloUtente: string = 'studente';
   @Input() vociMenu: VoceMenuNavigazione[] = [];
 
-  constructor(private router: Router) {
+  isDarkMode = false;
+
+  constructor(private router: Router, private auth: AuthService) {
+    this.isDarkMode = document.body.classList.contains('dark');
   }
 
   isLinkActive(voce: VoceMenuNavigazione): boolean {
@@ -27,5 +31,16 @@ export class SidebarComponent {
     }
 
     return this.router.isActive(voce.percorso, voce.esatto || false);
+  }
+
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    document.body.classList.toggle('dark', this.isDarkMode);
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+  }
+
+  logout() {
+    this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }

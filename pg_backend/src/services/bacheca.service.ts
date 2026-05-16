@@ -4,7 +4,7 @@ export interface BachecaResponse {
   id: string;
   titolo: string;
   descrizione: string;
-  idCorso: string;
+  idCorsoDiStudi: string;
   dataUltimoAggiornamento: string;
   faqs: FAQResponse[];
 }
@@ -22,7 +22,7 @@ function mapBacheca(bacheca: any): BachecaResponse {
     id: bacheca.id_bacheca,
     titolo: bacheca.titolo,
     descrizione: bacheca.descrizione,
-    idCorso: bacheca.id_corso,
+    idCorsoDiStudi: bacheca.id_corso_di_studi,
     dataUltimoAggiornamento: bacheca.data_ultimo_aggiornamento.toISOString(),
     faqs: (bacheca.faqs || []).map(mapFaq),
   };
@@ -38,23 +38,23 @@ function mapFaq(faq: any): FAQResponse {
   };
 }
 
-export async function getBachecaByCorso(idCorso: string): Promise<BachecaResponse> {
+export async function getBachecaByCorsoDiStudi(idCorsoDiStudi: string): Promise<BachecaResponse> {
   let bacheca = await prisma.bacheca.findUnique({
-    where: { id_corso: idCorso },
+    where: { id_corso_di_studi: idCorsoDiStudi },
     include: {
       faqs: { orderBy: { data_pubblicazione: 'desc' } },
     },
   });
 
   if (!bacheca) {
-    const corso = await prisma.corso.findUnique({ where: { id_corso: idCorso } });
-    if (!corso) throw new Error('Corso not found');
+    const cds = await prisma.corsoDiStudi.findUnique({ where: { id_corso_di_studi: idCorsoDiStudi } });
+    if (!cds) throw new Error('CorsoDiStudi not found');
 
     bacheca = await prisma.bacheca.create({
       data: {
-        titolo: `Bacheca - ${corso.nome_corso}`,
+        titolo: `Bacheca - ${cds.nome}`,
         descrizione: '',
-        id_corso: idCorso,
+        id_corso_di_studi: idCorsoDiStudi,
       },
       include: {
         faqs: { orderBy: { data_pubblicazione: 'desc' } },
@@ -65,11 +65,11 @@ export async function getBachecaByCorso(idCorso: string): Promise<BachecaRespons
   return mapBacheca(bacheca);
 }
 
-export async function updateBacheca(idCorso: string, data: {
+export async function updateBacheca(idCorsoDiStudi: string, data: {
   titolo?: string;
   descrizione?: string;
 }): Promise<BachecaResponse> {
-  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso: idCorso } });
+  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso_di_studi: idCorsoDiStudi } });
   if (!bacheca) throw new Error('Bacheca not found');
 
   const updateData: any = {};
@@ -77,7 +77,7 @@ export async function updateBacheca(idCorso: string, data: {
   if (data.descrizione !== undefined) updateData.descrizione = data.descrizione;
 
   const updated = await prisma.bacheca.update({
-    where: { id_corso: idCorso },
+    where: { id_corso_di_studi: idCorsoDiStudi },
     data: updateData,
     include: {
       faqs: { orderBy: { data_pubblicazione: 'desc' } },
@@ -87,8 +87,8 @@ export async function updateBacheca(idCorso: string, data: {
   return mapBacheca(updated);
 }
 
-export async function getFaqByBacheca(idCorso: string): Promise<FAQResponse[]> {
-  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso: idCorso } });
+export async function getFaqByBacheca(idCorsoDiStudi: string): Promise<FAQResponse[]> {
+  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso_di_studi: idCorsoDiStudi } });
   if (!bacheca) throw new Error('Bacheca not found');
 
   const faqs = await prisma.fAQ.findMany({
@@ -99,11 +99,11 @@ export async function getFaqByBacheca(idCorso: string): Promise<FAQResponse[]> {
   return faqs.map(mapFaq);
 }
 
-export async function createFaq(idCorso: string, data: {
+export async function createFaq(idCorsoDiStudi: string, data: {
   domanda: string;
   risposta: string;
 }): Promise<FAQResponse> {
-  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso: idCorso } });
+  const bacheca = await prisma.bacheca.findUnique({ where: { id_corso_di_studi: idCorsoDiStudi } });
   if (!bacheca) throw new Error('Bacheca not found');
 
   const faq = await prisma.fAQ.create({

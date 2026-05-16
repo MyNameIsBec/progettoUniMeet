@@ -18,9 +18,14 @@
       </a>
     }
 
-    <a routerLink="/login" class="logout-link">
+    <a class="logout-link" (click)="logout()">
       <ion-icon name="log-out-outline"></ion-icon>
       <span>Logout</span>
     </a>
   </nav>
+
+  <button class="sidebar-theme-toggle" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
+    <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+    <span>{{ isDarkMode ? 'Modalità chiara' : 'Modalità scura' }}</span>
+  </button>
 </aside>

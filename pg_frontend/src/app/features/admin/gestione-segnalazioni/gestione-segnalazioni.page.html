@@ -50,16 +50,24 @@
               <td class="hide-mobile email-cell">{{ s.studente?.email }}</td>
               <td class="hide-mobile data-cell">{{ s.data_invio | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="actions-col">
-                <ion-select
-                  [value]="s.stato"
-                  (ionChange)="cambiaStato(s, $event.detail.value)"
-                  interface="popover"
-                  class="stato-select"
-                >
-                  <ion-select-option value="APERTA">Aperta</ion-select-option>
-                  <ion-select-option value="IN_LAVORAZIONE">In lavorazione</ion-select-option>
-                  <ion-select-option value="CHIUSA">Chiusa</ion-select-option>
-                </ion-select>
+                <div class="action-group">
+                  <ion-select
+                    [value]="s.stato"
+                    (ionChange)="cambiaStato(s, $event.detail.value)"
+                    interface="popover"
+                    class="stato-select"
+                  >
+                    <ion-select-option value="APERTA">Aperta</ion-select-option>
+                    <ion-select-option value="IN_LAVORAZIONE">In lavorazione</ion-select-option>
+                    <ion-select-option value="CHIUSA">Chiusa</ion-select-option>
+                  </ion-select>
+                  <button class="btn-icon" title="Dettagli" (click)="dettagli(s)">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                  </button>
+                  <button class="btn-icon btn-danger" title="Elimina" (click)="elimina(s)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
               </td>
             </tr>
           } @empty {

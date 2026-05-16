@@ -49,6 +49,12 @@ export async function createStudente(data: {
   const existing = await prisma.studente.findUnique({ where: { email: data.email } });
   if (existing) throw new Error('Email already in use');
 
+  let cdsId = data.corsoDiStudi;
+  const cds = await prisma.corsoDiStudi.findUnique({ where: { nome: data.corsoDiStudi } });
+  if (cds) {
+    cdsId = cds.id_corso_di_studi;
+  }
+
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
   await prisma.studente.create({
     data: {
@@ -57,7 +63,7 @@ export async function createStudente(data: {
       cognome: data.cognome,
       email: data.email,
       password: hashedPassword,
-      corso_di_studi: data.corsoDiStudi,
+      id_corso_di_studi: cdsId,
     },
   });
 
@@ -147,7 +153,10 @@ export async function login(email: string, password: string): Promise<LoginRespo
 
 export async function getProfile(userId: string, ruolo: Ruolo): Promise<ProfileResponse> {
   if (ruolo === 'STUDENTE') {
-    const user = await prisma.studente.findUnique({ where: { matricola: userId } });
+    const user = await prisma.studente.findUnique({
+      where: { matricola: userId },
+      include: { corso_di_studi: { select: { nome: true } } },
+    });
     if (!user) throw new Error('User not found');
     return {
       id: user.matricola,
@@ -156,7 +165,7 @@ export async function getProfile(userId: string, ruolo: Ruolo): Promise<ProfileR
       email: user.email,
       role: 'STUDENTE',
       matricola: user.matricola,
-      corsoDiStudi: user.corso_di_studi,
+      corsoDiStudi: user.corso_di_studi.nome,
     };
   }
 
@@ -226,9 +235,6 @@ export async function changePassword(
   }
 }
 
-
-import { sendCodiceVerifica } from './email.service';
-import { creaCodice, verificaCodice as verificaCodiceDb, consumaCodice } from './codice-verifica.service';
 
 export async function forgotPassword(email: string): Promise<{ messaggio: string }> {
   let user: any = await prisma.studente.findUnique({ where: { email } });

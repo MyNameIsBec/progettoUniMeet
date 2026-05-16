@@ -107,7 +107,5 @@ export async function deleteCorso(id: string): Promise<void> {
   const corso = await prisma.corso.findUnique({ where: { id_corso: id } });
   if (!corso) throw new Error('Corso not found');
 
-  await prisma.fAQ.deleteMany({ where: { bacheca: { id_corso: id } } });
-  await prisma.bacheca.deleteMany({ where: { id_corso: id } });
   await prisma.corso.delete({ where: { id_corso: id } });
 }

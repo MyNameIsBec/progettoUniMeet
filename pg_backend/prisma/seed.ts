@@ -15,23 +15,43 @@ async function main() {
 
   const PW = await bcrypt.hash('password123', SALT_ROUNDS);
 
+  // ──────────────────────────── CORSO DI STUDI ────────────────────────────
+  console.log('── CorsoDiStudi ──');
+  const corsiDiStudi: Record<string, any> = {};
+  const cdsList = [
+    { id: 'cds-1', nome: 'Informatica' },
+    { id: 'cds-2', nome: 'Ingegneria Informatica' },
+    { id: 'cds-3', nome: 'Matematica' },
+  ];
+  for (const c of cdsList) {
+    corsiDiStudi[c.id] = await prisma.corsoDiStudi.upsert({
+      where: { id_corso_di_studi: c.id },
+      update: {},
+      create: { id_corso_di_studi: c.id, nome: c.nome },
+    });
+    console.log(`  ${c.nome}`);
+  }
+
   // ──────────────────────────── STUDENTE ────────────────────────────
-  console.log('── Studente ──');
+  console.log('\n── Studente ──');
   const studenti = [
-    { matricola: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unime.it', corso: 'Informatica' },
-    { matricola: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unime.it', corso: 'Informatica' },
-    { matricola: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unime.it', corso: 'Ingegneria Informatica' },
-    { matricola: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unime.it', corso: 'Informatica' },
-    { matricola: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unime.it', corso: 'Matematica' },
+    { matricola: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unime.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unime.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unime.it', corsoDiStudi: 'cds-2' },
+    { matricola: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unime.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unime.it', corsoDiStudi: 'cds-3' },
   ];
   const studentiCreati: Record<string, any> = {};
   for (const s of studenti) {
     studentiCreati[s.matricola] = await prisma.studente.upsert({
       where: { email: s.email },
       update: {},
-      create: { matricola: s.matricola, nome: s.nome, cognome: s.cognome, email: s.email, password: PW, corso_di_studi: s.corso },
+      create: {
+        matricola: s.matricola, nome: s.nome, cognome: s.cognome, email: s.email, password: PW,
+        id_corso_di_studi: corsiDiStudi[s.corsoDiStudi]!.id_corso_di_studi,
+      },
     });
-    console.log(`  ${s.matricola} — ${s.nome} ${s.cognome} (${s.corso})`);
+    console.log(`  ${s.matricola} — ${s.nome} ${s.cognome}`);
   }
 
   // ──────────────────────────── DOCENTE ────────────────────────────
@@ -47,9 +67,29 @@ async function main() {
     docentiCreati[d.email] = await prisma.docente.upsert({
       where: { email: d.email },
       update: {},
-      create: { ...d, password: PW },
+      create: { nome: d.nome, cognome: d.cognome, email: d.email, password: PW, ufficio: d.ufficio },
     });
     console.log(`  ${d.nome} ${d.cognome} — ${d.ufficio}`);
+  }
+
+  // ──────────────────────────── DOCENTE CORSO DI STUDI ────────────────────────────
+  console.log('\n── DocenteCorsoDiStudi ──');
+  const associazioni = [
+    { docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
+    { docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-2' },
+    { docente: 'anna.neri@unime.it', corsoDiStudi: 'cds-1' },
+    { docente: 'maria.bianco@unime.it', corsoDiStudi: 'cds-2' },
+    { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-1' },
+    { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-2' },
+  ];
+  for (const a of associazioni) {
+    await prisma.docenteCorsoDiStudi.create({
+      data: {
+        id_docente: docentiCreati[a.docente]!.id_docente,
+        id_corso_di_studi: corsiDiStudi[a.corsoDiStudi]!.id_corso_di_studi,
+      },
+    });
+    console.log(`  ${a.docente} → ${a.corsoDiStudi}`);
   }
 
   // ──────────────────────────── AMMINISTRATORE ────────────────────────────
@@ -90,16 +130,19 @@ async function main() {
   // ──────────────────────────── BACHECA ────────────────────────────
   console.log('\n── Bacheca ──');
   const bacheche = [
-    { titolo: 'Bacheca di Programmazione Web', descrizione: 'Avvisi e materiale per il corso di Programmazione Web', corso: 'corso-1' },
-    { titolo: 'Bacheca di Basi di Dati', descrizione: 'Avvisi e materiale per il corso di Basi di Dati', corso: 'corso-2' },
-    { titolo: 'Bacheca di Intelligenza Artificiale', descrizione: 'Annunci e risorse per il corso di IA', corso: 'corso-5' },
+    { titolo: 'Bacheca di Informatica', descrizione: 'Avvisi e materiale per il Corso di Studi in Informatica', corsoDiStudi: 'cds-1' },
+    { titolo: 'Bacheca di Ingegneria Informatica', descrizione: 'Avvisi e materiale per il Corso di Studi in Ingegneria Informatica', corsoDiStudi: 'cds-2' },
+    { titolo: 'Bacheca di Matematica', descrizione: 'Annunci e risorse per il Corso di Studi in Matematica', corsoDiStudi: 'cds-3' },
   ];
   const bachecheCreati: Record<string, any> = {};
   for (const b of bacheche) {
-    bachecheCreati[b.corso] = await prisma.bacheca.upsert({
-      where: { id_corso: corsiCreati[b.corso]!.id_corso },
+    bachecheCreati[b.corsoDiStudi] = await prisma.bacheca.upsert({
+      where: { id_corso_di_studi: corsiDiStudi[b.corsoDiStudi]!.id_corso_di_studi },
       update: {},
-      create: { titolo: b.titolo, descrizione: b.descrizione, id_corso: corsiCreati[b.corso]!.id_corso },
+      create: {
+        titolo: b.titolo, descrizione: b.descrizione,
+        id_corso_di_studi: corsiDiStudi[b.corsoDiStudi]!.id_corso_di_studi,
+      },
     });
     console.log(`  ${b.titolo}`);
   }
@@ -107,12 +150,12 @@ async function main() {
   // ──────────────────────────── FAQ ────────────────────────────
   console.log('\n── FAQ ──');
   const faqList = [
-    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'corso-1' },
-    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'corso-1' },
-    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'corso-1' },
-    { domanda: 'Come si ottiene l\'esonero?', risposta: 'Con una media del 27+ negli esami del primo semestre.', bacheca: 'corso-2' },
-    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'corso-2' },
-    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'corso-5' },
+    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1' },
+    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1' },
+    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2' },
+    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2' },
+    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1' },
+    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2' },
   ];
   for (const f of faqList) {
     const faq = await prisma.fAQ.create({
@@ -212,7 +255,7 @@ async function main() {
     { oggetto: 'Notifica di conferma non ricevuta', descrizione: 'La prenotazione del 18/05 è stata confermata ma non ho ricevuto la notifica.', stato: 'APERTA', studente: 'MAT003' },
     { oggetto: 'Problema accesso area personale', descrizione: 'Dopo il login vengo reindirizzato alla home invece che alla dashboard.', stato: 'CHIUSA', studente: 'MAT004' },
     { oggetto: 'Richiesta chiarimenti esonero', descrizione: 'Vorrei maggiori informazioni sulle modalità di esonero per Basi di Dati.', stato: 'CHIUSA', studente: 'MAT005' },
-    { oggetto: 'Errore modifica profilo', descrizione: 'Quando provo ad aggiornare il mio corso di studi, il sistema non salva le modifiche.', stato: 'APERTA', studente: 'MAT001' },
+    { oggetto: "Errore modifica profilo", descrizione: "Quando provo ad aggiornare il mio corso di studi, il sistema non salva le modifiche.", stato: 'APERTA', studente: 'MAT001' },
     { oggetto: 'Doppia prenotazione involontaria', descrizione: 'Ho prenotato due volte lo stesso slot per errore. Come posso cancellarne una?', stato: 'IN_LAVORAZIONE', studente: 'MAT003' },
     { oggetto: 'Documento allegato non visualizzato', descrizione: 'Il file caricato per la prenotazione del 22/05 non viene mostrato nella schermata di dettaglio.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
   ];

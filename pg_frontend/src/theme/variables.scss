@@ -132,6 +132,8 @@ body.dark {
   --ion-card-background: #0f172a;
   --ion-item-background: #0f172a;
   --ion-toolbar-background: #020617;
+  --ion-overlay-background-color: #1e293b;
+  --ion-backdrop-color: #000000;
 
   /* PREMIUM COMPONENT DARK OVERRIDES */
   .premium-card,
@@ -201,6 +203,28 @@ body.dark {
     border-color: rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(20px) !important;
 
+    .menu-toggle {
+      background: rgba(255, 255, 255, 0.03) !important;
+      color: #e2e8f0 !important;
+    }
+
+    .notification-button,
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+
+      ion-icon {
+        color: #94a3b8 !important;
+      }
+
+      &:hover {
+        background: rgba(37, 99, 235, 0.15) !important;
+        border-color: #2563eb !important;
+
+        ion-icon { color: #60a5fa !important; }
+      }
+    }
+
     .student-profile-mini {
       background: rgba(255, 255, 255, 0.03) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
@@ -208,6 +232,17 @@ body.dark {
       strong {
         color: #ffffff !important;
       }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+      }
+    }
+
+    .student-avatar-small {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #60a5fa !important;
     }
   }
 
@@ -215,13 +250,73 @@ body.dark {
     background: #020617 !important;
     border-right-color: rgba(255, 255, 255, 0.05) !important;
 
+    .sidebar-logo {
+      h1 { color: #60a5fa !important; }
+      span { color: #64748b !important; }
+      ion-icon { color: #60a5fa !important; }
+    }
+
     .sidebar-nav a {
       color: #94a3b8 !important;
 
-      &:hover,
+      ion-icon {
+        color: #64748b !important;
+      }
+
+      &:hover {
+        background: rgba(37, 99, 235, 0.1) !important;
+        color: #ffffff !important;
+
+        ion-icon { color: #ffffff !important; }
+      }
+
       &.active {
         background: #2563eb !important;
         color: #ffffff !important;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4) !important;
+
+        ion-icon { color: #ffffff !important; }
+      }
+    }
+
+    .sidebar-theme-toggle {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      color: #94a3b8 !important;
+
+      ion-icon { color: #64748b !important; }
+
+      &:hover {
+        background: rgba(37, 99, 235, 0.15) !important;
+        border-color: #2563eb !important;
+        color: #60a5fa !important;
+
+        ion-icon { color: #60a5fa !important; }
+      }
+    }
+  }
+
+  .mobile-top-menu {
+    background: #0f172a !important;
+
+    .drawer-header {
+      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+
+      h1 { color: #60a5fa !important; }
+      span { color: #64748b !important; }
+    }
+
+    .menu-items a {
+      color: #94a3b8 !important;
+
+      ion-icon { color: #64748b !important; }
+
+      &:hover,
+      &.active {
+        background: rgba(37, 99, 235, 0.1) !important;
+        color: #ffffff !important;
+
+        ion-icon { color: #ffffff !important; }
       }
     }
   }
@@ -238,6 +333,23 @@ body.dark {
   ion-select,
   ion-textarea {
     --color: #ffffff !important;
+    --placeholder-color: #94a3b8 !important;
+    --placeholder-opacity: 1 !important;
+    color: #e2e8f0 !important;
+  }
+
+  ion-label {
+    --color: #e2e8f0 !important;
+    color: #e2e8f0 !important;
+  }
+
+  .premium-form-field label {
+    color: #cbd5e1 !important;
+  }
+
+  .premium-form-field ion-item {
+    --background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
   }
 
   /* ACCENT CARDS - VIBRANT COLORS */
@@ -400,4 +512,376 @@ body.dark {
       color: #f87171 !important;
     }
   }
+
+  /* ──────────── ADMIN PAGES DARK MODE ──────────── */
+
+  /* Dashboard */
+  .stat-card {
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.15) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+
+    .stat-value { color: #ffffff !important; }
+    .stat-label  { color: #94a3b8 !important; }
+  }
+
+  .quick-actions h3 { color: #ffffff !important; }
+
+  /* Admin tables - utenti, calendario, segnalazioni */
+  .table-wrap {
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.1) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .utenti-table,
+  .segnalazioni-table,
+  .calendario-table {
+    th {
+      background: #1e293b !important;
+      color: #94a3b8 !important;
+      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    td {
+      color: #e2e8f0 !important;
+      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    tr:hover td {
+      background: rgba(37, 99, 235, 0.08) !important;
+    }
+  }
+
+  .empty-row {
+    color: #64748b !important;
+  }
+
+  /* Chips & filtri admin */
+  ion-chip {
+    --background: #1e293b !important;
+    --color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .count-badge {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #94a3b8 !important;
+  }
+
+  .search-bar {
+    --background: #1e293b !important;
+    --color: #ffffff !important;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+
+    input { color: #ffffff !important; }
+  }
+
+  /* Admin page titles */
+  .page-title,
+  .selected-day-label {
+    color: #ffffff !important;
+  }
+
+  .selected-day-label {
+    background: rgba(37, 99, 235, 0.15) !important;
+  }
+
+  /* Calendar admin */
+  ion-datetime {
+    --background: #0f172a !important;
+    --wheel-fade-background-rgb: 15, 23, 42 !important;
+    color: #ffffff !important;
+
+    &::part(calendar-day) {
+      color: #cbd5e1 !important;
+    }
+
+    &::part(calendar-day today) {
+      color: #60a5fa !important;
+    }
+  }
+
+  /* Filter cards & slot cards */
+  .filtri-card,
+  .slot-card {
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.1) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+
+    &:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
+      border-color: rgba(37, 99, 235, 0.25) !important;
+    }
+  }
+
+  .slot-header {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .slot-docente {
+    color: #e2e8f0 !important;
+  }
+
+  .slot-info {
+    color: #94a3b8 !important;
+  }
+
+  .slot-empty h3 {
+    color: #ffffff !important;
+  }
+
+  .slot-empty p {
+    color: #94a3b8 !important;
+  }
+
+  .slot-empty ion-icon {
+    color: #64748b !important;
+  }
+
+  /* Stato badges */
+  .stato-libero { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+  .stato-occupato { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+  .stato-aperta { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+  .stato-in_lavorazione { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
+  .stato-chiusa { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+
+  .ruolo-studente { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
+  .ruolo-docente { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+  .ruolo-amministratore { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+
+  .motivo-badge {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #f87171 !important;
+  }
+
+  .data-badge {
+    color: #e2e8f0 !important;
+  }
+
+  .data-badge ion-icon {
+    color: #60a5fa !important;
+  }
+
+  ion-datetime::part(calendar-day active) {
+    background: #2563eb !important;
+    color: #ffffff !important;
+  }
+
+  .selected-day-label {
+    background: rgba(37, 99, 235, 0.15) !important;
+    color: #e2e8f0 !important;
+  }
+
+  /* Field groups nei modali admin */
+  .field-group {
+    background: #1e293b !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
+
+    label { color: #94a3b8 !important; }
+
+    ion-input,
+    ion-select {
+      --background: rgba(255, 255, 255, 0.03) !important;
+      --color: #ffffff !important;
+      --placeholder-color: #94a3b8 !important;
+      --border-color: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: transparent !important;
+      color: #ffffff !important;
+    }
+
+    ion-input::part(placeholder),
+    ion-select::part(placeholder) {
+      color: #94a3b8 !important;
+    }
+
+    ion-select::part(text) {
+      color: #ffffff !important;
+    }
+
+    ion-toggle {
+      --background: rgba(255, 255, 255, 0.15) !important;
+      --background-checked: #22c55e !important;
+      --handle-background: #ffffff !important;
+      --handle-background-checked: #ffffff !important;
+    }
+  }
+
+  .luogo-section > label {
+    color: #94a3b8 !important;
+  }
+
+  .filtro-group {
+    label { color: #e2e8f0 !important; }
+
+    ion-select {
+      --background: rgba(255, 255, 255, 0.03) !important;
+      --color: #ffffff !important;
+      --placeholder-color: #94a3b8 !important;
+      --border-color: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: transparent !important;
+      color: #ffffff !important;
+    }
+
+    ion-select::part(text) {
+      color: #ffffff !important;
+    }
+
+    ion-select::part(placeholder) {
+      color: #94a3b8 !important;
+    }
+  }
+
+  /* Modal admin */
+  ion-modal ion-header ion-toolbar {
+    --background: #0f172a !important;
+    --color: #ffffff !important;
+  }
+
+  .modal-content {
+    --background: #0f172a !important;
+  }
+
+  /* Icon buttons admin */
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #94a3b8 !important;
+
+    &:hover {
+      background: rgba(37, 99, 235, 0.15) !important;
+      color: #60a5fa !important;
+      border-color: #2563eb !important;
+    }
+  }
+
+  .btn-danger:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #f87171 !important;
+    border-color: #ef4444 !important;
+  }
+
+  /* ──────────── SELECT INTERFACES (alert/popover) DARK MODE ──────────── */
+
+  /* Alert interface (default for ion-select) */
+  ion-alert {
+    --background: #1e293b !important;
+    --color: #e2e8f0 !important;
+    --button-color: #60a5fa !important;
+    --ion-text-color: #e2e8f0 !important;
+    --ion-color-step-600: #cbd5e1 !important;
+  }
+
+  ion-alert .alert-wrapper {
+    background: #1e293b !important;
+  }
+
+  ion-alert .alert-head h2,
+  ion-alert .alert-head h3 {
+    color: #ffffff !important;
+  }
+
+  ion-alert .alert-message {
+    color: #94a3b8 !important;
+  }
+
+  ion-alert .alert-radio-group {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    max-height: 320px !important;
+  }
+
+  ion-alert .alert-radio-button {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  ion-alert .alert-radio-label {
+    color: #e2e8f0 !important;
+    font-weight: 500 !important;
+  }
+
+  ion-alert .alert-radio-icon {
+    border-color: #64748b !important;
+  }
+
+  ion-alert .alert-radio-inner {
+    border-color: #60a5fa !important;
+    background: #60a5fa !important;
+  }
+
+  ion-alert .alert-button-group {
+    padding: 8px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  ion-alert .alert-button {
+    color: #60a5fa !important;
+    font-weight: 700 !important;
+    --color: #60a5fa !important;
+  }
+
+  /* Popover interface (used on some platforms) */
+  ion-popover {
+    --background: #1e293b !important;
+    --color: #e2e8f0 !important;
+    --ion-text-color: #e2e8f0 !important;
+  }
+
+  ion-popover ion-list,
+  ion-popover ion-item,
+  ion-popover ion-radio-group {
+    --background: #1e293b !important;
+    --color: #e2e8f0 !important;
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    --ion-text-color: #e2e8f0 !important;
+  }
+
+  ion-popover ion-item::part(native) {
+    --background: #1e293b !important;
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+
+  .icon-btn.edit {
+    color: #60a5fa !important;
+
+    &:hover { background: rgba(37, 99, 235, 0.15) !important; }
+  }
+
+  .icon-btn.delete {
+    color: #f87171 !important;
+
+    &:hover { background: rgba(239, 68, 68, 0.15) !important; }
+  }
+
+  /* Segnalazioni page - description text */
+  .oggetto-cell p {
+    color: #94a3b8 !important;
+  }
+
+  .studente-cell .matricola {
+    color: #64748b !important;
+  }
+
+  /* Stato select admin */
+  .stato-select {
+    --background: rgba(255, 255, 255, 0.03) !important;
+    --color: #ffffff !important;
+    --border-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
+    color: #ffffff !important;
+  }
+
+  /* Icon background circles admin */
+  .student-icon { background: rgba(37, 99, 235, 0.15) !important; }
+  .teacher-icon { background: rgba(22, 163, 74, 0.15) !important; }
+  .booking-icon { background: rgba(99, 102, 241, 0.15) !important; }
+  .slot-icon { background: rgba(249, 115, 22, 0.15) !important; }
+  .today-icon { background: rgba(239, 68, 68, 0.15) !important; }
+  .new-icon { background: rgba(34, 197, 94, 0.15) !important; }
 }

@@ -77,11 +77,13 @@ export async function getAllUsers(ruolo?: string): Promise<UtenteUnificato[]> {
   const results: UtenteUnificato[] = [];
 
   if (!ruolo || ruolo === 'studente') {
-    const studenti = await prisma.studente.findMany();
+    const studenti = await prisma.studente.findMany({
+      include: { corso_di_studi: { select: { nome: true } } },
+    });
     for (const s of studenti) {
       results.push({
         id: s.matricola, ruolo: 'studente', nome: s.nome, cognome: s.cognome,
-        email: s.email, matricola: s.matricola, corsoDiStudi: s.corso_di_studi,
+        email: s.email, matricola: s.matricola, corsoDiStudi: s.corso_di_studi.nome,
       });
     }
   }
@@ -116,6 +118,13 @@ export async function createUser(data: any): Promise<UtenteUnificato> {
     const existing = await prisma.studente.findUnique({ where: { email: data.email } });
     if (existing) throw new Error('Email already in use');
 
+    let cdsId = data.corsoDiStudi ?? data.corsoDiStudiId;
+    if (cdsId) {
+      const cds = await prisma.corsoDiStudi.findUnique({ where: { id_corso_di_studi: cdsId } })
+        ?? await prisma.corsoDiStudi.findUnique({ where: { nome: cdsId } });
+      if (cds) cdsId = cds.id_corso_di_studi;
+    }
+
     const user = await prisma.studente.create({
       data: {
         matricola: data.matricola,
@@ -123,12 +132,13 @@ export async function createUser(data: any): Promise<UtenteUnificato> {
         cognome: data.cognome,
         email: data.email,
         password: hashedPassword,
-        corso_di_studi: data.corsoDiStudi,
+        id_corso_di_studi: cdsId ?? 'cds-1',
       },
+      include: { corso_di_studi: { select: { nome: true } } },
     });
     return {
       id: user.matricola, ruolo: 'studente', nome: user.nome, cognome: user.cognome,
-      email: user.email, matricola: user.matricola, corsoDiStudi: user.corso_di_studi,
+      email: user.email, matricola: user.matricola, corsoDiStudi: user.corso_di_studi.nome,
     };
   }
 
@@ -172,11 +182,20 @@ export async function updateUser(id: string, data: any): Promise<UtenteUnificato
   if (found.tabella === 'studente') {
     if (data.cognome) updateData.cognome = data.cognome;
     if (data.matricola) updateData.matricola = data.matricola;
-    if (data.corsoDiStudi) updateData.corso_di_studi = data.corsoDiStudi;
-    const user = await prisma.studente.update({ where: { matricola: id }, data: updateData });
+    const cdsId = data.corsoDiStudi ?? data.corsoDiStudiId;
+    if (cdsId) {
+      const cds = await prisma.corsoDiStudi.findUnique({ where: { id_corso_di_studi: cdsId } })
+        ?? await prisma.corsoDiStudi.findUnique({ where: { nome: cdsId } });
+      if (cds) updateData.id_corso_di_studi = cds.id_corso_di_studi;
+    }
+    const user = await prisma.studente.update({
+      where: { matricola: id },
+      data: updateData,
+      include: { corso_di_studi: { select: { nome: true } } },
+    });
     return {
       id: user.matricola, ruolo: 'studente', nome: user.nome, cognome: user.cognome,
-      email: user.email, matricola: user.matricola, corsoDiStudi: user.corso_di_studi,
+      email: user.email, matricola: user.matricola, corsoDiStudi: user.corso_di_studi.nome,
     };
   }
 
@@ -215,14 +234,7 @@ export async function deleteUser(id: string, adminId?: string): Promise<void> {
       await tx.notifica.deleteMany({ where: { destinatario_id: id } });
       await tx.studente.delete({ where: { matricola: id } });
     } else if (found.tabella === 'docente') {
-      const corsi = await tx.corso.findMany({ where: { id_docente: id } });
-      for (const corso of corsi) {
-        const bacheca = await tx.bacheca.findUnique({ where: { id_corso: corso.id_corso } });
-        if (bacheca) {
-          await tx.fAQ.deleteMany({ where: { id_bacheca: bacheca.id_bacheca } });
-          await tx.bacheca.delete({ where: { id_corso: corso.id_corso } });
-        }
-      }
+      await tx.docenteCorsoDiStudi.deleteMany({ where: { id_docente: id } });
       await tx.corso.deleteMany({ where: { id_docente: id } });
 
       const slotIds = (await tx.slotRicevimento.findMany({

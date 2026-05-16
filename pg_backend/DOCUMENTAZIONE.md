@@ -141,10 +141,12 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 | Tabella | Righe | Dettaglio |
 |---------|-------|-----------|
 | Studente | 5 | Mario Rossi, Lisa Bianchi, Luca Ferrari, Sofia Romano, Marco Esposito |
+| CorsoDiStudi | 3 | Informatica, Ingegneria, Matematica |
 | Docente | 4 | Giuseppe Verdi, Anna Neri, Maria Bianco, Paolo Russo |
 | Amministratore | 2 | Admin, Super Admin |
 | Corso | 5 | Programmazione Web, Basi di Dati, Ingegneria del Software, Reti di Calcolatori, Intelligenza Artificiale |
-| Bacheca | 3 | Una per ogni corso principale |
+| DocenteCorsoDiStudi | 4 | Relazioni docente ↔ corso di studi |
+| Bacheca | 3 | Una per ogni corso di studi |
 | FAQ | 6 | Domande/Risposte distribuite tra le bacheche |
 | SlotRicevimento | 6 | Distribuiti tra i vari docenti in date diverse |
 | LuogoRicevimento | 3 | Aula 5, Studio 12, Lab 3 |
@@ -172,14 +174,14 @@ npx prisma generate
 
 | File | Descrizione |
 |------|-------------|
-| `auth.service.ts` | Registrazione (studente/docente/admin), login, profilo, refresh token, cambio/reset password, JWT |
-| `studenti.service.ts` | Profilo studente (GET, PUT) |
-| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche |
-| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA) |
+| `auth.service.ts` | Registrazione (studente/docente/admin), login, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
+| `studenti.service.ts` | Profilo studente (GET, PUT). Restituisce `corsoDiStudi` oggetto annidato |
+| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi |
+| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response |
 | `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
-| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD), slot globali (CRUD + filtri + date disponibili) |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni |
 | `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
-| `bacheca.service.ts` | ✅ CRUD bacheca (una per corso), CRUD FAQ |
+| `bacheca.service.ts` | ✅ CRUD bacheca (una per CorsoDiStudi), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
 | `notifiche.service.ts` | ✅ CRUD notifiche multi-ruolo (studente, docente, admin) |
 | `email.service.ts` | ✅ Invio email con nodemailer (logga in console se SMTP non configurato) |
@@ -284,10 +286,10 @@ Endpoint bacheca (`bacheche.routes.ts`):
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/bacheche/:idCorso` | GET | - | Bacheca di un corso (con FAQ) |
-| `/api/bacheche/:idCorso` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
-| `/api/bacheche/:idCorso/faq` | GET | - | FAQ della bacheca |
-| `/api/bacheche/:idCorso/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
+| `/api/bacheche/corso-di-studi/:idCorsoDiStudi` | GET | - | Bacheca di un corso di studi (con FAQ) |
+| `/api/bacheche/corso-di-studi/:idCorsoDiStudi` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
+| `/api/bacheche/corso-di-studi/:idCorsoDiStudi/faq` | GET | - | FAQ della bacheca |
+| `/api/bacheche/corso-di-studi/:idCorsoDiStudi/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
 | `/api/faq/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica FAQ |
 | `/api/faq/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina FAQ |
 
@@ -329,6 +331,7 @@ Endpoint segnalazioni (`segnalazioni.routes.ts`):
 | `/api/segnalazioni/studente/:matricola` | GET | JWT | Segnalazioni di uno studente |
 | `/api/segnalazioni/admin/all` | GET | Admin | Tutte le segnalazioni con dati studente (filtro `?stato=`) |
 | `/api/segnalazioni/:id/stato` | PATCH | Admin | Aggiorna stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) |
+| `/api/segnalazioni/:id` | DELETE | Admin | Elimina segnalazione |
 
 ---
 
@@ -362,8 +365,8 @@ File validator aggiuntivo:
 
 | File | Descrizione |
 |------|-------------|
-| `auth.validators.ts` | Login, registrazione (studente/docente/admin), cambio/reset password, refresh token |
-| `admin.validators.ts` | Creazione/modifica utenti admin, filtri slot globali |
+| `auth.validators.ts` | Login, registrazione (studente/docente/admin), cambio/reset password, refresh token. `corsoDiStudiId` opzionale per registrazione studente |
+| `admin.validators.ts` | Creazione/modifica utenti admin, filtri slot globali. `corsoDiStudiId` per creazione studente |
 | `studenti.validators.ts` | Aggiornamento profilo studente |
 | `docenti.validators.ts` | Creazione/modifica slot, filtri mese |
 | `prenotazioni.validators.ts` | Creazione prenotazione, aggiornamento stato |
@@ -467,6 +470,9 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - **camelCase**: i body usano camelCase (`corsoDiStudi`, `nuovaPassword`) — il service mappa a snake_case per Prisma
 - **Amministratore**: non ha `cognome` nello schema; login e profilo restituiscono `cognome: ''`
 - **Role case**: il backend usa ruoli in **MAIUSCOLO** (`STUDENTE`, `DOCENTE`, `AMMINISTRATORE`); il frontend li normalizza in **lowercase** (`studente`, `docente`, `amministratore`) all'arrivo della risposta in `AuthService.login()` e `loadSessionFromStorage()`
+- **CorsoDiStudi**: entità autonoma (non enum) per permettere gestione admin. `Docente` può insegnare in più CorsoDiStudi (tabella join `DocenteCorsoDiStudi`). `Studente` ha FK `id_corso_di_studi`. `Bacheca` appartiene a `CorsoDiStudi` anziché a `Corso`.
+- **materia docente**: non è più un campo diretto su `Docente`. Si deriva da `docente.corsi[0]?.nome_corso` nel response.
+- **luogo**: nei response delle prenotazioni, `luogo` è una stringa formattata "Aula 5, Edificio D (Primo piano)". L'oggetto completo è disponibile in `luogoRicevimento`.
 
 ---
 

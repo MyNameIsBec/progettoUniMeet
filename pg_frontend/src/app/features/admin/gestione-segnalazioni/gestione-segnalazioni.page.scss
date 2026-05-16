@@ -188,6 +188,40 @@ ion-chip.active {
   font-style: italic;
 }
 
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fbff;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #eef4ff;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
 @media (max-width: 760px) {
   .hide-mobile {
     display: none;

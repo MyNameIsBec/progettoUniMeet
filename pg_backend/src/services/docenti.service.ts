@@ -1,10 +1,18 @@
 import { prisma } from '../prisma/client';
 
+function getCorsoDiStudiIds(d: any): string[] {
+  return d.corsi_di_studi?.map((cds: any) => cds.corso_di_studi.nome) ?? [];
+}
+
 export async function getElencoDocenti(filtri?: { corso?: string; search?: string }) {
   const where: any = {};
 
   if (filtri?.corso && filtri.corso !== 'tutti') {
-    where.corso_di_studi = { contains: filtri.corso, mode: 'insensitive' };
+    where.corsi_di_studi = {
+      some: {
+        corso_di_studi: { nome: { contains: filtri.corso, mode: 'insensitive' } },
+      },
+    };
   }
 
   if (filtri?.search) {
@@ -12,7 +20,7 @@ export async function getElencoDocenti(filtri?: { corso?: string; search?: strin
     where.AND = terms.map(term => ({
       OR: [
         { nome: { contains: term, mode: 'insensitive' } },
-        { cognome: { contains: term, mode: 'insensitive' } }
+        { cognome: { contains: term, mode: 'insensitive' } },
       ]
     }));
   }
@@ -25,9 +33,11 @@ export async function getElencoDocenti(filtri?: { corso?: string; search?: strin
       cognome: true,
       email: true,
       ufficio: true,
-      materia: true,
-      corso_di_studi: true,
-    } as any,
+      corsi: { select: { nome_corso: true } },
+      corsi_di_studi: {
+        select: { corso_di_studi: { select: { nome: true } } },
+      },
+    },
   });
 
   return docenti.map((d) => ({
@@ -36,10 +46,10 @@ export async function getElencoDocenti(filtri?: { corso?: string; search?: strin
     cognome: d.cognome,
     email: d.email,
     ufficio: d.ufficio,
-    materia: d.materia || 'N/D',
-    corsoDiStudi: d.corso_di_studi ? [d.corso_di_studi] : [],
+    materia: d.corsi?.[0]?.nome_corso ?? 'N/D',
+    corsoDiStudi: getCorsoDiStudiIds(d),
     iniziali: `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??',
-    coloreAvatar: 'blue'
+    coloreAvatar: 'blue',
   }));
 }
 

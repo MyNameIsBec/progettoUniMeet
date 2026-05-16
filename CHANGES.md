@@ -594,6 +594,183 @@ POST /api/login  →  login con nuova password ✅
 
 ---
 
+---
+
+## Refactor CorsoDiStudi + allineamento backend/frontend + fix vari — 16/05/2026
+
+**Modifica:** Refactor del database e del codice per sostituire `corso_di_studi` come campo testuale su Docente/Studente con una entità `CorsoDiStudi` autonoma. Aggiornati servizi backend, interfacce e componenti frontend. Aggiunte feature mancanti nella pagina admin segnalazioni e fixata la compilazione SCSS.
+
+### Database — schema modificato
+
+#### `prisma/schema.prisma`
+- **Nuovo modello `CorsoDiStudi`**: `id_corso_di_studi` (UUID), `nome`, `descrizione?`
+- **Nuova tabella join `DocenteCorsoDiStudi`**: relazione molti-a-molti tra Docente e CorsoDiStudi
+- **`Docente`**: rimossi campi `materia` (String) e `corso_di_studi` (String) — ora derivati da relazioni
+- **`Bacheca`**: `id_corso` (FK verso Corso) → `id_corso_di_studi` (FK verso CorsoDiStudi)
+- **`Studente`**: `corso_di_studi` (String) → FK `id_corso_di_studi` verso CorsoDiStudi
+
+#### Migrazione: `20260516143900_add_corso_di_studi_entity`
+- Creata tabella `CorsoDiStudi`, tabella join `DocenteCorsoDiStudi`
+- Aggiunta FK `id_corso_di_studi` su `Studente`, rimossa colonna `corso_di_studi`
+- Modificata FK `Bacheca.id_corso_di_studi`
+- Migrazioni precedenti consolidate (rimosse 3 vecchie dal tracking git)
+
+#### `prisma/seed.ts`
+- Riscritto: ora crea 3 `CorsoDiStudi` (Informatica, Ingegneria, Matematica)
+- Docenti associati a CorsoDiStudi via `DocenteCorsoDiStudi`
+- Studenti assegnati a CorsoDiStudi via FK `id_corso_di_studi`
+- Bacheche collegate a CorsoDiStudi invece che a Corso
+
+### Backend — servizi modificati
+
+#### `docenti.service.ts`
+- `getDocenti(filtro?)`: filtro per nome CorsoDiStudi via `corsi_di_studi.some.corso_di_studi.nome` (anziché campo diretto)
+- `materia` derivata da `docente.corsi[0]?.nome_corso`
+
+#### `prenotazioni.service.ts`
+- Aggiunte funzioni helper: `fmtLuogo()` (restituisce "Aula 5, Edificio D (Primo piano)"), `mapLuogoRicevimento()` (oggetto completo con id/aula/edificio/piano/coordinate)
+- Tutte le response (createPrenotazione, getPrenotazioniStudente, getPrenotazioneById, getPrenotazioniDocente, aggiornaStatoPrenotazione) ora includono `luogo` (stringa formattata) e `luogoRicevimento` (oggetto)
+
+#### `admin.service.ts`
+- `createUser`: supporta `corsoDiStudiId` per nuovi studenti
+- `updateUser`: aggiorna `corsoDiStudiId` su Studente
+- `deleteUser`: invariato
+
+#### `auth.service.ts`
+- `createStudente`: cerca CorsoDiStudi per `id` o `nome`, lancia 400 se non trovato
+- `getProfile`: restituisce `corsoDiStudi?: { nome, id }`
+- `createDocente`: associa ai CorsoDiStudi selezionati
+
+#### `studenti.service.ts`
+- `getStudente`: restituisce `corsoDiStudi` (oggetto annidato) + `corsoDiStudiId`
+
+#### `bacheca.service.ts`
+- `getBachecaByCorsoDiStudi(idCorsoDiStudi)`: cerca per `id_corso_di_studi` (anziché `id_corso`)
+- `updateBacheca(idCorsoDiStudi, data)`: aggiorna per CorsoDiStudi
+
+#### `corsi.service.ts`
+- `deleteCorso`: rimosso `bacheca.deleteMany()` (la bacheca ora appartiene a CorsoDiStudi, non a Corso)
+
+### Frontend — interfacce e servizi
+
+#### `core/models/interfacce.ts`
+- Aggiunta interfaccia `CorsoDiStudi`: `idCorsoDiStudi`, `nome`, `descrizione?`
+- `Studente`: aggiunto `corsoDiStudiId`, `corsoDiStudi` oggetto annidato
+- `Bacheca`: `idCorso` → `idCorsoDiStudi`
+
+#### `core/services/bacheca.ts`
+- `getBachecaPerCorso(idCorso)` → `getBachecaPerCorsoDiStudi(idCorsoDiStudi)`, URL cambiato da `/bacheche/corso/:idCorso` a `/bacheche/corso-di-studi/:idCorsoDiStudi`
+- `updateBachecaPerCorso(idCorso, data)` → `updateBachecaPerCorsoDiStudi(idCorsoDiStudi, data)`
+
+#### `dashboard-studente.page.ts`, `bacheca-studente.page.ts`
+- Chiamano `getBachecaPerCorsoDiStudi(corsoDiStudiId)` invece della vecchia API
+
+### Admin segnalazioni — feature aggiunte
+
+#### `gestione-segnalazioni.page.ts`
+- Aggiunto `AlertController` import
+- Metodo `dettagli(s)`: mostra alert con oggetto, descrizione, studente, matricola, email, data, stato
+- Metodo `elimina(s)`: alert di conferma → chiama `eliminaSegnalazione(id)`
+
+#### `gestione-segnalazioni.page.html`
+- Colonna azioni ora include bottoni "Dettagli" (icona `information-circle-outline`) ed "Elimina" (icona `trash-outline`, con conferma)
+
+#### `gestione-segnalazioni.page.scss`
+- Aggiunti stili `.action-group` (flex row), `.btn-icon` (36x36, border, hover effetto), `.btn-danger` (hover rosso)
+
+### CSS — fix vari
+
+#### `global.scss`
+- **Fix nesting invalido**: `:root { ... }` annidato dentro `.premium-form-field` spostato al `:root` globale (il nesting era SCSS valido ma selettore `.premium-form-field :root` non matchava mai, rendendo le variabili CSS inutilizzabili in contesto globale)
+- **Rimosso** `@import "@ionic/angular/css/flex-utils.css"` (deprecato, non più presente nella CLI Ionic 7+)
+- **Rimosso** `body { font-family, background-color, color, transition }` (duplicato da Ionic CSS variables)
+
+---
+
+## Fix navigazione admin, dark mode completa, logout funzionante, theme toggle — 16/05/2026
+
+**Modifica:** Risolti molteplici bug di navigazione e UI sulle pagine admin e componenti condivisi. Implementata dark mode completa per tutte le pagine admin (dashboard, utenti, slot, segnalazioni, calendario) e per i componenti sidebar/topbar. Aggiunto theme toggle su sidebar e topbar. Fixato logout (sidebar e topbar pulivano solo la rotta senza chiamare `auth.logout()`). Fixato pulsante admin nella topbar (puntava sempre a `/profilo-studente`). Aggiunto error handler mancante in `caricaDocenti()` e flag di caricamento per risolvere race condition con `ion-select`.
+
+### Frontend — componenti condivisi
+
+#### `sidebar.component.html`
+- Sostituito `<a routerLink="/login">` con `<a (click)="logout()">` — ora chiama `auth.logout()` prima di navigare
+- Aggiunto pulsante `sidebar-theme-toggle` con icona sole/luna per cambiare tema
+
+#### `sidebar.component.ts`
+- Iniettato `AuthService`, aggiunta proprietà `isDarkMode` letta da `document.body.classList`
+- Metodo `toggleDarkMode()`: toggla classe `.dark` su `body` + salva in `localStorage`
+- Metodo `logout()`: chiama `this.auth.logout()` + naviga a `/login`
+
+#### `sidebar.component.scss`
+- Stili `.sidebar-theme-toggle`: dimensioni, colori, hover effetto, transizione
+
+#### `topbar.component.html`
+- Sostituito `<a routerLink="/login">` con `<a (click)="logout(); chiudiMenu()">` per il logout mobile
+- Sostituito `<div ... routerLink="/profilo-studente">` con `<div (click)="vaiAlProfilo()">` — ora naviga in base al ruolo
+- Aggiunto pulsante `.theme-toggle` con icona sole/luna
+
+#### `topbar.component.ts`
+- Iniettato `Router`, aggiunta proprietà `isDarkMode`
+- Metodo `toggleDarkMode()`: stesso comportamento della sidebar
+- Metodo `vaiAlProfilo()`: naviga a `/dashboard-admin` per admin, `/profilo-docente` per docente, `/profilo-studente` per studente
+- Metodo `logout()`: chiama `auth.logout()` + naviga a `/login`
+
+#### `topbar.component.scss`
+- Stili `.theme-toggle`: 46x46, bordo, hover, icona centrata
+
+### Frontend — admin pages
+
+#### `gestione-utenti.page.ts`
+- `formVuoto()`: aggiunto campo `corsoDiStudi: ''` (mancante causava errore a runtime nella creazione studente)
+
+#### `gestione-slot-admin.page.ts`
+- Aggiunta proprietà `docentiCaricati = false` per tracciare stato caricamento docenti
+- `caricaDocenti()`: aggiunto error handler (mancante), setta `docentiCaricati = true` in next e error
+- `apriModaleCrea()`: ora chiama `caricaDocenti()` prima di aprire la modale per evitare race condition (primi due click sul select docente mostravano zero opzioni perché `ion-select` caching gli `ion-select-option` prima che `@for` li renderizzasse)
+
+#### `app.routes.ts`
+- `dettaglio-prenotazione/:id`: decommentato `canActivate: [authGuard, roleGuard('studente')]` (era stato commentato per debug)
+
+### Frontend — dark mode admin completa
+
+#### `theme/variables.scss`
+Aggiunte sezioni `body.dark` per:
+
+- **Overlay e backdrop**: `--ion-overlay-background-color: #1e293b`, `--ion-backdrop-color: #000000`
+- **Topbar dark**: stili `.menu-toggle`, `.notification-button`, `.theme-toggle`, `.student-profile-mini`, `.student-avatar-small`
+- **Sidebar dark**: stili `.sidebar-logo`, `.sidebar-nav a` (hover + active con box-shadow), `.sidebar-theme-toggle`
+- **Mobile menu dark**: stili `.mobile-top-menu`, `.drawer-header`, `.menu-items a`
+- **Input/select dark**: `--placeholder-color`, `--placeholder-opacity`, `color` per ion-select, ion-input, ion-textarea, ion-label, `.premium-form-field label`, `.premium-form-field ion-item`
+- **Admin dashboard**: `.stat-card` (background, border, shadow), `.quick-actions h3`
+- **Admin tables**: `.table-wrap`, `.utenti-table`, `.segnalazioni-table`, `.calendario-table` (th, td, tr:hover)
+- **Admin chips/search**: `ion-chip`, `.count-badge`, `.search-bar`
+- **Admin page titles**: `.page-title`, `.selected-day-label`
+- **Calendar admin**: `ion-datetime` (background, wheel-fade, calendar-day colors)
+- **Slot page**: `.filtri-card`, `.slot-card`, `.slot-header`, `.slot-docente`, `.slot-info`, `.slot-empty`, `.stato-libero`, `.stato-occupato`
+- **Segnalazioni badges**: `.stato-aperta`, `.stato-in_lavorazione`, `.stato-chiusa`, `.ruolo-studente`, `.ruolo-docente`, `.ruolo-amministratore`, `.motivo-badge`, `.data-badge`
+- **Field groups modali**: `.field-group` (background, label, ion-input/select/toggle), `.luogo-section`, `.filtro-group`
+- **Modal header**: `ion-modal ion-header ion-toolbar`
+- **Icon buttons admin**: `.btn-icon`, `.btn-danger`, `.icon-btn.edit`, `.icon-btn.delete`
+- **Segnalazioni page**: `.oggetto-cell p`, `.studente-cell .matricola`, `.stato-select`
+- **Admin stat icons**: `.student-icon`, `.teacher-icon`, `.booking-icon`, `.slot-icon`, `.today-icon`, `.new-icon`
+
+### Select interfaces — dark mode (alert/popover)
+
+#### `theme/variables.scss`
+- **ion-alert**: `.alert-wrapper` background, `.alert-head h2/h3`, `.alert-message`, `.alert-radio-group`, `.alert-radio-button`, `.alert-radio-label`, `.alert-radio-icon`, `.alert-radio-inner`, `.alert-button-group`, `.alert-button`
+- **ion-popover**: background, color, `ion-list/ion-item/ion-radio-group` + `::part(native)`
+
+### Frontend — altro
+
+#### `main.ts`
+- Aggiunta icona `flagOutline` alla registrazione `addIcons` (mancante causava icona vuota nel menu admin)
+
+#### `global.scss`
+- Spostate variabili CSS globali (`--primary-blue`, `--text-dark`, etc.) da selector annidato `.premium-form-field :root` a `:root` globale — il selettore annidato non matchava mai
+
+---
+
 # ✅ Completato
 
 Tutte le fasi A–E sono state implementate in questo changeset.

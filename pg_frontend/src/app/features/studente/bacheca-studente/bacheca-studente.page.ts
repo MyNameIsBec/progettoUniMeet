@@ -66,10 +66,10 @@ export class BachecaStudentePage implements OnInit {
       const user = this.authService.getCurrentUser();
       if(user != null){
       const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
-        if (profilo.corsoDiStudi != null) {
-          const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorso(profilo.corsoDiStudi));
+        if (profilo.corsoDiStudiId != null) {
+          const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
           if (bacheca != null) {
-            this.listaFaq = await firstValueFrom(this.bachecaService.getFaq(bacheca.id));
+            this.listaFaq = await firstValueFrom(this.bachecaService.getFaq(bacheca.idCorsoDiStudi ?? ''));
           }
         }
       }

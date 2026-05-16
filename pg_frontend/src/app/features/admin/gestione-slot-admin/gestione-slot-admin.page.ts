@@ -24,6 +24,7 @@ import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from
 export class GestioneSlotAdminPage implements OnInit {
   slot: SlotGriglia[] = [];
   docenti: any[] = [];
+  docentiCaricati = false;
   dateDisponibili: SlotDate[] = [];
   filtroDocenteId = '';
   filtroData = '';
@@ -83,8 +84,16 @@ export class GestioneSlotAdminPage implements OnInit {
   }
 
   caricaDocenti() {
+    this.docentiCaricati = false;
     this.admin.getUtenti('docente').subscribe({
-      next: (data) => this.docenti = data,
+      next: (data) => {
+        this.docenti = data;
+        this.docentiCaricati = true;
+      },
+      error: () => {
+        this.docenti = [];
+        this.docentiCaricati = true;
+      },
     });
   }
 
@@ -108,6 +117,7 @@ export class GestioneSlotAdminPage implements OnInit {
     this.modaleTitolo = 'Crea slot';
     this.slotInModifica = null;
     this.formDati = this.formVuoto();
+    this.caricaDocenti();
     this.mostraModale = true;
   }
 

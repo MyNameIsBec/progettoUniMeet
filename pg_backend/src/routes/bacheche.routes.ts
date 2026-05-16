@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getBachecaByCorso,
+  getBachecaByCorsoDiStudi,
   updateBacheca,
   getFaqByBacheca,
   createFaq,
@@ -18,10 +18,10 @@ import { authorize } from '../middleware/authorize';
 
 const router = Router();
 
-router.get('/bacheche/:idCorso', getBachecaByCorso);
-router.put('/bacheche/:idCorso', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), aggiornaBachecaSchema, handleValidationErrors, updateBacheca);
-router.get('/bacheche/:idCorso/faq', getFaqByBacheca);
-router.post('/bacheche/:idCorso/faq', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), creaFaqSchema, handleValidationErrors, createFaq);
+router.get('/bacheche/corso-di-studi/:idCorsoDiStudi', getBachecaByCorsoDiStudi);
+router.put('/bacheche/corso-di-studi/:idCorsoDiStudi', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), aggiornaBachecaSchema, handleValidationErrors, updateBacheca);
+router.get('/bacheche/corso-di-studi/:idCorsoDiStudi/faq', getFaqByBacheca);
+router.post('/bacheche/corso-di-studi/:idCorsoDiStudi/faq', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), creaFaqSchema, handleValidationErrors, createFaq);
 router.put('/faq/:id', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), modificaFaqSchema, handleValidationErrors, updateFaq);
 router.delete('/faq/:id', authenticate, authorize('DOCENTE', 'AMMINISTRATORE'), deleteFaq);
 

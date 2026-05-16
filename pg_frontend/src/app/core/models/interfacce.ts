@@ -1,4 +1,3 @@
-// NAVIGAZIONE
 export interface VoceMenuNavigazione {
   etichetta: string;
   percorso: string;
@@ -6,7 +5,6 @@ export interface VoceMenuNavigazione {
   esatto?: boolean;
 }
 
-// UTENTI
 export interface Utente {
   id: string;
   nome: string;
@@ -18,6 +16,7 @@ export interface Utente {
 export interface Studente extends Utente {
   matricola: string;
   corsoDiStudi: string;
+  corsoDiStudiId?: string;
 }
 
 export interface Docente extends Utente {
@@ -34,6 +33,11 @@ export interface Amministratore extends Utente {
   dipartimento?: string;
 }
 
+export interface CorsoDiStudi {
+  id: string;
+  nome: string;
+}
+
 export interface Corso {
   id: string;
   nome: string;
@@ -42,7 +46,6 @@ export interface Corso {
   docenteId: string;
 }
 
-// PRENOTAZIONI
 export interface LuogoRicevimento {
   id: string;
   aula: string;
@@ -55,7 +58,6 @@ export interface LuogoRicevimento {
 export interface SlotRicevimento {
   id: string;
   docenteId: string;
-  materia: string;
   data: Date;
   oraInizio: string;
   oraFine: string;
@@ -89,13 +91,12 @@ export interface Prenotazione {
   luogoRicevimento?: LuogoRicevimento;
 }
 
-// BACHECA E NOTIFICHE
 export interface Bacheca {
   id: string;
   titolo: string;
   descrizione: string;
-  nomeCorso?: string;
-  idCorso?: string;
+  idCorsoDiStudi?: string;
+  nomeCorsoDiStudi?: string;
   faqs?: FAQ[];
   dataUltimoAggiornamento?: string;
 }
@@ -107,5 +108,3 @@ export interface FAQ {
   aperta: boolean;
   dataPubblicazione?: string;
 }
-
-

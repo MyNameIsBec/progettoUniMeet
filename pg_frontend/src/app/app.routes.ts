@@ -49,7 +49,7 @@ export const routes: Routes = [
   },
   {
     path: 'dettaglio-prenotazione/:id',
-    //canActivate: [authGuard, roleGuard('studente')],
+    canActivate: [authGuard, roleGuard('studente')],
     loadComponent: () => import('./features/studente/dettaglio-prenotazione/dettaglio-prenotazione.page').then(m => m.DettaglioPrenotazionePage)
   },
   {

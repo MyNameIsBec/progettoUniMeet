@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Bacheca, FAQ } from '../models/interfacce';
 
 @Injectable({ providedIn: 'root' })
@@ -10,30 +10,26 @@ export class BachecaService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 
   private get api(): string {
-    return `${this.authService.getApiUrl()}/api/bacheca`;
+    return `${this.authService.getApiUrl()}/api/bacheche`;
   }
 
-  getBacheche(): Observable<Bacheca[]> {
-    return this.http.get<Bacheca[]>(this.api);
+  getBachecaPerCorsoDiStudi(idCorsoDiStudi: string): Observable<Bacheca> {
+    return this.http.get<Bacheca>(`${this.api}/corso-di-studi/${idCorsoDiStudi}`);
   }
 
-  getBachecaPerCorso(idCorso: string): Observable<Bacheca> {
-    return this.http.get<Bacheca>(`${this.api}/corso/${idCorso}`);
+  getFaq(idCorsoDiStudi: string): Observable<FAQ[]> {
+    return this.http.get<FAQ[]>(`${this.api}/corso-di-studi/${idCorsoDiStudi}/faq`)
   }
 
-  getFaq(idBacheca: string): Observable<FAQ[]> {
-    return this.http.get<FAQ[]>(`${this.api}/${idBacheca}/faq`)
-  }
-
-  aggiungiFaq(idBacheca: string, faq: Partial<FAQ>): Observable<FAQ> {
-    return this.http.post<FAQ>(`${this.api}/${idBacheca}/faq`, faq)
+  aggiungiFaq(idCorsoDiStudi: string, faq: Partial<FAQ>): Observable<FAQ> {
+    return this.http.post<FAQ>(`${this.api}/corso-di-studi/${idCorsoDiStudi}/faq`, faq)
   }
 
   aggiornaFaq(idBacheca: string, faq: Partial<FAQ>): Observable<FAQ> {
-    return this.http.put<FAQ>(`${this.api}/${idBacheca}/faq/${faq.id}`, faq)
+    return this.http.put<FAQ>(`/api/faq/${faq.id}`, faq)
   }
 
-  eliminaFaq(idBacheca: string, idFaq: string): Observable<void> {
-    return this.http.delete<void>(`${this.api}/${idBacheca}/faq/${idFaq}`)
+  eliminaFaq(idFaq: string): Observable<void> {
+    return this.http.delete<void>(`/api/faq/${idFaq}`)
   }
 }

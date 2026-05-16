@@ -12,6 +12,13 @@
 
 :root {
     --ion-font-family: var(--app-font-main);
+    --primary-blue: #2563eb;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --bg-light: #f8fbff;
+    --border-light: #e2e8f0;
+    --success-green: #16a34a;
+    --success-bg: #dcfce7;
 }
 
 body {
@@ -398,16 +405,6 @@ ion-button {
 
     &.full-width {
         grid-column: 1 / -1;
-    }
-
-    :root {
-        --primary-blue: #2563eb;
-        --text-dark: #0f172a;
-        --text-muted: #64748b;
-        --bg-light: #f8fbff;
-        --border-light: #e2e8f0;
-        --success-green: #16a34a;
-        --success-bg: #dcfce7;
     }
 
     .premium-hero {

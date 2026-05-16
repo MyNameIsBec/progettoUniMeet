@@ -76,9 +76,8 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
       // Recupera il profilo completo per conoscere il corso di studi
       const profilo = await firstValueFrom(this.studenteService.getProfilo(matricola));
       
-      if (profilo.corsoDiStudi) {
-        // Carica le FAQ specifiche del corso
-        const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorso(profilo.corsoDiStudi));
+      if (profilo.corsoDiStudiId) {
+        const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
         if (bacheca && bacheca.faqs) {
           this.listaFaq = bacheca.faqs;
         }

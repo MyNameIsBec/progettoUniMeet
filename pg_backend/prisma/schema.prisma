@@ -6,15 +6,24 @@ datasource db {
   provider = "postgresql"
 }
 
+model CorsoDiStudi {
+  id_corso_di_studi String                @id @default(uuid())
+  nome              String                @unique
+  studenti          Studente[]
+  docenti           DocenteCorsoDiStudi[]
+  bacheche          Bacheca[]
+}
+
 model Studente {
-  matricola      String         @id
-  nome           String
-  cognome        String
-  email          String         @unique
-  password       String
-  corso_di_studi String
-  prenotazioni   Prenotazione[]
-  segnalazioni   Segnalazione[]
+  matricola        String         @id
+  nome             String
+  cognome          String
+  email            String         @unique
+  password         String
+  id_corso_di_studi String
+  corso_di_studi   CorsoDiStudi   @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+  prenotazioni     Prenotazione[]
+  segnalazioni     Segnalazione[]
 }
 
 model Segnalazione {
@@ -28,16 +37,24 @@ model Segnalazione {
 }
 
 model Docente {
-  id_docente       String            @id @default(uuid())
+  id_docente       String                @id @default(uuid())
   nome             String
   cognome          String
-  email            String            @unique
+  email            String                @unique
   password         String
   ufficio          String
-  materia          String?
-  corso_di_studi   String?
   corsi            Corso[]
   slot_ricevimento SlotRicevimento[]
+  corsi_di_studi   DocenteCorsoDiStudi[]
+}
+
+model DocenteCorsoDiStudi {
+  id_docente        String
+  id_corso_di_studi String
+  docente           Docente      @relation(fields: [id_docente], references: [id_docente])
+  corso_di_studi    CorsoDiStudi @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+
+  @@id([id_docente, id_corso_di_studi])
 }
 
 model Amministratore {
@@ -53,17 +70,16 @@ model Corso {
   anno       Int
   cfu        Int
   id_docente String
-  bacheca    Bacheca?
   docente    Docente  @relation(fields: [id_docente], references: [id_docente])
 }
 
 model Bacheca {
-  id_bacheca                String   @id @default(uuid())
+  id_bacheca                String       @id @default(uuid())
   titolo                    String
   descrizione               String
-  data_ultimo_aggiornamento DateTime @updatedAt
-  id_corso                  String   @unique
-  corso                     Corso    @relation(fields: [id_corso], references: [id_corso])
+  data_ultimo_aggiornamento DateTime     @updatedAt
+  id_corso_di_studi         String       @unique
+  corso_di_studi            CorsoDiStudi @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
   faqs                      FAQ[]
 }
 

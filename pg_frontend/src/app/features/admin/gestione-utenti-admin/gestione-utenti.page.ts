@@ -54,7 +54,7 @@ export class GestioneUtentiPage implements OnInit {
   }
 
   formVuoto(): CreaUtenteRequest {
-    return { ruolo: 'studente', nome: '', cognome: '', email: '', password: '' };
+    return { ruolo: 'studente', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '' };
   }
 
   caricaUtenti(ruolo?: string) {

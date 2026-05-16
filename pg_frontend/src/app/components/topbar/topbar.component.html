@@ -37,7 +37,7 @@
       </a>
       }
       
-      <a routerLink="/login" class="mobile-logout" (click)="chiudiMenu()">
+      <a class="mobile-logout" (click)="logout(); chiudiMenu()">
         <ion-icon name="log-out-outline"></ion-icon>
         <span>Logout</span>
       </a>
@@ -46,11 +46,15 @@
 
   <!-- AZIONI DESKTOP -->
   <div class="topbar-actions">
+    <button class="theme-toggle" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
+      <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+    </button>
+
     <button class="notification-button" routerLink="/notifiche">
       <ion-icon name="notifications-outline"></ion-icon>
     </button>
 
-    <div class="student-profile-mini" routerLink="/profilo-studente">
+    <div class="student-profile-mini" (click)="vaiAlProfilo()">
       <div class="student-avatar-small">
         <ion-icon name="person-outline"></ion-icon>
       </div>

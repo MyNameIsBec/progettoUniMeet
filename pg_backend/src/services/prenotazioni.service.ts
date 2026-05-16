@@ -1,5 +1,21 @@
 import { prisma } from '../prisma/client';
-import path from 'path';
+
+function fmtLuogo(luogo: { nome_aula: string; edificio: string; piano: string } | null): string {
+  if (!luogo) return '';
+  return `${luogo.nome_aula}, ${luogo.edificio} (${luogo.piano})`;
+}
+
+function mapLuogoRicevimento(luogo: any) {
+  if (!luogo) return undefined;
+  return {
+    id: luogo.id_luogo,
+    aula: luogo.nome_aula,
+    edificio: luogo.edificio,
+    piano: luogo.piano,
+    latitudine: luogo.latitudine,
+    longitudine: luogo.longitudine,
+  };
+}
 
 export async function createPrenotazione(
   data: {
@@ -56,7 +72,7 @@ export async function createPrenotazione(
         studente: { select: { matricola: true, nome: true, cognome: true } },
         slot: {
           include: {
-            docente: { select: { id_docente: true, nome: true, cognome: true, materia: true } },
+            docente: { select: { id_docente: true, nome: true, cognome: true, corsi: { select: { nome_corso: true } } } },
             luogo: true,
           },
         },
@@ -75,10 +91,11 @@ export async function createPrenotazione(
       studenteId: p.matricola_studente,
       slotId: p.id_slot,
       docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
-      materia: p.slot.docente.materia ?? '',
+      materia: p.slot.docente.corsi?.[0]?.nome_corso ?? '',
       data: p.slot.data.toISOString().split('T')[0],
       ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
-      luogo: p.slot.luogo?.nome_aula ?? '',
+      luogo: fmtLuogo(p.slot.luogo),
+      luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
       argomento: p.argomento,
       descrizione: p.descrizione,
       stato: p.stato_prenotazione.toLowerCase(),
@@ -132,7 +149,7 @@ export async function getPrenotazioniStudente(matricolaStudente: string) {
     include: {
       slot: {
         include: {
-          docente: { select: { id_docente: true, nome: true, cognome: true, materia: true } },
+          docente: { select: { id_docente: true, nome: true, cognome: true, corsi: { select: { nome_corso: true } } } },
           luogo: true,
         },
       },
@@ -145,10 +162,11 @@ export async function getPrenotazioniStudente(matricolaStudente: string) {
     studenteId: p.matricola_studente,
     slotId: p.id_slot,
     docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
-    materia: p.slot.docente.materia ?? '',
+    materia: p.slot.docente.corsi?.[0]?.nome_corso ?? '',
     data: p.slot.data.toISOString().split('T')[0],
     ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
-    luogo: p.slot.luogo?.nome_aula ?? '',
+    luogo: fmtLuogo(p.slot.luogo),
+    luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
     argomento: p.argomento,
     stato: p.stato_prenotazione.toLowerCase(),
   }));
@@ -174,7 +192,8 @@ export async function getPrenotazioniDocente(idDocente: string) {
     data: p.slot.data.toISOString().split('T')[0],
     oraInizio: p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5),
     oraFine: p.slot.ora_fine.toISOString().split('T')[1]?.substring(0, 5),
-    luogo: p.slot.luogo?.nome_aula ?? '',
+    luogo: fmtLuogo(p.slot.luogo),
+    luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
     argomento: p.argomento,
     stato: p.stato_prenotazione.toLowerCase(),
   }));
@@ -204,7 +223,7 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
     docente: `${updated.slot.docente.nome} ${updated.slot.docente.cognome}`,
     data: updated.slot.data.toISOString().split('T')[0],
     ora: `${updated.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
-    luogo: updated.slot.luogo?.nome_aula ?? '',
+    luogo: fmtLuogo(updated.slot.luogo),
     argomento: updated.argomento,
     stato: updated.stato_prenotazione.toLowerCase(),
   };
@@ -217,7 +236,7 @@ export async function getPrenotazioneById(id: string) {
     include: {
       studente: { select: { matricola: true, nome: true, cognome: true } },
       slot: {
-        include: { docente: true, luogo: true },
+        include: { docente: { include: { corsi: { select: { nome_corso: true } } } }, luogo: true },
       },
       documenti: true,
     },
@@ -225,15 +244,18 @@ export async function getPrenotazioneById(id: string) {
 
   if (!prenotazione) throw new Error('Prenotazione not found');
 
+  const materia = prenotazione.slot.docente.corsi?.[0]?.nome_corso ?? '';
+
   return {
     id: prenotazione.id_prenotazione,
     studenteId: prenotazione.matricola_studente,
     slotId: prenotazione.id_slot,
     docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
-    materia: prenotazione.slot.docente.materia ?? '',
+    materia,
     data: prenotazione.slot.data.toISOString().split('T')[0],
     ora: `${prenotazione.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
-    luogo: prenotazione.slot.luogo?.nome_aula ?? '',
+    luogo: fmtLuogo(prenotazione.slot.luogo),
+    luogoRicevimento: mapLuogoRicevimento(prenotazione.slot.luogo),
     argomento: prenotazione.argomento,
     descrizione: prenotazione.descrizione,
     stato: prenotazione.stato_prenotazione.toLowerCase(),
