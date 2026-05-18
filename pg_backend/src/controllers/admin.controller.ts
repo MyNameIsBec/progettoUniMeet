@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as adminService from '../services/admin.service';
+import * as prenotazioniService from '../services/prenotazioni.service';
 
 export async function getStats(_req: Request, res: Response) {
   try {
@@ -135,6 +136,49 @@ export async function sbloccaGiorno(req: Request, res: Response) {
     return res.status(204).send();
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Giorno non trovato') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function getAllPrenotazioni(req: Request, res: Response) {
+  try {
+    const filtri: { stato?: string; docenteId?: string; data?: string } = {};
+    const stato = req.query.stato as string | undefined;
+    const docenteId = req.query.docenteId as string | undefined;
+    const data = req.query.data as string | undefined;
+    if (stato) filtri.stato = stato;
+    if (docenteId) filtri.docenteId = docenteId;
+    if (data) filtri.data = data;
+    const prenotazioni = await adminService.getAllPrenotazioni(filtri);
+    return res.status(200).json(prenotazioni);
+  } catch {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function aggiornaStatoPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const { stato } = req.body;
+    const result = await prenotazioniService.aggiornaStatoPrenotazione(id, stato);
+    return res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function eliminaPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    await prenotazioniService.eliminaPrenotazione(id);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
       return res.status(404).json({ error: err.message });
     }
     return res.status(500).json({ error: 'Internal server error' });

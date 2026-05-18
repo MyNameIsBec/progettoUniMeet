@@ -43,9 +43,10 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   private configuraMenu(role: string) {
     if (role === 'amministratore') {
       this.vociMenu = [
-        { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'home-outline', esatto: true },
+        { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
         { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
         { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
+        { etichetta: 'Prenotazioni', percorso: '/gestione-prenotazioni-admin', icona: 'calendar-number-outline' },
         { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },
         { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
       ];

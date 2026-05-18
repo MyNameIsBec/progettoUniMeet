@@ -278,22 +278,6 @@ body.dark {
         ion-icon { color: #ffffff !important; }
       }
     }
-
-    .sidebar-theme-toggle {
-      background: rgba(255, 255, 255, 0.03) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #94a3b8 !important;
-
-      ion-icon { color: #64748b !important; }
-
-      &:hover {
-        background: rgba(37, 99, 235, 0.15) !important;
-        border-color: #2563eb !important;
-        color: #60a5fa !important;
-
-        ion-icon { color: #60a5fa !important; }
-      }
-    }
   }
 
   .mobile-top-menu {
@@ -536,7 +520,8 @@ body.dark {
 
   .utenti-table,
   .segnalazioni-table,
-  .calendario-table {
+  .calendario-table,
+  .prenotazioni-table {
     th {
       background: #1e293b !important;
       color: #94a3b8 !important;
@@ -627,6 +612,10 @@ body.dark {
     color: #94a3b8 !important;
   }
 
+  .slot-cell .ora {
+    color: #94a3b8 !important;
+  }
+
   .slot-empty h3 {
     color: #ffffff !important;
   }
@@ -645,6 +634,10 @@ body.dark {
   .stato-aperta { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
   .stato-in_lavorazione { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
   .stato-chiusa { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+  .stato-in_attesa { background: rgba(234, 179, 8, 0.15) !important; color: #fde047 !important; }
+  .stato-confermato { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+  .stato-rifiutato { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+  .stato-annullata { background: rgba(100, 116, 139, 0.2) !important; color: #94a3b8 !important; }
 
   .ruolo-studente { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
   .ruolo-docente { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
@@ -858,8 +851,9 @@ body.dark {
     &:hover { background: rgba(239, 68, 68, 0.15) !important; }
   }
 
-  /* Segnalazioni page - description text */
-  .oggetto-cell p {
+  /* Segnalazioni/Prenotazioni page - description text */
+  .oggetto-cell p,
+  .argomento-cell p {
     color: #94a3b8 !important;
   }
 

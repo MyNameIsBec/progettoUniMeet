@@ -1,0 +1,95 @@
+<app-dashboard-layout [ruoloUtente]="'amministratore'">
+  <div class="prenotazioni-content">
+    <div class="toolbar-row">
+      <div class="filter-chips">
+        <ion-chip [class.active]="!filtroStato" (click)="onFiltroStato('')">
+          <ion-label>Tutte</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'IN_ATTESA'" (click)="onFiltroStato('IN_ATTESA')">
+          <ion-label>In attesa</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'CONFERMATO'" (click)="onFiltroStato('CONFERMATO')">
+          <ion-label>Confermate</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'RIFIUTATO'" (click)="onFiltroStato('RIFIUTATO')">
+          <ion-label>Rifiutate</ion-label>
+        </ion-chip>
+        <ion-chip [class.active]="filtroStato === 'ANNULLATA'" (click)="onFiltroStato('ANNULLATA')">
+          <ion-label>Annullate</ion-label>
+        </ion-chip>
+      </div>
+      <span class="count-badge">{{ prenotazioni.length }} prenotazion{{ prenotazioni.length === 1 ? 'e' : 'i' }}</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="prenotazioni-table">
+        <thead>
+          <tr>
+            <th>Stato</th>
+            <th>Studente</th>
+            <th>Docente</th>
+            <th class="hide-mobile">Argomento</th>
+            <th class="hide-mobile">Slot</th>
+            <th class="hide-mobile">Data prenotazione</th>
+            <th class="actions-col">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of prenotazioni; track p.id) {
+            <tr>
+              <td>
+                <div class="stato-badge" [class]="statoClasse(p.stato)">
+                  <ion-icon [name]="statoIcona(p.stato)"></ion-icon>
+                  <span>{{ statoLabel(p.stato) }}</span>
+                </div>
+              </td>
+              <td class="studente-cell">
+                {{ p.studente.nome }} {{ p.studente.cognome }}
+                <span class="matricola">{{ p.studente.matricola }}</span>
+              </td>
+              <td>{{ p.docente.nome }} {{ p.docente.cognome }}</td>
+              <td class="hide-mobile argomento-cell">
+                <strong>{{ p.argomento }}</strong>
+                @if (p.descrizione) {
+                  <p>{{ p.descrizione }}</p>
+                }
+              </td>
+              <td class="hide-mobile slot-cell">
+                {{ formattaData(p.slot.data) }}<br>
+                <span class="ora">{{ p.slot.oraInizio }} - {{ p.slot.oraFine }}</span>
+              </td>
+              <td class="hide-mobile data-cell">{{ formattaDataOra(p.dataPrenotazione) }}</td>
+              <td class="actions-col">
+                <div class="action-group">
+                  <ion-select
+                    [value]="p.stato"
+                    (ionChange)="cambiaStato(p, $event.detail.value)"
+                    interface="popover"
+                    class="stato-select"
+                  >
+                    <ion-select-option value="IN_ATTESA">In attesa</ion-select-option>
+                    <ion-select-option value="CONFERMATO">Confermato</ion-select-option>
+                    <ion-select-option value="RIFIUTATO">Rifiutato</ion-select-option>
+                    <ion-select-option value="ANNULLATA">Annullata</ion-select-option>
+                  </ion-select>
+                  <button class="btn-icon" title="Dettagli" (click)="dettagli(p)">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                  </button>
+                  <button class="btn-icon btn-danger" title="Elimina" (click)="confermaEliminazione(p)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            @if (!inCaricamento) {
+              <tr>
+                <td colspan="7" class="empty-row">Nessuna prenotazione trovata</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-dashboard-layout>

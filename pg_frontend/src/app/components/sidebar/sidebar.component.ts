@@ -16,11 +16,7 @@ export class SidebarComponent {
   @Input() ruoloUtente: string = 'studente';
   @Input() vociMenu: VoceMenuNavigazione[] = [];
 
-  isDarkMode = false;
-
-  constructor(private router: Router, private auth: AuthService) {
-    this.isDarkMode = document.body.classList.contains('dark');
-  }
+  constructor(private router: Router, private auth: AuthService) {}
 
   isLinkActive(voce: VoceMenuNavigazione): boolean {
     const currentUrl = this.router.url;
@@ -31,12 +27,6 @@ export class SidebarComponent {
     }
 
     return this.router.isActive(voce.percorso, voce.esatto || false);
-  }
-
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    document.body.classList.toggle('dark', this.isDarkMode);
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
   logout() {
