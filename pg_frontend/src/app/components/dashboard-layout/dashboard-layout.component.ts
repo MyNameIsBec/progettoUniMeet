@@ -17,12 +17,11 @@ import { Subscription } from 'rxjs';
 export class DashboardLayoutComponent implements OnInit, OnDestroy {
   @Input() ruoloUtente: string = '';
   @Input() nomeUtente: string = '';
-
   @Input() vociMenu: VoceMenuNavigazione[] = [];
-  
+
   private userSub: Subscription | null = null;
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService) { }
 
   ngOnInit() {
     this.userSub = this.auth.currentUser$.subscribe(user => {
@@ -49,7 +48,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },
         { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
       ];
-    } 
+    }
     else if (role === 'docente') {
       this.vociMenu = [
         { etichetta: 'Dashboard', percorso: '/dashboard-docente', icona: 'home-outline', esatto: true },
@@ -59,7 +58,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         { etichetta: 'Statistiche', percorso: '/statistiche-docente', icona: 'bar-chart-outline' },
         { etichetta: 'Profilo', percorso: '/profilo-docente', icona: 'person-outline' },
       ];
-    } 
+    }
     else if (role === 'studente') {
       this.vociMenu = [
         { etichetta: 'Dashboard', percorso: '/dashboard-studente', icona: 'home-outline', esatto: true },

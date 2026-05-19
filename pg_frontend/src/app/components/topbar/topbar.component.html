@@ -13,7 +13,6 @@
     </div>
   </div>
 
-  <!-- MENU A TENDINA LATERALE (MOBILE ONLY) -->
   @if (menuAperto) {
   <div class="mobile-dropdown-overlay" (click)="toggleMenu()"></div>
   }
@@ -44,7 +43,6 @@
     </div>
   </nav>
 
-  <!-- AZIONI DESKTOP -->
   <div class="topbar-actions">
     <button class="theme-toggle" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
       <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>

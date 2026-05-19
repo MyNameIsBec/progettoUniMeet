@@ -11,11 +11,10 @@
 
   <nav class="sidebar-nav">
     @for (voce of vociMenu; track voce.percorso) {
-      <a [routerLink]="voce.percorso" 
-         [class.active]="isLinkActive(voce)">
-        <ion-icon [name]="voce.icona"></ion-icon>
-        <span>{{ voce.etichetta }}</span>
-      </a>
+    <a [routerLink]="voce.percorso" [class.active]="isLinkActive(voce)">
+      <ion-icon [name]="voce.icona"></ion-icon>
+      <span>{{ voce.etichetta }}</span>
+    </a>
     }
 
     <a class="logout-link" (click)="logout()">
@@ -24,8 +23,5 @@
     </a>
   </nav>
 
-  <button class="sidebar-theme-toggle" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
-    <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
-    <span>{{ isDarkMode ? 'Modalità chiara' : 'Modalità scura' }}</span>
-  </button>
+
 </aside>

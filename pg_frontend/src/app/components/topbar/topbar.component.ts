@@ -17,10 +17,10 @@ export class TopbarComponent implements OnInit, OnDestroy {
   @Input() vociMenuMobile: VoceMenuNavigazione[] = [];
 
   nomeUtente: string = '';
-  ruoloUtente: string = 'studente';
+  ruoloUtente: string = ' ';
   menuAperto = false;
   isDarkMode = false;
-  
+
   private userSub: Subscription | null = null;
 
   constructor(private auth: AuthService, private router: Router) { }

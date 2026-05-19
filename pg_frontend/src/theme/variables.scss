@@ -1,6 +1,4 @@
-/** Ionic CSS Variables **/
 :root {
-  /** primary **/
   --ion-color-primary: #2563eb;
   --ion-color-primary-rgb: 37, 99, 235;
   --ion-color-primary-contrast: #ffffff;
@@ -8,7 +6,6 @@
   --ion-color-primary-shade: #2157cf;
   --ion-color-primary-tint: #3b73ed;
 
-  /** secondary **/
   --ion-color-secondary: #0f172a;
   --ion-color-secondary-rgb: 15, 23, 42;
   --ion-color-secondary-contrast: #ffffff;
@@ -16,7 +13,6 @@
   --ion-color-secondary-shade: #0d1425;
   --ion-color-secondary-tint: #272e3f;
 
-  /** tertiary **/
   --ion-color-tertiary: #64748b;
   --ion-color-tertiary-rgb: 100, 116, 139;
   --ion-color-tertiary-contrast: #ffffff;
@@ -24,7 +20,6 @@
   --ion-color-tertiary-shade: #58667a;
   --ion-color-tertiary-tint: #748297;
 
-  /** success **/
   --ion-color-success: #16a34a;
   --ion-color-success-rgb: 22, 163, 74;
   --ion-color-success-contrast: #ffffff;
@@ -32,7 +27,6 @@
   --ion-color-success-shade: #138f41;
   --ion-color-success-tint: #2dac5c;
 
-  /** warning **/
   --ion-color-warning: #f59e0b;
   --ion-color-warning-rgb: 245, 158, 11;
   --ion-color-warning-contrast: #ffffff;
@@ -40,7 +34,6 @@
   --ion-color-warning-shade: #d88b0a;
   --ion-color-warning-tint: #f6a823;
 
-  /** danger **/
   --ion-color-danger: #ef4444;
   --ion-color-danger-rgb: 239, 68, 68;
   --ion-color-danger-contrast: #ffffff;
@@ -48,7 +41,6 @@
   --ion-color-danger-shade: #d23c3c;
   --ion-color-danger-tint: #f15757;
 
-  /** dark **/
   --ion-color-dark: #0f172a;
   --ion-color-dark-rgb: 15, 23, 42;
   --ion-color-dark-contrast: #ffffff;
@@ -56,7 +48,6 @@
   --ion-color-dark-shade: #0d1425;
   --ion-color-dark-tint: #272e3f;
 
-  /** medium **/
   --ion-color-medium: #64748b;
   --ion-color-medium-rgb: 100, 116, 139;
   --ion-color-medium-contrast: #ffffff;
@@ -64,7 +55,6 @@
   --ion-color-medium-shade: #58667a;
   --ion-color-medium-tint: #748297;
 
-  /** light **/
   --ion-color-light: #f8fbff;
   --ion-color-light-rgb: 248, 251, 255;
   --ion-color-light-contrast: #0f172a;
@@ -77,7 +67,6 @@
   --ion-text-color: #0f172a;
   --ion-text-color-rgb: 15, 23, 42;
 
-  /** Custom App Variables **/
   --app-radius-sm: 8px;
   --app-radius-md: 12px;
   --app-radius-lg: 18px;
@@ -91,7 +80,7 @@
   --app-bg-gradient: none;
 }
 
-/* Dark mode palette overrides if needed */
+
 @media (prefers-color-scheme: dark) {
   body {
     --ion-color-primary: #3b82f6;
@@ -111,12 +100,10 @@
 }
 
 body.dark {
-  /* PREMIUM MIDNIGHT BLUE THEME */
-  --ion-background-color: #020617 !important;
-  /* Extremely deep blue */
-  --ion-background-color-rgb: 2, 6, 23 !important;
-  --ion-text-color: #f8fafc !important;
-  --ion-text-color-rgb: 248, 250, 252 !important;
+  --ion-background-color: #020617;
+  --ion-background-color-rgb: 2, 6, 23;
+  --ion-text-color: #f8fafc;
+  --ion-text-color-rgb: 248, 250, 252;
 
   --ion-color-step-50: #0f172a;
   --ion-color-step-100: #1e293b;
@@ -135,7 +122,6 @@ body.dark {
   --ion-overlay-background-color: #1e293b;
   --ion-backdrop-color: #000000;
 
-  /* PREMIUM COMPONENT DARK OVERRIDES */
   .premium-card,
   .profile-card,
   .form-card,
@@ -148,222 +134,246 @@ body.dark {
   .activity-card,
   .profile-actions,
   ion-card {
-    background: #0f172a !important;
-    border: 1px solid rgba(37, 99, 235, 0.1) !important;
-    /* Subtle blue border */
-    color: #f1f5f9 !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    background: #0f172a;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    color: #f1f5f9;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 
     ion-card-title {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     p {
-      color: #94a3b8 !important;
+      color: #94a3b8;
     }
   }
 
   .premium-hero {
     background:
       radial-gradient(circle at top right, rgba(37, 99, 235, 0.2), transparent 50%),
-      linear-gradient(135deg, #020617 0%, #0f172a 100%) !important;
-    border-color: rgba(37, 99, 235, 0.15) !important;
+      linear-gradient(135deg, #020617 0%, #0f172a 100%);
+    border-color: rgba(37, 99, 235, 0.15);
 
     h1,
     h2 {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     p {
-      color: #94a3b8 !important;
+      color: #94a3b8;
     }
 
     .eyebrow {
-      background: rgba(37, 99, 235, 0.25) !important;
-      color: #60a5fa !important;
+      background: rgba(37, 99, 235, 0.25);
+      color: #60a5fa;
     }
   }
 
   .hero-status-card {
-    background: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
     strong {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     .hero-status-icon {
-      background: #2563eb !important;
-      color: #ffffff !important;
+      background: #2563eb;
+      color: #ffffff;
     }
   }
 
   .topbar {
-    background: rgba(2, 6, 23, 0.8) !important;
-    border-color: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(20px) !important;
+    background: rgba(2, 6, 23, 0.8);
+    border-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
 
     .menu-toggle {
-      background: rgba(255, 255, 255, 0.03) !important;
-      color: #e2e8f0 !important;
+      background: rgba(255, 255, 255, 0.03);
+      color: #e2e8f0;
     }
 
     .notification-button,
     .theme-toggle {
-      background: rgba(255, 255, 255, 0.03) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.1);
 
       ion-icon {
-        color: #94a3b8 !important;
+        color: #94a3b8;
       }
 
       &:hover {
-        background: rgba(37, 99, 235, 0.15) !important;
-        border-color: #2563eb !important;
+        background: rgba(37, 99, 235, 0.15);
+        border-color: #2563eb;
 
-        ion-icon { color: #60a5fa !important; }
+        ion-icon {
+          color: #60a5fa;
+        }
       }
     }
 
     .student-profile-mini {
-      background: rgba(255, 255, 255, 0.03) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.1);
 
       strong {
-        color: #ffffff !important;
+        color: #ffffff;
       }
 
       &:hover {
-        background: rgba(255, 255, 255, 0.06) !important;
-        border-color: rgba(255, 255, 255, 0.15) !important;
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.15);
       }
     }
 
     .student-avatar-small {
-      background: rgba(255, 255, 255, 0.05) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #60a5fa !important;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #60a5fa;
     }
   }
 
   .sidebar {
-    background: #020617 !important;
-    border-right-color: rgba(255, 255, 255, 0.05) !important;
+    background: #020617;
+    border-right-color: rgba(255, 255, 255, 0.05);
 
     .sidebar-logo {
-      h1 { color: #60a5fa !important; }
-      span { color: #64748b !important; }
-      ion-icon { color: #60a5fa !important; }
+      h1 {
+        color: #60a5fa;
+      }
+
+      span {
+        color: #64748b;
+      }
+
+      ion-icon {
+        color: #60a5fa;
+      }
     }
 
     .sidebar-nav a {
-      color: #94a3b8 !important;
+      color: #94a3b8;
 
       ion-icon {
-        color: #64748b !important;
+        color: #64748b;
       }
 
       &:hover {
-        background: rgba(37, 99, 235, 0.1) !important;
-        color: #ffffff !important;
+        background: rgba(37, 99, 235, 0.1);
+        color: #ffffff;
 
-        ion-icon { color: #ffffff !important; }
+        ion-icon {
+          color: #ffffff;
+        }
       }
 
       &.active {
-        background: #2563eb !important;
-        color: #ffffff !important;
-        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4) !important;
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
 
-        ion-icon { color: #ffffff !important; }
+        ion-icon {
+          color: #ffffff;
+        }
       }
     }
 
     .sidebar-theme-toggle {
-      background: rgba(255, 255, 255, 0.03) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #94a3b8 !important;
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
 
-      ion-icon { color: #64748b !important; }
+      ion-icon {
+        color: #64748b;
+      }
 
       &:hover {
-        background: rgba(37, 99, 235, 0.15) !important;
-        border-color: #2563eb !important;
-        color: #60a5fa !important;
+        background: rgba(37, 99, 235, 0.15);
+        border-color: #2563eb;
+        color: #60a5fa;
 
-        ion-icon { color: #60a5fa !important; }
+        ion-icon {
+          color: #60a5fa;
+        }
       }
     }
   }
 
   .mobile-top-menu {
-    background: #0f172a !important;
+    background: #0f172a;
 
     .drawer-header {
-      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+      border-bottom-color: rgba(255, 255, 255, 0.05);
 
-      h1 { color: #60a5fa !important; }
-      span { color: #64748b !important; }
+      h1 {
+        color: #60a5fa;
+      }
+
+      span {
+        color: #64748b;
+      }
     }
 
     .menu-items a {
-      color: #94a3b8 !important;
+      color: #94a3b8;
 
-      ion-icon { color: #64748b !important; }
+      ion-icon {
+        color: #64748b;
+      }
 
       &:hover,
       &.active {
-        background: rgba(37, 99, 235, 0.1) !important;
-        color: #ffffff !important;
+        background: rgba(37, 99, 235, 0.1);
+        color: #ffffff;
 
-        ion-icon { color: #ffffff !important; }
+        ion-icon {
+          color: #ffffff;
+        }
       }
     }
   }
 
-  /* FORMS & INPUTS - VIBRANT DARK */
   ion-item {
-    --background: rgba(255, 255, 255, 0.02) !important;
-    --color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px !important;
+    --background: rgba(255, 255, 255, 0.02);
+    --color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
   }
 
   ion-input,
   ion-select,
   ion-textarea {
-    --color: #ffffff !important;
-    --placeholder-color: #94a3b8 !important;
-    --placeholder-opacity: 1 !important;
-    color: #e2e8f0 !important;
+    --color: #ffffff;
+    --placeholder-color: #94a3b8;
+    --placeholder-opacity: 1;
+    color: #e2e8f0;
   }
 
   ion-label {
-    --color: #e2e8f0 !important;
-    color: #e2e8f0 !important;
+    --color: #e2e8f0;
+    color: #e2e8f0;
   }
 
   .premium-form-field label {
-    color: #cbd5e1 !important;
+    color: #cbd5e1;
   }
 
   .premium-form-field ion-item {
-    --background: rgba(255, 255, 255, 0.03) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
+    --background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
-  /* ACCENT CARDS - VIBRANT COLORS */
   .stat-card div strong,
   .summary-number strong {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   .summary-card h3,
   .summary-card h4,
   .appointments-card ion-card-title,
   .faq-card ion-card-title {
-    color: #ffffff !important;
-    font-weight: 900 !important;
+    color: #ffffff;
+    font-weight: 900;
   }
 
   .summary-card,
@@ -371,41 +381,41 @@ body.dark {
   .faq-card,
   .appointment-item,
   .faq-row {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
     h3,
     h4,
     strong {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     p,
     span {
-      color: #cbd5e1 !important;
+      color: #cbd5e1;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.05) !important;
-      border-color: #2563eb !important;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: #2563eb;
     }
   }
 
   .faq-link {
-    background: #2563eb !important;
-    color: #ffffff !important;
+    background: #2563eb;
+    color: #ffffff;
 
     ion-icon {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     &:hover {
-      background: #1d4ed8 !important;
+      background: #1d4ed8;
     }
   }
 
 
-  /* FORMS, FILTERS & CARDS - NO WHITE */
+
   .security-item,
   .toggle-row,
   .activity-box,
@@ -426,19 +436,19 @@ body.dark {
   .management-card,
   .filters-row,
   .calendar-card {
-    background: #0f172a !important;
-    border: 1px solid rgba(37, 99, 235, 0.1) !important;
+    background: #0f172a;
+    border: 1px solid rgba(37, 99, 235, 0.1);
 
     h3,
     h4,
     strong,
     ion-card-title {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     p,
     span {
-      color: #94a3b8 !important;
+      color: #94a3b8;
     }
   }
 
@@ -448,440 +458,485 @@ body.dark {
   .custom-field ion-item,
   .filter-button,
   .management-row {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff !important;
-    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 14px;
 
     input {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     ion-select,
     ion-input,
     ion-textarea {
-      color: #ffffff !important;
-      --color: #ffffff !important;
+      color: #ffffff;
+      --color: #ffffff;
     }
 
     &.active {
-      background: #2563eb !important;
-      color: #ffffff !important;
-      border-color: #2563eb !important;
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
     }
 
     &:hover {
-      border-color: #2563eb !important;
+      border-color: #2563eb;
     }
   }
 
   .filter-button {
-    padding: 8px 20px !important;
-    font-weight: 700 !important;
+    padding: 8px 20px;
+    font-weight: 700;
   }
 
   .teacher-header h3 {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   .next-slot-banner {
-    background: rgba(34, 197, 94, 0.1) !important;
-    color: #4ade80 !important;
-    border: 1px solid rgba(34, 197, 94, 0.2) !important;
+    background: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.2);
 
     &.not-available {
-      background: rgba(255, 255, 255, 0.05) !important;
-      color: #94a3b8 !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      border-color: rgba(255, 255, 255, 0.1);
     }
   }
 
   .status-overlay .badge {
     &.success {
-      background: rgba(34, 197, 94, 0.2) !important;
-      color: #4ade80 !important;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
     }
 
     &.warning {
-      background: rgba(234, 179, 8, 0.2) !important;
-      color: #fde047 !important;
+      background: rgba(234, 179, 8, 0.2);
+      color: #fde047;
     }
 
     &.danger {
-      background: rgba(239, 68, 68, 0.2) !important;
-      color: #f87171 !important;
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
     }
   }
 
-  /* ──────────── ADMIN PAGES DARK MODE ──────────── */
-
-  /* Dashboard */
   .stat-card {
-    background: #0f172a !important;
-    border: 1px solid rgba(37, 99, 235, 0.15) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+    background: #0f172a;
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 
-    .stat-value { color: #ffffff !important; }
-    .stat-label  { color: #94a3b8 !important; }
+    .stat-value {
+      color: #ffffff;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+    }
   }
 
-  .quick-actions h3 { color: #ffffff !important; }
+  .quick-actions h3 {
+    color: #ffffff;
+  }
 
-  /* Admin tables - utenti, calendario, segnalazioni */
   .table-wrap {
-    background: #0f172a !important;
-    border: 1px solid rgba(37, 99, 235, 0.1) !important;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
+    background: #0f172a;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
   }
 
   .utenti-table,
   .segnalazioni-table,
   .calendario-table {
     th {
-      background: #1e293b !important;
-      color: #94a3b8 !important;
-      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+      background: #1e293b;
+      color: #94a3b8;
+      border-bottom-color: rgba(255, 255, 255, 0.05);
     }
 
     td {
-      color: #e2e8f0 !important;
-      border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+      color: #e2e8f0;
+      border-bottom-color: rgba(255, 255, 255, 0.05);
     }
 
     tr:hover td {
-      background: rgba(37, 99, 235, 0.08) !important;
+      background: rgba(37, 99, 235, 0.08);
     }
   }
 
   .empty-row {
-    color: #64748b !important;
+    color: #64748b;
   }
 
-  /* Chips & filtri admin */
   ion-chip {
-    --background: #1e293b !important;
-    --color: #e2e8f0 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
+    --background: #1e293b;
+    --color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .count-badge {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #94a3b8 !important;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
   }
 
   .search-bar {
-    --background: #1e293b !important;
-    --color: #ffffff !important;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    --background: #1e293b;
+    --color: #ffffff;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
-    input { color: #ffffff !important; }
+    input {
+      color: #ffffff;
+    }
   }
 
-  /* Admin page titles */
   .page-title,
   .selected-day-label {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   .selected-day-label {
-    background: rgba(37, 99, 235, 0.15) !important;
+    background: rgba(37, 99, 235, 0.15);
   }
 
-  /* Calendar admin */
   ion-datetime {
-    --background: #0f172a !important;
-    --wheel-fade-background-rgb: 15, 23, 42 !important;
-    color: #ffffff !important;
+    --background: #0f172a;
+    --wheel-fade-background-rgb: 15, 23, 42;
+    color: #ffffff;
 
     &::part(calendar-day) {
-      color: #cbd5e1 !important;
+      color: #cbd5e1;
     }
 
     &::part(calendar-day today) {
-      color: #60a5fa !important;
+      color: #60a5fa;
     }
   }
 
-  /* Filter cards & slot cards */
   .filtri-card,
   .slot-card {
-    background: #0f172a !important;
-    border: 1px solid rgba(37, 99, 235, 0.1) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+    background: #0f172a;
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 
     &:hover {
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4) !important;
-      border-color: rgba(37, 99, 235, 0.25) !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      border-color: rgba(37, 99, 235, 0.25);
     }
   }
 
   .slot-header {
-    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.05);
   }
 
   .slot-docente {
-    color: #e2e8f0 !important;
+    color: #e2e8f0;
   }
 
   .slot-info {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   .slot-empty h3 {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   .slot-empty p {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   .slot-empty ion-icon {
-    color: #64748b !important;
+    color: #64748b;
   }
 
-  /* Stato badges */
-  .stato-libero { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
-  .stato-occupato { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
-  .stato-aperta { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
-  .stato-in_lavorazione { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
-  .stato-chiusa { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
+  .stato-libero {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+  }
 
-  .ruolo-studente { background: rgba(37, 99, 235, 0.15) !important; color: #60a5fa !important; }
-  .ruolo-docente { background: rgba(22, 163, 74, 0.15) !important; color: #4ade80 !important; }
-  .ruolo-amministratore { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+  .stato-occupato {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  .stato-aperta {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  .stato-in_lavorazione {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+  }
+
+  .stato-chiusa {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+  }
+
+  .ruolo-studente {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+  }
+
+  .ruolo-docente {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+  }
+
+  .ruolo-amministratore {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
 
   .motivo-badge {
-    background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171 !important;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
   }
 
   .data-badge {
-    color: #e2e8f0 !important;
+    color: #e2e8f0;
   }
 
   .data-badge ion-icon {
-    color: #60a5fa !important;
+    color: #60a5fa;
   }
 
   ion-datetime::part(calendar-day active) {
-    background: #2563eb !important;
-    color: #ffffff !important;
+    background: #2563eb;
+    color: #ffffff;
   }
 
   .selected-day-label {
-    background: rgba(37, 99, 235, 0.15) !important;
-    color: #e2e8f0 !important;
+    background: rgba(37, 99, 235, 0.15);
+    color: #e2e8f0;
   }
 
-  /* Field groups nei modali admin */
   .field-group {
-    background: #1e293b !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: none !important;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
 
-    label { color: #94a3b8 !important; }
+    label {
+      color: #94a3b8;
+    }
 
     ion-input,
     ion-select {
-      --background: rgba(255, 255, 255, 0.03) !important;
-      --color: #ffffff !important;
-      --placeholder-color: #94a3b8 !important;
-      --border-color: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      background: transparent !important;
-      color: #ffffff !important;
+      --background: rgba(255, 255, 255, 0.03);
+      --color: #ffffff;
+      --placeholder-color: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.1);
+      background: transparent;
+      color: #ffffff;
     }
 
     ion-input::part(placeholder),
     ion-select::part(placeholder) {
-      color: #94a3b8 !important;
+      color: #94a3b8;
     }
 
     ion-select::part(text) {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     ion-toggle {
-      --background: rgba(255, 255, 255, 0.15) !important;
-      --background-checked: #22c55e !important;
-      --handle-background: #ffffff !important;
-      --handle-background-checked: #ffffff !important;
+      --background: rgba(255, 255, 255, 0.15);
+      --background-checked: #22c55e;
+      --handle-background: #ffffff;
+      --handle-background-checked: #ffffff;
     }
   }
 
-  .luogo-section > label {
-    color: #94a3b8 !important;
+  .luogo-section>label {
+    color: #94a3b8;
   }
 
   .filtro-group {
-    label { color: #e2e8f0 !important; }
+    label {
+      color: #e2e8f0;
+    }
 
     ion-select {
-      --background: rgba(255, 255, 255, 0.03) !important;
-      --color: #ffffff !important;
-      --placeholder-color: #94a3b8 !important;
-      --border-color: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      background: transparent !important;
-      color: #ffffff !important;
+      --background: rgba(255, 255, 255, 0.03);
+      --color: #ffffff;
+      --placeholder-color: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.1);
+      background: transparent;
+      color: #ffffff;
     }
 
     ion-select::part(text) {
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     ion-select::part(placeholder) {
-      color: #94a3b8 !important;
+      color: #94a3b8;
     }
   }
 
-  /* Modal admin */
   ion-modal ion-header ion-toolbar {
-    --background: #0f172a !important;
-    --color: #ffffff !important;
+    --background: #0f172a;
+    --color: #ffffff;
   }
 
   .modal-content {
-    --background: #0f172a !important;
+    --background: #0f172a;
   }
 
-  /* Icon buttons admin */
   .btn-icon {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #94a3b8 !important;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
 
     &:hover {
-      background: rgba(37, 99, 235, 0.15) !important;
-      color: #60a5fa !important;
-      border-color: #2563eb !important;
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      border-color: #2563eb;
     }
   }
 
   .btn-danger:hover {
-    background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171 !important;
-    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: #ef4444;
   }
 
-  /* ──────────── SELECT INTERFACES (alert/popover) DARK MODE ──────────── */
-
-  /* Alert interface (default for ion-select) */
   ion-alert {
-    --background: #1e293b !important;
-    --color: #e2e8f0 !important;
-    --button-color: #60a5fa !important;
-    --ion-text-color: #e2e8f0 !important;
-    --ion-color-step-600: #cbd5e1 !important;
+    --background: #1e293b;
+    --color: #e2e8f0;
+    --button-color: #60a5fa;
+    --ion-text-color: #e2e8f0;
+    --ion-color-step-600: #cbd5e1;
   }
 
   ion-alert .alert-wrapper {
-    background: #1e293b !important;
+    background: #1e293b;
   }
 
   ion-alert .alert-head h2,
   ion-alert .alert-head h3 {
-    color: #ffffff !important;
+    color: #ffffff;
   }
 
   ion-alert .alert-message {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   ion-alert .alert-radio-group {
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    max-height: 320px !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    max-height: 320px;
   }
 
   ion-alert .alert-radio-button {
-    background: transparent !important;
-    border-color: rgba(255, 255, 255, 0.05) !important;
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.05);
   }
 
   ion-alert .alert-radio-label {
-    color: #e2e8f0 !important;
-    font-weight: 500 !important;
+    color: #e2e8f0;
+    font-weight: 500;
   }
 
   ion-alert .alert-radio-icon {
-    border-color: #64748b !important;
+    border-color: #64748b;
   }
 
   ion-alert .alert-radio-inner {
-    border-color: #60a5fa !important;
-    background: #60a5fa !important;
+    border-color: #60a5fa;
+    background: #60a5fa;
   }
 
   ion-alert .alert-button-group {
-    padding: 8px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   ion-alert .alert-button {
-    color: #60a5fa !important;
-    font-weight: 700 !important;
-    --color: #60a5fa !important;
+    color: #60a5fa;
+    font-weight: 700;
+    --color: #60a5fa;
   }
 
-  /* Popover interface (used on some platforms) */
   ion-popover {
-    --background: #1e293b !important;
-    --color: #e2e8f0 !important;
-    --ion-text-color: #e2e8f0 !important;
+    --background: #1e293b;
+    --color: #e2e8f0;
+    --ion-text-color: #e2e8f0;
   }
 
   ion-popover ion-list,
   ion-popover ion-item,
   ion-popover ion-radio-group {
-    --background: #1e293b !important;
-    --color: #e2e8f0 !important;
-    background: #1e293b !important;
-    color: #e2e8f0 !important;
-    --ion-text-color: #e2e8f0 !important;
+    --background: #1e293b;
+    --color: #e2e8f0;
+    background: #1e293b;
+    color: #e2e8f0;
+    --ion-text-color: #e2e8f0;
   }
 
   ion-popover ion-item::part(native) {
-    --background: #1e293b !important;
-    background: #1e293b !important;
-    color: #e2e8f0 !important;
+    --background: #1e293b;
+    background: #1e293b;
+    color: #e2e8f0;
   }
 
   .icon-btn.edit {
-    color: #60a5fa !important;
+    color: #60a5fa;
 
-    &:hover { background: rgba(37, 99, 235, 0.15) !important; }
+    &:hover {
+      background: rgba(37, 99, 235, 0.15);
+    }
   }
 
   .icon-btn.delete {
-    color: #f87171 !important;
+    color: #f87171;
 
-    &:hover { background: rgba(239, 68, 68, 0.15) !important; }
+    &:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
   }
 
-  /* Segnalazioni page - description text */
   .oggetto-cell p {
-    color: #94a3b8 !important;
+    color: #94a3b8;
   }
 
   .studente-cell .matricola {
-    color: #64748b !important;
+    color: #64748b;
   }
 
-  /* Stato select admin */
   .stato-select {
-    --background: rgba(255, 255, 255, 0.03) !important;
-    --color: #ffffff !important;
-    --border-color: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    background: transparent !important;
-    color: #ffffff !important;
+    --background: rgba(255, 255, 255, 0.03);
+    --color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #ffffff;
   }
 
-  /* Icon background circles admin */
-  .student-icon { background: rgba(37, 99, 235, 0.15) !important; }
-  .teacher-icon { background: rgba(22, 163, 74, 0.15) !important; }
-  .booking-icon { background: rgba(99, 102, 241, 0.15) !important; }
-  .slot-icon { background: rgba(249, 115, 22, 0.15) !important; }
-  .today-icon { background: rgba(239, 68, 68, 0.15) !important; }
-  .new-icon { background: rgba(34, 197, 94, 0.15) !important; }
+  .student-icon {
+    background: rgba(37, 99, 235, 0.15);
+  }
+
+  .teacher-icon {
+    background: rgba(22, 163, 74, 0.15);
+  }
+
+  .booking-icon {
+    background: rgba(99, 102, 241, 0.15);
+  }
+
+  .slot-icon {
+    background: rgba(249, 115, 22, 0.15);
+  }
+
+  .today-icon {
+    background: rgba(239, 68, 68, 0.15);
+  }
+
+  .new-icon {
+    background: rgba(34, 197, 94, 0.15);
+  }
 }

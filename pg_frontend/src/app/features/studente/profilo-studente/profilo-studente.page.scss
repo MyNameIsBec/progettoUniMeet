@@ -99,6 +99,10 @@
     }
 }
 
+.full-width-card {
+    grid-column: 1 / -1;
+}
+
 /* SECURITY & TOGGLES */
 .security-list,
 .toggle-list {
