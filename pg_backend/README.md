@@ -147,3 +147,29 @@ npm run seed
 | `./setup-db.sh` | Setup completo DB (Unix) |
 | `npx prisma migrate deploy` | Applica migrazioni pendenti |
 | `npx prisma generate` | Rigenera il client Prisma |
+
+---
+
+## Email / Recupero password
+
+Per l'invio dei codici OTP (recupero password, verifica email) il server usa **nodemailer**.
+
+### Configurazione SMTP (`.env`)
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=la-tua-email@gmail.com
+SMTP_PASS=la-tua-app-password
+EMAIL_FROM=la-tua-email@gmail.com
+```
+
+**Gmail:**
+1. Attiva la **verifica in due passaggi** su https://myaccount.google.com/security
+2. Genera una **App Password** su https://myaccount.google.com/apppasswords
+3. Inserisci l'App Password in `SMTP_PASS`
+4. `EMAIL_FROM` deve coincidere con `SMTP_USER`
+
+**Altri provider:** modifica `SMTP_HOST` e `SMTP_PORT` di conseguenza.
+
+Se `SMTP_USER` o `SMTP_PASS` sono vuoti, il server scrive il codice in console (utile in sviluppo).

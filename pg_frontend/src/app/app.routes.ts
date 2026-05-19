@@ -132,6 +132,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/gestione-segnalazioni/gestione-segnalazioni.page').then(m => m.GestioneSegnalazioniPage),
   },
   {
+    path: 'gestione-prenotazioni-admin',
+    canActivate: [authGuard, roleGuard('amministratore')],
+    loadComponent: () => import('./features/admin/gestione-prenotazioni-admin/gestione-prenotazioni-admin.page').then(m => m.GestionePrenotazioniAdminPage),
+  },
+  {
     path: 'gestione-calendario',
     canActivate: [authGuard, roleGuard('amministratore')],
     loadComponent: () => import('./features/admin/gestione-calendario/gestione-calendario.page').then(m => m.GestioneCalendarioPage),

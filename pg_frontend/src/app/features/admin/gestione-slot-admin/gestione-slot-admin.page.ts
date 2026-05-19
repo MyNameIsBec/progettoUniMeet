@@ -7,7 +7,6 @@ import {
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from 'src/app/core/services/admin';
 
 @Component({
@@ -35,14 +34,6 @@ export class GestioneSlotAdminPage implements OnInit {
   modaleTitolo = '';
   slotInModifica: SlotGriglia | null = null;
   formDati: any = {};
-
-  vociMenuAdmin: VoceMenuNavigazione[] = [
-    { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
-    { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
-    { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
-    { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },
-    { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
-  ];
 
   constructor(private admin: AdminService, private route: ActivatedRoute) {
   }

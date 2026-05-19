@@ -5,7 +5,6 @@ import {
   IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel, AlertController,
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { VoceMenuNavigazione } from '../../../core/models/interfacce';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 
 @Component({
@@ -22,14 +21,6 @@ export class GestioneSegnalazioniPage implements OnInit {
   segnalazioni: (Segnalazione & { studente?: { nome: string; cognome: string; email: string } })[] = [];
   filtroStato = '';
   inCaricamento = false;
-
-  vociMenuAdmin: VoceMenuNavigazione[] = [
-    { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
-    { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
-    { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
-    { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },
-    { etichetta: 'Segnalazioni', percorso: '/gestione-segnalazioni', icona: 'flag-outline' },
-  ];
 
   constructor(
     private segnalazioneService: SegnalazioneService,

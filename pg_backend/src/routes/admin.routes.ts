@@ -10,6 +10,9 @@ import {
   modificaSlot,
   eliminaSlot,
   getSlotGlobali,
+  getAllPrenotazioni,
+  aggiornaStatoPrenotazione,
+  eliminaPrenotazione,
   getGiorniBloccati,
   bloccaGiorno,
   sbloccaGiorno,
@@ -38,6 +41,9 @@ router.post('/admin/slot', ...authz, creaSlot);
 router.put('/admin/slot/:idSlot', ...authz, modificaSlot);
 router.delete('/admin/slot/:idSlot', ...authz, eliminaSlot);
 router.get('/admin/slot', ...authz, slotFiltriSchema, handleValidationErrors, getSlotGlobali);
+router.get('/admin/prenotazioni', ...authz, getAllPrenotazioni);
+router.put('/admin/prenotazioni/:id/stato', ...authz, aggiornaStatoPrenotazione);
+router.delete('/admin/prenotazioni/:id', ...authz, eliminaPrenotazione);
 router.get('/admin/giorni-bloccati', authenticate, getGiorniBloccati);
 router.post('/admin/giorni-bloccati', ...authz, bloccaGiornoSchema, handleValidationErrors, bloccaGiorno);
 router.delete('/admin/giorni-bloccati/:id', ...authz, sbloccaGiorno);

@@ -64,6 +64,24 @@ export interface GiornoBloccato {
   creatoIl: string;
 }
 
+export interface PrenotazioneAdmin {
+  id: string;
+  studente: { matricola: string; nome: string; cognome: string; email: string };
+  docente: { id: string; nome: string; cognome: string; email: string };
+  slot: { data: string; oraInizio: string; oraFine: string };
+  argomento: string;
+  descrizione?: string | null;
+  stato: string;
+  dataPrenotazione: string;
+  documentiCount: number;
+}
+
+export interface FiltriPrenotazioni {
+  stato?: string;
+  docenteId?: string;
+  data?: string;
+}
+
 export interface FiltriSlot {
   docenteId?: string;
   data?: string;
@@ -123,6 +141,26 @@ export class AdminService {
 
   sbloccaGiorno(id: string): Observable<void> {
     return this.http.delete<void>(`api/admin/giorni-bloccati/${id}`);
+  }
+
+  aggiornaStatoPrenotazione(id: string, stato: string): Observable<any> {
+    return this.http.put(`api/admin/prenotazioni/${id}/stato`, { stato });
+  }
+
+  eliminaPrenotazione(id: string): Observable<void> {
+    return this.http.delete<void>(`api/admin/prenotazioni/${id}`);
+  }
+
+  getPrenotazioni(filtri?: FiltriPrenotazioni): Observable<PrenotazioneAdmin[]> {
+    let params = '';
+    if (filtri) {
+      const parts: string[] = [];
+      if (filtri.stato) parts.push(`stato=${filtri.stato}`);
+      if (filtri.docenteId) parts.push(`docenteId=${filtri.docenteId}`);
+      if (filtri.data) parts.push(`data=${filtri.data}`);
+      if (parts.length) params = `?${parts.join('&')}`;
+    }
+    return this.http.get<PrenotazioneAdmin[]>(`api/admin/prenotazioni${params}`);
   }
 
   getSlotGlobali(filtri?: FiltriSlot): Observable<SlotGriglia[]> {

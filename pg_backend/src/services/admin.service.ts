@@ -428,6 +428,69 @@ export async function sbloccaGiorno(id: string): Promise<void> {
   await prisma.giornoBloccato.delete({ where: { id_giorno: id } });
 }
 
+export interface PrenotazioneAdmin {
+  id: string;
+  studente: { matricola: string; nome: string; cognome: string; email: string };
+  docente: { id: string; nome: string; cognome: string; email: string };
+  slot: { data: string; oraInizio: string; oraFine: string };
+  argomento: string;
+  descrizione?: string | null;
+  stato: string;
+  dataPrenotazione: string;
+  documentiCount: number;
+}
+
+export async function getAllPrenotazioni(filtri?: {
+  stato?: string;
+  docenteId?: string;
+  data?: string;
+}): Promise<PrenotazioneAdmin[]> {
+  const where: any = {};
+
+  if (filtri?.stato) where.stato_prenotazione = filtri.stato;
+  if (filtri?.docenteId) where.slot = { id_docente: filtri.docenteId };
+  if (filtri?.data) where.slot = { ...where.slot, data: new Date(filtri.data) };
+
+  const rows = await prisma.prenotazione.findMany({
+    where,
+    include: {
+      studente: { select: { matricola: true, nome: true, cognome: true, email: true } },
+      slot: {
+        include: {
+          docente: { select: { id_docente: true, nome: true, cognome: true, email: true } },
+        },
+      },
+      documenti: { select: { id_documento: true } },
+    },
+    orderBy: { data_prenotazione: 'desc' },
+  });
+
+  const fmtDate = (d: Date) => d.toISOString().split('T')[0] ?? '';
+  const fmtTime = (d: Date) => (d.toISOString().split('T')[1] ?? '').substring(0, 5);
+
+  return rows.map((r) => ({
+    id: r.id_prenotazione,
+    studente: {
+      matricola: r.studente.matricola, nome: r.studente.nome,
+      cognome: r.studente.cognome, email: r.studente.email,
+    },
+    docente: {
+      id: r.slot.docente.id_docente, nome: r.slot.docente.nome,
+      cognome: r.slot.docente.cognome, email: r.slot.docente.email,
+    },
+    slot: {
+      data: fmtDate(r.slot.data),
+      oraInizio: fmtTime(r.slot.ora_inizio),
+      oraFine: fmtTime(r.slot.ora_fine),
+    },
+    argomento: r.argomento,
+    descrizione: r.descrizione,
+    stato: r.stato_prenotazione,
+    dataPrenotazione: r.data_prenotazione.toISOString(),
+    documentiCount: r.documenti.length,
+  }));
+}
+
 export async function getSlotGlobali(filtri?: {
   docenteId?: string;
   data?: string;

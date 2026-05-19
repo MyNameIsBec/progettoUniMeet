@@ -20,6 +20,12 @@ function getTransporter(): nodemailer.Transporter | null {
     auth: { user, pass },
   });
 
+  transporter.verify().then(() => {
+    console.log('[EMAIL] Connessione SMTP verificata con successo');
+  }).catch((err) => {
+    console.error('[EMAIL] ERRORE connessione SMTP — credenziali o server non validi:', err.message);
+  });
+
   return transporter;
 }
 
@@ -33,12 +39,17 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     return;
   }
 
-  await t.sendMail({
-    from: process.env.EMAIL_FROM || 'noreply@unimeet.it',
-    to,
-    subject,
-    html,
-  });
+  try {
+    await t.sendMail({
+      from: process.env.EMAIL_FROM || 'noreply@unimeet.it',
+      to,
+      subject,
+      html,
+    });
+    console.log(`[EMAIL] Inviata a ${to} — oggetto: ${subject}`);
+  } catch (err) {
+    console.error(`[EMAIL] ERRORE invio a ${to}:`, err instanceof Error ? err.message : err);
+  }
 }
 
 export async function sendCodiceVerifica(email: string, codice: string, tipo: string): Promise<void> {
