@@ -1,15 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, IonButton, IonIcon, IonInput, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService } from '../../../core/services/auth';
-
-function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const pwd = group.get('password')?.value;
-  const confirm = group.get('confirmPassword')?.value;
-  return pwd === confirm ? null : { passwordMismatch: true };
-}
+import { passwordMatchValidator } from '../../../core/validators/password.validator';
 
 @Component({
   selector: 'app-reset-password',

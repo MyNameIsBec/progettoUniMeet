@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
-import { FAQ, Bacheca, Studente } from '../../../core/models/interfacce';
+import { FAQ } from '../../../core/models/interfacce';
 import { BachecaService } from '../../../core/services/bacheca';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';

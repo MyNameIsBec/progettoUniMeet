@@ -85,9 +85,11 @@
             <ion-icon name="school-outline" class="field-icon"></ion-icon>
             <ion-input formControlName="corsoDiStudi" placeholder="Es. Informatica" class="field-input"></ion-input>
           </div>
-          <span class="field-error-msg" *ngIf="corsoDiStudi.invalid && corsoDiStudi.touched">
-            <ng-container *ngIf="corsoDiStudi.errors?.['required']">Il corso di studi è obbligatorio</ng-container>
+          @if (corsoDiStudi.invalid && corsoDiStudi.touched) {
+          <span class="field-error-msg">
+            @if (corsoDiStudi.errors?.['required']) { Il corso di studi è obbligatorio }
           </span>
+          }
         </div>
         <div class="field-group">
           <label class="field-label">Password</label>

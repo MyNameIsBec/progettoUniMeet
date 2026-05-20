@@ -55,9 +55,9 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         { etichetta: 'Dashboard', percorso: '/dashboard-docente', icona: 'home-outline', esatto: true },
         { etichetta: 'I miei slot', percorso: '/gestione-slot', icona: 'calendar-outline' },
         { etichetta: 'Prenotazioni', percorso: '/prenotazioni-ricevute', icona: 'list-outline' },
-        { etichetta: 'Bacheca', percorso: '/bacheca-docente', icona: 'help-circle-outline' },
+        { etichetta: 'Documenti', percorso: '/documenti-docente', icona: 'folder-open-outline' },
+        { etichetta: 'Bacheche', percorso: '/bacheche-docente', icona: 'help-circle-outline' },
         { etichetta: 'Statistiche', percorso: '/statistiche-docente', icona: 'bar-chart-outline' },
-        { etichetta: 'Profilo', percorso: '/profilo-docente', icona: 'person-outline' },
       ];
     }
     else if (role === 'studente') {

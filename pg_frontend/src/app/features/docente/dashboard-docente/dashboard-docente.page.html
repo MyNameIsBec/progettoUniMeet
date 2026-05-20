@@ -1,9 +1,325 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="secondary">
-    <ion-title>UniMeet Docente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-dashboard-layout>
 
-<ion-content [fullscreen]="true">
-  <ion-router-outlet></ion-router-outlet>
-</ion-content>
+  <!-- HEADER PAGINA -->
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Dashboard</span>
+      <h1>Bentornato/a<br><span class="hero-name">Prof. {{ nomeDocente }}</span></h1>
+      <p>Gestisci i tuoi ricevimenti, controlla le prenotazioni degli studenti e monitora l’andamento delle statistiche.</p>
+    </div>
+
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="calendar-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Area Docente</span>
+        <strong>I tuoi ricevimenti</strong>
+        <small>Gestione slot e prenotazioni</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-grid">
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+
+        <div class="summary-icon blue">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+        </div>
+
+        <h3>Prenotazioni oggi</h3>
+        <strong>{{ prenotazioniOggiCount }}</strong>
+        <p>ricevimenti programmati</p>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+
+        <div class="summary-icon green">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+        </div>
+
+        <h3>Slot disponibili</h3>
+        <strong>{{ slotDisponibiliCount }}</strong>
+        <p>ancora prenotabili</p>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+
+        <div class="summary-icon orange">
+          <ion-icon name="hourglass-outline"></ion-icon>
+        </div>
+
+        <h3>Richieste in attesa</h3>
+        <strong>{{ richiesteInAttesaCount }}</strong>
+        <p>da confermare</p>
+
+      </ion-card-content>
+    </ion-card>
+
+  </section>
+
+  <!-- PRENOTAZIONI + FAQ -->
+  <section class="dashboard-bottom-grid">
+
+    <!-- COLONNA SINISTRA -->
+    <div class="left-column">
+
+      <!-- PROSSIMI RICEVIMENTI -->
+      <ion-card class="main-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="time-outline"></ion-icon>
+            Prossimi ricevimenti
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          @if (prossimiRicevimenti.length > 0) {
+          <div class="appointment-list">
+
+            @for (p of prossimiRicevimenti; track p.id) {
+            <div class="appointment-item">
+
+              <div class="student-avatar" [ngClass]="{'blue': p.stato === 'confermata', 'green': p.stato === 'in_attesa'}">
+                <span>{{ getIniziali(p.studente) }}</span>
+              </div>
+
+              <div class="appointment-info">
+                <h3>{{ p.studente }}</h3>
+                <p>{{ p.argomento }}</p>
+
+                <div class="appointment-meta">
+                  <span>
+                    <ion-icon name="calendar-outline"></ion-icon>
+                    {{ formattaData(p.data) }}
+                  </span>
+
+                  <span>
+                    <ion-icon name="time-outline"></ion-icon>
+                    {{ p.oraInizio }}
+                  </span>
+
+                  <span>
+                    <ion-icon name="location-outline"></ion-icon>
+                    {{ p.luogo }}
+                  </span>
+                </div>
+              </div>
+
+              <span class="status" [class.confirmed]="p.stato === 'confermata'" [class.waiting]="p.stato === 'in_attesa'">
+                {{ p.stato === 'confermata' ? 'Confermata' : 'In attesa' }}
+              </span>
+
+              <ion-button fill="outline" [routerLink]="['/dettaglio-prenotazione-docente', p.id]">
+                Dettagli
+              </ion-button>
+
+            </div>
+            }
+
+          </div>
+          } @else {
+          <div style="text-align: center; padding: 24px; font-weight: 700; color: #64748b;">
+            Nessun ricevimento programmato
+          </div>
+          }
+
+          <div class="card-footer-action">
+            <ion-button fill="clear" routerLink="/prenotazioni-ricevute">
+              Vedi tutte le prenotazioni
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- PRENOTAZIONI RECENTI -->
+      <ion-card class="main-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="list-outline"></ion-icon>
+            Prenotazioni ricevute recenti
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          @if (recentiPrenotazioni.length > 0) {
+          <table class="recent-table">
+
+            <thead>
+              <tr>
+                <th>Studente</th>
+                <th>Argomento</th>
+                <th>Data</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (p of recentiPrenotazioni; track p.id) {
+              <tr>
+                <td>{{ p.studente }}</td>
+                <td>{{ p.argomento }}</td>
+                <td>{{ formattaData(p.data) }}</td>
+                <td>
+                  <span class="table-status" [class.confirmed]="p.stato === 'confermata'" [class.waiting]="p.stato === 'in_attesa'" [class.completed]="p.stato === 'completata'">
+                    {{ p.stato === 'confermata' ? 'Confermata' : p.stato === 'in_attesa' ? 'In attesa' : 'Completata' }}
+                  </span>
+                </td>
+
+                <td class="table-actions">
+                  @if (p.stato === 'in_attesa') {
+                  <ion-button fill="clear" color="success" (click)="confermaPrenotazione(p.id)">
+                    Conferma
+                  </ion-button>
+                  }
+                  @if (p.stato !== 'in_attesa') {
+                  <ion-button fill="clear" [routerLink]="['/dettaglio-prenotazione-docente', p.id]">
+                    Dettagli
+                  </ion-button>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+
+          </table>
+          } @else {
+          <div style="text-align: center; padding: 24px; font-weight: 700; color: #64748b;">
+            Nessuna prenotazione recente
+          </div>
+          }
+
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <!-- COLONNA DESTRA -->
+    <aside class="right-column">
+
+      <!-- GESTIONE SLOT -->
+      <ion-card class="side-card slot-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            Gestione slot
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <p>
+            Crea, modifica o elimina gli slot di ricevimento disponibili per gli studenti.
+          </p>
+
+          @if (recentiSlots.length > 0) {
+          <div class="slot-list">
+
+            @for (s of recentiSlots; track s.id) {
+            <div class="slot-item">
+              <div>
+                <strong>{{ getGiornoSettimana(s.data) }}</strong>
+                <span>{{ formattaData(s.data) }} &bull; {{ s.oraInizio }} - {{ s.oraFine }}</span>
+              </div>
+
+              <small [class.available]="s.disponibilita" [class.full]="!s.disponibilita">
+                {{ s.disponibilita ? 'Disponibile' : 'Occupato' }}
+              </small>
+            </div>
+            }
+
+          </div>
+          } @else {
+          <div style="text-align: center; padding: 12px; font-weight: 700; color: #64748b;">
+            Nessuno slot attivo programmato
+          </div>
+          }
+
+          <ion-button expand="block" routerLink="/gestione-slot">
+            Gestisci slot
+          </ion-button>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- STATISTICHE -->
+      <ion-card class="side-card stats-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="stats-chart-outline"></ion-icon>
+            Statistiche rapide
+          </ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <div class="progress-box">
+            <div class="progress-circle" [style.background]="'conic-gradient(#2563eb 0 ' + riempimentoMedio + '%, #e2e8f0 ' + riempimentoMedio + '% 100%)'">
+              <span>{{ riempimentoMedio }}%</span>
+            </div>
+
+            <div>
+              <h3>Riempimento slot</h3>
+              <p>Media degli slot occupati questa settimana.</p>
+            </div>
+          </div>
+
+          <div class="topics-list">
+            <h3>Argomenti più richiesti</h3>
+
+            @for (a of argomentiRichiesti; track a.nome) {
+            <div class="topic-row">
+              <span>{{ a.nome }}</span>
+              <strong>{{ a.percentuale }}</strong>
+            </div>
+            }
+          </div>
+
+          <ion-button expand="block" fill="outline" routerLink="/statistiche-docente">
+            Apri statistiche
+          </ion-button>
+
+        </ion-card-content>
+      </ion-card>
+
+
+
+      <!-- BACHECA FAQ -->
+      <ion-card class="side-card faq-card">
+        <ion-card-content>
+
+          <div class="faq-icon">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </div>
+
+          <h3>Bacheche docenti</h3>
+
+          <p>
+            Gestisci le domande frequenti e pubblica risposte utili per gli studenti.
+          </p>
+
+          <ion-button expand="block" routerLink="/bacheche-docente">
+            Apri bacheche
+          </ion-button>
+
+        </ion-card-content>
+      </ion-card>
+
+    </aside>
+
+  </section>
+
+</app-dashboard-layout>

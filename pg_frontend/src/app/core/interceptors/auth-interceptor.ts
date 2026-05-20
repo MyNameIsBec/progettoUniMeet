@@ -3,11 +3,12 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth';
+import { environment } from '../../../environments/environment';
 
 export const intercettoreAutenticazione: HttpInterceptorFn = (richiesta, next) => {
   const router = inject(Router);
   const servizioAuth = inject(AuthService);
-  const urlBaseApi = 'http://localhost:5000'; // URL del server backend
+  const urlBaseApi = environment.apiUrl;
 
   const tokenAutenticazione = servizioAuth.getToken();
   const eUnPercorsoAssoluto = richiesta.url.startsWith('http://') || richiesta.url.startsWith('https://');

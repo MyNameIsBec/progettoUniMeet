@@ -1,0 +1,224 @@
+:host {
+    --background-page: #f8fbff;
+    --primary-blue: #2563eb;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    color: var(--text-dark);
+}
+
+/* FILTRI */
+.filtri-bar {
+    margin: 0 34px 28px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filtro-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ion-icon {
+        font-size: 1.1rem;
+    }
+
+    &:hover {
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        color: var(--primary-blue);
+    }
+
+    &.active {
+        background: var(--primary-blue);
+        border-color: var(--primary-blue);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+    }
+}
+
+/* SEZIONE DOCUMENTI */
+.documenti-section {
+    margin: 0 34px 48px;
+}
+
+.documenti-card {
+    --background: #ffffff;
+    --box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    --border-radius: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 28px;
+    margin: 0 !important;
+
+    ion-card-content {
+        padding: 8px 0 0;
+    }
+}
+
+/* LISTA */
+.doc-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 32px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s ease;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: #f8fbff;
+    }
+}
+
+/* ICONA DOCUMENTO */
+.doc-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+        font-size: 26px;
+    }
+
+    &.pdf {
+        background: #fff1f2;
+        ion-icon { color: #e11d48; }
+    }
+
+    &.doc {
+        background: #eff6ff;
+        ion-icon { color: #2563eb; }
+    }
+
+    &.altro {
+        background: #f3e8ff;
+        ion-icon { color: #7c3aed; }
+    }
+}
+
+/* INFO DOCUMENTO */
+.doc-info {
+    min-width: 0;
+
+    h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+        font-weight: 850;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.doc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        font-weight: 700;
+
+        ion-icon {
+            font-size: 1rem;
+            color: var(--primary-blue);
+        }
+    }
+}
+
+/* AZIONI */
+.doc-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+
+    ion-button {
+        --border-radius: 10px;
+        text-transform: none;
+        font-weight: 800;
+    }
+}
+
+/* STATO VUOTO */
+.empty-state {
+    padding: 80px 32px;
+    text-align: center;
+    color: var(--text-muted);
+
+    ion-icon {
+        font-size: 64px;
+        color: #cbd5e1;
+        display: block;
+        margin: 0 auto 24px;
+    }
+
+    h3 {
+        margin: 0 0 10px;
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--text-dark);
+    }
+
+    p {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .filtri-bar,
+    .documenti-section {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .doc-item {
+        grid-template-columns: 48px 1fr;
+        padding: 18px 20px;
+        row-gap: 14px;
+
+        .doc-actions {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .filtri-bar {
+        gap: 8px;
+    }
+
+    .filtro-btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+}

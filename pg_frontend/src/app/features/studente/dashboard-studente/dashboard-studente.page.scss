@@ -17,20 +17,20 @@
 }
 
 .summary-card {
-    margin: 0;
-    border-radius: 28px;
-    background: #ffffff;
+    --background: #ffffff;
+    --box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    --border-radius: 28px;
+    margin: 0 !important;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
+        --box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
     }
 
     ion-card-content {
-        padding: 32px;
+        padding: 32px !important;
         min-height: 260px;
         display: flex;
         flex-direction: column;
@@ -157,11 +157,11 @@
 
 .appointments-card,
 .faq-card {
-    margin: 0;
-    border-radius: 28px;
-    background: #ffffff;
+    --background: #ffffff;
+    --box-shadow: 0 14px 35px rgba(15, 23, 42, 0.05);
+    --border-radius: 28px;
+    margin: 0 !important;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.05);
 
     ion-card-header {
         padding: 32px 32px 16px;

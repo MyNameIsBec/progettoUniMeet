@@ -95,7 +95,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/docente/dettaglio-prenotazione-docente/dettaglio-prenotazione-docente.page').then(m => m.DettaglioPrenotazioneDocentePage)
   },
   {
-    path: 'bacheca-docente',
+    path: 'bacheche-docente',
     canActivate: [authGuard, roleGuard('docente')],
     loadComponent: () => import('./features/docente/bacheca-docente/bacheca-docente.page').then(m => m.BachecaDocentePage)
   },
@@ -108,6 +108,11 @@ export const routes: Routes = [
     path: 'profilo-docente',
     canActivate: [authGuard, roleGuard('docente')],
     loadComponent: () => import('./features/docente/profilo-docente/profilo-docente.page').then(m => m.ProfiloDocentePage)
+  },
+  {
+    path: 'documenti-docente',
+    canActivate: [authGuard, roleGuard('docente')],
+    loadComponent: () => import('./features/docente/documenti-docente/documenti-docente.page').then(m => m.DocumentiDocentePage)
   },
 
   // --- ADMIN ---

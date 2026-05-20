@@ -1,0 +1,98 @@
+<app-dashboard-layout>
+
+  <!-- HEADER -->
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Documenti</span>
+      <h1>I tuoi documenti</h1>
+      <p>Consulta e scarica tutti i file allegati dagli studenti nelle richieste di ricevimento.</p>
+    </div>
+
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="folder-open-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Archivio</span>
+        <strong>File ricevuti</strong>
+        <small>Apri o vai alla prenotazione</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTRI -->
+  <section class="filtri-bar">
+    <button class="filtro-btn" [class.active]="filtro === 'tutti'" (click)="setFiltro('tutti')">
+      <ion-icon name="layers-outline"></ion-icon>
+      Tutti
+    </button>
+    <button class="filtro-btn" [class.active]="filtro === 'pdf'" (click)="setFiltro('pdf')">
+      <ion-icon name="document-text-outline"></ion-icon>
+      PDF
+    </button>
+    <button class="filtro-btn" [class.active]="filtro === 'doc'" (click)="setFiltro('doc')">
+      <ion-icon name="document-outline"></ion-icon>
+      Word
+    </button>
+  </section>
+
+  <!-- LISTA DOCUMENTI -->
+  <section class="documenti-section">
+
+    @if (isLoading) {
+    <div class="empty-state">
+      <ion-icon name="hourglass-outline"></ion-icon>
+      <p>Caricamento documenti in corso…</p>
+    </div>
+    } @else if (documentiFiltrati.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="folder-open-outline"></ion-icon>
+      <h3>Nessun documento trovato</h3>
+      <p>Non ci sono documenti per il filtro selezionato.</p>
+    </div>
+    } @else {
+    <ion-card class="documenti-card">
+      <ion-card-content>
+        <div class="doc-list">
+          @for (doc of documentiFiltrati; track doc.id) {
+          <div class="doc-item">
+
+            <div class="doc-icon" [class.pdf]="doc.tipo === 'pdf'" [class.doc]="doc.tipo === 'doc'" [class.altro]="doc.tipo === 'altro'">
+              <ion-icon [name]="getIconaFile(doc.tipo)"></ion-icon>
+            </div>
+
+            <div class="doc-info">
+              <h3>{{ doc.nomeFile }}</h3>
+              <div class="doc-meta">
+                <span>
+                  <ion-icon name="person-outline"></ion-icon>
+                  {{ doc.studente }}
+                </span>
+                <span>
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  {{ doc.data }}
+                </span>
+              </div>
+            </div>
+
+            <div class="doc-actions">
+              <ion-button fill="solid" size="small" (click)="apriFile(doc.percorso)" [disabled]="!doc.percorso">
+                <ion-icon name="open-outline" slot="start"></ion-icon>
+                Apri
+              </ion-button>
+              <ion-button fill="outline" size="small" [routerLink]="['/dettaglio-prenotazione-docente', doc.prenotazioneId]">
+                <ion-icon name="eye-outline" slot="start"></ion-icon>
+                Prenotazione
+              </ion-button>
+            </div>
+
+          </div>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+    }
+
+  </section>
+
+</app-dashboard-layout>

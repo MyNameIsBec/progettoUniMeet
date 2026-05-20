@@ -69,9 +69,10 @@ export interface SlotRicevimento {
 export interface Documento {
   id: string;
   nomeFile: string;
-  tipo: string;
-  dimensione: number;
-  dataCaricamento: string;
+  tipo: 'pdf' | 'doc' | 'altro';
+  studente: string;
+  prenotazioneId: string;
+  data: string;
   percorso: string;
 }
 

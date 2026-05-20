@@ -122,6 +122,43 @@ body.dark {
   --ion-overlay-background-color: #1e293b;
   --ion-backdrop-color: #000000;
 
+  /* Override CSS custom properties defined inside :host of each page component.
+     body.dark [selector] ha specificità più alta di :host dentro il componente
+     quindi sovrascrive le variabili locali che bloccavano i colori in dark mode. */
+  app-dashboard-docente,
+  app-dashboard-studente,
+  app-dashboard-admin,
+  app-documenti-docente,
+  app-bacheca-docente,
+  app-bacheca-studente,
+  app-gestione-slot,
+  app-gestione-slot-admin,
+  app-gestione-utenti,
+  app-gestione-calendario,
+  app-gestione-prenotazioni-admin,
+  app-gestione-segnalazioni,
+  app-prenotazioni-ricevute,
+  app-statistiche-docente,
+  app-profilo-docente,
+  app-prenota,
+  app-elenco-docenti,
+  app-riepilogo-prenotazioni,
+  app-dettaglio-prenotazione,
+  app-dettaglio-prenotazione-docente,
+  app-profilo-studente,
+  app-notifiche,
+  app-segnalazione,
+  app-login,
+  app-registrazione,
+  app-recupera-password,
+  app-reset-password {
+    --background-page: #020617;
+    --primary-blue: #60a5fa;
+    --text-dark: #f1f5f9;
+    --text-muted: #94a3b8;
+    color: #f1f5f9;
+  }
+
   .premium-card,
   .profile-card,
   .form-card,
@@ -156,11 +193,15 @@ body.dark {
 
     h1,
     h2 {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     p {
-      color: #94a3b8;
+      color: #94a3b8 !important;
+    }
+
+    span {
+      color: #f1f5f9 !important;
     }
 
     .eyebrow {
@@ -371,48 +412,139 @@ body.dark {
   .summary-card h3,
   .summary-card h4,
   .appointments-card ion-card-title,
-  .faq-card ion-card-title {
+  .faq-card ion-card-title,
+  .main-card ion-card-title,
+  .side-card ion-card-title {
     color: #ffffff;
     font-weight: 900;
   }
 
   .summary-card,
+  .main-card,
+  .side-card,
   .appointments-card,
   .faq-card,
-  .appointment-item,
-  .faq-row {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  .documenti-card {
+    --background: #0f172a !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(37, 99, 235, 0.12) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
 
-    h3,
-    h4,
-    strong {
+    ion-card-title {
       color: #ffffff;
     }
 
-    p,
-    span {
-      color: #cbd5e1;
+    h3, h4, strong {
+      color: #ffffff;
+    }
+
+    p, span {
+      color: #94a3b8;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: #2563eb;
+      border-color: rgba(37, 99, 235, 0.3) !important;
     }
+  }
+
+  .appointment-item {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.05);
+
+    h3 { color: #ffffff; }
+    p { color: #94a3b8; }
+  }
+
+  .faq-row {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+
+    &:hover {
+      background: rgba(37, 99, 235, 0.1);
+      border-color: #2563eb;
+      color: #60a5fa;
+    }
+
+    ion-icon { color: #94a3b8; }
   }
 
   .faq-link {
     background: #2563eb;
     color: #ffffff;
 
-    ion-icon {
-      color: #ffffff;
-    }
+    ion-icon { color: #ffffff; }
+
+    &:hover { background: #1d4ed8; }
+  }
+
+  .filtro-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
 
     &:hover {
-      background: #1d4ed8;
+      background: rgba(37, 99, 235, 0.15);
+      border-color: #2563eb;
+      color: #60a5fa;
+    }
+
+    &.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
     }
   }
+
+  .doc-item {
+    border-color: rgba(255, 255, 255, 0.04);
+
+    &:hover { background: rgba(255, 255, 255, 0.03); }
+
+    h3 { color: #ffffff; }
+  }
+
+  .doc-meta span { color: #94a3b8; }
+
+  .slot-item {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.05);
+
+    strong { color: #ffffff; }
+    span { color: #94a3b8; }
+  }
+
+  .faq-card {
+    background: rgba(37, 99, 235, 0.08) !important;
+    border-color: rgba(37, 99, 235, 0.2) !important;
+
+    h3 { color: #ffffff; }
+    p { color: #94a3b8; }
+  }
+
+  .faq-icon {
+    background: rgba(37, 99, 235, 0.2);
+    ion-icon { color: #60a5fa; }
+  }
+
+  .status.confirmed, .table-status.confirmed { background: rgba(22, 163, 74, 0.2); color: #4ade80; }
+  .status.waiting, .table-status.waiting { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+  .table-status.completed { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+
+  .student-avatar.blue { background: #1d4ed8; }
+  .student-avatar.green { background: #15803d; }
+  .student-avatar.purple { background: #6d28d9; }
+
+  .summary-icon.blue { box-shadow: 0 8px 16px rgba(37, 99, 235, 0.4); }
+  .summary-icon.green { box-shadow: 0 8px 16px rgba(22, 163, 74, 0.4); }
+  .summary-icon.orange { box-shadow: 0 8px 16px rgba(217, 119, 6, 0.4); }
+  .summary-icon.purple { box-shadow: 0 8px 16px rgba(124, 58, 237, 0.4); }
+
+  .next-appointment h4 { color: #ffffff; }
+  .next-appointment p { color: #94a3b8; }
+  .next-appointment span { color: #cbd5e1; }
+
+  .card-footer-action ion-button { --color: #60a5fa; }
 
 
 
