@@ -63,6 +63,13 @@ export class TopbarComponent implements OnInit, OnDestroy {
     }
   }
 
+  getNotificheRoute(): string {
+    switch (this.ruoloUtente) {
+      case 'docente': return '/notifiche-docente';
+      default: return '/notifiche-studente';
+    }
+  }
+
   vaiAlProfilo() {
     this.router.navigate([this.getProfileRoute()]);
   }

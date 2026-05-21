@@ -62,6 +62,24 @@ export async function getDettagliDocente(id: string) {
       cognome: true,
       email: true,
       ufficio: true,
+      corsi: {
+        select: {
+          id_corso: true,
+          nome_corso: true,
+          cfu: true,
+          anno: true
+        }
+      },
+      corsi_di_studi: {
+        select: {
+          corso_di_studi: {
+            select: {
+              id_corso_di_studi: true,
+              nome: true
+            }
+          }
+        }
+      }
     },
   });
   if (!docente) throw new Error('Docente not found');
@@ -71,6 +89,16 @@ export async function getDettagliDocente(id: string) {
     cognome: docente.cognome,
     email: docente.email,
     ufficio: docente.ufficio,
+    corsi: docente.corsi?.map(c => ({
+      id: c.id_corso,
+      nome: c.nome_corso,
+      cfu: c.cfu,
+      anno: c.anno
+    })) ?? [],
+    corsiDiStudi: docente.corsi_di_studi?.map(cds => ({
+      id: cds.corso_di_studi.id_corso_di_studi,
+      nome: cds.corso_di_studi.nome
+    })) ?? []
   };
 }
 

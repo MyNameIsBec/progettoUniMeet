@@ -36,8 +36,9 @@ export class PrenotazioneService {
     return this.http.get<Prenotazione[]>(`${this.api}/docente/${idDocente}`);
   }
 
-  aggiornaStatoPrenotazione(id: string, stato: Prenotazione['stato']): Observable<Prenotazione> {
-    return this.http.put<Prenotazione>(`${this.api}/${id}/stato`, { stato });
+  aggiornaStatoPrenotazione(id: string, stato: string): Observable<Prenotazione> {
+    const statoUpper = stato.toUpperCase();
+    return this.http.put<Prenotazione>(`${this.api}/${id}/stato`, { stato: statoUpper });
   }
 
   puoAnnullare(dataSlot: string, limiteOre: number = 24): boolean {

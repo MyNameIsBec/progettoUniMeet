@@ -48,7 +48,7 @@
       <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
     </button>
 
-    <button class="notification-button" routerLink="/notifiche">
+    <button class="notification-button" [routerLink]="getNotificheRoute()">
       <ion-icon name="notifications-outline"></ion-icon>
     </button>
 

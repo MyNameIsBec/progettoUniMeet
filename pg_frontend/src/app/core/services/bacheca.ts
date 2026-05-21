@@ -26,10 +26,10 @@ export class BachecaService {
   }
 
   aggiornaFaq(idBacheca: string, faq: Partial<FAQ>): Observable<FAQ> {
-    return this.http.put<FAQ>(`/api/faq/${faq.id}`, faq)
+    return this.http.put<FAQ>(`${this.authService.getApiUrl()}/api/faq/${faq.id}`, faq)
   }
 
   eliminaFaq(idFaq: string): Observable<void> {
-    return this.http.delete<void>(`/api/faq/${idFaq}`)
+    return this.http.delete<void>(`${this.authService.getApiUrl()}/api/faq/${idFaq}`)
   }
 }

@@ -63,9 +63,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/studente/bacheca-studente/bacheca-studente.page').then(m => m.BachecaStudentePage)
   },
   {
-    path: 'notifiche',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/studente/notifiche/notifiche.page').then(m => m.NotifichePage)
+    path: 'notifiche-studente',
+    canActivate: [authGuard, roleGuard('studente')],
+    loadComponent: () => import('./features/studente/notifiche-studente/notifiche-studente.page').then(m => m.NotificheStudentePage)
   },
   {
     path: 'segnalazione',
@@ -97,7 +97,12 @@ export const routes: Routes = [
   {
     path: 'bacheche-docente',
     canActivate: [authGuard, roleGuard('docente')],
-    loadComponent: () => import('./features/docente/bacheca-docente/bacheca-docente.page').then(m => m.BachecaDocentePage)
+    loadComponent: () => import('./features/docente/bacheche-docente/bacheche-docente.page').then(m => m.BachecheDocentePage)
+  },
+  {
+    path: 'notifiche-docente',
+    canActivate: [authGuard, roleGuard('docente')],
+    loadComponent: () => import('./features/docente/notifiche-docente/notifiche-docente.page').then(m => m.NotificheDocentePage)
   },
   {
     path: 'statistiche-docente',

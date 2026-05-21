@@ -13,6 +13,26 @@ const SALT_ROUNDS = 10;
 async function main() {
   console.log('🌱 Seeding database...\n');
 
+  // Pulizia preliminare per rendere il seed riproducibile
+  console.log('🧹 Clearing existing database data...');
+  await prisma.codiceVerifica.deleteMany({});
+  await prisma.giornoBloccato.deleteMany({});
+  await prisma.notifica.deleteMany({});
+  await prisma.documento.deleteMany({});
+  await prisma.prenotazione.deleteMany({});
+  await prisma.luogoRicevimento.deleteMany({});
+  await prisma.slotRicevimento.deleteMany({});
+  await prisma.segnalazione.deleteMany({});
+  await prisma.fAQ.deleteMany({});
+  await prisma.bacheca.deleteMany({});
+  await prisma.corso.deleteMany({});
+  await prisma.docenteCorsoDiStudi.deleteMany({});
+  await prisma.amministratore.deleteMany({});
+  await prisma.studente.deleteMany({});
+  await prisma.docente.deleteMany({});
+  await prisma.corsoDiStudi.deleteMany({});
+  console.log('✨ Database cleared.\n');
+
   const PW = await bcrypt.hash('password123', SALT_ROUNDS);
 
   // ──────────────────────────── CORSO DI STUDI ────────────────────────────

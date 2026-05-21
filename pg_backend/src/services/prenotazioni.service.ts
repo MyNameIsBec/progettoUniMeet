@@ -234,7 +234,7 @@ export async function getPrenotazioneById(id: string) {
   const prenotazione = await prisma.prenotazione.findUnique({
     where: { id_prenotazione: id },
     include: {
-      studente: { select: { matricola: true, nome: true, cognome: true } },
+      studente: { select: { matricola: true, nome: true, cognome: true, email: true } },
       slot: {
         include: { docente: { include: { corsi: { select: { nome_corso: true } } } }, luogo: true },
       },
@@ -249,6 +249,8 @@ export async function getPrenotazioneById(id: string) {
   return {
     id: prenotazione.id_prenotazione,
     studenteId: prenotazione.matricola_studente,
+    studente: `${prenotazione.studente.nome} ${prenotazione.studente.cognome}`,
+    studenteEmail: prenotazione.studente.email,
     slotId: prenotazione.id_slot,
     docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
     materia,

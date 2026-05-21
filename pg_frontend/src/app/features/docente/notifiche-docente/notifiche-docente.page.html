@@ -1,0 +1,139 @@
+<app-dashboard-layout>
+  <!-- PAGE HEADER -->
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Centro Avvisi</span>
+      <h1>Le tue notifiche</h1>
+      <p>Rimani aggiornato sulle prenotazioni, ricevi comunicazioni dal dipartimento e gestisci i promemoria per i tuoi ricevimenti.</p>
+    </div>
+
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="mail-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Centro Avvisi</span>
+        <strong>Ricevimenti e Avvisi</strong>
+        <small>Comunicazioni e avvisi</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIEPILOGO -->
+  <section class="notifications-summary-grid">
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon blue">
+          <ion-icon name="mail-unread-outline"></ion-icon>
+        </div>
+        <div>
+          <span>Non lette</span>
+          <strong>{{ info.nonLette }}</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon orange">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div>
+          <span>Promemoria</span>
+          <strong>{{ info.promemoria }}</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="summary-card">
+      <ion-card-content>
+        <div class="summary-icon green">
+          <ion-icon name="megaphone-outline"></ion-icon>
+        </div>
+        <div>
+          <span>Aggiornamenti</span>
+          <strong>{{ info.aggiornamenti }}</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </section>
+
+  <!-- FILTRI -->
+  <section class="filters-row">
+    @for (f of ['Tutte', 'Non lette', 'Promemoria', 'Aggiornamenti']; track f) {
+      <button 
+        class="filter-button" 
+        [class.active]="filtroAttivo === f"
+        (click)="applicaFiltri(f)">
+        {{ f }}
+      </button>
+    }
+  </section>
+
+  <!-- CONTENUTO PRINCIPALE -->
+  <section class="notifications-layout">
+    <div class="left-column">
+      <ion-card class="notifications-list-card">
+        <ion-card-content>
+          @if (filtriNotifiche.length === 0) {
+            <div class="empty-state">
+              <ion-icon name="notifications-off-outline"></ion-icon>
+              <p>Non ci sono notifiche da visualizzare</p>
+            </div>
+          } @else {
+            @for (n of filtriNotifiche; track n.id) {
+              <div 
+                class="notification-item" 
+                [class.unread]="!n.letta"
+                (click)="segnaComeLetta(n)">
+                @if (!n.letta) {
+                  <span class="unread-dot"></span>
+                }
+                <div class="notification-icon" [ngClass]="getIconColor(n.tipo)">
+                  <ion-icon [name]="getIconName(n.tipo)"></ion-icon>
+                </div>
+                <div class="notification-content">
+                  <h3>{{ n.titolo }}</h3>
+                  <p>{{ n.messaggio }}</p>
+                  <small>{{ n.dataInvio | date:'dd/MM/yyyy HH:mm' }}</small>
+                </div>
+                <ion-button fill="clear" color="primary">
+                  <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          }
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <aside class="right-column">
+      <ion-card class="management-card">
+        <ion-card-header>
+          <ion-card-title>Gestione</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <button class="management-row" (click)="segnaTutteComeLette()">
+            <ion-icon name="mail-open-outline"></ion-icon>
+            <span>Segna tutte come lette</span>
+          </button>
+          <button class="management-row" (click)="cancellaNotificheLette()">
+            <ion-icon name="trash-outline"></ion-icon>
+            <span>Cancella notifiche lette</span>
+          </button>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="info-card">
+        <ion-card-content>
+          <div class="info-icon">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+          <p>
+            I promemoria ti aiutano a tracciare le richieste di ricevimento e le attività del tuo calendario.
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </aside>
+  </section>
+</app-dashboard-layout>

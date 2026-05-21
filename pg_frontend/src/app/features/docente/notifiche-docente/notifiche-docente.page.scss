@@ -6,8 +6,6 @@
     color: var(--text-dark);
 }
 
-/* HEADER */
-
 /* RIEPILOGO */
 .notifications-summary-grid {
     margin: 0 34px 32px;
@@ -274,6 +272,8 @@
     background: transparent;
     transition: all 0.3s ease;
     cursor: pointer;
+    border: none;
+    outline: none;
 
     &:hover {
         background: #f8fbff;

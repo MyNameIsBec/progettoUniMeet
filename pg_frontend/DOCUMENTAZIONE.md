@@ -84,7 +84,7 @@ Tutte le rotte sono **lazy-loaded**. Le pagine autenticate usano il componente `
 | `/gestione-slot` | GestioneSlotPage | auth + role('docente') | Docente |
 | `/prenotazioni-ricevute` | PrenotazioniRicevutePage | auth + role('docente') | Docente |
 | `/dettaglio-prenotazione-docente/:id` | DettaglioPrenotazioneDocentePage | auth + role('docente') | Docente |
-| `/bacheca-docente` | BachecaDocentePage | auth + role('docente') | Docente |
+| `/bacheche-docente` | BachecheDocentePage | auth + role('docente') | Docente |
 | `/statistiche-docente` | StatisticheDocentePage | auth + role('docente') | Docente |
 | `/profilo-docente` | ProfiloDocentePage | auth + role('docente') | Docente |
 | `/dashboard-admin` | DashboardAdminPage | auth + role('amministratore') | Admin |
@@ -156,7 +156,7 @@ File: `src/app/core/models/interfacce.ts`
 | GestioneSlotPage | Creazione/gestione slot disponibili |
 | PrenotazioniRicevutePage | Elenco prenotazioni ricevute |
 | DettaglioPrenotazioneDocentePage | Dettaglio prenotazione |
-| BachecaDocentePage | Bacheca personale |
+| BachecheDocentePage | Gestione bacheche corsi |
 | StatisticheDocentePage | Statistiche |
 | ProfiloDocentePage | Modifica profilo |
 

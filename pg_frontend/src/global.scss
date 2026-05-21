@@ -408,9 +408,10 @@ ion-button {
     &.full-width {
         grid-column: 1 / -1;
     }
+}
 
-    .premium-hero {
-        margin: 48px 34px 32px;
+.premium-hero {
+    margin: 48px 34px 32px;
         padding: 42px;
         border-radius: 32px;
         background: linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
@@ -593,4 +594,3 @@ ion-button {
             text-align: center;
         }
     }
-}

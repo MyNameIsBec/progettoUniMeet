@@ -5,15 +5,31 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
 import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
 
+import { addIcons } from 'ionicons';
+import {
+  mailOutline,
+  mailUnreadOutline,
+  timeOutline,
+  megaphoneOutline,
+  notificationsOffOutline,
+  chevronForwardOutline,
+  mailOpenOutline,
+  trashOutline,
+  informationCircleOutline,
+  notificationsOutline,
+  checkmarkCircleOutline,
+  documentTextOutline
+} from 'ionicons/icons';
+
 @Component({
-  selector: 'app-notifiche',
-  templateUrl: './notifiche.page.html',
-  styleUrls: ['./notifiche.page.scss'],
+  selector: 'app-notifiche-docente',
+  templateUrl: './notifiche-docente.page.html',
+  styleUrls: ['./notifiche-docente.page.scss'],
   standalone: true,
   imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent]
 })
 
-export class NotifichePage implements OnInit {
+export class NotificheDocentePage implements OnInit {
   notifiche: Notifica[] = [];
   filtriNotifiche: Notifica[] = [];
   filtroAttivo: string = 'Tutte';
@@ -24,7 +40,25 @@ export class NotifichePage implements OnInit {
     aggiornamenti: 0
   };
 
-  constructor(private notificaService: NotificaService, private authService: AuthService) { }
+  constructor(
+    private notificaService: NotificaService,
+    private authService: AuthService
+  ) {
+    addIcons({
+      mailOutline,
+      mailUnreadOutline,
+      timeOutline,
+      megaphoneOutline,
+      notificationsOffOutline,
+      chevronForwardOutline,
+      mailOpenOutline,
+      trashOutline,
+      informationCircleOutline,
+      notificationsOutline,
+      checkmarkCircleOutline,
+      documentTextOutline
+    });
+  }
 
   ngOnInit() {
     this.caricaNotifiche();
@@ -32,20 +66,20 @@ export class NotifichePage implements OnInit {
 
   caricaNotifiche() {
     const user = this.authService.getCurrentUser();
-    let matricola = "";
+    let docenteId = "";
     if (user != null) {
-      matricola = user.id;
+      docenteId = user.id;
     } else {
       return
     }
 
-    this.notificaService.getNotifiche(matricola).subscribe({
+    this.notificaService.getNotifiche(docenteId).subscribe({
       next: (data) => {
         this.notifiche = data;
         this.applicaFiltri(this.filtroAttivo);
         this.aggiornaStatistiche();
       },
-      error: (err) => console.error('Errore nel caricamento notifiche', err)
+      error: (err) => console.error('Errore nel caricamento notifiche docente', err)
     });
   }
 
@@ -84,15 +118,15 @@ export class NotifichePage implements OnInit {
 
   segnaTutteComeLette() {
     const user = this.authService.getCurrentUser();
-    let matricola = "";
+    let docenteId = "";
     if (user != null) {
-      matricola = user.id;
+      docenteId = user.id;
     } else {
       return
     }
-    if (!matricola) return;
+    if (!docenteId) return;
 
-    this.notificaService.segnaTutteComeLette(matricola).subscribe(() => {
+    this.notificaService.segnaTutteComeLette(docenteId).subscribe(() => {
       this.notifiche.forEach(n => n.letta = true);
       this.aggiornaStatistiche();
     });
@@ -100,15 +134,15 @@ export class NotifichePage implements OnInit {
 
   cancellaNotificheLette() {
     const user = this.authService.getCurrentUser();
-    let matricola = "";
+    let docenteId = "";
     if (user != null) {
-      matricola = user.id;
+      docenteId = user.id;
     } else {
       return
     }
-    if (!matricola) return;
+    if (!docenteId) return;
 
-    this.notificaService.cancellaNotificheLette(matricola).subscribe(() => {
+    this.notificaService.cancellaNotificheLette(docenteId).subscribe(() => {
       this.notifiche = this.notifiche.filter(n => !n.letta);
       this.applicaFiltri(this.filtroAttivo);
       this.aggiornaStatistiche();

@@ -27,6 +27,7 @@ export interface Docente extends Utente {
   descrizione?: string;
   prossimoSlot?: string;
   corsoDiStudi: string[];
+  corsiDiStudi?: { id: string; nome: string }[];
 }
 
 export interface Amministratore extends Utente {
@@ -91,6 +92,7 @@ export interface Prenotazione {
   documenti?: Documento[];
   luogo: string;
   luogoRicevimento?: LuogoRicevimento;
+  studente?: string;
 }
 
 export interface Bacheca {
