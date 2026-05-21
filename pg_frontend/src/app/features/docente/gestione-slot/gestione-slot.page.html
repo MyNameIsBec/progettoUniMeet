@@ -1,13 +1,656 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>gestione-slot</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="gestione-slot-page">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">gestione-slot</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <h1>UniMeet</h1>
+            <span>Area Docente</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a routerLink="/dashboard-docente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/gestione-slot" class="active">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Gestione slot</span>
+        </a>
+
+        <a routerLink="/prenotazioni-ricevute">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Prenotazioni ricevute</span>
+        </a>
+
+        <a routerLink="/bacheca-docente">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>Bacheca / FAQ</span>
+        </a>
+
+        <a routerLink="/statistiche-docente">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          <span>Statistiche</span>
+        </a>
+
+        <a routerLink="/profilo-docente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <!-- LOGO MOBILE -->
+        <div class="mobile-logo">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <strong>UniMeet</strong>
+            <span>Area Docente</span>
+          </div>
+        </div>
+
+        <!-- MENU MOBILE -->
+        <nav class="mobile-top-menu">
+
+          <a routerLink="/dashboard-docente">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Dashboard</span>
+          </a>
+
+          <a routerLink="/gestione-slot" class="active">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>Slot</span>
+          </a>
+
+          <a routerLink="/prenotazioni-ricevute">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+            <span>Prenotazioni</span>
+          </a>
+
+          <a routerLink="/bacheca-docente">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>FAQ</span>
+          </a>
+
+          <a routerLink="/statistiche-docente">
+            <ion-icon name="stats-chart-outline"></ion-icon>
+            <span>Statistiche</span>
+          </a>
+
+        </nav>
+
+        <!-- AZIONI DESKTOP -->
+        <div class="topbar-actions">
+
+          <button class="notification-button">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-badge">5</span>
+          </button>
+
+          <div class="teacher-profile-mini">
+            <div class="teacher-avatar-small">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Prof. Mario Rossi</strong>
+              <span>Docente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- HEADER PAGINA -->
+      <section class="page-header">
+        <div>
+          <span class="eyebrow">Ricevimenti</span>
+
+          <h2>Gestione slot</h2>
+
+          <p>
+            Crea, modifica o elimina gli slot di ricevimento disponibili per gli studenti,
+            specificando data, orario, durata e luogo dell’incontro.
+          </p>
+        </div>
+
+        <ion-button>
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Nuovo slot
+        </ion-button>
+      </section>
+
+      <!-- RIEPILOGO SLOT -->
+      <section class="slot-summary-grid">
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon blue">
+              <ion-icon name="calendar-clear-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Slot attivi</h3>
+              <strong>12</strong>
+              <p>programmati questa settimana</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Disponibili</h3>
+              <strong>8</strong>
+              <p>ancora prenotabili</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon orange">
+              <ion-icon name="people-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Parzialmente pieni</h3>
+              <strong>3</strong>
+              <p>con prenotazioni presenti</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon red">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Non disponibili</h3>
+              <strong>1</strong>
+              <p>annullato o chiuso</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+      </section>
+
+      <!-- CONTENUTO PRINCIPALE -->
+      <section class="slot-layout">
+
+        <!-- COLONNA SINISTRA -->
+        <div class="slot-left-column">
+
+          <!-- CREA / MODIFICA SLOT -->
+          <ion-card class="form-card">
+
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="create-outline"></ion-icon>
+                Crea nuovo slot
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="slot-form-grid">
+
+                <div class="custom-field">
+                  <label>Giorno</label>
+
+                  <ion-item>
+                    <ion-input type="date" value="2026-06-12"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="custom-field">
+                  <label>Ora inizio</label>
+
+                  <ion-item>
+                    <ion-input type="time" value="10:00"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="custom-field">
+                  <label>Ora fine</label>
+
+                  <ion-item>
+                    <ion-input type="time" value="11:00"></ion-input>
+                  </ion-item>
+                </div>
+
+                <div class="custom-field">
+                  <label>Durata appuntamento</label>
+
+                  <ion-item>
+                    <ion-select value="30" interface="popover">
+                      <ion-select-option value="15">15 minuti</ion-select-option>
+                      <ion-select-option value="30">30 minuti</ion-select-option>
+                      <ion-select-option value="45">45 minuti</ion-select-option>
+                      <ion-select-option value="60">60 minuti</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+                <div class="custom-field">
+                  <label>Corso</label>
+
+                  <ion-item>
+                    <ion-select value="basi-dati" interface="popover">
+                      <ion-select-option value="basi-dati">Basi di Dati</ion-select-option>
+                      <ion-select-option value="programmazione">Programmazione e Algoritmi</ion-select-option>
+                      <ion-select-option value="reti">Reti di Calcolatori</ion-select-option>
+                      <ion-select-option value="ia">Intelligenza Artificiale</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+                <div class="custom-field">
+                  <label>Luogo ricevimento</label>
+
+                  <ion-item>
+                    <ion-select value="edificio-a" interface="popover">
+                      <ion-select-option value="edificio-a">Edificio A, Piano 2, Aula 201</ion-select-option>
+                      <ion-select-option value="studio">Studio docente</ion-select-option>
+                      <ion-select-option value="laboratorio">Laboratorio Informatica</ion-select-option>
+                      <ion-select-option value="online">Online</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </div>
+
+              </div>
+
+              <div class="form-actions">
+                <ion-button>
+                  <ion-icon name="save-outline" slot="start"></ion-icon>
+                  Salva slot
+                </ion-button>
+
+                <ion-button fill="outline">
+                  <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                  Annulla
+                </ion-button>
+              </div>
+
+            </ion-card-content>
+
+          </ion-card>
+
+          <!-- LISTA SLOT -->
+          <ion-card class="slots-list-card">
+
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="list-outline"></ion-icon>
+                Slot programmati
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="filters-row">
+
+                <div class="search-field">
+                  <ion-icon name="search-outline"></ion-icon>
+                  <input type="text" placeholder="Cerca per corso, data o luogo...">
+                </div>
+
+                <div class="select-field">
+                  <ion-icon name="filter-outline"></ion-icon>
+
+                  <ion-select value="tutti" interface="popover">
+                    <ion-select-option value="tutti">Tutti gli stati</ion-select-option>
+                    <ion-select-option value="disponibile">Disponibile</ion-select-option>
+                    <ion-select-option value="parziale">Parzialmente pieno</ion-select-option>
+                    <ion-select-option value="pieno">Completo</ion-select-option>
+                    <ion-select-option value="annullato">Annullato</ion-select-option>
+                  </ion-select>
+                </div>
+
+              </div>
+
+              <div class="slot-list">
+
+                <!-- SLOT 1 -->
+                <div class="slot-item available">
+
+                  <div class="slot-date-box">
+                    <span>GIU</span>
+                    <strong>12</strong>
+                    <small>2026</small>
+                  </div>
+
+                  <div class="slot-main-info">
+                    <h3>Basi di Dati</h3>
+
+                    <div class="slot-meta">
+                      <span>
+                        <ion-icon name="time-outline"></ion-icon>
+                        10:00 - 11:00
+                      </span>
+
+                      <span>
+                        <ion-icon name="hourglass-outline"></ion-icon>
+                        30 min
+                      </span>
+
+                      <span>
+                        <ion-icon name="location-outline"></ion-icon>
+                        Edificio A, Piano 2
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="slot-capacity">
+                    <span>0/2</span>
+                    <div class="capacity-bar">
+                      <div style="width: 0%;"></div>
+                    </div>
+                  </div>
+
+                  <span class="slot-status available">Disponibile</span>
+
+                  <div class="slot-actions">
+                    <ion-button fill="clear">
+                      <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="danger">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                </div>
+
+                <!-- SLOT 2 -->
+                <div class="slot-item partial">
+
+                  <div class="slot-date-box">
+                    <span>GIU</span>
+                    <strong>13</strong>
+                    <small>2026</small>
+                  </div>
+
+                  <div class="slot-main-info">
+                    <h3>Programmazione e Algoritmi</h3>
+
+                    <div class="slot-meta">
+                      <span>
+                        <ion-icon name="time-outline"></ion-icon>
+                        15:00 - 16:00
+                      </span>
+
+                      <span>
+                        <ion-icon name="hourglass-outline"></ion-icon>
+                        30 min
+                      </span>
+
+                      <span>
+                        <ion-icon name="location-outline"></ion-icon>
+                        Studio docente
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="slot-capacity">
+                    <span>1/2</span>
+                    <div class="capacity-bar">
+                      <div style="width: 50%;"></div>
+                    </div>
+                  </div>
+
+                  <span class="slot-status partial">Parziale</span>
+
+                  <div class="slot-actions">
+                    <ion-button fill="clear">
+                      <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="danger">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                </div>
+
+                <!-- SLOT 3 -->
+                <div class="slot-item full">
+
+                  <div class="slot-date-box">
+                    <span>GIU</span>
+                    <strong>14</strong>
+                    <small>2026</small>
+                  </div>
+
+                  <div class="slot-main-info">
+                    <h3>Reti di Calcolatori</h3>
+
+                    <div class="slot-meta">
+                      <span>
+                        <ion-icon name="time-outline"></ion-icon>
+                        09:00 - 10:00
+                      </span>
+
+                      <span>
+                        <ion-icon name="hourglass-outline"></ion-icon>
+                        30 min
+                      </span>
+
+                      <span>
+                        <ion-icon name="location-outline"></ion-icon>
+                        Laboratorio Informatica
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="slot-capacity">
+                    <span>2/2</span>
+                    <div class="capacity-bar">
+                      <div style="width: 100%;"></div>
+                    </div>
+                  </div>
+
+                  <span class="slot-status full">Completo</span>
+
+                  <div class="slot-actions">
+                    <ion-button fill="clear">
+                      <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="danger">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                </div>
+
+                <!-- SLOT 4 -->
+                <div class="slot-item cancelled">
+
+                  <div class="slot-date-box">
+                    <span>GIU</span>
+                    <strong>15</strong>
+                    <small>2026</small>
+                  </div>
+
+                  <div class="slot-main-info">
+                    <h3>Intelligenza Artificiale</h3>
+
+                    <div class="slot-meta">
+                      <span>
+                        <ion-icon name="time-outline"></ion-icon>
+                        11:00 - 12:00
+                      </span>
+
+                      <span>
+                        <ion-icon name="hourglass-outline"></ion-icon>
+                        30 min
+                      </span>
+
+                      <span>
+                        <ion-icon name="location-outline"></ion-icon>
+                        Online
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="slot-capacity">
+                    <span>0/2</span>
+                    <div class="capacity-bar">
+                      <div style="width: 0%;"></div>
+                    </div>
+                  </div>
+
+                  <span class="slot-status cancelled">Annullato</span>
+
+                  <div class="slot-actions">
+                    <ion-button fill="clear">
+                      <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="clear" color="danger">
+                      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </ion-card-content>
+
+          </ion-card>
+
+        </div>
+
+        <!-- COLONNA DESTRA -->
+        <aside class="slot-right-column">
+
+          <!-- GUIDA -->
+          <ion-card class="side-card guide-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="information-circle-outline"></ion-icon>
+                Come funziona
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="guide-step">
+                <span>1</span>
+                <p>Scegli giorno, orario e durata dello slot.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>2</span>
+                <p>Specifica corso e luogo del ricevimento.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>3</span>
+                <p>Gli studenti potranno prenotare gli slot disponibili.</p>
+              </div>
+
+              <div class="guide-step">
+                <span>4</span>
+                <p>Puoi modificare o annullare uno slot in qualsiasi momento.</p>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- RIEMPIMENTO -->
+          <ion-card class="side-card fill-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="pie-chart-outline"></ion-icon>
+                Riempimento slot
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="fill-circle">
+                <span>75%</span>
+              </div>
+
+              <h3>Media settimanale</h3>
+
+              <p>
+                La percentuale indica il riempimento medio degli slot disponibili
+                rispetto alle prenotazioni ricevute.
+              </p>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- BLOCCO FESTIVI -->
+          <ion-card class="side-card warning-card">
+            <ion-card-content>
+
+              <div class="warning-icon">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+              </div>
+
+              <div>
+                <h3>Weekend e festivi</h3>
+                <p>
+                  Evita di creare slot nei giorni non disponibili. Gli slot annullati
+                  aggiorneranno automaticamente le prenotazioni associate.
+                </p>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+        </aside>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </ion-content>

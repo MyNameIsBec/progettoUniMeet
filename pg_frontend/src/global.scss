@@ -39,21 +39,23 @@ body {
 .dashboard-layout {
     display: grid;
     grid-template-columns: 260px 1fr;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: visible;
     background: var(--ion-color-light);
 }
 
 .main-content {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    overflow: auto;
 }
 
 .dashboard-content {
     --background: transparent;
     flex: 1;
+    overflow-y: auto;
 }
 
 .content-wrapper {

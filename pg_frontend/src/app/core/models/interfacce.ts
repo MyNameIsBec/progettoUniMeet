@@ -74,6 +74,7 @@ export interface Documento {
   prenotazioneId: string;
   data: string;
   percorso: string;
+  dimensione?: number;
 }
 
 export interface Prenotazione {

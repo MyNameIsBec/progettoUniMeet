@@ -1,13 +1,650 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>prenotazioni-ricevute</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="prenotazioni-ricevute-page">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">prenotazioni-ricevute</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR DESKTOP -->
+    <aside class="sidebar">
+
+      <div class="sidebar-logo">
+        <div class="logo-row">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <h1>UniMeet</h1>
+            <span>Area Docente</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <a routerLink="/dashboard-docente">
+          <ion-icon name="home-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+
+        <a routerLink="/gestione-slot">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <span>Gestione slot</span>
+        </a>
+
+        <a routerLink="/prenotazioni-ricevute" class="active">
+          <ion-icon name="calendar-number-outline"></ion-icon>
+          <span>Prenotazioni ricevute</span>
+        </a>
+
+        <a routerLink="/bacheca-docente">
+          <ion-icon name="help-circle-outline"></ion-icon>
+          <span>Bacheca / FAQ</span>
+        </a>
+
+        <a routerLink="/statistiche-docente">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          <span>Statistiche</span>
+        </a>
+
+        <a routerLink="/profilo-docente">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profilo</span>
+        </a>
+
+        <a routerLink="/home" class="logout-link">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <span>Logout</span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+
+        <!-- LOGO MOBILE -->
+        <div class="mobile-logo">
+          <ion-icon name="calendar-outline"></ion-icon>
+
+          <div>
+            <strong>UniMeet</strong>
+            <span>Area Docente</span>
+          </div>
+        </div>
+
+        <!-- MENU MOBILE -->
+        <nav class="mobile-top-menu">
+
+          <a routerLink="/dashboard-docente">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>Dashboard</span>
+          </a>
+
+          <a routerLink="/gestione-slot">
+            <ion-icon name="calendar-clear-outline"></ion-icon>
+            <span>Slot</span>
+          </a>
+
+          <a routerLink="/prenotazioni-ricevute" class="active">
+            <ion-icon name="calendar-number-outline"></ion-icon>
+            <span>Prenotazioni</span>
+          </a>
+
+          <a routerLink="/bacheca-docente">
+            <ion-icon name="help-circle-outline"></ion-icon>
+            <span>FAQ</span>
+          </a>
+
+          <a routerLink="/statistiche-docente">
+            <ion-icon name="stats-chart-outline"></ion-icon>
+            <span>Statistiche</span>
+          </a>
+
+        </nav>
+
+        <!-- AZIONI DESKTOP -->
+        <div class="topbar-actions">
+
+          <button class="notification-button">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <span class="notification-badge">5</span>
+          </button>
+
+          <div class="teacher-profile-mini">
+            <div class="teacher-avatar-small">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+
+            <div>
+              <strong>Prof. Mario Rossi</strong>
+              <span>Docente</span>
+            </div>
+
+            <ion-icon name="chevron-down-outline"></ion-icon>
+          </div>
+
+        </div>
+
+      </header>
+
+      <!-- HEADER PAGINA -->
+      <section class="page-header">
+
+        <div>
+          <span class="eyebrow">Ricevimenti</span>
+
+          <h2>Prenotazioni ricevute</h2>
+
+          <p>
+            Visualizza le richieste degli studenti, controlla data e orario del ricevimento,
+            aggiorna lo stato delle prenotazioni e consulta i dettagli.
+          </p>
+        </div>
+
+        <ion-button routerLink="/gestione-slot">
+          <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
+          Gestisci slot
+        </ion-button>
+
+      </section>
+
+      <!-- RIEPILOGO -->
+      <section class="summary-grid">
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon blue">
+              <ion-icon name="calendar-number-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Totale ricevute</h3>
+              <strong>18</strong>
+              <p>prenotazioni complessive</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon orange">
+              <ion-icon name="hourglass-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>In attesa</h3>
+              <strong>3</strong>
+              <p>richieste da confermare</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Confermate</h3>
+              <strong>11</strong>
+              <p>ricevimenti approvati</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="summary-card">
+          <ion-card-content>
+
+            <div class="summary-icon purple">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+
+            <div>
+              <h3>Con documenti</h3>
+              <strong>6</strong>
+              <p>prenotazioni con allegati</p>
+            </div>
+
+          </ion-card-content>
+        </ion-card>
+
+      </section>
+
+      <!-- CONTENUTO PRINCIPALE -->
+      <section class="prenotazioni-layout">
+
+        <!-- COLONNA PRINCIPALE -->
+        <div class="main-column">
+
+          <!-- FILTRI -->
+          <ion-card class="filters-card">
+            <ion-card-content>
+
+              <div class="search-field">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" placeholder="Cerca studente, corso o argomento...">
+              </div>
+
+              <div class="select-field">
+                <ion-icon name="filter-outline"></ion-icon>
+
+                <ion-select value="tutti" interface="popover">
+                  <ion-select-option value="tutti">Tutti gli stati</ion-select-option>
+                  <ion-select-option value="confermata">Confermata</ion-select-option>
+                  <ion-select-option value="in-attesa">In attesa</ion-select-option>
+                  <ion-select-option value="annullata">Annullata</ion-select-option>
+                  <ion-select-option value="completata">Completata</ion-select-option>
+                </ion-select>
+              </div>
+
+              <div class="select-field">
+                <ion-icon name="calendar-outline"></ion-icon>
+
+                <ion-select value="settimana" interface="popover">
+                  <ion-select-option value="oggi">Oggi</ion-select-option>
+                  <ion-select-option value="settimana">Questa settimana</ion-select-option>
+                  <ion-select-option value="mese">Questo mese</ion-select-option>
+                  <ion-select-option value="storico">Storico</ion-select-option>
+                </ion-select>
+              </div>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- LISTA PRENOTAZIONI -->
+          <div class="bookings-list">
+
+            <!-- PRENOTAZIONE 1 -->
+            <ion-card class="booking-card">
+              <ion-card-content>
+
+                <div class="booking-header">
+
+                  <div class="student-info">
+                    <div class="student-avatar blue">
+                      <span>AL</span>
+                    </div>
+
+                    <div>
+                      <h3>Alessio Lombardo</h3>
+                      <p>Basi di Dati</p>
+                    </div>
+                  </div>
+
+                  <span class="booking-status confirmed">Confermata</span>
+
+                </div>
+
+                <div class="booking-details-grid">
+
+                  <div class="detail-item">
+                    <ion-icon name="calendar-outline"></ion-icon>
+
+                    <div>
+                      <span>Data</span>
+                      <strong>12/06/2026</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="time-outline"></ion-icon>
+
+                    <div>
+                      <span>Orario</span>
+                      <strong>10:30 - 11:00</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="location-outline"></ion-icon>
+
+                    <div>
+                      <span>Luogo</span>
+                      <strong>Edificio A, Piano 2</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+
+                    <div>
+                      <span>Argomento</span>
+                      <strong>Chiarimenti esame</strong>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="booking-description">
+                  <p>
+                    Richiesta di chiarimenti sulle query SQL con join e sulle forme normali.
+                  </p>
+                </div>
+
+                <div class="booking-footer">
+
+                  <div class="document-indicator">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                    <span>2 documenti allegati</span>
+                  </div>
+
+                  <div class="booking-actions">
+                    <ion-button fill="outline" routerLink="/dettaglio-prenotazione-docente/1">
+                      Dettagli
+                      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                    </ion-button>
+
+                    <ion-button fill="outline" color="danger">
+                      Annulla
+                    </ion-button>
+                  </div>
+
+                </div>
+
+              </ion-card-content>
+            </ion-card>
+
+            <!-- PRENOTAZIONE 2 -->
+            <ion-card class="booking-card waiting-card">
+              <ion-card-content>
+
+                <div class="booking-header">
+
+                  <div class="student-info">
+                    <div class="student-avatar green">
+                      <span>GR</span>
+                    </div>
+
+                    <div>
+                      <h3>Giulia Romano</h3>
+                      <p>Basi di Dati</p>
+                    </div>
+                  </div>
+
+                  <span class="booking-status waiting">In attesa</span>
+
+                </div>
+
+                <div class="booking-details-grid">
+
+                  <div class="detail-item">
+                    <ion-icon name="calendar-outline"></ion-icon>
+
+                    <div>
+                      <span>Data</span>
+                      <strong>12/06/2026</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="time-outline"></ion-icon>
+
+                    <div>
+                      <span>Orario</span>
+                      <strong>11:00 - 11:30</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="location-outline"></ion-icon>
+
+                    <div>
+                      <span>Luogo</span>
+                      <strong>Edificio A, Piano 2</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+
+                    <div>
+                      <span>Argomento</span>
+                      <strong>Progetto</strong>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="booking-description">
+                  <p>
+                    Discussione sulla struttura del progetto e dubbi sulla parte di normalizzazione.
+                  </p>
+                </div>
+
+                <div class="booking-footer">
+
+                  <div class="document-indicator">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                    <span>1 documento allegato</span>
+                  </div>
+
+                  <div class="booking-actions">
+                    <ion-button fill="outline" routerLink="/dettaglio-prenotazione-docente/2">
+                      Dettagli
+                      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                    </ion-button>
+
+                    <ion-button color="success">
+                      Conferma
+                    </ion-button>
+
+                    <ion-button fill="outline" color="danger">
+                      Annulla
+                    </ion-button>
+                  </div>
+
+                </div>
+
+              </ion-card-content>
+            </ion-card>
+
+            <!-- PRENOTAZIONE 3 -->
+            <ion-card class="booking-card completed-card">
+              <ion-card-content>
+
+                <div class="booking-header">
+
+                  <div class="student-info">
+                    <div class="student-avatar purple">
+                      <span>MV</span>
+                    </div>
+
+                    <div>
+                      <h3>Marco Vitale</h3>
+                      <p>Programmazione e Algoritmi</p>
+                    </div>
+                  </div>
+
+                  <span class="booking-status completed">Completata</span>
+
+                </div>
+
+                <div class="booking-details-grid">
+
+                  <div class="detail-item">
+                    <ion-icon name="calendar-outline"></ion-icon>
+
+                    <div>
+                      <span>Data</span>
+                      <strong>10/06/2026</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="time-outline"></ion-icon>
+
+                    <div>
+                      <span>Orario</span>
+                      <strong>15:00 - 15:30</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="location-outline"></ion-icon>
+
+                    <div>
+                      <span>Luogo</span>
+                      <strong>Studio docente</strong>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+
+                    <div>
+                      <span>Argomento</span>
+                      <strong>Esercizi</strong>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="booking-description">
+                  <p>
+                    Revisione esercizi su array, funzioni e complessità computazionale.
+                  </p>
+                </div>
+
+                <div class="booking-footer">
+
+                  <div class="document-indicator">
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                    <span>Ricevimento concluso</span>
+                  </div>
+
+                  <div class="booking-actions">
+                    <ion-button fill="outline" routerLink="/dettaglio-prenotazione-docente/3">
+                      Apri storico
+                      <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                </div>
+
+              </ion-card-content>
+            </ion-card>
+
+          </div>
+
+        </div>
+
+        <!-- COLONNA DESTRA -->
+        <aside class="side-column">
+
+          <!-- AGENDA -->
+          <ion-card class="side-card agenda-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="calendar-outline"></ion-icon>
+                Agenda di oggi
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <div class="agenda-list">
+
+                <div class="agenda-item active">
+                  <span>10:30</span>
+
+                  <div>
+                    <strong>Alessio Lombardo</strong>
+                    <small>Basi di Dati</small>
+                  </div>
+                </div>
+
+                <div class="agenda-item waiting">
+                  <span>11:00</span>
+
+                  <div>
+                    <strong>Giulia Romano</strong>
+                    <small>In attesa</small>
+                  </div>
+                </div>
+
+                <div class="agenda-item">
+                  <span>15:00</span>
+
+                  <div>
+                    <strong>Marco Vitale</strong>
+                    <small>Programmazione</small>
+                  </div>
+                </div>
+
+              </div>
+
+              <ion-button expand="block" fill="outline">
+                <ion-icon name="download-outline" slot="start"></ion-icon>
+                Scarica agenda PDF
+              </ion-button>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- AZIONI RAPIDE -->
+          <ion-card class="side-card quick-actions-card">
+            <ion-card-header>
+              <ion-card-title>
+                <ion-icon name="flash-outline"></ion-icon>
+                Azioni rapide
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+
+              <button class="quick-action">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <span>Conferma richieste in attesa</span>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+
+              <button class="quick-action">
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+                <span>Crea nuovo slot</span>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+
+              <button class="quick-action">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span>Visualizza documenti studenti</span>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </button>
+
+            </ion-card-content>
+          </ion-card>
+
+          <!-- INFO -->
+          <ion-card class="side-card info-card">
+            <ion-card-content>
+
+              <div class="info-icon">
+                <ion-icon name="information-circle-outline"></ion-icon>
+              </div>
+
+              <h3>Gestione stati</h3>
+
+              <p>
+                Puoi confermare, annullare o segnare come completata una prenotazione.
+                Gli studenti riceveranno una notifica automatica.
+              </p>
+
+            </ion-card-content>
+          </ion-card>
+
+        </aside>
+
+      </section>
+
+    </main>
+
+  </div>
+
 </ion-content>

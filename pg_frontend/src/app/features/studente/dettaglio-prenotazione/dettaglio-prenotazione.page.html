@@ -186,7 +186,10 @@
                   </div>
                   <div class="document-info">
                     <h3>{{ doc.nomeFile }}</h3>
-                    <p>{{ doc.tipo | uppercase }} · {{ (doc.dimensione / 1024 / 1024) | number:'1.1-1' }} MB</p>
+                    <p>
+                      {{ doc.tipo | uppercase }} · 
+                      {{ doc.dimensione ? ((doc.dimensione / 1024 / 1024) | number:'1.1-1') + ' MB' : 'Dimensione non disponibile' }}
+                    </p>
                   </div>
                   <div class="document-actions">
                     <ion-button fill="outline" (click)="apriDocumento(doc.percorso)">Visualizza</ion-button>

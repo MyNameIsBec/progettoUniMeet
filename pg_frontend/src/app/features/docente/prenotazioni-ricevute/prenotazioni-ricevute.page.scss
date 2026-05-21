@@ -1,0 +1,966 @@
+:host {
+  font-family: Arial, sans-serif;
+  color: #0f172a;
+}
+
+.prenotazioni-ricevute-page {
+  --background: #f8fbff;
+}
+
+/* LAYOUT */
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: visible;
+  background: #f8fbff;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 28px 18px;
+  box-shadow: 6px 0 24px rgba(15, 23, 42, 0.04);
+  overflow-y: auto;
+}
+
+.main-content {
+  grid-column: 2;
+  min-width: 0;
+  background: #f8fbff;
+}
+
+.sidebar-logo {
+  margin-bottom: 38px;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo ion-icon {
+  color: #2563eb;
+  font-size: 34px;
+}
+
+.sidebar-logo h1 {
+  margin: 0;
+  color: #2563eb;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.sidebar-logo span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: #334155;
+  text-decoration: none;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.sidebar-nav a ion-icon {
+  font-size: 22px;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+}
+
+.sidebar-nav .logout-link {
+  margin-top: 18px;
+  color: #dc2626;
+}
+
+.sidebar-nav .logout-link:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  box-shadow: none;
+}
+
+/* MAIN */
+
+.main-content {
+  grid-column: 2;
+  min-width: 0;
+  background: #f8fbff;
+}
+
+/* TOPBAR */
+
+.topbar {
+  height: 86px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.mobile-logo,
+.mobile-top-menu {
+  display: none;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.notification-button {
+  position: relative;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.notification-button ion-icon {
+  font-size: 26px;
+  color: #0f172a;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -7px;
+  width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teacher-profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-profile-mini strong {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.teacher-profile-mini span {
+  display: block;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.teacher-avatar-small {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #eaf2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.teacher-avatar-small ion-icon {
+  color: #2563eb;
+  font-size: 24px;
+}
+
+/* HEADER */
+
+.page-header {
+  padding: 34px 34px 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 38px;
+  font-weight: 900;
+}
+
+.page-header p {
+  max-width: 900px;
+  margin: 8px 0 0;
+  color: #475569;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* CARD BASE */
+
+ion-card {
+  margin: 0;
+}
+
+.summary-card,
+.filters-card,
+.booking-card,
+.side-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+ion-card-header {
+  padding: 24px 24px 8px;
+}
+
+ion-card-content {
+  padding: 22px 24px 24px;
+}
+
+ion-card-title {
+  color: #0f172a;
+  font-size: 21px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+ion-card-title ion-icon {
+  color: #2563eb;
+}
+
+ion-button {
+  --border-radius: 10px;
+  text-transform: none;
+  font-weight: 900;
+}
+
+/* SUMMARY */
+
+.summary-grid {
+  margin: 0 34px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.summary-card ion-card-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 138px;
+}
+
+.summary-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.summary-icon ion-icon {
+  font-size: 30px;
+}
+
+.summary-icon.blue {
+  background: #eaf2ff;
+}
+
+.summary-icon.blue ion-icon {
+  color: #2563eb;
+}
+
+.summary-icon.orange {
+  background: #ffedd5;
+}
+
+.summary-icon.orange ion-icon {
+  color: #f59e0b;
+}
+
+.summary-icon.green {
+  background: #dcfce7;
+}
+
+.summary-icon.green ion-icon {
+  color: #16a34a;
+}
+
+.summary-icon.purple {
+  background: #f3e8ff;
+}
+
+.summary-icon.purple ion-icon {
+  color: #7c3aed;
+}
+
+.summary-card h3 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.summary-card strong {
+  display: block;
+  color: #2563eb;
+  font-size: 34px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.summary-card p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* LAYOUT */
+
+.prenotazioni-layout {
+  margin: 0 34px 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.main-column,
+.side-column {
+  display: grid;
+  gap: 24px;
+}
+
+/* FILTRI */
+
+.filters-card ion-card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.search-field {
+  flex: 1;
+  min-width: 300px;
+  height: 56px;
+  padding: 0 18px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  transition: 0.2s ease;
+}
+
+.search-field:focus-within {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.search-field ion-icon {
+  color: #2563eb;
+  font-size: 23px;
+}
+
+.search-field input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.search-field input::placeholder {
+  color: #94a3b8;
+}
+
+.select-field {
+  min-width: 190px;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.select-field ion-icon {
+  color: #2563eb;
+  font-size: 22px;
+}
+
+.select-field ion-select {
+  width: 100%;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* BOOKING LIST */
+
+.bookings-list {
+  display: grid;
+  gap: 22px;
+}
+
+.booking-card {
+  transition: 0.2s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+}
+
+.booking-card.waiting-card {
+  border-left: 5px solid #f59e0b;
+}
+
+.booking-card.completed-card {
+  border-left: 5px solid #64748b;
+}
+
+.booking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.student-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 950;
+  flex: 0 0 auto;
+}
+
+.student-avatar.blue {
+  background: #2563eb;
+}
+
+.student-avatar.green {
+  background: #16a34a;
+}
+
+.student-avatar.purple {
+  background: #7c3aed;
+}
+
+.student-info h3 {
+  margin: 0 0 4px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.student-info p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.booking-status {
+  width: max-content;
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.booking-status.confirmed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.booking-status.waiting {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.booking-status.completed {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.booking-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.detail-item {
+  min-height: 82px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-item ion-icon {
+  color: #2563eb;
+  font-size: 24px;
+  flex: 0 0 auto;
+}
+
+.detail-item span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.detail-item strong {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.3;
+}
+
+.booking-description {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  margin-bottom: 18px;
+}
+
+.booking-description p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+.booking-footer {
+  padding-top: 18px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.document-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.document-indicator ion-icon {
+  color: #2563eb;
+  font-size: 21px;
+}
+
+.booking-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* SIDE COLUMN */
+
+.agenda-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.agenda-item {
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #e2e8f0;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 12px;
+  align-items: center;
+}
+
+.agenda-item.active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.agenda-item.waiting {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.agenda-item > span {
+  color: #2563eb;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.agenda-item strong {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 950;
+  margin-bottom: 3px;
+}
+
+.agenda-item small {
+  color: #64748b;
+  font-weight: 800;
+}
+
+.quick-actions-card ion-card-content {
+  padding-top: 10px;
+}
+
+.quick-action {
+  width: 100%;
+  min-height: 62px;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  color: #0f172a;
+  display: grid;
+  grid-template-columns: 28px 1fr 20px;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.quick-action:last-child {
+  border-bottom: none;
+}
+
+.quick-action ion-icon {
+  color: #2563eb;
+  font-size: 22px;
+}
+
+.quick-action:hover span,
+.quick-action:hover ion-icon {
+  color: #1d4ed8;
+}
+
+.info-card {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.info-card ion-card-content {
+  text-align: center;
+}
+
+.info-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #eaf2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-icon ion-icon {
+  color: #2563eb;
+  font-size: 32px;
+}
+
+.info-card h3 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.info-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+/* RESPONSIVE TABLET */
+
+@media (max-width: 1200px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .prenotazioni-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    grid-column: auto;
+  }
+
+  .topbar {
+    height: auto;
+    min-height: 86px;
+    padding: 12px 16px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-actions {
+    display: none;
+  }
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  .mobile-logo ion-icon {
+    color: #2563eb;
+    font-size: 28px;
+  }
+
+  .mobile-logo strong {
+    display: block;
+    color: #2563eb;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .mobile-logo span {
+    display: block;
+    color: #64748b;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  .mobile-top-menu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 4px 0;
+    flex: 1;
+  }
+
+  .mobile-top-menu a {
+    min-width: 58px;
+    padding: 7px 6px;
+    border-radius: 12px;
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    white-space: nowrap;
+  }
+
+  .mobile-top-menu a ion-icon {
+    color: #2563eb;
+    font-size: 21px;
+  }
+
+  .mobile-top-menu a:hover,
+  .mobile-top-menu a.active {
+    background: #eaf2ff;
+    color: #2563eb;
+  }
+
+  .page-header {
+    padding: 28px 18px 18px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .page-header h2 {
+    font-size: 30px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+  }
+
+  .summary-grid,
+  .prenotazioni-layout {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card ion-card-content {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .filters-card ion-card-content {
+    flex-direction: column;
+  }
+
+  .search-field,
+  .select-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .booking-header {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .student-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .booking-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .booking-description {
+    text-align: center;
+  }
+
+  .booking-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .document-indicator {
+    justify-content: center;
+  }
+
+  .booking-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .booking-actions ion-button {
+    width: 100%;
+  }
+
+  .agenda-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .quick-action {
+    grid-template-columns: 28px 1fr 20px;
+  }
+
+  ion-card-title {
+    justify-content: center;
+    text-align: center;
+  }
+}
