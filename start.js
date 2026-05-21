@@ -217,20 +217,24 @@ async function main() {
   await new Promise(r => setTimeout(r, 3000));
 
   // ── 3. Prisma Studio ──
-  log('PRISMA', 'Avvio Prisma Studio...');
+  const PRISMA_PORT = 5557;
+  // Usa il binario locale invece di npx per evitare doppi processi
+  const prismaBin = path.join(
+    BACKEND, 'node_modules', '.bin',
+    IS_WIN ? 'prisma.cmd' : 'prisma'
+  );
+  log('PRISMA', `Avvio Prisma Studio su http://localhost:${PRISMA_PORT}...`);
   let prismaUrlOpened = false;
-  const prisma = spawn('npx', ['prisma', 'studio'], {
+  const prisma = spawn(prismaBin, ['studio', '--port', String(PRISMA_PORT)], {
     cwd: BACKEND,
     stdio: 'pipe',
-    shell: true,
   });
   prisma.stdout.on('data', d => {
     process.stdout.write(`[PRISMA] ${d}`);
     const msg = d.toString();
-    const urlMatch = msg.match(/http:\/\/localhost:\d+/);
-    if (urlMatch && !prismaUrlOpened) {
+    if (msg.includes(String(PRISMA_PORT)) && !prismaUrlOpened) {
       prismaUrlOpened = true;
-      setTimeout(() => openBrowser(urlMatch[0]), 1500);
+      setTimeout(() => openBrowser(`http://localhost:${PRISMA_PORT}`), 1500);
     }
   });
   prisma.stderr.on('data', d => process.stderr.write(`[PRISMA] ${d}`));
@@ -257,7 +261,7 @@ async function main() {
   console.log('═══════════════════════════════════════════');
   console.log('  Backend       → http://localhost:5000');
   console.log('  Frontend      → http://localhost:4200');
-  console.log('  Prisma Studio → http://localhost:5555');
+  console.log('  Prisma Studio → http://localhost:5557');
   console.log('');
   console.log('  I browser si apriranno automaticamente');
   console.log('  non appena i servizi sono pronti.');
