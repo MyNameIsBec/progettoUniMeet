@@ -8,7 +8,6 @@ const ROOT = __dirname;
 const BACKEND = path.join(ROOT, 'pg_backend');
 const FRONTEND = path.join(ROOT, 'pg_frontend');
 const ENV_PATH = path.join(BACKEND, '.env');
-const IS_WIN = os.platform() === 'win32';
 
 function loadEnv() {
   if (!fs.existsSync(ENV_PATH)) return {};
@@ -23,6 +22,36 @@ function loadEnv() {
 function log(tag, msg) {
   const ts = new Date().toLocaleTimeString('it-IT');
   console.log(`[${ts}][${tag}] ${msg}`);
+}
+
+function checkDeps() {
+  let ok = true;
+  const backendNodeModules = path.join(BACKEND, 'node_modules');
+  const frontendNodeModules = path.join(FRONTEND, 'node_modules');
+
+  if (!fs.existsSync(backendNodeModules)) {
+    log('INFO', 'Backend: cartella node_modules mancante.');
+    log('INFO', '  Esegui: cd pg_backend && npm install');
+    ok = false;
+  }
+  if (!fs.existsSync(frontendNodeModules)) {
+    log('INFO', 'Frontend: cartella node_modules mancante.');
+    log('INFO', '  Esegui: cd pg_frontend && npm install');
+    ok = false;
+  }
+  return ok;
+}
+
+function openBrowser(url) {
+  const platform = os.platform();
+  const detached = spawn(
+    platform === 'darwin' ? 'open' :
+    platform === 'win32' ? 'cmd' :
+    'xdg-open',
+    platform === 'win32' ? ['/c', 'start', url] : [url],
+    { stdio: 'ignore', detached: true }
+  );
+  detached.unref();
 }
 
 async function waitForPostgres(url, timeout = 30000) {
@@ -57,7 +86,6 @@ async function startPostgreSQL() {
       execSync('sudo systemctl start postgresql', { stdio: 'pipe', timeout: 15000 });
       return true;
     } catch {
-      // fallback: prova pg_ctlcluster
       try {
         const ver = execSync('pg_lsclusters -h 2>/dev/null || echo "15"', { encoding: 'utf-8' })
           .trim().split('\n')[0]?.match(/\d+/)?.[0] || '15';
@@ -92,7 +120,6 @@ async function startPostgreSQL() {
       const out = execSync('sc query postgresql* 2>nul || net start postgresql* 2>nul', {
         stdio: 'pipe', timeout: 15000, encoding: 'utf-8',
       });
-      // Prova ad avviare il servizio trovato
       const match = out.match(/postgresql[^\s]*/i);
       if (match) {
         execSync(`net start ${match[0]}`, { stdio: 'pipe', timeout: 15000 });
@@ -132,8 +159,15 @@ async function main() {
   console.log('═══════════════════════════════════════════');
   console.log('');
 
+  if (!checkDeps()) {
+    console.log('\n⚠️  Esegui npm install nelle cartelle indicate e riprova.\n');
+    process.exit(1);
+  }
+  console.log('  Dipendenze OK ✅');
+  console.log('');
+
   const env = loadEnv();
-  let dbUrl = env.DATABASE_URL || 'postgresql://postgres:YOLO@localhost:5432/prenotazioni_db';
+  const dbUrl = env.DATABASE_URL || 'postgresql://postgres:YOLO@localhost:5432/prenotazioni_db';
 
   // ── 1. PostgreSQL ──
   log('DB', 'Verifico PostgreSQL...');
@@ -182,52 +216,91 @@ async function main() {
 
   await new Promise(r => setTimeout(r, 3000));
 
-  // ── 3. Frontend ──
+  // ── 3. Prisma Studio ──
+  log('PRISMA', 'Avvio Prisma Studio...');
+  let prismaUrlOpened = false;
+  const prisma = spawn('npx', ['prisma', 'studio'], {
+    cwd: BACKEND,
+    stdio: 'pipe',
+    shell: true,
+  });
+  prisma.stdout.on('data', d => {
+    process.stdout.write(`[PRISMA] ${d}`);
+    const msg = d.toString();
+    const urlMatch = msg.match(/http:\/\/localhost:\d+/);
+    if (urlMatch && !prismaUrlOpened) {
+      prismaUrlOpened = true;
+      setTimeout(() => openBrowser(urlMatch[0]), 1500);
+    }
+  });
+  prisma.stderr.on('data', d => process.stderr.write(`[PRISMA] ${d}`));
+
+  // ── 4. Frontend ──
   log('FRONTEND', 'Avvio frontend...');
+  let frontendUrlOpened = false;
   const frontend = spawn('npm', ['start'], {
     cwd: FRONTEND,
     stdio: 'pipe',
     shell: true,
   });
-  frontend.stdout.on('data', d => process.stdout.write(`[FRONTEND] ${d}`));
+  frontend.stdout.on('data', d => {
+    process.stdout.write(`[FRONTEND] ${d}`);
+    const msg = d.toString();
+    if ((msg.includes('localhost:4200') || msg.includes('compiled successfully')) && !frontendUrlOpened) {
+      frontendUrlOpened = true;
+      setTimeout(() => openBrowser('http://localhost:4200'), 1500);
+    }
+  });
   frontend.stderr.on('data', d => process.stderr.write(`[FRONTEND] ${d}`));
 
   console.log('');
   console.log('═══════════════════════════════════════════');
-  console.log('  Backend  → http://localhost:5000');
-  console.log('  Frontend → http://localhost:4200');
+  console.log('  Backend       → http://localhost:5000');
+  console.log('  Frontend      → http://localhost:4200');
+  console.log('  Prisma Studio → http://localhost:5555');
+  console.log('');
+  console.log('  I browser si apriranno automaticamente');
+  console.log('  non appena i servizi sono pronti.');
   console.log('  Premi Ctrl+C per arrestare tutto.');
   console.log('═══════════════════════════════════════════');
   console.log('');
 
-  // ── 4. Graceful shutdown ──
+  // ── 5. Graceful shutdown ──
   const shutdown = () => {
     console.log('\n');
     log('STOP', 'Arresto in corso...');
     backend.kill('SIGTERM');
     frontend.kill('SIGTERM');
+    prisma.kill('SIGTERM');
     setTimeout(() => {
       backend.kill('SIGKILL');
       frontend.kill('SIGKILL');
+      prisma.kill('SIGKILL');
       process.exit(0);
     }, 5000);
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
-  // Se un processo muore, ferma tutto
-  backend.on('exit', (code) => {
+  backend.on('exit', code => {
     if (code !== 0 && code !== null) {
       log('ERR', `Backend terminato con codice ${code}`);
       frontend.kill();
+      prisma.kill();
       process.exit(code);
     }
   });
-  frontend.on('exit', (code) => {
+  frontend.on('exit', code => {
     if (code !== 0 && code !== null) {
       log('ERR', `Frontend terminato con codice ${code}`);
       backend.kill();
+      prisma.kill();
       process.exit(code);
+    }
+  });
+  prisma.on('exit', code => {
+    if (code !== 0 && code !== null) {
+      log('WARN', `Prisma Studio terminato con codice ${code}`);
     }
   });
 }
