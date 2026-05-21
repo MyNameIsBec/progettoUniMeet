@@ -136,7 +136,7 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 
 ### Seed dati di test
 
-`prisma/seed.ts` popola il database con dati di esempio:
+`prisma/seed.ts` pulisce automaticamente i dati esistenti (in ordine di FK) e popola il database con dati di esempio:
 
 | Tabella | Righe | Dettaglio |
 |---------|-------|-----------|
@@ -176,8 +176,8 @@ npx prisma generate
 |------|-------------|
 | `auth.service.ts` | Registrazione (studente/docente/admin), login, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
 | `studenti.service.ts` | Profilo studente (GET, PUT). Restituisce `corsoDiStudi` oggetto annidato |
-| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi |
-| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response |
+| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi. `getDettagliDocente` response include `corsi[]` e `corsiDiStudi[]` |
+| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo) e `studenteEmail` |
 | `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
 | `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni |
 | `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |

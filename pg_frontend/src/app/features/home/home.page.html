@@ -16,6 +16,10 @@
         <a href="#come-funziona" [class.active]="activeSection === 'come-funziona'" (click)="scrollToSection($event, 'come-funziona')">Come funziona</a>
       </nav>
 
+      <button class="theme-toggle" (click)="toggleDarkMode()">
+        <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+      </button>
+
     </div>
   </ion-toolbar>
 </ion-header>

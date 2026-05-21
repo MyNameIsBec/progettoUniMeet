@@ -53,8 +53,8 @@ pg_frontend/
 │       └── features/             # Pagine (lazy-loaded)
 │           ├── home/             # Landing page
 │           ├── auth/             # Login, registrazione, password
-│           ├── studente/         # 8 pagine studente
-│           ├── docente/          # 7 pagine docente (stub)
+│           ├── studente/         # 9 pagine studente
+│           ├── docente/          # 9 pagine docente
 │           └── admin/            # 6 pagine admin
 ```
 
@@ -78,13 +78,15 @@ Tutte le rotte sono **lazy-loaded**. Le pagine autenticate usano il componente `
 | `/dettaglio-prenotazione/:id` | DettaglioPrenotazionePage | auth + role('studente') | Studente |
 | `/profilo-studente` | ProfiloStudentePage | auth + role('studente') | Studente |
 | `/bacheca-studente` | BachecaStudentePage | auth + role('studente') | Studente |
-| `/notifiche` | NotifichePage | auth | Qualsiasi |
+| `/notifiche-studente` | NotificheStudentePage | auth + role('studente') | Studente |
 | `/segnalazione` | SegnalazionePage | auth + role('studente') | Studente |
 | `/dashboard-docente` | DashboardDocentePage | auth + role('docente') | Docente |
 | `/gestione-slot` | GestioneSlotPage | auth + role('docente') | Docente |
 | `/prenotazioni-ricevute` | PrenotazioniRicevutePage | auth + role('docente') | Docente |
 | `/dettaglio-prenotazione-docente/:id` | DettaglioPrenotazioneDocentePage | auth + role('docente') | Docente |
 | `/bacheche-docente` | BachecheDocentePage | auth + role('docente') | Docente |
+| `/notifiche-docente` | NotificheDocentePage | auth + role('docente') | Docente |
+| `/documenti-docente` | DocumentiDocentePage | auth + role('docente') | Docente |
 | `/statistiche-docente` | StatisticheDocentePage | auth + role('docente') | Docente |
 | `/profilo-docente` | ProfiloDocentePage | auth + role('docente') | Docente |
 | `/dashboard-admin` | DashboardAdminPage | auth + role('amministratore') | Admin |
@@ -109,14 +111,14 @@ File: `src/app/core/models/interfacce.ts`
 | `VoceMenuNavigazione` | — | etichetta, percorso, icona, esatto |
 | `Utente` | — | id, nome, cognome, email, ruolo |
 | `Studente` | Utente | matricola, corsoDiStudi |
-| `Docente` | Utente | ufficio, materia, coloreAvatar, iniziali, corsoDiStudi[] |
+| `Docente` | Utente | ufficio, materia, coloreAvatar, iniziali, corsoDiStudi[], corsiDiStudi[] |
 | `Amministratore` | Utente | dipartimento |
 | `CorsoDiStudi` | — | id, nome |
 | `Corso` | — | id, nome, cfu, anno, docenteId |
 | `LuogoRicevimento` | — | id, aula, edificio, piano, latitudine, longitudine |
 | `SlotRicevimento` | — | id, docenteId, data, oraInizio, oraFine, disponibilita, luogo |
-| `Prenotazione` | — | id, studenteId, docente, materia, data, ora, stato, luogo, documenti |
-| `Documento` | — | id, nomeFile, tipo, dimensione, dataCaricamento, percorso |
+| `Prenotazione` | — | id, studenteId, docente, materia, data, ora, stato, luogo, documenti, studente |
+| `Documento` | — | id, nomeFile, tipo, studente, prenotazioneId, data, percorso |
 | `Bacheca` | — | id, titolo, descrizione, faqs[], corsoDiStudi |
 | `FAQ` | — | id, domanda, risposta, aperta |
 
@@ -134,7 +136,7 @@ File: `src/app/core/models/interfacce.ts`
 | **RecuperaPasswordPage** | Richiesta reset password (multi-step) |
 | **ResetPasswordPage** | Reset password con token |
 
-### Studente (8 pagine)
+### Studente (9 pagine)
 
 | Pagina | Descrizione |
 |--------|-------------|
@@ -145,20 +147,22 @@ File: `src/app/core/models/interfacce.ts`
 | **DettaglioPrenotazionePage** | Dettaglio con mappa Leaflet del luogo |
 | **ProfiloStudentePage** | Modifica profilo, cambio password, elimina account |
 | **BachecaStudentePage** | FAQ e link utili per corso di studi |
-| **NotifichePage** | Centro notifiche con filtri (lette/non lette) |
+| **NotificheStudentePage** | Centro notifiche con filtri (lette/non lette) |
 | **SegnalazionePage** | Form segnalazione problema + storico |
 
-### Docente (7 pagine — stub)
+### Docente (9 pagine)
 
 | Pagina | Descrizione |
 |--------|-------------|
-| DashboardDocentePage | Riepilogo attività |
-| GestioneSlotPage | Creazione/gestione slot disponibili |
-| PrenotazioniRicevutePage | Elenco prenotazioni ricevute |
-| DettaglioPrenotazioneDocentePage | Dettaglio prenotazione |
-| BachecheDocentePage | Gestione bacheche corsi |
-| StatisticheDocentePage | Statistiche |
-| ProfiloDocentePage | Modifica profilo |
+| **DashboardDocentePage** | Riepilogo attività, prossimi ricevimenti, statistiche personali |
+| **GestioneSlotPage** | CRUD slot disponibili con calendario e modali |
+| **PrenotazioniRicevutePage** | Elenco prenotazioni con filtri (stato/data/ricerca), conferma/annulla, agenda oggi |
+| **DettaglioPrenotazioneDocentePage** | Dettaglio prenotazione con mappa e documenti |
+| **BachecheDocentePage** | Gestione bacheche e FAQ per corso di studi |
+| **NotificheDocentePage** | Centro notifiche con filtri (lette/non lette/promemoria) |
+| **DocumentiDocentePage** | Documenti, upload e gestione allegati |
+| **StatisticheDocentePage** | Statistiche sugli argomenti di ricevimento |
+| **ProfiloDocentePage** | Modifica profilo |
 
 ### Admin (6 pagine)
 
@@ -189,6 +193,7 @@ Tutti i servizi usano `providedIn: 'root'` e il pattern `BehaviorSubject` per lo
 | `DocumentoService` | `core/services/documento.ts` | POST upload, GET/DELETE `/api/documenti` |
 | `AdminService` | `core/services/admin.ts` | CRUD `/api/admin/utenti`, `/api/admin/slot`, `/api/admin/prenotazioni`, stats |
 | `ErroriService` | `core/services/errori.ts` | Gestione errori HTTP con toast in italiano |
+| `PasswordValidator` | `core/validators/password.validator.ts` | Validazione password con requisiti di complessità |
 
 ---
 
@@ -278,11 +283,11 @@ provideIonicAngular({ mode: 'md' }),
 |------|--------|-------|
 | Home | 1 | ✅ Completato |
 | Autenticazione | 4 | ✅ Completato |
-| Studente | 8 | ✅ Completato |
+| Studente | 9 | ✅ Completato |
 | Admin | 6 | ✅ Completato |
-| Docente | 7 | 🚧 Stub (solo scheletro) |
+| Docente | 9 | ✅ Completato |
 | Componenti condivisi | 3 | ✅ Completato |
-| Servizi | 12 | ✅ Completato (2 stub) |
+| Servizi | 12 | ✅ Completato |
 
 ---
 

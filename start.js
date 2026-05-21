@@ -26,7 +26,12 @@ function log(tag, msg) {
 }
 
 async function waitForPostgres(url, timeout = 30000) {
-  const pg = require('pg');
+  let pg;
+  try {
+    pg = require('pg');
+  } catch {
+    pg = require(path.join(BACKEND, 'node_modules/pg'));
+  }
   const start = Date.now();
   while (Date.now() - start < timeout) {
     try {
