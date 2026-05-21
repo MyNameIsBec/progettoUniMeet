@@ -104,6 +104,17 @@ export class AuthService {
     );
   }
 
+  getProfile(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/auth/profile`);
+  }
+
+  changePassword(oldPassword: string, newPassword: string): Observable<{ messaggio: string }> {
+    return this.http.post<{ messaggio: string }>(
+      `${this.apiUrl}/api/auth/change-password`,
+      { oldPassword, newPassword }
+    );
+  }
+
   isLoggedIn(): boolean {
     return this.currentUserSubject.value !== null;
   }

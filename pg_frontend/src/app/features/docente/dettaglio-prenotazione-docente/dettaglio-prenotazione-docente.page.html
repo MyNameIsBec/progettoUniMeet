@@ -1,13 +1,300 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>dettaglio-prenotazione-docente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-dashboard-layout>
+  @if (loading) {
+  <div class="loading-container">
+    <ion-icon name="refresh-outline"></ion-icon>
+    <p>Caricamento dettagli prenotazione...</p>
+  </div>
+  } @else if (prenotazione) {
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">dettaglio-prenotazione-docente</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <div class="page-header">
+    <div>
+      <a class="back-link" routerLink="/prenotazioni-ricevute">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        Torna alle prenotazioni
+      </a>
+      <span class="eyebrow">Dettaglio Ricevimento</span>
+      <h2>{{ prenotazione.argomento || 'Ricevimento' }}</h2>
+      <p>Dettaglio della prenotazione ricevuta da {{ prenotazione.studente || 'studente' }}.</p>
+    </div>
+    <span class="page-status" [ngClass]="getStatusClass(prenotazione.stato)">
+      <ion-icon [name]="prenotazione.stato === 'confermata' ? 'checkmark-circle-outline' : prenotazione.stato === 'in_attesa' ? 'time-outline' : 'close-circle-outline'"></ion-icon>
+      {{ prenotazione.stato === 'confermata' ? 'Confermata' : prenotazione.stato === 'in_attesa' ? 'In attesa' : 'Annullata' }}
+    </span>
+  </div>
+
+  <div class="status-section">
+    <ion-card class="status-card">
+      <ion-card-content>
+        <div class="status-main">
+          <div class="status-icon">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <div>
+            <span>STATO PRENOTAZIONE</span>
+            <h3>{{ prenotazione.stato === 'confermata' ? 'Confermata' : prenotazione.stato === 'in_attesa' ? 'In attesa di conferma' : 'Annullata' }}</h3>
+            <p>Ricevimento prenotato per il {{ formattaData(prenotazione.data) }}</p>
+          </div>
+        </div>
+        <div class="status-meta">
+          <div>
+            <span>Data</span>
+            <strong>{{ formattaData(prenotazione.data) }}</strong>
+          </div>
+          <div>
+            <span>Ora</span>
+            <strong>{{ prenotazione.ora }}</strong>
+          </div>
+          <div>
+            <span>Luogo</span>
+            <strong>{{ prenotazione.luogo }}</strong>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="detail-layout">
+    <div class="detail-left-column">
+
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="person-outline"></ion-icon>
+            Studente
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="student-profile-box">
+            <div class="student-avatar-large">{{ getIniziali(prenotazione.studente) }}</div>
+            <div class="student-main-info">
+              <h3>{{ prenotazione.studente || 'Studente' }}</h3>
+              <p>Matricola: {{ prenotazione.studenteId }}</p>
+              <div class="student-tags">
+                <span><ion-icon name="book-outline"></ion-icon> {{ prenotazione.materia || 'Generale' }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Dettagli ricevimento
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+              <div>
+                <span>Data</span>
+                <strong>{{ formattaData(prenotazione.data) }}</strong>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon"><ion-icon name="time-outline"></ion-icon></div>
+              <div>
+                <span>Ora</span>
+                <strong>{{ prenotazione.ora }}</strong>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon"><ion-icon name="location-outline"></ion-icon></div>
+              <div>
+                <span>Luogo</span>
+                <strong>{{ prenotazione.luogo }}</strong>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon"><ion-icon name="book-outline"></ion-icon></div>
+              <div>
+                <span>Materia</span>
+                <strong>{{ prenotazione.materia || 'Generale' }}</strong>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      @if (prenotazione.argomento) {
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+            Argomento
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="topic-box">
+            <span>Argomento del ricevimento</span>
+            <h3>{{ prenotazione.argomento }}</h3>
+            @if (prenotazione.descrizione) {
+            <p>{{ prenotazione.descrizione }}</p>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+      }
+
+      @if (prenotazione.documenti && prenotazione.documenti.length > 0) {
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="documents-outline"></ion-icon>
+            Documenti allegati
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="documents-list">
+            @for (doc of prenotazione.documenti; track doc.id) {
+            <div class="document-item">
+              <div class="document-icon" [ngClass]="doc.tipo">
+                <ion-icon name="document-text-outline"></ion-icon>
+              </div>
+              <div class="document-info">
+                <h3>{{ doc.nomeFile }}</h3>
+                <p>{{ doc.tipo | uppercase }} • {{ doc.data }}</p>
+              </div>
+              <div class="document-actions">
+                <ion-button fill="clear" size="small" (click)="apriFile(doc.percorso)">
+                  <ion-icon name="open-outline" slot="start"></ion-icon>
+                  Apri
+                </ion-button>
+              </div>
+            </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+      }
+
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="create-outline"></ion-icon>
+            Note
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="notes-box">
+            <ion-textarea [(ngModel)]="note" placeholder="Aggiungi note personali su questa prenotazione..." rows="4"></ion-textarea>
+            <div class="notes-actions">
+              <ion-button fill="outline" size="small" (click)="salvaNote()">
+                <ion-icon name="save-outline" slot="start"></ion-icon>
+                Salva note
+              </ion-button>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+
+    <div class="detail-right-column">
+
+      <ion-card class="detail-card actions-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="flash-outline"></ion-icon>
+            Azioni rapide
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @if (prenotazione.stato === 'in_attesa') {
+          <ion-button expand="block" color="success" (click)="confermaPrenotazione()">
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Conferma prenotazione
+          </ion-button>
+          <ion-button expand="block" fill="outline" color="danger" (click)="annullaPrenotazione()">
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+            Rifiuta prenotazione
+          </ion-button>
+          }
+          @if (prenotazione.stato === 'confermata') {
+          <ion-button expand="block" fill="outline" color="danger" (click)="annullaPrenotazione()">
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+            Annulla prenotazione
+          </ion-button>
+          }
+          <ion-button expand="block" fill="outline" routerLink="/prenotazioni-ricevute">
+            <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+            Torna all'elenco
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="detail-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="time-outline"></ion-icon>
+            Timeline
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="timeline">
+            <div class="timeline-item active">
+              <span></span>
+              <div>
+                <strong>Prenotazione effettuata</strong>
+                <p>{{ prenotazione.data }}</p>
+              </div>
+            </div>
+            @if (prenotazione.stato === 'confermata' || prenotazione.stato === 'completata') {
+            <div class="timeline-item active">
+              <span></span>
+              <div>
+                <strong>Confermata</strong>
+                <p>Ricevimento confermato</p>
+              </div>
+            </div>
+            }
+            @if (prenotazione.stato === 'annullata') {
+            <div class="timeline-item active">
+              <span></span>
+              <div>
+                <strong>Annullata</strong>
+                <p>Prenotazione annullata</p>
+              </div>
+            </div>
+            }
+            @if (prenotazione.stato === 'completata') {
+            <div class="timeline-item active">
+              <span></span>
+              <div>
+                <strong>Completata</strong>
+                <p>Ricevimento concluso</p>
+              </div>
+            </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="detail-card reminder-card">
+        <ion-card-content>
+          <div class="reminder-icon">
+            <ion-icon name="notifications-outline"></ion-icon>
+          </div>
+          <div>
+            <h3>Promemoria</h3>
+            <p>Il ricevimento si terrà il {{ formattaData(prenotazione.data) }} alle {{ prenotazione.ora }}. Assicurati di essere disponibile nel luogo indicato.</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+  </div>
+
+  } @else {
+  <div class="page-header">
+    <a class="back-link" routerLink="/prenotazioni-ricevute">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      Torna alle prenotazioni
+    </a>
+    <h2>Prenotazione non trovata</h2>
+    <p>La prenotazione richiesta non esiste o non è disponibile.</p>
+  </div>
+  }
+</app-dashboard-layout>

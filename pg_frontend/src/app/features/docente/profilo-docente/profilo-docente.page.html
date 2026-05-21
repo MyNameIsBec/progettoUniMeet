@@ -1,13 +1,111 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>profilo-docente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-dashboard-layout>
+  @if (loading) {
+  <div class="loading-container">
+    <ion-icon name="refresh-outline" class="spin"></ion-icon>
+    <p>Caricamento profilo...</p>
+  </div>
+  } @else {
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Profilo docente</span>
+      <h1>Ciao {{ form.nome }}</h1>
+      <p>Gestisci i tuoi dati personali e la sicurezza del tuo account.</p>
+    </div>
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="person-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>Identità Digitale</span>
+        <strong>Dati Personali</strong>
+        <small>Sicurezza e Privacy</small>
+      </div>
+    </div>
+  </section>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">profilo-docente</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <section class="profile-grid">
+    <ion-card class="profile-card personal-card full-width-card">
+      <ion-card-header>
+        <div class="card-title-row">
+          <div class="card-icon"><ion-icon name="id-card-outline"></ion-icon></div>
+          <div>
+            <ion-card-title>Dati personali</ion-card-title>
+            <p>Informazioni principali del tuo account UniMeet.</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Nome</label>
+            <ion-item lines="none">
+              <ion-input [(ngModel)]="form.nome" placeholder="Inserisci il nome"></ion-input>
+            </ion-item>
+          </div>
+          <div class="form-field">
+            <label>Cognome</label>
+            <ion-item lines="none">
+              <ion-input [(ngModel)]="form.cognome" placeholder="Inserisci il cognome"></ion-input>
+            </ion-item>
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <ion-item lines="none">
+              <ion-input type="email" [(ngModel)]="form.email" placeholder="Email" readonly></ion-input>
+            </ion-item>
+          </div>
+          <div class="form-field">
+            <label>Ufficio</label>
+            <ion-item lines="none">
+              <ion-input [(ngModel)]="form.ufficio" placeholder="Ufficio" readonly></ion-input>
+            </ion-item>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="profile-card security-card">
+      <ion-card-header>
+        <div class="card-title-row">
+          <div class="card-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
+          <div>
+            <ion-card-title>Sicurezza account</ion-card-title>
+            <p>Controlla password e stato account.</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="security-list">
+          <div class="security-item">
+            <div>
+              <span>Password</span>
+              <strong>Proteggi il tuo account</strong>
+            </div>
+            <ion-button fill="clear" size="small" (click)="apriCambioPassword()">
+              <ion-icon name="key-outline" slot="start"></ion-icon>
+              Cambia
+            </ion-button>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </section>
+
+  <section class="profile-actions">
+    <div>
+      <h2>Azioni profilo</h2>
+      <p>Salva le modifiche apportate.</p>
+    </div>
+    <div class="actions-buttons">
+      <ion-button class="save-btn" (click)="salvaModifiche()">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Salva modifiche
+      </ion-button>
+      <ion-button fill="clear" class="delete-btn" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Esci
+      </ion-button>
+    </div>
+  </section>
+  }
+</app-dashboard-layout>

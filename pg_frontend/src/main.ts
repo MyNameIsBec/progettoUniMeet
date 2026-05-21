@@ -45,6 +45,7 @@ import {
   fileTrayFullOutline,
   filterOutline,
   flagOutline,
+  flashOutline,
   folderOpenOutline,
   folderOutline,
   gridOutline,
@@ -128,6 +129,7 @@ addIcons({
   fileTrayFullOutline,
   filterOutline,
   flagOutline,
+  flashOutline,
   folderOpenOutline,
   folderOutline,
   gridOutline,
@@ -179,7 +181,6 @@ addIcons({
   trashOutline
 });
 
-// Inizializza il tema scuro se salvato nelle preferenze
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
   document.body.classList.add('dark');

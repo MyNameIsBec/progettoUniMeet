@@ -1,13 +1,72 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>bacheche-docente</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-dashboard-layout>
+  <section class="premium-hero">
+    <div class="hero-text-content">
+      <span class="eyebrow">Bacheca</span>
+      <h1>Bacheca docenti</h1>
+      <p>Gestisci le domande frequenti e le comunicazioni per il corso di {{ nomeCorsoDiStudi }}.</p>
+    </div>
+    <div class="hero-status-card">
+      <div class="hero-status-icon">
+        <ion-icon name="help-circle-outline"></ion-icon>
+      </div>
+      <div class="status-details">
+        <span>{{ nomeCorsoDiStudi }}</span>
+        <strong>FAQ e comunicazioni</strong>
+        <small>{{ faqs.length }} domande</small>
+      </div>
+    </div>
+  </section>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">bacheche-docente</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+  <section class="bacheca-content">
+    @if (loading) {
+    <div class="loading-state">
+      <ion-icon name="refresh-outline"></ion-icon>
+      <p>Caricamento bacheca...</p>
+    </div>
+    } @else {
+    <ion-card class="faq-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="help-circle-outline"></ion-icon>
+          Domande frequenti
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="faq-toolbar">
+          <ion-button fill="outline" (click)="aggiungiFaq()">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Nuova FAQ
+          </ion-button>
+        </div>
+
+        @if (faqs.length === 0) {
+        <div class="no-faq">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <p>Nessuna FAQ presente. Aggiungi la prima domanda frequente.</p>
+        </div>
+        }
+
+        <div class="faq-list">
+          @for (faq of faqs; track faq.id) {
+          <details [open]="faq.aperta" class="faq-item">
+            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
+              <span>{{ faq.domanda }}</span>
+              <div class="faq-actions">
+                <ion-button fill="clear" size="small" (click)="$event.stopPropagation(); modificaFaq(faq)">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" size="small" color="danger" (click)="$event.stopPropagation(); eliminaFaq(faq)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </div>
+            </summary>
+            <div class="faq-answer">{{ faq.risposta }}</div>
+          </details>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+    }
+  </section>
+</app-dashboard-layout>

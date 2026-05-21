@@ -1,1 +1,172 @@
-/* Stili per la pagina bacheche-docente */
+:host {
+  --primary-blue: #2563eb;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --bg-light: #f8fbff;
+  color: var(--text-dark);
+}
+
+.bacheca-content {
+  margin: 0 34px 48px;
+}
+
+.faq-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 28px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+  margin: 0;
+}
+
+ion-card-header {
+  padding: 32px 32px 16px;
+}
+
+ion-card-content {
+  padding: 16px 32px 32px;
+}
+
+ion-card-title {
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: -0.03em;
+  ion-icon {
+    color: var(--primary-blue);
+    font-size: 28px;
+  }
+}
+
+.faq-toolbar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.faq-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  &:hover {
+    border-color: var(--primary-blue);
+  }
+}
+
+.faq-item summary {
+  cursor: pointer;
+  padding: 16px 20px;
+  color: var(--text-dark);
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  outline: none;
+  list-style: none;
+  gap: 12px;
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.faq-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ion-button {
+    margin: 0;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    min-height: 36px;
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.faq-item summary > ion-icon {
+  color: var(--text-muted);
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.faq-item[open] summary {
+  border-bottom: 1px solid #eef4ff;
+  background: #f8fbff;
+  color: var(--primary-blue);
+  > ion-icon {
+    transform: rotate(90deg);
+    color: var(--primary-blue);
+  }
+}
+
+.faq-answer {
+  padding: 20px;
+  color: #475569;
+  line-height: 1.7;
+  font-weight: 500;
+  background: #ffffff;
+}
+
+.no-faq {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-light);
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  ion-icon {
+    font-size: 48px;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+  }
+  p {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+  color: var(--text-muted);
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: var(--primary-blue);
+  }
+  p {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .bacheca-content {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  ion-card-content {
+    padding: 16px;
+  }
+  ion-card-header {
+    padding: 24px 16px 12px;
+  }
+}
