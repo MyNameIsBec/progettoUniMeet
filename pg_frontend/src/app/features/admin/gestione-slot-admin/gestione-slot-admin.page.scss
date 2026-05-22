@@ -356,6 +356,16 @@ ion-button {
 
 /* DARK MODE OVERRIDES */
 
+:host-context(body.dark) .stato-libero {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+}
+
+:host-context(body.dark) .stato-occupato {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
 :host-context(body.dark) .slot-docente ion-icon {
     color: #60a5fa;
 }

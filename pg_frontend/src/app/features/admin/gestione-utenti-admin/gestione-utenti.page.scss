@@ -281,6 +281,72 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 
 /* DARK MODE OVERRIDES */
 
+:host-context(body.dark) .ruolo-studente {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .ruolo-docente {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+}
+
+:host-context(body.dark) .ruolo-amministratore {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+:host-context(body.dark) .icon-btn.edit {
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .icon-btn.edit:hover {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+:host-context(body.dark) .icon-btn.delete {
+    color: #f87171;
+}
+
+:host-context(body.dark) .icon-btn.delete:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+
+:host-context(body.dark) ion-modal ion-header ion-toolbar {
+    --background: #0f172a;
+    --color: #ffffff;
+}
+
+:host-context(body.dark) ion-modal ion-header ion-toolbar ion-buttons ion-button {
+    --color: #94a3b8;
+}
+
+:host-context(body.dark) .modal-content {
+    --background: #0f172a;
+}
+
+:host-context(body.dark) .field-group {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+
+:host-context(body.dark) .field-group ion-input,
+:host-context(body.dark) .field-group ion-select {
+    --background: rgba(255, 255, 255, 0.03);
+    --color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --placeholder-color: #94a3b8;
+    border-color: rgba(255, 255, 255, 0.1);
+    background: transparent;
+}
+
+:host-context(body.dark) .search-bar {
+    --background: #1e293b;
+    --color: #ffffff;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width: 760px) {
   .hide-mobile {
     display: none;

@@ -232,6 +232,21 @@ ion-chip.active {
 
 /* DARK MODE OVERRIDES */
 
+:host-context(body.dark) .stato-aperta {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+:host-context(body.dark) .stato-in_lavorazione {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .stato-chiusa {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+}
+
 @media (max-width: 760px) {
   .hide-mobile {
     display: none;
