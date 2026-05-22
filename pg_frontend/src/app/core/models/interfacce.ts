@@ -27,6 +27,7 @@ export interface Docente extends Utente {
   descrizione?: string;
   prossimoSlot?: string;
   corsoDiStudi: string[];
+  corsi?: { id: string; nome: string }[];
   corsiDiStudi?: { id: string; nome: string }[];
 }
 

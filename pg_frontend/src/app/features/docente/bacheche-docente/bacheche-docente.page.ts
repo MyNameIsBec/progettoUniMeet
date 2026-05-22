@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonTextarea, IonHeader, IonToolbar, IonTitle, IonContent, AlertController } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonTextarea, IonItem, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonTitle, IonContent, AlertController } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { BachecaService } from '../../../core/services/bacheca';
 import { DocenteService } from '../../../core/services/docente';
@@ -18,6 +18,7 @@ import { FAQ, Bacheca } from '../../../core/models/interfacce';
   imports: [
     CommonModule, FormsModule, RouterLink,
     IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonTextarea,
+    IonItem, IonSelect, IonSelectOption,
     IonHeader, IonToolbar, IonTitle, IonContent,
     DashboardLayoutComponent
   ]
@@ -25,6 +26,8 @@ import { FAQ, Bacheca } from '../../../core/models/interfacce';
 export class BachecheDocentePage implements OnInit {
   public bacheca: Bacheca | null = null;
   public faqs: FAQ[] = [];
+  public corsiDisponibili: { id: string; nome: string }[] = [];
+  public cdsSelezionatoId: string = '';
   public nomeCorsoDiStudi = '';
   public loading = true;
 
@@ -36,25 +39,39 @@ export class BachecheDocentePage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    await this.caricaBacheca();
+    await this.caricaCorsi();
   }
 
-  async caricaBacheca() {
-    this.loading = true;
+  async caricaCorsi() {
     try {
       const user = this.authService.getCurrentUser();
       if (!user) return;
 
       const docente = await firstValueFrom(this.docenteService.getDettagliDocente(user.id)) as any;
-      const corsi = docente.corsiDiStudi || [];
-      if (corsi.length === 0) {
-        this.loading = false;
-        return;
+      this.corsiDisponibili = docente.corsiDiStudi || [];
+      if (this.corsiDisponibili.length > 0) {
+        this.cdsSelezionatoId = this.corsiDisponibili[0].id;
+        await this.caricaBacheca();
       }
+    } catch (err) {
+      console.error('Errore caricamento corsi', err);
+      this.loading = false;
+    }
+  }
 
-      this.nomeCorsoDiStudi = corsi[0].nome;
-      this.bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(corsi[0].id));
-      this.faqs = await firstValueFrom(this.bachecaService.getFaq(corsi[0].id));
+  async onCdsChange(event: any) {
+    this.cdsSelezionatoId = event.detail.value;
+    await this.caricaBacheca();
+  }
+
+  async caricaBacheca() {
+    if (!this.cdsSelezionatoId) return;
+    this.loading = true;
+    try {
+      const cds = this.corsiDisponibili.find(c => c.id === this.cdsSelezionatoId);
+      this.nomeCorsoDiStudi = cds?.nome || '';
+      this.bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(this.cdsSelezionatoId));
+      this.faqs = await firstValueFrom(this.bachecaService.getFaq(this.cdsSelezionatoId));
     } catch (err) {
       console.error('Errore caricamento bacheca', err);
     }
@@ -75,13 +92,8 @@ export class BachecheDocentePage implements OnInit {
           handler: async (data) => {
             if (!data.domanda || !data.risposta) return false;
             try {
-              const user = this.authService.getCurrentUser();
-              const docente = await firstValueFrom(this.docenteService.getDettagliDocente(user!.id)) as any;
-              const cdsId = (docente.corsiDiStudi || [])[0]?.id;
-              if (cdsId) {
-                await firstValueFrom(this.bachecaService.aggiungiFaq(cdsId, { domanda: data.domanda, risposta: data.risposta }));
-                await this.caricaBacheca();
-              }
+              await firstValueFrom(this.bachecaService.aggiungiFaq(this.cdsSelezionatoId, { domanda: data.domanda, risposta: data.risposta }));
+              await this.caricaBacheca();
             } catch (err) {
               console.error('Errore creazione FAQ', err);
             }

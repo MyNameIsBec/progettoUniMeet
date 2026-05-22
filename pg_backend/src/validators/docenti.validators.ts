@@ -2,9 +2,9 @@ import { body, query, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 export const creaSlotSchema = [
-  body('data').isString().notEmpty().withMessage('Data obbligatoria'),
-  body('oraInizio').isString().notEmpty().withMessage('Ora inizio obbligatoria'),
-  body('oraFine').isString().notEmpty().withMessage('Ora fine obbligatoria'),
+  body('data').isString().notEmpty().matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Data obbligatoria (YYYY-MM-DD)'),
+  body('oraInizio').isString().notEmpty().matches(/^\d{2}:\d{2}$/).withMessage('Ora inizio obbligatoria (HH:mm)'),
+  body('oraFine').isString().notEmpty().matches(/^\d{2}:\d{2}$/).withMessage('Ora fine obbligatoria (HH:mm)'),
   body('luogo').optional().isObject(),
   body('luogo.nomeAula').if(body('luogo').exists()).isString().notEmpty(),
   body('luogo.edificio').if(body('luogo').exists()).isString().notEmpty(),
@@ -12,9 +12,9 @@ export const creaSlotSchema = [
 ];
 
 export const modificaSlotSchema = [
-  body('data').optional().isString().notEmpty(),
-  body('oraInizio').optional().isString().notEmpty(),
-  body('oraFine').optional().isString().notEmpty(),
+  body('data').optional().isString().notEmpty().matches(/^\d{4}-\d{2}-\d{2}$/),
+  body('oraInizio').optional().isString().notEmpty().matches(/^\d{2}:\d{2}$/),
+  body('oraFine').optional().isString().notEmpty().matches(/^\d{2}:\d{2}$/),
   body('disponibilita').optional().isBoolean(),
   body('luogo').optional().isObject(),
   body('luogo.nomeAula').if(body('luogo').exists()).isString().notEmpty(),

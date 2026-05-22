@@ -12,6 +12,7 @@ model CorsoDiStudi {
   studenti          Studente[]
   docenti           DocenteCorsoDiStudi[]
   bacheche          Bacheca[]
+  corsi             Corso[]
 }
 
 model Studente {
@@ -27,13 +28,15 @@ model Studente {
 }
 
 model Segnalazione {
-  id_segnalazione    String   @id @default(uuid())
+  id_segnalazione    String    @id @default(uuid())
   oggetto            String
   descrizione        String
-  data_invio         DateTime @default(now())
-  stato              String   @default("APERTA")
-  matricola_studente String
-  studente           Studente @relation(fields: [matricola_studente], references: [matricola])
+  data_invio         DateTime  @default(now())
+  stato              String    @default("APERTA")
+  matricola_studente String?
+  studente           Studente? @relation(fields: [matricola_studente], references: [matricola])
+  id_docente         String?
+  docente            Docente?  @relation(fields: [id_docente], references: [id_docente])
 }
 
 model Docente {
@@ -46,6 +49,7 @@ model Docente {
   corsi            Corso[]
   slot_ricevimento SlotRicevimento[]
   corsi_di_studi   DocenteCorsoDiStudi[]
+  segnalazioni     Segnalazione[]
 }
 
 model DocenteCorsoDiStudi {
@@ -65,12 +69,14 @@ model Amministratore {
 }
 
 model Corso {
-  id_corso   String   @id @default(uuid())
-  nome_corso String
-  anno       Int
-  cfu        Int
-  id_docente String
-  docente    Docente  @relation(fields: [id_docente], references: [id_docente])
+  id_corso          String      @id @default(uuid())
+  nome_corso        String
+  anno              Int
+  cfu               Int
+  id_docente        String
+  docente           Docente     @relation(fields: [id_docente], references: [id_docente])
+  id_corso_di_studi String?
+  corso_di_studi    CorsoDiStudi? @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
 }
 
 model Bacheca {

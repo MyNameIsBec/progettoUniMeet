@@ -5,9 +5,12 @@ import {
   getAllSegnalazioni,
   aggiornaStatoSegnalazione,
   eliminaSegnalazione,
+  createSegnalazioneDocente,
+  getSegnalazioniByDocente,
 } from '../controllers/segnalazioni.controller';
 import {
   creaSegnalazioneSchema,
+  creaSegnalazioneDocenteSchema,
   aggiornaStatoSchema,
   handleValidationErrors,
 } from '../validators/segnalazioni.validators';
@@ -51,6 +54,20 @@ router.delete(
   authenticate,
   authorize('AMMINISTRATORE'),
   eliminaSegnalazione
+);
+
+router.post(
+  '/segnalazioni/docente',
+  authenticate,
+  creaSegnalazioneDocenteSchema,
+  handleValidationErrors,
+  createSegnalazioneDocente,
+);
+
+router.get(
+  '/segnalazioni/docente/:idDocente',
+  authenticate,
+  getSegnalazioniByDocente,
 );
 
 export default router;

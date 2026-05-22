@@ -50,13 +50,11 @@ export class ElencoDocentiPage {
     try {
       const user = this.authService.getCurrentUser();
       if (user != null) {
-        await this.caricaDocenti(); 
-        
         const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
         if (profilo && profilo.corsoDiStudi) {
           this.mioCorso = profilo.corsoDiStudi;
-          this.cerca(); // Filtra inizialmente per il mio corso o mostra tutto
         }
+        await this.caricaDocenti();
       }
     }
     catch (error) {
@@ -66,8 +64,7 @@ export class ElencoDocentiPage {
 
   async caricaDocenti() {
     try {
-      // Passiamo stringa vuota per caricare tutti i docenti
-      const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso('', this.ricerca));
+      const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso(this.mioCorso || '', this.ricerca));
       this.listaDocenti = docenti.map(d => ({ 
         ...d, 
         iniziali: d.iniziali || `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??'

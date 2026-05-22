@@ -49,14 +49,12 @@ export const forgotPasswordSchema = [
 export const verificaCodiceSchema = [
   body('email').isEmail().withMessage('Email non valida').normalizeEmail(),
   body('codice').isString().notEmpty().withMessage('Codice richiesto'),
-  handleValidationErrors,
 ];
 
 export const resetPasswordSchema = [
   body('email').isEmail().withMessage('Email non valida').normalizeEmail(),
   body('codice').isString().notEmpty().withMessage('Codice richiesto'),
   body('nuovaPassword').isString().isLength({ min: 8 }).withMessage('La password deve essere di almeno 8 caratteri'),
-  handleValidationErrors,
 ];
 
 export const refreshTokenSchema = [

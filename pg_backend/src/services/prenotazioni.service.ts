@@ -1,4 +1,5 @@
 import { prisma } from '../prisma/client';
+import { formatTime } from '../utils/time';
 
 function fmtLuogo(luogo: { nome_aula: string; edificio: string; piano: string } | null): string {
   if (!luogo) return '';
@@ -29,13 +30,6 @@ export async function createPrenotazione(
   const matricola = data.matricolaStudente?.trim();
   const idSlot = data.idSlot?.trim();
 
-  const slot = await prisma.slotRicevimento.findUnique({
-    where: { id_slot: idSlot },
-    include: { docente: true },
-  });
-  if (!slot) throw new Error('Slot not found');
-  if (!slot.disponibilita) throw new Error('Slot non disponibile');
-
   const studente = await prisma.studente.findUnique({
     where: { matricola: matricola },
   });
@@ -63,27 +57,35 @@ export async function createPrenotazione(
     };
   }
 
-
-  
   try {
-    const p = await prisma.prenotazione.create({
-      data: createData as any,
-      include: {
-        studente: { select: { matricola: true, nome: true, cognome: true } },
-        slot: {
-          include: {
-            docente: { select: { id_docente: true, nome: true, cognome: true, corsi: { select: { nome_corso: true } } } },
-            luogo: true,
-          },
-        },
-        documenti: true,
-      },
-    }) as any;
+    const p = await prisma.$transaction(async (tx) => {
+      const slot = await tx.slotRicevimento.findUnique({
+        where: { id_slot: idSlot },
+        include: { docente: true },
+      });
+      if (!slot) throw new Error('Slot not found');
+      if (!slot.disponibilita) throw new Error('Slot non disponibile');
 
-    // Aggiorniamo la disponibilità dello slot a false dopo la prenotazione
-    await prisma.slotRicevimento.update({
-      where: { id_slot: idSlot },
-      data: { disponibilita: false }
+      const prenotazione = await tx.prenotazione.create({
+        data: createData as any,
+        include: {
+          studente: { select: { matricola: true, nome: true, cognome: true } },
+          slot: {
+            include: {
+              docente: { select: { id_docente: true, nome: true, cognome: true, corsi: { select: { nome_corso: true } } } },
+              luogo: true,
+            },
+          },
+          documenti: true,
+        },
+      }) as any;
+
+      await tx.slotRicevimento.update({
+        where: { id_slot: idSlot },
+        data: { disponibilita: false }
+      });
+
+      return prenotazione;
     });
     
     return {
@@ -93,7 +95,7 @@ export async function createPrenotazione(
       docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
       materia: p.slot.docente.corsi?.[0]?.nome_corso ?? '',
       data: p.slot.data.toISOString().split('T')[0],
-      ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+      ora: formatTime(p.slot.ora_inizio),
       luogo: fmtLuogo(p.slot.luogo),
       luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
       argomento: p.argomento,
@@ -164,7 +166,7 @@ export async function getPrenotazioniStudente(matricolaStudente: string) {
     docente: `${p.slot.docente.nome} ${p.slot.docente.cognome}`,
     materia: p.slot.docente.corsi?.[0]?.nome_corso ?? '',
     data: p.slot.data.toISOString().split('T')[0],
-    ora: `${p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+    ora: formatTime(p.slot.ora_inizio),
     luogo: fmtLuogo(p.slot.luogo),
     luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
     argomento: p.argomento,
@@ -190,8 +192,8 @@ export async function getPrenotazioniDocente(idDocente: string) {
     slotId: p.id_slot,
     studente: `${p.studente.nome} ${p.studente.cognome}`,
     data: p.slot.data.toISOString().split('T')[0],
-    oraInizio: p.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5),
-    oraFine: p.slot.ora_fine.toISOString().split('T')[1]?.substring(0, 5),
+    oraInizio: formatTime(p.slot.ora_inizio),
+    oraFine: formatTime(p.slot.ora_fine),
     luogo: fmtLuogo(p.slot.luogo),
     luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
     argomento: p.argomento,
@@ -222,7 +224,7 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
     slotId: updated.id_slot,
     docente: `${updated.slot.docente.nome} ${updated.slot.docente.cognome}`,
     data: updated.slot.data.toISOString().split('T')[0],
-    ora: `${updated.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+    ora: formatTime(updated.slot.ora_inizio),
     luogo: fmtLuogo(updated.slot.luogo),
     argomento: updated.argomento,
     stato: updated.stato_prenotazione.toLowerCase(),
@@ -255,7 +257,7 @@ export async function getPrenotazioneById(id: string) {
     docente: `${prenotazione.slot.docente.nome} ${prenotazione.slot.docente.cognome}`,
     materia,
     data: prenotazione.slot.data.toISOString().split('T')[0],
-    ora: `${prenotazione.slot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5)}`,
+    ora: formatTime(prenotazione.slot.ora_inizio),
     luogo: fmtLuogo(prenotazione.slot.luogo),
     luogoRicevimento: mapLuogoRicevimento(prenotazione.slot.luogo),
     argomento: prenotazione.argomento,

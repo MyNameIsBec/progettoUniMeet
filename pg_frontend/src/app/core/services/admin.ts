@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth';
 
 export interface AdminStats {
   totaleStudenti: number;
@@ -92,63 +93,67 @@ export interface FiltriSlot {
   providedIn: 'root',
 })
 export class AdminService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
+
+  private get api(): string {
+    return `${this.authService.getApiUrl()}/api/admin`;
+  }
 
   getStatistiche(): Observable<AdminStats> {
-    return this.http.get<AdminStats>('api/admin/stats');
+    return this.http.get<AdminStats>(`${this.api}/stats`);
   }
 
   getUtenti(ruolo?: string): Observable<UtenteUnificato[]> {
     const params = ruolo ? `?ruolo=${ruolo}` : '';
-    return this.http.get<UtenteUnificato[]>(`api/admin/utenti${params}`);
+    return this.http.get<UtenteUnificato[]>(`${this.api}/utenti${params}`);
   }
 
   creaUtente(dati: CreaUtenteRequest): Observable<UtenteUnificato> {
-    return this.http.post<UtenteUnificato>('api/admin/utenti', dati);
+    return this.http.post<UtenteUnificato>(`${this.api}/utenti`, dati);
   }
 
   modificaUtente(id: string, dati: Partial<CreaUtenteRequest>): Observable<UtenteUnificato> {
-    return this.http.put<UtenteUnificato>(`api/admin/utenti/${id}`, dati);
+    return this.http.put<UtenteUnificato>(`${this.api}/utenti/${id}`, dati);
   }
 
   eliminaUtente(id: string): Observable<void> {
-    return this.http.delete<void>(`api/admin/utenti/${id}`);
+    return this.http.delete<void>(`${this.api}/utenti/${id}`);
   }
 
   getSlotDate(): Observable<SlotDate[]> {
-    return this.http.get<SlotDate[]>('api/admin/slot-date');
+    return this.http.get<SlotDate[]>(`${this.api}/slot-date`);
   }
 
   creaSlot(dati: CreaSlotRequest): Observable<SlotGriglia> {
-    return this.http.post<SlotGriglia>('api/admin/slot', dati);
+    return this.http.post<SlotGriglia>(`${this.api}/slot`, dati);
   }
 
   modificaSlot(idSlot: string, dati: Partial<CreaSlotRequest>): Observable<any> {
-    return this.http.put(`api/admin/slot/${idSlot}`, dati);
+    return this.http.put(`${this.api}/slot/${idSlot}`, dati);
   }
 
   eliminaSlot(idSlot: string): Observable<void> {
-    return this.http.delete<void>(`api/admin/slot/${idSlot}`);
+    return this.http.delete<void>(`${this.api}/slot/${idSlot}`);
   }
 
   getGiorniBloccati(): Observable<GiornoBloccato[]> {
-    return this.http.get<GiornoBloccato[]>('api/admin/giorni-bloccati');
+    return this.http.get<GiornoBloccato[]>(`${this.api}/giorni-bloccati`);
   }
 
   bloccaGiorno(dati: { data: string; motivo?: string }): Observable<GiornoBloccato> {
-    return this.http.post<GiornoBloccato>('api/admin/giorni-bloccati', dati);
+    return this.http.post<GiornoBloccato>(`${this.api}/giorni-bloccati`, dati);
   }
 
   sbloccaGiorno(id: string): Observable<void> {
-    return this.http.delete<void>(`api/admin/giorni-bloccati/${id}`);
+    return this.http.delete<void>(`${this.api}/giorni-bloccati/${id}`);
   }
 
   aggiornaStatoPrenotazione(id: string, stato: string): Observable<any> {
-    return this.http.put(`api/admin/prenotazioni/${id}/stato`, { stato });
+    return this.http.put(`${this.api}/prenotazioni/${id}/stato`, { stato });
   }
 
   eliminaPrenotazione(id: string): Observable<void> {
-    return this.http.delete<void>(`api/admin/prenotazioni/${id}`);
+    return this.http.delete<void>(`${this.api}/prenotazioni/${id}`);
   }
 
   getPrenotazioni(filtri?: FiltriPrenotazioni): Observable<PrenotazioneAdmin[]> {
@@ -160,7 +165,7 @@ export class AdminService {
       if (filtri.data) parts.push(`data=${filtri.data}`);
       if (parts.length) params = `?${parts.join('&')}`;
     }
-    return this.http.get<PrenotazioneAdmin[]>(`api/admin/prenotazioni${params}`);
+    return this.http.get<PrenotazioneAdmin[]>(`${this.api}/prenotazioni${params}`);
   }
 
   getSlotGlobali(filtri?: FiltriSlot): Observable<SlotGriglia[]> {
@@ -172,6 +177,6 @@ export class AdminService {
       if (filtri.stato) parts.push(`stato=${filtri.stato}`);
       if (parts.length) params = `?${parts.join('&')}`;
     }
-    return this.http.get<SlotGriglia[]>(`api/admin/slot${params}`);
+    return this.http.get<SlotGriglia[]>(`${this.api}/slot${params}`);
   }
 }

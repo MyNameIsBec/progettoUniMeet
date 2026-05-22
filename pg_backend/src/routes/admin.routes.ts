@@ -21,6 +21,8 @@ import {
   creaUtenteSchema,
   modificaUtenteSchema,
   slotFiltriSchema,
+  creaSlotSchema,
+  modificaSlotSchema,
   bloccaGiornoSchema,
   handleValidationErrors,
 } from '../validators/admin.validators';
@@ -37,14 +39,14 @@ router.post('/admin/utenti', ...authz, creaUtenteSchema, handleValidationErrors,
 router.put('/admin/utenti/:id', ...authz, modificaUtenteSchema, handleValidationErrors, modificaUtente);
 router.delete('/admin/utenti/:id', ...authz, eliminaUtente);
 router.get('/admin/slot-date', ...authz, getSlotDate);
-router.post('/admin/slot', ...authz, creaSlot);
-router.put('/admin/slot/:idSlot', ...authz, modificaSlot);
+router.post('/admin/slot', ...authz, creaSlotSchema, handleValidationErrors, creaSlot);
+router.put('/admin/slot/:idSlot', ...authz, modificaSlotSchema, handleValidationErrors, modificaSlot);
 router.delete('/admin/slot/:idSlot', ...authz, eliminaSlot);
 router.get('/admin/slot', ...authz, slotFiltriSchema, handleValidationErrors, getSlotGlobali);
 router.get('/admin/prenotazioni', ...authz, getAllPrenotazioni);
 router.put('/admin/prenotazioni/:id/stato', ...authz, aggiornaStatoPrenotazione);
 router.delete('/admin/prenotazioni/:id', ...authz, eliminaPrenotazione);
-router.get('/admin/giorni-bloccati', authenticate, getGiorniBloccati);
+router.get('/admin/giorni-bloccati', ...authz, getGiorniBloccati);
 router.post('/admin/giorni-bloccati', ...authz, bloccaGiornoSchema, handleValidationErrors, bloccaGiorno);
 router.delete('/admin/giorni-bloccati/:id', ...authz, sbloccaGiorno);
 

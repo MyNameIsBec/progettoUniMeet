@@ -417,3 +417,29 @@ pg_frontend/src/app/features/studente/impostazioni-studente/
 **File modificati:**
 - `src/app/core/models/interfacce.ts`
 - `pg_backend/src/services/docenti.service.ts`**
+
+---
+
+## 15. Bug Hunt — Piano di fix (22/05/2026)
+
+### Fase 6 — URL relativi in services (medio)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 6.1 | Sostituire `'api/admin/...'` con `${this.authService.getApiUrl()}/api/admin/...` | `core/services/admin.ts` (tutti i metodi) | media |
+| 6.2 | Stessa cosa in segnalazione service | `core/services/segnalazione.ts` (tutti i metodi) | media |
+
+### Fase 7 — Missing Ionic imports (check completo)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 7.1 | Scansionare TUTTI i .html delle feature pages e verificare che ogni componente Ionic usato sia importato nel .ts corrispondente | Tutte le feature pages | media |
+
+### Fix già applicati (questa sessione)
+
+| # | Bug | Fix |
+|---|-----|-----|
+| 1 | `bacheche-docente`: mancava `IonItem` negli imports | Aggiunto `IonItem` a `@Component.imports` |
+| 2 | `elenco-docenti`: non filtrava per CorsoDiStudi dello studente | Ora carica profilo studente e passa `mioCorso` alla API |
+| 3 | `prenota`: `(user as any).corsoDiStudi` sempre undefined | Iniettato `StudenteService`, caricato profilo per ottenere `corsoDiStudi` |
+| 4 | `bacheca-studente`: doppia chiamata API per le FAQ | Usa `bacheca.faqs` embeddati invece di chiamata separata |

@@ -13,6 +13,7 @@
 /yarn.lock
 
 # Environment files
+pg_backend/.env
 
 # Angular CLI and build artefacts
 /.angular-cli.json

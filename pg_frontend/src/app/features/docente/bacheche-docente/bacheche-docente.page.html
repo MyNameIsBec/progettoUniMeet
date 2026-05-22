@@ -17,6 +17,18 @@
     </div>
   </section>
 
+  @if (corsiDisponibili.length > 1) {
+  <section class="cds-selector-section">
+    <ion-item lines="none" class="cds-selector-item">
+      <ion-select [value]="cdsSelezionatoId" (ionChange)="onCdsChange($event)" interface="popover" label="Corso di Studi">
+        @for (cds of corsiDisponibili; track cds.id) {
+        <ion-select-option [value]="cds.id">{{ cds.nome }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </section>
+  }
+
   <section class="bacheca-content">
     @if (loading) {
     <div class="loading-state">

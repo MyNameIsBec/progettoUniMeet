@@ -23,7 +23,7 @@ export async function aggiornaProfilo(matricola: string, data: {
   nome?: string;
   cognome?: string;
   email?: string;
-  corsoDiStudiId?: string;
+  corsoDiStudi?: string;
 }) {
   const existing = await prisma.studente.findUnique({ where: { matricola } });
   if (!existing) throw new Error('Studente not found');
@@ -32,8 +32,20 @@ export async function aggiornaProfilo(matricola: string, data: {
   if (data.nome) updateData.nome = data.nome;
   if (data.cognome) updateData.cognome = data.cognome;
   if (data.email) updateData.email = data.email;
-  if (data.corsoDiStudiId) updateData.id_corso_di_studi = data.corsoDiStudiId;
+  if (data.corsoDiStudi) {
+    const cds = await prisma.corsoDiStudi.findUnique({ where: { nome: data.corsoDiStudi } });
+    if (!cds) throw new Error('Corso di studi not found');
+    updateData.id_corso_di_studi = cds.id_corso_di_studi;
+  }
 
   await prisma.studente.update({ where: { matricola }, data: updateData });
   return { messaggio: 'Profilo aggiornato con successo.' };
+}
+
+export async function eliminaAccount(matricola: string) {
+  const existing = await prisma.studente.findUnique({ where: { matricola } });
+  if (!existing) throw new Error('Studente not found');
+  await prisma.prenotazione.deleteMany({ where: { matricola_studente: matricola } });
+  await prisma.studente.delete({ where: { matricola } });
+  return { messaggio: 'Account eliminato con successo.' };
 }

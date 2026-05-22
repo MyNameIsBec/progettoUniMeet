@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import {
-  IonIcon, IonButton, IonSelect, IonSelectOption,
+  IonIcon, IonButton, IonLabel, IonSelect, IonSelectOption,
   IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
 } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from 'src/app/core/services/admin';
 
@@ -15,7 +17,7 @@ import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from
   styleUrls: ['./gestione-slot-admin.page.scss'],
   standalone: true,
   imports: [
-    IonIcon, IonButton, IonSelect, IonSelectOption,
+    IonIcon, IonButton, IonLabel, IonSelect, IonSelectOption,
     IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
     CommonModule, FormsModule, DashboardLayoutComponent,
   ],
@@ -23,7 +25,6 @@ import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from
 export class GestioneSlotAdminPage implements OnInit {
   slot: SlotGriglia[] = [];
   docenti: any[] = [];
-  docentiCaricati = false;
   dateDisponibili: SlotDate[] = [];
   filtroDocenteId = '';
   filtroData = '';
@@ -35,9 +36,18 @@ export class GestioneSlotAdminPage implements OnInit {
   modalButtonText = '';
   slotInModifica: SlotGriglia | null = null;
   formDati: any = {};
-  private docentiInCaricamento = false;
+  private docentiPromise: Promise<void> | null = null;
 
-  constructor(private admin: AdminService, private route: ActivatedRoute) {
+  constructor(
+    private admin: AdminService,
+    private route: ActivatedRoute,
+    private alertCtrl: AlertController,
+  ) {
+  }
+
+  get docenteLabel(): string {
+    const d = this.docenti.find(d => d.id === this.formDati.docenteId);
+    return d ? `${d.nome} ${d.cognome}` : 'Seleziona un docente';
   }
 
   ngOnInit() {
@@ -76,21 +86,13 @@ export class GestioneSlotAdminPage implements OnInit {
     });
   }
 
-  caricaDocenti() {
-    if (this.docentiCaricati || this.docentiInCaricamento) return;
-    this.docentiInCaricamento = true;
-    this.admin.getUtenti('docente').subscribe({
-      next: (data) => {
-        this.docenti = data;
-        this.docentiCaricati = true;
-        this.docentiInCaricamento = false;
-      },
-      error: () => {
-        this.docenti = [];
-        this.docentiCaricati = true;
-        this.docentiInCaricamento = false;
-      },
-    });
+  async caricaDocenti(): Promise<void> {
+    if (this.docentiPromise) return this.docentiPromise;
+    this.docentiPromise = firstValueFrom(this.admin.getUtenti('docente'))
+      .then(data => { this.docenti = data; })
+      .catch(() => { this.docenti = []; })
+      .finally(() => { this.docentiPromise = null; });
+    return this.docentiPromise;
   }
 
   caricaSlot() {
@@ -109,16 +111,16 @@ export class GestioneSlotAdminPage implements OnInit {
     });
   }
 
-  apriModaleCrea() {
+  async apriModaleCrea() {
     this.modaleTitolo = 'Crea slot';
     this.slotInModifica = null;
     this.formDati = this.formVuoto();
     this.modalButtonText = 'Crea slot';
-    this.caricaDocenti();
+    await this.caricaDocenti();
     this.mostraModale = true;
   }
 
-  apriModaleModifica(s: SlotGriglia) {
+  async apriModaleModifica(s: SlotGriglia) {
     this.modaleTitolo = 'Modifica slot';
     this.slotInModifica = s;
     this.formDati = {
@@ -130,12 +132,35 @@ export class GestioneSlotAdminPage implements OnInit {
       luogo: s.luogo ? { ...s.luogo } : { nomeAula: '', edificio: '', piano: '' },
     };
     this.modalButtonText = 'Salva modifiche';
-    this.caricaDocenti();
+    await this.caricaDocenti();
     this.mostraModale = true;
   }
 
   chiudiModale() {
     this.mostraModale = false;
+  }
+
+  async apriSceltaDocente() {
+    const inputs = this.docenti.map(d => ({
+      type: 'radio' as const,
+      label: `${d.nome} ${d.cognome}`,
+      value: d.id,
+      checked: d.id === this.formDati.docenteId,
+    }));
+    const alert = await this.alertCtrl.create({
+      header: 'Seleziona docente',
+      inputs,
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'OK',
+          handler: (val: string) => {
+            if (val) this.formDati.docenteId = val;
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   salvaSlot() {

@@ -6,6 +6,7 @@ import { IonItem, IonSelect, IonSelectOption, IonButton, IonIcon, IonCard, IonCa
 import { DocenteService } from '../../../core/services/docente';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { AuthService } from '../../../core/services/auth';
+import { StudenteService } from '../../../core/services/studente';
 import { Docente, SlotRicevimento } from '../../../core/models/interfacce';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, GiornoBloccato } from '../../../core/services/admin';
@@ -37,10 +38,13 @@ export class PrenotaPage implements OnInit {
   fileSelezionati: File[] = [];
   mostraModalePrenotazione = false;
 
+  private mioCorso = '';
+
   constructor(
     private docenteService: DocenteService,
     private prenotazioneService: PrenotazioneService,
     private authService: AuthService,
+    private studenteService: StudenteService,
     private adminService: AdminService,
     private router: Router,
     private route: ActivatedRoute
@@ -119,11 +123,13 @@ export class PrenotaPage implements OnInit {
     try {
       const user = this.authService.getCurrentUser();
       if (user) {
-        // Carichiamo tutti i docenti o quelli del corso
-        const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso(user.role === 'studente' ? (user as any).corsoDiStudi : ''));
+        if (user.role === 'studente') {
+          const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
+          this.mioCorso = profilo.corsoDiStudi || '';
+        }
+        const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso(this.mioCorso));
         this.elencoDocenti = docenti;
         
-        // Se c'era un ID in sospeso dalla query string, lo attiviamo ora
         if (this.filtriRicerca.docenteId) {
           this.selezionaDocente(this.filtriRicerca.docenteId);
         }

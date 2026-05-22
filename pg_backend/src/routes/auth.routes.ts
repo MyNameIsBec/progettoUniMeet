@@ -33,7 +33,6 @@ router.post('/recupera-password', forgotPasswordSchema, handleValidationErrors, 
 router.post('/auth/verifica-codice', verificaCodiceSchema, handleValidationErrors, verificaCodice);
 router.post('/reset-password', resetPasswordSchema, handleValidationErrors, resetPassword);
 
-router.post('/auth/register/studente', studenteRegistrationSchema, handleValidationErrors, registerStudente);
 router.post('/auth/register/docente', docenteRegistrationSchema, handleValidationErrors, registerDocente);
 router.post('/auth/register/admin', adminRegistrationSchema, handleValidationErrors, registerAdmin);
 router.post('/auth/refresh', refreshTokenSchema, handleValidationErrors, refreshToken);

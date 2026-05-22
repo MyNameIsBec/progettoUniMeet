@@ -6,12 +6,18 @@ export interface SegnalazioneConStudente {
   descrizione: string;
   data_invio: string;
   stato: string;
-  matricola_studente: string;
+  matricola_studente: string | null;
+  id_docente: string | null;
   studente: {
     nome: string;
     cognome: string;
     email: string;
-  };
+  } | null;
+  docente: {
+    nome: string;
+    cognome: string;
+    email: string;
+  } | null;
 }
 
 export async function createSegnalazione(data: {
@@ -66,6 +72,7 @@ export async function getAllSegnalazioni(stato?: string): Promise<SegnalazioneCo
     where,
     include: {
       studente: { select: { nome: true, cognome: true, email: true } },
+      docente: { select: { nome: true, cognome: true, email: true } },
     },
     orderBy: { data_invio: 'desc' },
   });
@@ -77,11 +84,9 @@ export async function getAllSegnalazioni(stato?: string): Promise<SegnalazioneCo
     data_invio: s.data_invio.toISOString(),
     stato: s.stato,
     matricola_studente: s.matricola_studente,
-    studente: {
-      nome: s.studente.nome,
-      cognome: s.studente.cognome,
-      email: s.studente.email,
-    },
+    id_docente: s.id_docente,
+    studente: s.studente,
+    docente: s.docente,
   }));
 }
 
@@ -99,6 +104,7 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
     data: { stato },
     include: {
       studente: { select: { nome: true, cognome: true, email: true } },
+      docente: { select: { nome: true, cognome: true, email: true } },
     },
   });
 
@@ -109,11 +115,9 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
     data_invio: updated.data_invio.toISOString(),
     stato: updated.stato,
     matricola_studente: updated.matricola_studente,
-    studente: {
-      nome: updated.studente.nome,
-      cognome: updated.studente.cognome,
-      email: updated.studente.email,
-    },
+    id_docente: updated.id_docente,
+    studente: updated.studente,
+    docente: updated.docente,
   };
 }
 export async function eliminaSegnalazione(id: string) {
@@ -125,4 +129,48 @@ export async function eliminaSegnalazione(id: string) {
   await prisma.segnalazione.delete({
     where: { id_segnalazione: id },
   });
+}
+
+export async function createSegnalazioneDocente(data: {
+  oggetto: string;
+  descrizione: string;
+  id_docente: string;
+}) {
+  const docente = await prisma.docente.findUnique({
+    where: { id_docente: data.id_docente },
+  });
+  if (!docente) throw new Error('Docente not found');
+
+  const segnalazione = await prisma.segnalazione.create({
+    data: {
+      oggetto: data.oggetto,
+      descrizione: data.descrizione,
+      id_docente: data.id_docente,
+    },
+  });
+
+  return {
+    id_segnalazione: segnalazione.id_segnalazione,
+    oggetto: segnalazione.oggetto,
+    descrizione: segnalazione.descrizione,
+    data_invio: segnalazione.data_invio.toISOString(),
+    stato: segnalazione.stato,
+    id_docente: segnalazione.id_docente,
+  };
+}
+
+export async function getSegnalazioniByDocente(idDocente: string) {
+  const segnalazioni = await prisma.segnalazione.findMany({
+    where: { id_docente: idDocente },
+    orderBy: { data_invio: 'desc' },
+  });
+
+  return segnalazioni.map((s) => ({
+    id_segnalazione: s.id_segnalazione,
+    oggetto: s.oggetto,
+    descrizione: s.descrizione,
+    data_invio: s.data_invio.toISOString(),
+    stato: s.stato,
+    id_docente: s.id_docente,
+  }));
 }

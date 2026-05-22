@@ -990,6 +990,21 @@ body.dark {
       --handle-background: #ffffff;
       --handle-background-checked: #ffffff;
     }
+
+    .docente-select-btn {
+      --background: #1e293b !important;
+      --border-color: #334155 !important;
+      --border-width: 1px;
+      --color: #e2e8f0 !important;
+
+      ion-label {
+        color: #e2e8f0 !important;
+      }
+
+      ion-icon {
+        color: #64748b !important;
+      }
+    }
   }
 
   .luogo-section>label {

@@ -535,6 +535,9 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
 ### Bug fix applicati
 
 - **[14/05/2026] piano edificio non numerico**: `docenti.service.ts` — rimosso `parseInt()` su `s.luogo.piano` che causava `NaN` per valori non numerici come "Primo piano" o "Piano terra". Il campo è ora gestito come stringa, allineato con l'interfaccia frontend (commit `07057b4`).
+- **[22/05/2026] DB: aggiunto `id_corso_di_studi` a `Corso`**: nuova FK opzionale verso `CorsoDiStudi`. Migrazione `add_corso_corso_di_studi`. Seed aggiornato con associazioni corso → CorsoDiStudi e nuovo docente Elena Colombo per Matematica.
+- **[22/05/2026] Backend: `docenti.service.ts` — response unificati**: `getElencoDocenti` ora restituisce anche `corsi[]` (id+nome). `getDettagliDocente` ora include `materia` e `corsoDiStudi: string[]` per consistenza.
+- **[22/05/2026] Frontend `bacheche-docente`: selezione CorsoDiStudi**: aggiunto selettore `<ion-select>` per docenti con più CorsiDiStudi, invece di usare sempre `corsi[0]`.
 
 ---
 
@@ -607,3 +610,50 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
 ---
 
 > **Nota:** La pianificazione dettagliata della Fase 11 (Blocca giorni) è stata rimossa in quanto già implementata. Vedi sezione API admin per gli endpoint `/api/admin/giorni-bloccati`.
+
+---
+
+## Bug Hunt — Piano di fix (22/05/2026)
+
+### Fase 1 — Endpoint mancanti (critico)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 1.1 | Aggiungere `POST /api/studenti/:matricola/cambia-password` (collegare ad `authService.changePassword`) | `studenti.routes.ts`, `studenti.controller.ts` | piccola |
+| 1.2 | Aggiungere `DELETE /api/studenti/:matricola` (elimina account studente) | `studenti.routes.ts`, `studenti.controller.ts`, `studenti.service.ts` | piccola |
+| 1.3 | Aggiungere `POST /api/segnalazioni/docente` e `GET /api/segnalazioni/docente/:id` | `segnalazioni.routes.ts`, controller, service | media |
+| 1.4 | Allineare field name: frontend manda `corsoDiStudi`, backend aspetta `corsoDiStudiId` | `studenti.validators.ts` o frontend | piccola |
+
+### Fase 2 — Race condition e consistenza dati (critico)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 2.1 | Avvolgere creazione prenotazione + update slot in `prisma.$transaction()` | `prenotazioni.service.ts:69-87` | piccola |
+| 2.2 | Aggiungere cancellazione documenti prima di eliminare slot (admin e docente) | `admin.service.ts:384-386`, `docenti.service.ts:255-261` | piccola |
+| 2.3 | Limitare `upload.any()` → `upload.array('files', 5)` e spostare upload dopo la validazione | `prenotazioni.routes.ts:21` | piccola |
+
+### Fase 3 — Autorizzazione mancante (alto)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 3.1 | Aggiungere `authorize('AMMINISTRATORE')` a `GET /admin/giorni-bloccati` | `admin.routes.ts:47` | piccola |
+| 3.2 | Verificare che `req.user.id === req.params.idDocente` negli slot docente | `docenti.controller.ts` + `docenti.routes.ts` | media |
+| 3.3 | Aggiungere autorizzazione alle statistiche docente (solo docente stesso o admin) | `docenti.routes.ts:27` | piccola |
+
+### Fase 4 — Timezone e validazione (medio)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 4.1 | Sostituire `toISOString()` con formattazione locale per campi `@db.Time(6)` | `docenti.service.ts:128`, `admin.service.ts:315`, `prenotazioni.service.ts:96` | media |
+| 4.2 | Centralizzare `handleValidationErrors` in `middleware/validation.ts` | Tutti i validators/ | piccola |
+| 4.3 | Validare `JWT_SECRET` all'avvio del server | `server.ts` | piccola |
+| 4.4 | Aggiungere graceful shutdown (`SIGTERM`/`SIGINT` → `prisma.$disconnect()`) | `server.ts` | piccola |
+| 4.5 | Validare formato data (`YYYY-MM-DD`) e ora (`HH:mm`) nei validators | `docenti.validators.ts`, `admin.validators.ts` | piccola |
+| 4.6 | Allineare case degli stati (lowercase output vs uppercase validatori) | `prenotazioni.service.ts` + `prenotazioni.validators.ts` | piccola |
+
+### Fase 5 — Pulizia codice (basso)
+
+| # | Task | File | Stima |
+|---|------|------|-------|
+| 5.1 | Rimuovere endpoint duplicato `POST /api/auth/register/studente` (esiste già `/api/registrazione`) | `auth.routes.ts:36` | piccola |
+| 5.2 | Rimuovere `handleValidationErrors` duplicato dai validators di auth (già nella route) | `auth.validators.ts:49-60` | piccola |

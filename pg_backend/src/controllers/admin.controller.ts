@@ -67,7 +67,13 @@ export async function creaSlot(req: Request, res: Response) {
   try {
     const slot = await adminService.creaSlot(req.body);
     return res.status(201).json(slot);
-  } catch {
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Giorno bloccato') {
+      return res.status(409).json({ error: err.message });
+    }
+    if (err instanceof Error && err.message === 'Slot già esistente in questa fascia oraria') {
+      return res.status(409).json({ error: err.message });
+    }
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

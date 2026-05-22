@@ -11,3 +11,14 @@ export function authorize(...ruoli: string[]) {
     next();
   };
 }
+
+export function authorizeDocente(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Token required' });
+  }
+  const idDocente = req.params.idDocente;
+  if (req.user.id !== idDocente && req.user.ruolo !== 'AMMINISTRATORE') {
+    return res.status(403).json({ error: 'Access denied' });
+  }
+  next();
+}

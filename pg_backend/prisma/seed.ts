@@ -81,6 +81,7 @@ async function main() {
     { nome: 'Anna', cognome: 'Neri', email: 'anna.neri@unime.it', ufficio: 'Edificio A, Stanza 5' },
     { nome: 'Maria', cognome: 'Bianco', email: 'maria.bianco@unime.it', ufficio: 'Edificio B, Stanza 8' },
     { nome: 'Paolo', cognome: 'Russo', email: 'paolo.russo@unime.it', ufficio: 'Edificio C, Stanza 3' },
+    { nome: 'Elena', cognome: 'Colombo', email: 'elena.colombo@unime.it', ufficio: 'Edificio E, Stanza 10' },
   ];
   const docentiCreati: Record<string, any> = {};
   for (const d of docenti) {
@@ -101,6 +102,7 @@ async function main() {
     { docente: 'maria.bianco@unime.it', corsoDiStudi: 'cds-2' },
     { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-1' },
     { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-2' },
+    { docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
   ];
   for (const a of associazioni) {
     await prisma.docenteCorsoDiStudi.create({
@@ -130,11 +132,13 @@ async function main() {
   // ──────────────────────────── CORSO ────────────────────────────
   console.log('\n── Corso ──');
   const corsi = [
-    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it' },
-    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it' },
-    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unime.it' },
-    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unime.it' },
-    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unime.it' },
+    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unime.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unime.it', corsoDiStudi: 'cds-2' },
+    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-2' },
+    { id: 'corso-6', nome: 'Analisi Matematica', anno: 2025, cfu: 12, docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
+    { id: 'corso-7', nome: 'Geometria', anno: 2025, cfu: 9, docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
   ];
   const corsiCreati: Record<string, any> = {};
   for (const c of corsi) {
@@ -142,9 +146,13 @@ async function main() {
     corsiCreati[c.id] = await prisma.corso.upsert({
       where: { id_corso: c.id },
       update: {},
-      create: { id_corso: c.id, nome_corso: c.nome, anno: c.anno, cfu: c.cfu, id_docente: doc.id_docente },
+      create: {
+        id_corso: c.id, nome_corso: c.nome, anno: c.anno, cfu: c.cfu,
+        id_docente: doc.id_docente,
+        id_corso_di_studi: corsiDiStudi[c.corsoDiStudi]!.id_corso_di_studi,
+      },
     });
-    console.log(`  ${c.nome} — ${c.cfu} CFU (${c.docente})`);
+    console.log(`  ${c.nome} — ${c.cfu} CFU (${c.docente}) → ${c.corsoDiStudi}`);
   }
 
   // ──────────────────────────── BACHECA ────────────────────────────
@@ -176,6 +184,8 @@ async function main() {
     { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2' },
     { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1' },
     { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2' },
+    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3' },
+    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3' },
   ];
   for (const f of faqList) {
     const faq = await prisma.fAQ.create({

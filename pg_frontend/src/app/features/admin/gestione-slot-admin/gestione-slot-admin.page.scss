@@ -354,6 +354,49 @@ ion-button {
   font-weight: 700;
 }
 
+.docente-select-btn {
+  width: 100%;
+  --border-radius: 10px;
+  --border-color: #e2e8f0;
+  --border-width: 1px;
+  --border-style: solid;
+  --background: #f8fbff;
+  --color: #0f172a;
+  min-height: 44px;
+  display: flex;
+  justify-content: space-between;
+  --padding-start: 14px;
+  --padding-end: 14px;
+}
+
+.docente-select-btn ion-label {
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docente-select-btn ion-icon {
+  font-size: 16px;
+  color: #64748b;
+  margin-left: 8px;
+}
+
+:host-context(body.dark) .docente-select-btn {
+  --background: #1e293b;
+  --border-color: #334155;
+  --color: #e2e8f0;
+}
+
+:host-context(body.dark) .docente-select-btn ion-icon {
+  color: #64748b;
+}
+
+:host-context(body.dark) .docente-select-btn ion-label {
+  color: #94a3b8;
+}
+
 /* DARK MODE OVERRIDES */
 
 :host-context(body.dark) .stato-libero {

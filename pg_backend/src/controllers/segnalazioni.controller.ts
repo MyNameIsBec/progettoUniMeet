@@ -61,3 +61,25 @@ export async function eliminaSegnalazione(req: Request, res: Response) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
+export async function createSegnalazioneDocente(req: Request, res: Response) {
+  try {
+    const segnalazione = await segnalazioniService.createSegnalazioneDocente(req.body);
+    return res.status(201).json(segnalazione);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Docente not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function getSegnalazioniByDocente(req: Request, res: Response) {
+  try {
+    const idDocente = req.params.idDocente as string;
+    const segnalazioni = await segnalazioniService.getSegnalazioniByDocente(idDocente);
+    return res.status(200).json(segnalazioni);
+  } catch {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}

@@ -111,17 +111,10 @@
           <div class="form-grid">
             <div class="field-group">
               <label>Docente</label>
-              <ion-select [(ngModel)]="formDati.docenteId" [disabled]="!!slotInModifica">
-                @if (docentiCaricati) {
-                @for (d of docenti; track d.id) {
-                <ion-select-option [value]="d.id">
-                  {{ d.nome }} {{ d.cognome }}
-                </ion-select-option>
-                }
-                } @else {
-                <ion-select-option value="" disabled>Caricamento...</ion-select-option>
-                }
-              </ion-select>
+              <ion-button fill="outline" (click)="apriSceltaDocente()" [disabled]="!!slotInModifica" class="docente-select-btn">
+                <ion-label>{{ docenteLabel }}</ion-label>
+                <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
+              </ion-button>
             </div>
             <div class="field-row">
               <div class="field-group">
@@ -159,9 +152,7 @@
           </div>
           <div class="modal-actions">
             <ion-button fill="outline" (click)="chiudiModale()">Annulla</ion-button>
-            <ion-button (click)="salvaSlot()">
-              {{ modalButtonText }}
-            </ion-button>
+            <ion-button (click)="salvaSlot()">{{ modalButtonText }}</ion-button>
           </div>
         </ion-content>
       </ng-template>

@@ -8,6 +8,11 @@ export const aggiornaStudenteSchema = [
   body('corsoDiStudi').optional().isString().notEmpty().trim(),
 ];
 
+export const cambiaPasswordStudenteSchema = [
+  body('vecchiaPw').isString().notEmpty(),
+  body('nuovaPw').isString().isLength({ min: 8 }),
+];
+
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

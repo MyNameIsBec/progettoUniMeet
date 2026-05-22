@@ -1,4 +1,5 @@
 import { prisma } from '../prisma/client';
+import { formatTime } from '../utils/time';
 
 function getCorsoDiStudiIds(d: any): string[] {
   return d.corsi_di_studi?.map((cds: any) => cds.corso_di_studi.nome) ?? [];
@@ -33,7 +34,7 @@ export async function getElencoDocenti(filtri?: { corso?: string; search?: strin
       cognome: true,
       email: true,
       ufficio: true,
-      corsi: { select: { nome_corso: true } },
+      corsi: { select: { id_corso: true, nome_corso: true } },
       corsi_di_studi: {
         select: { corso_di_studi: { select: { nome: true } } },
       },
@@ -48,6 +49,7 @@ export async function getElencoDocenti(filtri?: { corso?: string; search?: strin
     ufficio: d.ufficio,
     materia: d.corsi?.[0]?.nome_corso ?? 'N/D',
     corsoDiStudi: getCorsoDiStudiIds(d),
+    corsi: d.corsi?.map(c => ({ id: c.id_corso, nome: c.nome_corso })) ?? [],
     iniziali: `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??',
     coloreAvatar: 'blue',
   }));
@@ -89,12 +91,14 @@ export async function getDettagliDocente(id: string) {
     cognome: docente.cognome,
     email: docente.email,
     ufficio: docente.ufficio,
+    materia: docente.corsi?.[0]?.nome_corso ?? 'N/D',
     corsi: docente.corsi?.map(c => ({
       id: c.id_corso,
       nome: c.nome_corso,
       cfu: c.cfu,
       anno: c.anno
     })) ?? [],
+    corsoDiStudi: docente.corsi_di_studi?.map(cds => cds.corso_di_studi.nome) ?? [],
     corsiDiStudi: docente.corsi_di_studi?.map(cds => ({
       id: cds.corso_di_studi.id_corso_di_studi,
       nome: cds.corso_di_studi.nome
@@ -122,14 +126,12 @@ export async function getSlots(idDocente: string, mese?: string) {
     orderBy: [{ data: 'asc' }, { ora_inizio: 'asc' }],
   });
 
-  const fmtTime = (d: Date) => d.toISOString().split('T')[1]?.substring(0, 5) ?? '';
-
   return slots.map((s) => ({
     id: s.id_slot,
     docenteId: s.id_docente,
     data: s.data.toISOString().split('T')[0],
-    oraInizio: fmtTime(s.ora_inizio),
-    oraFine: fmtTime(s.ora_fine),
+    oraInizio: formatTime(s.ora_inizio),
+    oraFine: formatTime(s.ora_fine),
     disponibilita: s.disponibilita,
     stato: s.disponibilita ? 'disponibile' : 'occupato',
     luogo: s.luogo
@@ -199,8 +201,8 @@ export async function creaSlot(idDocente: string, data: {
     id: createdSlot.id_slot,
     docenteId: createdSlot.id_docente,
     data: createdSlot.data.toISOString().split('T')[0],
-    oraInizio: createdSlot.ora_inizio.toISOString().split('T')[1]?.substring(0, 5),
-    oraFine: createdSlot.ora_fine.toISOString().split('T')[1]?.substring(0, 5),
+    oraInizio: formatTime(createdSlot.ora_inizio),
+    oraFine: formatTime(createdSlot.ora_fine),
     disponibilita: createdSlot.disponibilita,
     luogo: createdSlot.luogo
       ? { id: createdSlot.luogo.id_luogo, aula: createdSlot.luogo.nome_aula, edificio: createdSlot.luogo.edificio, piano: parseInt(createdSlot.luogo.piano) }
@@ -257,6 +259,11 @@ export async function eliminaSlot(idDocente: string, idSlot: string) {
   });
   if (!slot) throw new Error('Slot not found');
 
+  await prisma.documento.deleteMany({
+    where: { prenotazione: { id_slot: idSlot } },
+  });
+  await prisma.luogoRicevimento.deleteMany({ where: { id_slot: idSlot } });
+  await prisma.prenotazione.deleteMany({ where: { id_slot: idSlot } });
   await prisma.slotRicevimento.delete({ where: { id_slot: idSlot } });
 }
 

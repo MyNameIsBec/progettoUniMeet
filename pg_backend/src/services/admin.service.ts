@@ -1,5 +1,6 @@
 import { prisma } from '../prisma/client';
 import bcrypt from 'bcrypt';
+import { formatTime } from '../utils/time';
 
 const SALT_ROUNDS = 10;
 
@@ -288,6 +289,22 @@ export interface CreaSlotRequest {
 }
 
 export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
+  const giornoBloccato = await prisma.giornoBloccato.findUnique({
+    where: { data: new Date(data.data) },
+  });
+  if (giornoBloccato) throw new Error('Giorno bloccato');
+
+  const overlap = await prisma.slotRicevimento.findFirst({
+    where: {
+      id_docente: data.docenteId,
+      data: new Date(data.data),
+      OR: [
+        { ora_inizio: { lt: data.oraFine as any }, ora_fine: { gt: data.oraInizio as any } },
+      ],
+    },
+  });
+  if (overlap) throw new Error('Slot già esistente in questa fascia oraria');
+
   const slot = await prisma.slotRicevimento.create({
     data: {
       data: new Date(data.data),
@@ -311,18 +328,15 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
     },
   });
 
-  const fmtDate = (d: Date) => d.toISOString().split('T')[0] ?? '';
-  const fmtTime = (d: Date) => (d.toISOString().split('T')[1] ?? '').substring(0, 5);
-
   return {
     id: slot.id_slot,
     docente: {
       id: slot.docente.id_docente, nome: slot.docente.nome,
       cognome: slot.docente.cognome, email: slot.docente.email,
     },
-    data: fmtDate(slot.data),
-    oraInizio: fmtTime(slot.ora_inizio),
-    oraFine: fmtTime(slot.ora_fine),
+    data: slot.data.toISOString().split('T')[0] ?? '',
+    oraInizio: formatTime(slot.ora_inizio),
+    oraFine: formatTime(slot.ora_fine),
     disponibilita: slot.disponibilita,
     luogo: slot.luogo
       ? { nomeAula: slot.luogo.nome_aula, edificio: slot.luogo.edificio, piano: slot.luogo.piano }
@@ -381,6 +395,9 @@ export async function eliminaSlot(idSlot: string): Promise<void> {
   });
   if (!slot) throw new Error('Slot not found');
 
+  await prisma.documento.deleteMany({
+    where: { prenotazione: { id_slot: idSlot } },
+  });
   await prisma.luogoRicevimento.deleteMany({ where: { id_slot: idSlot } });
   await prisma.prenotazione.deleteMany({ where: { id_slot: idSlot } });
   await prisma.slotRicevimento.delete({ where: { id_slot: idSlot } });
@@ -465,9 +482,6 @@ export async function getAllPrenotazioni(filtri?: {
     orderBy: { data_prenotazione: 'desc' },
   });
 
-  const fmtDate = (d: Date) => d.toISOString().split('T')[0] ?? '';
-  const fmtTime = (d: Date) => (d.toISOString().split('T')[1] ?? '').substring(0, 5);
-
   return rows.map((r) => ({
     id: r.id_prenotazione,
     studente: {
@@ -479,9 +493,9 @@ export async function getAllPrenotazioni(filtri?: {
       cognome: r.slot.docente.cognome, email: r.slot.docente.email,
     },
     slot: {
-      data: fmtDate(r.slot.data),
-      oraInizio: fmtTime(r.slot.ora_inizio),
-      oraFine: fmtTime(r.slot.ora_fine),
+      data: r.slot.data.toISOString().split('T')[0] ?? '',
+      oraInizio: formatTime(r.slot.ora_inizio),
+      oraFine: formatTime(r.slot.ora_fine),
     },
     argomento: r.argomento,
     descrizione: r.descrizione,
@@ -514,23 +528,15 @@ export async function getSlotGlobali(filtri?: {
   });
 
   return slot.map((s) => {
-    const fmtDate = (d: Date) => {
-      const iso = d.toISOString();
-      return iso.split('T')[0] ?? '';
-    };
-    const fmtTime = (d: Date) => {
-      const iso = d.toISOString();
-      return (iso.split('T')[1] ?? '').substring(0, 5);
-    };
     return {
       id: s.id_slot,
       docente: {
         id: s.docente.id_docente, nome: s.docente.nome,
         cognome: s.docente.cognome, email: s.docente.email,
       },
-      data: fmtDate(s.data),
-      oraInizio: fmtTime(s.ora_inizio),
-      oraFine: fmtTime(s.ora_fine),
+      data: s.data.toISOString().split('T')[0] ?? '',
+      oraInizio: formatTime(s.ora_inizio),
+      oraFine: formatTime(s.ora_fine),
       disponibilita: s.disponibilita,
       luogo: s.luogo
         ? { nomeAula: s.luogo.nome_aula, edificio: s.luogo.edificio, piano: s.luogo.piano }
