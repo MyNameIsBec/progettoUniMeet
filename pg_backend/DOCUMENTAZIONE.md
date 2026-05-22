@@ -532,6 +532,10 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
 - [x] Amministratore: bloccare giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
 
+### Bug fix applicati
+
+- **[14/05/2026] piano edificio non numerico**: `docenti.service.ts` — rimosso `parseInt()` su `s.luogo.piano` che causava `NaN` per valori non numerici come "Primo piano" o "Piano terra". Il campo è ora gestito come stringa, allineato con l'interfaccia frontend (commit `07057b4`).
+
 ---
 
 ## Flusso di una richiesta (recupero password con codice di verifica)

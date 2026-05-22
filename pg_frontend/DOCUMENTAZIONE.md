@@ -370,3 +370,50 @@ pg_frontend/src/app/features/studente/impostazioni-studente/
 2. **Backend unificato vs per ruolo**: unico (`/api/auth/impostazioni`) è più semplice; separati (`/api/docenti/:id/impostazioni`, `/api/studenti/:matricola/impostazioni`) danno maggiore controllo.
 3. **Tema**: già gestito in topbar + localStorage. Va comunque salvato anche su DB per persistenza cross-device?
 4. **Altre impostazioni da aggiungere/rimuovere?**
+
+---
+
+## 14. Bug noti e fix applicati
+
+### 14.1 Dark mode — !important mancante in variables.scss
+
+**Problema:** I selettori globali `body.dark .classe` in `variables.scss` avevano la stessa specificità (0,2,0) degli stili locali nei componenti (`.classe[_ngcontent-cX]` = 0,2,0). Poiché Angular carica gli stili dei componenti dopo quelli globali, il tema scuro non vinceva: sfondi bianchi e testi nero su nero in tutte le pagine admin e in molte pagine docente/studente in dark mode.
+
+**Causa radice:** Specificità CSS identica + ordine di caricamento (component styles iniettati dopo global styles).
+
+**Fix (commit `c367b10`, `e19791c`):** Aggiunto `!important` a tutte le 294 dichiarazioni target (`background`, `--background`, `color`, `--color`, `border`, `border-color`, `box-shadow`, `--border-color`, `--placeholder-color`) dentro il blocco `body.dark` in `theme/variables.scss`. Estende il pattern già esistente usato per le card (`.summary-card`, `.main-card`, ecc.). Ora il tema scuro vince sempre indipendentemente dalla specificità dei selettori dei componenti.
+
+**File modificato:** `src/theme/variables.scss`
+
+---
+
+### 14.2 Gestione slot admin — race condition apertura modale
+
+**Problema:** Due bug distinti sulla stessa pagina:
+
+1. **Testo "Crea slot" non visibile** sul bottone submit dentro la modale: il binding `{{ slotInModifica ? 'Salva modifiche' : 'Crea slot' }}` non veniva valutato subito all'apertura della modale (template ternario dentro `<ng-template>` in `<ion-modal>`).
+
+2. **Opzioni docente non appaiono** le prime 1-2 volte che si apre la modale: `apriModaleCrea()` chiamava `caricaDocenti()` che azzerava l'array `docenti` e faceva una nuova HTTP request. La modale si apriva prima che la risposta arrivasse, mostrando lo ion-select vuoto.
+
+**Causa radice:** Duplicazione HTTP request (`ngOnInit` + `apriModaleCrea`) + template ternario su variabile runtime dentro `ion-modal > ng-template`.
+
+**Fix (commit `4ec3404`):**
+- **Caching one-shot:** `caricaDocenti()` ora usa flag `docentiInCaricamento` per eseguire una sola HTTP request, qualunque sia il numero di chiamate.
+- **`modalButtonText`:** Sostituito il binding ternario con una proprietà stringa semplice (`modalButtonText = 'Crea slot'`), settata prima di aprire la modale.
+- **Fallback caricamento:** Lo ion-select del docente mostra `@if (docentiCaricati)` con le opzioni reali, o un'opzione placeholder "Caricamento..." mentre i dati non sono pronti.
+
+**File modificati:**
+- `src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.ts`
+- `src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.html`
+
+---
+
+### 14.3 Docente — piano edificio non numerico
+
+**Problema:** Il campo `piano` del luogo era tipizzato come `number` nell'interfaccia TypeScript e passato a `parseInt()` nel backend. Valori come "Primo piano" o "Piano terra" producevano `NaN` e non venivano visualizzati correttamente.
+
+**Fix (commit `07057b4`):** Cambiato `piano: number` → `piano: string` in `interfacce.ts`. Rimosso `parseInt()` su `s.luogo.piano` in `docenti.service.ts` (backend).
+
+**File modificati:**
+- `src/app/core/models/interfacce.ts`
+- `pg_backend/src/services/docenti.service.ts`**
