@@ -683,7 +683,8 @@ body.dark {
 
   .utenti-table,
   .segnalazioni-table,
-  .calendario-table {
+  .calendario-table,
+  .prenotazioni-table {
     th {
       background: #1e293b;
       color: #94a3b8;
@@ -708,6 +709,12 @@ body.dark {
     --background: #1e293b;
     --color: #e2e8f0;
     border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  ion-chip.active {
+    --background: #2563eb;
+    --color: #ffffff;
+    border-color: #2563eb;
   }
 
   .count-badge {
@@ -807,6 +814,26 @@ body.dark {
   .stato-chiusa {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
+  }
+
+  .stato-in_attesa {
+    background: rgba(234, 179, 8, 0.15);
+    color: #fde047;
+  }
+
+  .stato-confermato {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+  }
+
+  .stato-rifiutato {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  .stato-annullata {
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
   }
 
   .ruolo-studente {
@@ -1052,25 +1079,31 @@ body.dark {
 
   .student-icon {
     background: rgba(37, 99, 235, 0.15);
+    ion-icon { color: #60a5fa; }
   }
 
   .teacher-icon {
     background: rgba(22, 163, 74, 0.15);
+    ion-icon { color: #4ade80; }
   }
 
   .booking-icon {
     background: rgba(99, 102, 241, 0.15);
+    ion-icon { color: #818cf8; }
   }
 
   .slot-icon {
     background: rgba(249, 115, 22, 0.15);
+    ion-icon { color: #fb923c; }
   }
 
   .today-icon {
     background: rgba(239, 68, 68, 0.15);
+    ion-icon { color: #f87171; }
   }
 
   .new-icon {
     background: rgba(34, 197, 94, 0.15);
+    ion-icon { color: #4ade80; }
   }
 }
