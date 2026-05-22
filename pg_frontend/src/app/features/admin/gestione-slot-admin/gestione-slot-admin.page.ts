@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -32,10 +32,12 @@ export class GestioneSlotAdminPage implements OnInit {
 
   mostraModale = false;
   modaleTitolo = '';
+  modalButtonText = '';
   slotInModifica: SlotGriglia | null = null;
   formDati: any = {};
+  private docentiInCaricamento = false;
 
-  constructor(private admin: AdminService, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
+  constructor(private admin: AdminService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -75,15 +77,18 @@ export class GestioneSlotAdminPage implements OnInit {
   }
 
   caricaDocenti() {
-    this.docentiCaricati = false;
+    if (this.docentiCaricati || this.docentiInCaricamento) return;
+    this.docentiInCaricamento = true;
     this.admin.getUtenti('docente').subscribe({
       next: (data) => {
         this.docenti = data;
         this.docentiCaricati = true;
+        this.docentiInCaricamento = false;
       },
       error: () => {
         this.docenti = [];
         this.docentiCaricati = true;
+        this.docentiInCaricamento = false;
       },
     });
   }
@@ -108,8 +113,9 @@ export class GestioneSlotAdminPage implements OnInit {
     this.modaleTitolo = 'Crea slot';
     this.slotInModifica = null;
     this.formDati = this.formVuoto();
+    this.modalButtonText = 'Crea slot';
+    this.caricaDocenti();
     this.mostraModale = true;
-    this.cdr.detectChanges();
   }
 
   apriModaleModifica(s: SlotGriglia) {
@@ -123,8 +129,9 @@ export class GestioneSlotAdminPage implements OnInit {
       disponibilita: s.disponibilita,
       luogo: s.luogo ? { ...s.luogo } : { nomeAula: '', edificio: '', piano: '' },
     };
+    this.modalButtonText = 'Salva modifiche';
+    this.caricaDocenti();
     this.mostraModale = true;
-    this.cdr.detectChanges();
   }
 
   chiudiModale() {
