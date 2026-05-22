@@ -227,10 +227,10 @@ async function main() {
   // ──────────────────────────── PRENOTAZIONE ────────────────────────────
   console.log('\n── Prenotazione ──');
   const prenotazioni = [
-    { argomento: 'Discussione progetto esame', stato: 'CONFERMATO', studente: 'MAT001', slot: slotsCreati[0]! },
+    { argomento: 'Discussione progetto esame', stato: 'CONFERMATA', studente: 'MAT001', slot: slotsCreati[0]! },
     { argomento: 'Chiarimenti su esercizi SQL', stato: 'IN_ATTESA', studente: 'MAT002', slot: slotsCreati[1]! },
-    { argomento: 'Orientamento tesi triennale', stato: 'CONFERMATO', studente: 'MAT003', slot: slotsCreati[2]! },
-    { argomento: 'Richiesta lettera di referenza', stato: 'RIFIUTATO', studente: 'MAT004', slot: slotsCreati[3]! },
+    { argomento: 'Orientamento tesi triennale', stato: 'CONFERMATA', studente: 'MAT003', slot: slotsCreati[2]! },
+    { argomento: 'Richiesta lettera di referenza', stato: 'RIFIUTATA', studente: 'MAT004', slot: slotsCreati[3]! },
     { argomento: 'Consigli su percorso studi', stato: 'IN_ATTESA', studente: 'MAT005', slot: slotsCreati[4]! },
   ];
   const prenotazioniCreati: any[] = [];

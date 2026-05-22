@@ -100,8 +100,8 @@ export class GestionePrenotazioniAdminPage implements OnInit {
   statoLabel(stato: string): string {
     const map: Record<string, string> = {
       IN_ATTESA: 'In attesa',
-      CONFERMATO: 'Confermato',
-      RIFIUTATO: 'Rifiutato',
+      CONFERMATA: 'Confermata',
+      RIFIUTATA: 'Rifiutata',
       ANNULLATA: 'Annullata',
     };
     return map[stato] ?? stato;
@@ -110,8 +110,8 @@ export class GestionePrenotazioniAdminPage implements OnInit {
   statoIcona(stato: string): string {
     const map: Record<string, string> = {
       IN_ATTESA: 'time-outline',
-      CONFERMATO: 'checkmark-circle-outline',
-      RIFIUTATO: 'close-circle-outline',
+      CONFERMATA: 'checkmark-circle-outline',
+      RIFIUTATA: 'close-circle-outline',
       ANNULLATA: 'ban-outline',
     };
     return map[stato] ?? 'help-outline';

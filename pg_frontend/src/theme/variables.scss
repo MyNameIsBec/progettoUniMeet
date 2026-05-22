@@ -825,12 +825,14 @@ body.dark {
     color: #fde047;
   }
 
-  .stato-confermato {
+  .stato-confermato,
+  .stato-confermata {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
   }
 
-  .stato-rifiutato {
+  .stato-rifiutato,
+  .stato-rifiutata {
     background: rgba(239, 68, 68, 0.15);
     color: #f87171;
   }

@@ -8,10 +8,10 @@
         <ion-chip [class.active]="filtroStato === 'IN_ATTESA'" (click)="onFiltroStato('IN_ATTESA')">
           <ion-label>In attesa</ion-label>
         </ion-chip>
-        <ion-chip [class.active]="filtroStato === 'CONFERMATO'" (click)="onFiltroStato('CONFERMATO')">
+        <ion-chip [class.active]="filtroStato === 'CONFERMATA'" (click)="onFiltroStato('CONFERMATA')">
           <ion-label>Confermate</ion-label>
         </ion-chip>
-        <ion-chip [class.active]="filtroStato === 'RIFIUTATO'" (click)="onFiltroStato('RIFIUTATO')">
+        <ion-chip [class.active]="filtroStato === 'RIFIUTATA'" (click)="onFiltroStato('RIFIUTATA')">
           <ion-label>Rifiutate</ion-label>
         </ion-chip>
         <ion-chip [class.active]="filtroStato === 'ANNULLATA'" (click)="onFiltroStato('ANNULLATA')">
@@ -68,8 +68,8 @@
                     class="stato-select"
                   >
                     <ion-select-option value="IN_ATTESA">In attesa</ion-select-option>
-                    <ion-select-option value="CONFERMATO">Confermato</ion-select-option>
-                    <ion-select-option value="RIFIUTATO">Rifiutato</ion-select-option>
+                    <ion-select-option value="CONFERMATA">Confermata</ion-select-option>
+                    <ion-select-option value="RIFIUTATA">Rifiutata</ion-select-option>
                     <ion-select-option value="ANNULLATA">Annullata</ion-select-option>
                   </ion-select>
                   <button class="btn-icon" title="Dettagli" (click)="dettagli(p)">

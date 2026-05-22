@@ -57,9 +57,24 @@ export class DettaglioPrenotazioneDocentePage implements OnInit {
     return `${d}/${m}/${y}`;
   }
 
+  private statoBase(stato: string): string {
+    if (!stato) return '';
+    const s = stato.toLowerCase();
+    if (s === 'confermata' || s === 'confermato') return 'confermata';
+    if (s === 'in_attesa' || s === 'in-attesa' || s === 'in attesa') return 'in_attesa';
+    if (s === 'completata' || s === 'completato') return 'completata';
+    if (s === 'annullata' || s === 'annullato') return 'annullata';
+    if (s === 'rifiutata' || s === 'rifiutato') return 'rifiutata';
+    return '';
+  }
+
   getStatusClass(stato: string): string {
-    const map: Record<string, string> = { confermata: 'confirmed', in_attesa: 'waiting', completata: 'completed', annullata: 'cancelled' };
-    return map[stato] || '';
+    const map: Record<string, string> = { confermata: 'confirmed', in_attesa: 'waiting', completata: 'completed', annullata: 'cancelled', rifiutata: 'cancelled' };
+    return map[this.statoBase(stato)] || '';
+  }
+
+  isStato(stato: string, atteso: string): boolean {
+    return this.statoBase(stato) === atteso;
   }
 
   getDocumentIcon(type: string): string {

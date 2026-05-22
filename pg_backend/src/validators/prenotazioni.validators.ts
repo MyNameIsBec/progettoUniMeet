@@ -8,7 +8,7 @@ export const creaPrenotazioneSchema = [
 ];
 
 export const aggiornaStatoSchema = [
-  body('stato').isIn(['IN_ATTESA', 'CONFERMATA', 'COMPLETATA', 'ANNULLATA']),
+  body('stato').isIn(['IN_ATTESA', 'CONFERMATA', 'COMPLETATA', 'ANNULLATA', 'RIFIUTATA']),
 ];
 
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {

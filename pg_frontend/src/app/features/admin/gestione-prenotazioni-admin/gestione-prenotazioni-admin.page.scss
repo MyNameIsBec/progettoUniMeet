@@ -108,12 +108,14 @@ ion-chip.active {
   color: #ca8a04;
 }
 
-.stato-confermato {
+.stato-confermato,
+.stato-confermata {
   background: #eafaf0;
   color: #16a34a;
 }
 
-.stato-rifiutato {
+.stato-rifiutato,
+.stato-rifiutata {
   background: #fef2f2;
   color: #ef4444;
 }
