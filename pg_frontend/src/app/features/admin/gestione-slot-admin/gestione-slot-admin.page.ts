@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -35,7 +35,7 @@ export class GestioneSlotAdminPage implements OnInit {
   slotInModifica: SlotGriglia | null = null;
   formDati: any = {};
 
-  constructor(private admin: AdminService, private route: ActivatedRoute) {
+  constructor(private admin: AdminService, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -108,8 +108,8 @@ export class GestioneSlotAdminPage implements OnInit {
     this.modaleTitolo = 'Crea slot';
     this.slotInModifica = null;
     this.formDati = this.formVuoto();
-    this.caricaDocenti();
     this.mostraModale = true;
+    this.cdr.detectChanges();
   }
 
   apriModaleModifica(s: SlotGriglia) {
@@ -124,6 +124,7 @@ export class GestioneSlotAdminPage implements OnInit {
       luogo: s.luogo ? { ...s.luogo } : { nomeAula: '', edificio: '', piano: '' },
     };
     this.mostraModale = true;
+    this.cdr.detectChanges();
   }
 
   chiudiModale() {
