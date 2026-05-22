@@ -158,7 +158,7 @@ body.dark {
     --text-dark: #f1f5f9;
     --text-muted: #94a3b8;
     --border-light: #334155;
-    color: #f1f5f9;
+    color: #f1f5f9 !important;
   }
 
   .premium-card,
@@ -175,15 +175,15 @@ body.dark {
   ion-card {
     background: #0f172a !important;
     border: 1px solid rgba(37, 99, 235, 0.1) !important;
-    color: #f1f5f9;
+    color: #f1f5f9 !important;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 
     ion-card-title {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     p {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
   }
 
@@ -208,7 +208,7 @@ body.dark {
 
     .eyebrow {
       background: rgba(37, 99, 235, 0.25) !important;
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
   }
 
@@ -217,12 +217,12 @@ body.dark {
     border: 1px solid rgba(255, 255, 255, 0.05) !important;
 
     strong {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     .hero-status-icon {
       background: #2563eb !important;
-      color: #ffffff;
+      color: #ffffff !important;
     }
   }
 
@@ -233,7 +233,7 @@ body.dark {
 
     .menu-toggle {
       background: rgba(255, 255, 255, 0.03) !important;
-      color: #e2e8f0;
+      color: #e2e8f0 !important;
     }
 
     .notification-button,
@@ -242,7 +242,7 @@ body.dark {
       border-color: rgba(255, 255, 255, 0.1) !important;
 
       ion-icon {
-        color: #94a3b8;
+        color: #94a3b8 !important;
       }
 
       &:hover {
@@ -250,7 +250,7 @@ body.dark {
         border-color: #2563eb !important;
 
         ion-icon {
-          color: #60a5fa;
+          color: #60a5fa !important;
         }
       }
     }
@@ -260,7 +260,7 @@ body.dark {
       border-color: rgba(255, 255, 255, 0.1) !important;
 
       strong {
-        color: #ffffff;
+        color: #ffffff !important;
       }
 
       &:hover {
@@ -272,7 +272,7 @@ body.dark {
     .student-avatar-small {
       background: rgba(255, 255, 255, 0.05) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
   }
 
@@ -282,41 +282,41 @@ body.dark {
 
     .sidebar-logo {
       h1 {
-        color: #60a5fa;
+        color: #60a5fa !important;
       }
 
       span {
-        color: #64748b;
+        color: #64748b !important;
       }
 
       ion-icon {
-        color: #60a5fa;
+        color: #60a5fa !important;
       }
     }
 
     .sidebar-nav a {
-      color: #94a3b8;
+      color: #94a3b8 !important;
 
       ion-icon {
-        color: #64748b;
+        color: #64748b !important;
       }
 
       &:hover {
         background: rgba(37, 99, 235, 0.1) !important;
-        color: #ffffff;
+        color: #ffffff !important;
 
         ion-icon {
-          color: #ffffff;
+          color: #ffffff !important;
         }
       }
 
       &.active {
         background: #2563eb !important;
-        color: #ffffff;
+        color: #ffffff !important;
         box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4) !important;
 
         ion-icon {
-          color: #ffffff;
+          color: #ffffff !important;
         }
       }
     }
@@ -324,19 +324,19 @@ body.dark {
     .sidebar-theme-toggle {
       background: rgba(255, 255, 255, 0.03) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #94a3b8;
+      color: #94a3b8 !important;
 
       ion-icon {
-        color: #64748b;
+        color: #64748b !important;
       }
 
       &:hover {
         background: rgba(37, 99, 235, 0.15) !important;
         border-color: #2563eb !important;
-        color: #60a5fa;
+        color: #60a5fa !important;
 
         ion-icon {
-          color: #60a5fa;
+          color: #60a5fa !important;
         }
       }
     }
@@ -349,28 +349,28 @@ body.dark {
       border-bottom-color: rgba(255, 255, 255, 0.05) !important;
 
       h1 {
-        color: #60a5fa;
+        color: #60a5fa !important;
       }
 
       span {
-        color: #64748b;
+        color: #64748b !important;
       }
     }
 
     .menu-items a {
-      color: #94a3b8;
+      color: #94a3b8 !important;
 
       ion-icon {
-        color: #64748b;
+        color: #64748b !important;
       }
 
       &:hover,
       &.active {
         background: rgba(37, 99, 235, 0.1) !important;
-        color: #ffffff;
+        color: #ffffff !important;
 
         ion-icon {
-          color: #ffffff;
+          color: #ffffff !important;
         }
       }
     }
@@ -389,16 +389,16 @@ body.dark {
     --color: #ffffff !important;
     --placeholder-color: #94a3b8 !important;
     --placeholder-opacity: 1;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   ion-label {
     --color: #e2e8f0 !important;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   .premium-form-field label {
-    color: #cbd5e1;
+    color: #cbd5e1 !important;
   }
 
   .premium-form-field ion-item {
@@ -408,7 +408,7 @@ body.dark {
 
   .stat-card div strong,
   .summary-number strong {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .summary-card h3,
@@ -417,7 +417,7 @@ body.dark {
   .faq-card ion-card-title,
   .main-card ion-card-title,
   .side-card ion-card-title {
-    color: #ffffff;
+    color: #ffffff !important;
     font-weight: 900;
   }
 
@@ -437,15 +437,15 @@ body.dark {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4) !important;
 
     ion-card-title {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     h3, h4, strong {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     p, span {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
 
     &:hover {
@@ -464,12 +464,12 @@ body.dark {
   .faq-row {
     background: rgba(255, 255, 255, 0.03) !important;
     border-color: rgba(255, 255, 255, 0.05) !important;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
 
     &:hover {
       background: rgba(37, 99, 235, 0.1) !important;
       border-color: #2563eb !important;
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
 
     ion-icon { color: #94a3b8; }
@@ -477,7 +477,7 @@ body.dark {
 
   .faq-link {
     background: #2563eb !important;
-    color: #ffffff;
+    color: #ffffff !important;
 
     ion-icon { color: #ffffff; }
 
@@ -487,18 +487,18 @@ body.dark {
   .filtro-btn {
     background: rgba(255, 255, 255, 0.04) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #94a3b8;
+    color: #94a3b8 !important;
 
     &:hover {
       background: rgba(37, 99, 235, 0.15) !important;
       border-color: #2563eb !important;
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
 
     &.active {
       background: #2563eb !important;
       border-color: #2563eb !important;
-      color: #ffffff;
+      color: #ffffff !important;
     }
   }
 
@@ -581,12 +581,12 @@ body.dark {
     h4,
     strong,
     ion-card-title {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     p,
     span {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
   }
 
@@ -598,23 +598,23 @@ body.dark {
   .management-row {
     background: rgba(255, 255, 255, 0.03) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff;
+    color: #ffffff !important;
     border-radius: 14px;
 
     input {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     ion-select,
     ion-input,
     ion-textarea {
-      color: #ffffff;
+      color: #ffffff !important;
       --color: #ffffff !important;
     }
 
     &.active {
       background: #2563eb !important;
-      color: #ffffff;
+      color: #ffffff !important;
       border-color: #2563eb !important;
     }
 
@@ -629,17 +629,17 @@ body.dark {
   }
 
   .teacher-header h3 {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .next-slot-banner {
     background: rgba(34, 197, 94, 0.1) !important;
-    color: #4ade80;
+    color: #4ade80 !important;
     border: 1px solid rgba(34, 197, 94, 0.2) !important;
 
     &.not-available {
       background: rgba(255, 255, 255, 0.05) !important;
-      color: #94a3b8;
+      color: #94a3b8 !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
     }
   }
@@ -647,17 +647,17 @@ body.dark {
   .status-overlay .badge {
     &.success {
       background: rgba(34, 197, 94, 0.2) !important;
-      color: #4ade80;
+      color: #4ade80 !important;
     }
 
     &.warning {
       background: rgba(234, 179, 8, 0.2) !important;
-      color: #fde047;
+      color: #fde047 !important;
     }
 
     &.danger {
       background: rgba(239, 68, 68, 0.2) !important;
-      color: #f87171;
+      color: #f87171 !important;
     }
   }
 
@@ -667,16 +667,16 @@ body.dark {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3) !important;
 
     .stat-value {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     .stat-label {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
   }
 
   .quick-actions h3 {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .table-wrap {
@@ -691,12 +691,12 @@ body.dark {
   .prenotazioni-table {
     th {
       background: #1e293b !important;
-      color: #94a3b8;
+      color: #94a3b8 !important;
       border-bottom-color: rgba(255, 255, 255, 0.05) !important;
     }
 
     td {
-      color: #e2e8f0;
+      color: #e2e8f0 !important;
       border-bottom-color: rgba(255, 255, 255, 0.05) !important;
     }
 
@@ -706,7 +706,7 @@ body.dark {
   }
 
   .empty-row {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   ion-chip {
@@ -723,7 +723,7 @@ body.dark {
 
   .count-badge {
     background: rgba(255, 255, 255, 0.05) !important;
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .search-bar {
@@ -732,13 +732,13 @@ body.dark {
     --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
     input {
-      color: #ffffff;
+      color: #ffffff !important;
     }
   }
 
   .page-title,
   .selected-day-label {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .selected-day-label {
@@ -748,14 +748,14 @@ body.dark {
   ion-datetime {
     --background: #0f172a !important;
     --wheel-fade-background-rgb: 15, 23, 42;
-    color: #ffffff;
+    color: #ffffff !important;
 
     &::part(calendar-day) {
-      color: #cbd5e1;
+      color: #cbd5e1 !important;
     }
 
     &::part(calendar-day today) {
-      color: #60a5fa;
+      color: #60a5fa !important;
     }
   }
 
@@ -776,108 +776,108 @@ body.dark {
   }
 
   .slot-docente {
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   .slot-info {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .slot-empty h3 {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .slot-empty p {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .slot-empty ion-icon {
-    color: #64748b;
+    color: #64748b !important;
   }
 
   .stato-libero {
     background: rgba(22, 163, 74, 0.15) !important;
-    color: #4ade80;
+    color: #4ade80 !important;
   }
 
   .stato-occupato {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
   }
 
   .stato-aperta {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
   }
 
   .stato-in_lavorazione {
     background: rgba(37, 99, 235, 0.15) !important;
-    color: #60a5fa;
+    color: #60a5fa !important;
   }
 
   .stato-chiusa {
     background: rgba(22, 163, 74, 0.15) !important;
-    color: #4ade80;
+    color: #4ade80 !important;
   }
 
   .stato-in_attesa {
     background: rgba(234, 179, 8, 0.15) !important;
-    color: #fde047;
+    color: #fde047 !important;
   }
 
   .stato-confermato,
   .stato-confermata {
     background: rgba(22, 163, 74, 0.15) !important;
-    color: #4ade80;
+    color: #4ade80 !important;
   }
 
   .stato-rifiutato,
   .stato-rifiutata {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
   }
 
   .stato-annullata {
     background: rgba(100, 116, 139, 0.2) !important;
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .ruolo-studente {
     background: rgba(37, 99, 235, 0.15) !important;
-    color: #60a5fa;
+    color: #60a5fa !important;
   }
 
   .ruolo-docente {
     background: rgba(22, 163, 74, 0.15) !important;
-    color: #4ade80;
+    color: #4ade80 !important;
   }
 
   .ruolo-amministratore {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
   }
 
   .motivo-badge {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
   }
 
   .data-badge {
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   .data-badge ion-icon {
-    color: #60a5fa;
+    color: #60a5fa !important;
   }
 
   ion-datetime::part(calendar-day active) {
     background: #2563eb !important;
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .selected-day-label {
     background: rgba(37, 99, 235, 0.15) !important;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   .field-group {
@@ -886,7 +886,7 @@ body.dark {
     box-shadow: none !important;
 
     label {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
 
     ion-input,
@@ -897,16 +897,16 @@ body.dark {
       --border-color: rgba(255, 255, 255, 0.1) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
       background: transparent !important;
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     ion-input::part(placeholder),
     ion-select::part(placeholder) {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
 
     ion-select::part(text) {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     ion-toggle {
@@ -918,12 +918,12 @@ body.dark {
   }
 
   .luogo-section>label {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .filtro-group {
     label {
-      color: #e2e8f0;
+      color: #e2e8f0 !important;
     }
 
     ion-select {
@@ -933,15 +933,15 @@ body.dark {
       --border-color: rgba(255, 255, 255, 0.1) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
       background: transparent !important;
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     ion-select::part(text) {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     ion-select::part(placeholder) {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
   }
 
@@ -957,18 +957,18 @@ body.dark {
   .btn-icon {
     background: rgba(255, 255, 255, 0.03) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #94a3b8;
+    color: #94a3b8 !important;
 
     &:hover {
       background: rgba(37, 99, 235, 0.15) !important;
-      color: #60a5fa;
+      color: #60a5fa !important;
       border-color: #2563eb !important;
     }
   }
 
   .btn-danger:hover {
     background: rgba(239, 68, 68, 0.15) !important;
-    color: #f87171;
+    color: #f87171 !important;
     border-color: #ef4444 !important;
   }
 
@@ -986,11 +986,11 @@ body.dark {
 
   ion-alert .alert-head h2,
   ion-alert .alert-head h3 {
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   ion-alert .alert-message {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   ion-alert .alert-radio-group {
@@ -1004,7 +1004,7 @@ body.dark {
   }
 
   ion-alert .alert-radio-label {
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
     font-weight: 500;
   }
 
@@ -1023,7 +1023,7 @@ body.dark {
   }
 
   ion-alert .alert-button {
-    color: #60a5fa;
+    color: #60a5fa !important;
     font-weight: 700;
     --color: #60a5fa !important;
   }
@@ -1040,18 +1040,18 @@ body.dark {
     --background: #1e293b !important;
     --color: #e2e8f0 !important;
     background: #1e293b !important;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
     --ion-text-color: #e2e8f0;
   }
 
   ion-popover ion-item::part(native) {
     --background: #1e293b !important;
     background: #1e293b !important;
-    color: #e2e8f0;
+    color: #e2e8f0 !important;
   }
 
   .icon-btn.edit {
-    color: #60a5fa;
+    color: #60a5fa !important;
 
     &:hover {
       background: rgba(37, 99, 235, 0.15) !important;
@@ -1059,7 +1059,7 @@ body.dark {
   }
 
   .icon-btn.delete {
-    color: #f87171;
+    color: #f87171 !important;
 
     &:hover {
       background: rgba(239, 68, 68, 0.15) !important;
@@ -1067,11 +1067,11 @@ body.dark {
   }
 
   .oggetto-cell p {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .studente-cell .matricola {
-    color: #94a3b8;
+    color: #94a3b8 !important;
   }
 
   .stato-select {
@@ -1080,7 +1080,7 @@ body.dark {
     --border-color: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     background: transparent !important;
-    color: #ffffff;
+    color: #ffffff !important;
   }
 
   .student-icon {
