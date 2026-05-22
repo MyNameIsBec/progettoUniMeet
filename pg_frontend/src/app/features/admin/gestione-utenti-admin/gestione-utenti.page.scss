@@ -1,3 +1,11 @@
+:host {
+  --primary-blue: #2563eb;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  color: var(--text-dark);
+}
+
 .utenti-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -53,7 +61,7 @@ ion-chip.active {
 .table-wrap {
   background: #ffffff;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   overflow-x: auto;
 }
@@ -68,18 +76,18 @@ ion-chip.active {
   padding: 16px 20px;
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-light);
   background: #fafcff;
 }
 
 .utenti-table td {
   padding: 14px 20px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   font-size: 14px;
-  color: #0f172a;
+  color: var(--text-dark);
   vertical-align: middle;
 }
 
@@ -125,12 +133,12 @@ ion-chip.active {
 }
 
 .email-cell {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 13px;
 }
 
 .dettagli-cell {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 13px;
 }
 
@@ -166,7 +174,7 @@ ion-chip.active {
 
 .empty-row {
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-muted);
   padding: 40px 20px !important;
   font-style: italic;
 }
@@ -270,6 +278,8 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 .modal-actions ion-button:last-child {
   --background: #2563eb;
 }
+
+/* DARK MODE OVERRIDES */
 
 @media (max-width: 760px) {
   .hide-mobile {

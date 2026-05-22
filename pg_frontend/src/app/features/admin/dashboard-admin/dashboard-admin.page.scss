@@ -1,3 +1,11 @@
+:host {
+  --primary-blue: #2563eb;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  color: var(--text-dark);
+}
+
 .admin-dashboard {
   max-width: 1400px;
   margin: 0 auto;
@@ -65,13 +73,13 @@
 .stat-value {
   font-size: 28px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-dark);
   line-height: 1.1;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 600;
   margin-top: 2px;
 }
@@ -83,7 +91,7 @@
 .quick-actions h3 {
   font-size: 22px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-dark);
   margin: 0 0 18px;
 }
 
@@ -99,6 +107,7 @@ ion-button {
   font-weight: 700;
 }
 
+/* DARK MODE OVERRIDES */
 :host-context(body.dark) .quick-actions h3 {
     color: #ffffff;
 }

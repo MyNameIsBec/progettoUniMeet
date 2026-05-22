@@ -1,3 +1,11 @@
+:host {
+  --primary-blue: #2563eb;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  color: var(--text-dark);
+}
+
 .prenotazioni-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -22,7 +30,7 @@
 ion-chip {
   --background: #ffffff;
   --color: #0f172a;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
@@ -38,7 +46,7 @@ ion-chip.active {
 .count-badge {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted);
   background: #f1f5f9;
   padding: 6px 14px;
   border-radius: 20px;
@@ -48,7 +56,7 @@ ion-chip.active {
 .table-wrap {
   background: #ffffff;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   overflow-x: auto;
 }
@@ -64,19 +72,19 @@ ion-chip.active {
   padding: 14px 12px;
   font-size: 11px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-light);
   background: #fafcff;
   white-space: nowrap;
 }
 
 .prenotazioni-table td {
   padding: 12px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
   font-size: 13px;
-  color: #0f172a;
+  color: var(--text-dark);
   vertical-align: middle;
 }
 
@@ -122,7 +130,7 @@ ion-chip.active {
 
 .stato-annullata {
   background: #f1f5f9;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .studente-cell {
@@ -154,7 +162,7 @@ ion-chip.active {
 .argomento-cell p {
   margin: 0;
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -163,17 +171,17 @@ ion-chip.active {
 
 .slot-cell {
   font-size: 12px;
-  color: #0f172a;
+  color: var(--text-dark);
   white-space: nowrap;
 }
 
 .slot-cell .ora {
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .data-cell {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -202,7 +210,7 @@ ion-chip.active {
   --padding-end: 8px;
   --padding-top: 4px;
   --padding-bottom: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   background: #f8fbff;
   font-weight: 500;
@@ -217,9 +225,9 @@ ion-chip.active {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   background: #f8fbff;
-  color: #64748b;
+  color: var(--text-muted);
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s;
@@ -227,7 +235,7 @@ ion-chip.active {
 
 .btn-icon:hover {
   background: #eef4ff;
-  color: #2563eb;
+  color: var(--primary-blue);
   border-color: #2563eb;
 }
 
@@ -244,12 +252,13 @@ ion-chip.active {
   font-style: italic;
 }
 
+/* DARK MODE OVERRIDES */
 :host-context(body.dark) .argomento-cell p {
     color: #94a3b8;
 }
 
 :host-context(body.dark) .slot-cell .ora {
-    color: #64748b;
+    color: #94a3b8;
 }
 
 @media (max-width: 1100px) {

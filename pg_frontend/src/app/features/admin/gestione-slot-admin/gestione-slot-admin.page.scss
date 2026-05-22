@@ -1,3 +1,11 @@
+:host {
+  --primary-blue: #2563eb;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  color: var(--text-dark);
+}
+
 .slot-content {
   max-width: 1400px;
   margin: 0 auto;
@@ -79,7 +87,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 
 .field-group {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 14px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
@@ -146,7 +154,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 .luogo-section > label {
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -176,7 +184,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 .filtri-card {
   background: #ffffff;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   padding: 24px;
   margin-bottom: 24px;
@@ -197,7 +205,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-dark);
   margin-bottom: 6px;
 }
 
@@ -238,7 +246,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 .slot-card {
   background: #ffffff;
   border-radius: 18px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   overflow: hidden;
   transition: box-shadow 0.2s;
@@ -253,7 +261,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .slot-docente {
@@ -262,11 +270,11 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   gap: 8px;
   font-weight: 700;
   font-size: 15px;
-  color: #0f172a;
+  color: var(--text-dark);
 }
 
 .slot-docente ion-icon {
-  color: #2563eb;
+  color: var(--primary-blue);
   font-size: 20px;
 }
 
@@ -302,12 +310,12 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-muted);
 }
 
 .slot-info ion-icon {
   font-size: 18px;
-  color: #94a3b8;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -323,19 +331,19 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 
 .slot-empty ion-icon {
   font-size: 56px;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin-bottom: 16px;
 }
 
 .slot-empty h3 {
   font-size: 20px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-dark);
   margin: 0 0 6px;
 }
 
 .slot-empty p {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 14px;
   margin: 0;
 }
@@ -345,6 +353,8 @@ ion-button {
   text-transform: none;
   font-weight: 700;
 }
+
+/* DARK MODE OVERRIDES */
 
 :host-context(body.dark) .slot-docente ion-icon {
     color: #60a5fa;
