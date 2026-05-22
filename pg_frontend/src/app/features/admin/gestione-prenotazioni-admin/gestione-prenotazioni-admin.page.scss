@@ -244,6 +244,14 @@ ion-chip.active {
   font-style: italic;
 }
 
+:host-context(body.dark) .argomento-cell p {
+    color: #94a3b8;
+}
+
+:host-context(body.dark) .slot-cell .ora {
+    color: #64748b;
+}
+
 @media (max-width: 1100px) {
   .hide-mobile {
     display: none;

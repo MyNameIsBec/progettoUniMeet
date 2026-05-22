@@ -346,6 +346,14 @@ ion-button {
   font-weight: 700;
 }
 
+:host-context(body.dark) .slot-docente ion-icon {
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .slot-info ion-icon {
+    color: #64748b;
+}
+
 @media (max-width: 760px) {
   .slot-content {
     padding: 16px 4%;
