@@ -590,6 +590,10 @@ ion-button {
     border-color: rgba(37, 99, 235, 0.25);
 }
 
+:host-context(body.dark) .info-card .info-icon {
+    background: rgba(37, 99, 235, 0.15);
+}
+
 /* RESPONSIVE TABLET */
 @media (max-width: 1200px) {
     .summary-grid {

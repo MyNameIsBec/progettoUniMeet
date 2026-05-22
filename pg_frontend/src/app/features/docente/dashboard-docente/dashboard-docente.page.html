@@ -128,7 +128,7 @@
 
           </div>
           } @else {
-          <div style="text-align: center; padding: 24px; font-weight: 700; color: #64748b;">
+          <div style="text-align: center; padding: 24px; font-weight: 700; color: var(--text-muted);">
             Nessun ricevimento programmato
           </div>
           }
@@ -197,7 +197,7 @@
 
           </table>
           } @else {
-          <div style="text-align: center; padding: 24px; font-weight: 700; color: #64748b;">
+          <div style="text-align: center; padding: 24px; font-weight: 700; color: var(--text-muted);">
             Nessuna prenotazione recente
           </div>
           }
@@ -243,7 +243,7 @@
 
           </div>
           } @else {
-          <div style="text-align: center; padding: 12px; font-weight: 700; color: #64748b;">
+          <div style="text-align: center; padding: 12px; font-weight: 700; color: var(--text-muted);">
             Nessuno slot attivo programmato
           </div>
           }
@@ -267,7 +267,7 @@
         <ion-card-content>
 
           <div class="progress-box">
-            <div class="progress-circle" [style.background]="'conic-gradient(#2563eb 0 ' + riempimentoMedio + '%, #e2e8f0 ' + riempimentoMedio + '% 100%)'">
+            <div class="progress-circle" [style.background]="'conic-gradient(var(--primary-blue) 0 ' + riempimentoMedio + '%, var(--border-light) ' + riempimentoMedio + '% 100%)'">
               <span>{{ riempimentoMedio }}%</span>
             </div>
 
