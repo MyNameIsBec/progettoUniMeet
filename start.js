@@ -228,6 +228,7 @@ async function main() {
   const prisma = spawn(prismaBin, ['studio', '--port', String(PRISMA_PORT), '--browser', 'none'], {
     cwd: BACKEND,
     stdio: 'pipe',
+    shell: true,
   });
   prisma.stdout.on('data', d => process.stdout.write(`[PRISMA] ${d}`));
   prisma.stderr.on('data', d => process.stderr.write(`[PRISMA] ${d}`));

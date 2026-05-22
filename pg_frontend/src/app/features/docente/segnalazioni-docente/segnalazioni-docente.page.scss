@@ -233,7 +233,7 @@
             --box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
             margin-top: 10px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            
+
             &::part(native) {
                 background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             }
@@ -498,4 +498,98 @@
         flex-direction: column;
         text-align: center;
     }
+}
+
+/* DARK MODE */
+:host-context(body.dark) .stat-card,
+:host-context(body.dark) .form-card,
+:host-context(body.dark) .history-card,
+:host-context(body.dark) .info-card,
+:host-context(body.dark) .tips-card,
+:host-context(body.dark) .secure-card {
+    background: var(--ion-card-background);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+:host-context(body.dark) .stat-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .stat-icon.yellow {
+    background: linear-gradient(135deg, #b45309, #92400e);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .stat-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .info-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .info-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .info-icon.yellow {
+    background: linear-gradient(135deg, #b45309, #92400e);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .info-icon.red {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .card-icon {
+    background: rgba(37, 99, 235, 0.15);
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .report-item {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .report-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(body.dark) .upload-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(37, 99, 235, 0.3);
+}
+
+:host-context(body.dark) .upload-box:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.5);
+}
+
+:host-context(body.dark) .form-field ion-item {
+    --background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .tips-card {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.2);
+    color: #93c5fd;
+}
+
+:host-context(body.dark) .secure-card {
+    background: rgba(21, 128, 61, 0.1);
+    border-color: rgba(21, 128, 61, 0.2);
+    color: #86efac;
+}
+
+:host-context(body.dark) .secure-card p {
+    color: #4ade80;
 }

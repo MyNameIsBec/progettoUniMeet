@@ -58,6 +58,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         { etichetta: 'Documenti', percorso: '/documenti-docente', icona: 'folder-open-outline' },
         { etichetta: 'Bacheche', percorso: '/bacheche-docente', icona: 'help-circle-outline' },
         { etichetta: 'Statistiche', percorso: '/statistiche-docente', icona: 'bar-chart-outline' },
+        { etichetta: 'Segnalazioni', percorso: '/segnalazioni-docente', icona: 'alert-circle-outline' },
       ];
     }
     else if (role === 'studente') {
@@ -67,7 +68,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
         { etichetta: 'Prenota', percorso: '/prenota', icona: 'calendar-clear-outline' },
         { etichetta: 'Le mie prenotazioni', percorso: '/riepilogo-prenotazioni', icona: 'calendar-number-outline' },
         { etichetta: 'FAQ / Bacheca', percorso: '/bacheca-studente', icona: 'help-circle-outline' },
-        { etichetta: 'Segnalazione', percorso: '/segnalazione', icona: 'alert-circle-outline' },
+        { etichetta: 'Segnalazioni', percorso: '/segnalazioni-studente', icona: 'alert-circle-outline' },
       ];
     }
   }

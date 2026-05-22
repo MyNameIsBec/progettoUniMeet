@@ -9,7 +9,13 @@ export interface Segnalazione {
   data_invio: string;
   stato: string;
   matricola_studente: string;
+  id_docente?: string;
   studente?: {
+    nome: string;
+    cognome: string;
+    email: string;
+  };
+  docente?: {
     nome: string;
     cognome: string;
     email: string;
@@ -41,5 +47,13 @@ export class SegnalazioneService {
 
   eliminaSegnalazione(id: string): Observable<void> {
     return this.http.delete<void>(`api/segnalazioni/${id}`);
+  }
+
+  inviaSegnalazioneDocente(oggetto: string, descrizione: string, id_docente: string): Observable<Segnalazione> {
+    return this.http.post<Segnalazione>('api/segnalazioni/docente', { oggetto, descrizione, id_docente });
+  }
+
+  getSegnalazioniByDocente(id_docente: string): Observable<Segnalazione[]> {
+    return this.http.get<Segnalazione[]>(`api/segnalazioni/docente/${id_docente}`);
   }
 }

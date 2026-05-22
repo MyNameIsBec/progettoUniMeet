@@ -68,9 +68,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/studente/notifiche-studente/notifiche-studente.page').then(m => m.NotificheStudentePage)
   },
   {
-    path: 'segnalazione',
+    path: 'segnalazioni-studente',
     canActivate: [authGuard, roleGuard('studente')],
-    loadComponent: () => import('./features/studente/segnalazione/segnalazione.page').then(m => m.SegnalazionePage)
+    loadComponent: () => import('./features/studente/segnalazioni-studente/segnalazioni-studente.page').then(m => m.SegnalazioniStudentePage)
   },
 
   // --- DOCENTE ---
@@ -118,6 +118,11 @@ export const routes: Routes = [
     path: 'documenti-docente',
     canActivate: [authGuard, roleGuard('docente')],
     loadComponent: () => import('./features/docente/documenti-docente/documenti-docente.page').then(m => m.DocumentiDocentePage)
+  },
+  {
+    path: 'segnalazioni-docente',
+    canActivate: [authGuard, roleGuard('docente')],
+    loadComponent: () => import('./features/docente/segnalazioni-docente/segnalazioni-docente.page').then(m => m.SegnalazioniDocentePage)
   },
 
   // --- ADMIN ---

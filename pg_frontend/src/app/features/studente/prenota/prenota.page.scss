@@ -10,8 +10,8 @@
 .important-card,
 .selected-slot-card,
 .booking-form-card {
-  background: #ffffff !important;
-  color: #0f172a !important;
+  background: var(--ion-card-background);
+  color: var(--ion-text-color);
   border: 1px solid #e2e8f0;
   border-radius: 18px;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
@@ -860,3 +860,175 @@ ion-modal.booking-modal {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* DARK MODE */
+:host-context(body.dark) .selection-card,
+:host-context(body.dark) .calendar-card,
+:host-context(body.dark) .important-card,
+:host-context(body.dark) .selected-slot-card,
+:host-context(body.dark) .booking-form-card {
+  background: var(--ion-card-background);
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+:host-context(body.dark) ion-card-title {
+  color: var(--ion-text-color);
+}
+
+:host-context(body.dark) .selection-form {
+  background: var(--ion-card-background);
+  border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .selected-teacher-box {
+  background: var(--ion-card-background);
+}
+
+:host-context(body.dark) .calendar-scroll-container {
+  background: var(--ion-card-background);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .slot-calendar {
+  background: var(--ion-card-background);
+}
+
+:host-context(body.dark) .calendar-empty,
+:host-context(body.dark) .day-header {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+:host-context(body.dark) .calendar-empty,
+:host-context(body.dark) .day-header,
+:host-context(body.dark) .time-cell,
+:host-context(body.dark) .calendar-cell {
+  border-right-color: rgba(255, 255, 255, 0.06);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .day-header strong {
+  color: #e2e8f0;
+}
+
+:host-context(body.dark) .day-header.active-day {
+  background: rgba(37, 99, 235, 0.15);
+  border-bottom-color: #2563eb;
+}
+
+:host-context(body.dark) .day-header.active-day strong {
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .time-cell {
+  background: rgba(255, 255, 255, 0.04);
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .calendar-cell {
+  background: var(--ion-card-background);
+}
+
+:host-context(body.dark) .slot.available {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+:host-context(body.dark) .slot.available:hover {
+  background: #065f46;
+}
+
+:host-context(body.dark) .slot.occupied {
+  background: #78350f !important;
+  color: #fde68a !important;
+}
+
+:host-context(body.dark) .slot.blocked {
+  background: #450a0a;
+  color: #fca5a5;
+  border-color: #b91c1c;
+}
+
+:host-context(body.dark) .slot.selected {
+  background: #1e40af !important;
+  color: #ffffff !important;
+  border-color: #60a5fa !important;
+}
+
+:host-context(body.dark) .legend-row {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .week-title {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .calendar-actions button {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .calendar-actions button:hover {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+:host-context(body.dark) .important-card {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+:host-context(body.dark) .important-card h3 {
+  color: #93c5fd;
+}
+
+:host-context(body.dark) .modal-root-native {
+  background: var(--ion-background-color);
+}
+
+:host-context(body.dark) .slot-hero-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .booking-form-wrapper {
+  background: var(--ion-card-background);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .detail-pill {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+
+:host-context(body.dark) .modal-input-item {
+  --background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .upload-zone {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+:host-context(body.dark) .upload-zone:hover {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
+:host-context(body.dark) .file-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .file-name {
+  color: #cbd5e1;
+}
+
+:host-context(body.dark) .day-blocked {
+  background: rgba(244, 63, 94, 0.08) !important;
+}

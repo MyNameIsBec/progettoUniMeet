@@ -6,17 +6,16 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-segnalazione',
+  selector: 'app-segnalazioni-docente',
   standalone: true,
   imports: [CommonModule, FormsModule, IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonItem, IonInput, IonTextarea, DashboardLayoutComponent],
-  templateUrl: './segnalazione.page.html',
-  styleUrls: ['./segnalazione.page.scss'],
+  templateUrl: './segnalazioni-docente.page.html',
+  styleUrls: ['./segnalazioni-docente.page.scss'],
 })
 
-export class SegnalazionePage implements OnInit {
+export class SegnalazioniDocentePage implements OnInit {
   segnalazioni: Segnalazione[] = [];
   selectedFile: File | null = null;
   invioInCorso: boolean = false;
@@ -33,7 +32,7 @@ export class SegnalazionePage implements OnInit {
   };
 
   constructor(
-    private segnalazioneService: SegnalazioneService, 
+    private segnalazioneService: SegnalazioneService,
     private authService: AuthService,
     private alertController: AlertController,
     private toastController: ToastController
@@ -49,10 +48,8 @@ export class SegnalazionePage implements OnInit {
           text: 'Elimina',
           cssClass: 'delete-button-confirm',
           handler: () => {
-            console.log('Tentativo eliminazione segnalazione ID:', id);
             this.segnalazioneService.eliminaSegnalazione(id).subscribe({
               next: async () => {
-                console.log('Eliminazione segnalazione riuscita sul backend');
                 this.caricaSegnalazioni();
                 const toast = await this.toastController.create({
                   message: 'Segnalazione eliminata con successo',
@@ -63,7 +60,6 @@ export class SegnalazionePage implements OnInit {
                 await toast.present();
               },
               error: async (err) => {
-                console.error('Errore durante l\'eliminazione segnalazione', err);
                 const toast = await this.toastController.create({
                   message: 'Errore durante l\'eliminazione: ' + (err.error?.error || 'Server error'),
                   duration: 3000,
@@ -96,14 +92,14 @@ export class SegnalazionePage implements OnInit {
 
   caricaSegnalazioni() {
     const user = this.authService.getCurrentUser();
-    let matricola = '';
+    let docenteId = '';
     if (user != null) {
-      matricola = user.id;
+      docenteId = user.id;
     } else {
       return;
     }
 
-    this.segnalazioneService.getSegnalazioniByStudente(matricola).subscribe({
+    this.segnalazioneService.getSegnalazioniByDocente(docenteId).subscribe({
       next: (data) => {
         this.segnalazioni = data;
         this.aggiornaStatistiche();
@@ -120,19 +116,19 @@ export class SegnalazionePage implements OnInit {
 
   inviaSegnalazione() {
     const user = this.authService.getCurrentUser();
-    let matricola = '';
+    let docenteId = '';
 
     if (user != null && this.form.oggetto != '' && this.form.descrizione != '') {
-      matricola = user.id;
+      docenteId = user.id;
     } else {
       return;
     }
 
     this.invioInCorso = true;
-    this.segnalazioneService.inviaSegnalazione(
+    this.segnalazioneService.inviaSegnalazioneDocente(
       this.form.oggetto,
       this.form.descrizione,
-      matricola
+      docenteId
     ).subscribe({
       next: () => {
         this.form = { oggetto: '', descrizione: '' };
