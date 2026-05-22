@@ -3,6 +3,7 @@
   --text-dark: #0f172a;
   --text-muted: #64748b;
   --bg-light: #f8fbff;
+  --background-page: #f8fbff;
   color: var(--text-dark);
 }
 
@@ -16,8 +17,8 @@
 .profile-card {
   margin: 0;
   border-radius: 28px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--ion-card-background);
+  border: 1px solid var(--border-light);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
   ion-card-header { padding: 32px 32px 16px; }
   ion-card-content { padding: 16px 32px 32px; }
@@ -54,15 +55,15 @@
 .form-field {
   label {
     display: block; margin-bottom: 10px;
-    color: #334155; font-size: 0.9rem; font-weight: 900;
+    color: var(--text-muted); font-size: 0.9rem; font-weight: 900;
   }
   ion-item {
-    --background: #f8fbff;
+    --background: var(--background-page);
     --border-radius: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
     border-radius: 16px;
     transition: all 0.3s ease;
-    &:focus-within { border-color: var(--primary-blue); background: #ffffff; }
+    &:focus-within { border-color: var(--primary-blue); background: var(--ion-card-background); }
   }
   &.full-width { grid-column: 1 / -1; }
 }
@@ -73,7 +74,7 @@
 
 .security-item {
   padding: 20px; border-radius: 20px;
-  background: #f8fbff; border: 1px solid #eef4ff;
+  background: var(--background-page); border: 1px solid var(--border-light);
   display: flex; justify-content: space-between; align-items: center;
   span {
     color: var(--text-muted); font-size: 0.85rem;
@@ -88,7 +89,7 @@
 .profile-actions {
   margin: 0 34px 48px;
   padding: 40px; border-radius: 32px;
-  background: #ffffff; border: 1px solid #e2e8f0;
+  background: var(--ion-card-background); border: 1px solid var(--border-light);
   display: flex; justify-content: space-between; align-items: center; gap: 32px;
   h2 { margin: 0; font-size: 1.8rem; font-weight: 950; letter-spacing: -0.04em; }
   p { margin: 6px 0 0; color: var(--text-muted); font-weight: 700; font-size: 1.1rem; }
@@ -122,6 +123,22 @@
   .profile-grid { grid-template-columns: 1fr; margin-left: 16px; margin-right: 16px; }
   .actions-buttons { width: 100%; flex-direction: column; }
   .actions-buttons ion-button { width: 100%; }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .card-icon {
+  background: rgba(37, 99, 235, 0.15);
+}
+
+:host-context(body.dark) .form-field ion-item {
+  --background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .form-field ion-item:focus-within {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-blue);
 }
 
 @media (max-width: 700px) {

@@ -3,6 +3,7 @@
     --text-dark: #0f172a;
     --text-muted: #64748b;
     --bg-light: #f8fbff;
+    --background-page: #f8fbff;
     color: var(--text-dark);
 }
 
@@ -17,8 +18,8 @@
 .summary-card {
     margin: 0;
     border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--ion-card-background);
+    border: 1px solid var(--border-light);
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
 
     ion-card-content {
@@ -91,8 +92,8 @@
 .filter-button {
     padding: 10px 20px;
     border-radius: 14px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--ion-card-background);
+    border: 1px solid var(--border-light);
     color: var(--text-muted);
     font-weight: 800;
     font-size: 0.95rem;
@@ -124,8 +125,8 @@
 .notifications-list-card {
     margin: 0;
     border-radius: 28px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--ion-card-background);
+    border: 1px solid var(--border-light);
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
 
     ion-card-content {
@@ -143,7 +144,7 @@
     transition: all 0.3s ease;
 
     &:hover {
-        background: #f8fbff;
+        background: var(--background-page);
     }
 
     &.unread {
@@ -211,7 +212,7 @@
 
         p {
             margin: 0;
-            color: #475569;
+            color: var(--text-muted);
             font-weight: 600;
             line-height: 1.5;
             font-size: 0.95rem;
@@ -243,8 +244,8 @@
 .management-card {
     margin: 0;
     border-radius: 28px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--ion-card-background);
+    border: 1px solid var(--border-light);
     box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
 
     ion-card-header {
@@ -276,7 +277,7 @@
     outline: none;
 
     &:hover {
-        background: #f8fbff;
+        background: var(--background-page);
 
         .arrow {
             transform: translateX(4px);
@@ -321,7 +322,7 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: #ffffff;
+        background: var(--ion-card-background);
         color: var(--primary-blue);
         display: grid;
         place-items: center;
@@ -339,6 +340,60 @@
         line-height: 1.5;
         font-size: 0.95rem;
     }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .summary-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .summary-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .summary-icon.orange {
+    background: linear-gradient(135deg, #b45309, #92400e);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .notification-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .notification-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .notification-icon.orange {
+    background: linear-gradient(135deg, #b45309, #92400e);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .notification-icon.purple {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    color: #ffffff;
+}
+
+:host-context(body.dark) .notification-item.unread {
+    background: rgba(37, 99, 235, 0.1);
+}
+
+:host-context(body.dark) .notification-item.unread:hover {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+:host-context(body.dark) .info-card {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+:host-context(body.dark) .info-card p {
+    color: #60a5fa;
 }
 
 /* RESPONSIVE */

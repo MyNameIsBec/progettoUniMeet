@@ -20,8 +20,8 @@
     gap: 8px;
     padding: 10px 20px;
     border-radius: 12px;
-    border: 1.5px solid #e2e8f0;
-    background: #ffffff;
+    border: 1.5px solid var(--border-light);
+    background: var(--ion-card-background);
     color: var(--text-muted);
     font-size: 0.95rem;
     font-weight: 750;
@@ -52,10 +52,10 @@
 }
 
 .documenti-card {
-    --background: #ffffff;
+    --background: var(--ion-card-background);
     --box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
     --border-radius: 28px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
     border-radius: 28px;
     margin: 0 !important;
 
@@ -84,7 +84,7 @@
     }
 
     &:hover {
-        background: #f8fbff;
+        background: var(--background-page);
     }
 }
 
@@ -175,7 +175,7 @@
 
     ion-icon {
         font-size: 64px;
-        color: #cbd5e1;
+        color: var(--text-muted);
         display: block;
         margin: 0 auto 24px;
     }
@@ -191,6 +191,32 @@
         font-size: 1rem;
         font-weight: 600;
     }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .doc-icon.pdf {
+    background: rgba(225, 29, 72, 0.15);
+}
+
+:host-context(body.dark) .doc-icon.pdf ion-icon {
+    color: #fb7185;
+}
+
+:host-context(body.dark) .doc-icon.doc {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+:host-context(body.dark) .doc-icon.doc ion-icon {
+    color: #60a5fa;
+}
+
+:host-context(body.dark) .doc-icon.altro {
+    background: rgba(124, 58, 237, 0.15);
+}
+
+:host-context(body.dark) .doc-icon.altro ion-icon {
+    color: #a78bfa;
 }
 
 /* RESPONSIVE */

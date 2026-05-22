@@ -337,8 +337,8 @@ ion-button {
 .detail-item {
     padding: 16px;
     border-radius: 18px;
-    background: #f8fbff;
-    border: 1px solid #e2e8f0;
+    background: var(--background-page);
+    border: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -370,7 +370,7 @@ ion-button {
 
 .booking-footer {
     padding-top: 20px;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -408,8 +408,8 @@ ion-button {
 .agenda-item {
     padding: 16px;
     border-radius: 18px;
-    background: #f8fbff;
-    border: 1px solid #e2e8f0;
+    background: var(--background-page);
+    border: 1px solid var(--border-light);
     display: grid;
     grid-template-columns: 60px 1fr;
     gap: 14px;
@@ -464,7 +464,7 @@ ion-button {
     width: 100%;
     min-height: 60px;
     border: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-light);
     background: transparent;
     color: var(--text-dark);
     display: grid;
@@ -528,11 +528,66 @@ ion-button {
 
     p {
         margin: 0;
-        color: #475569;
+        color: var(--text-muted);
         line-height: 1.6;
         font-size: 0.9rem;
         font-weight: 700;
     }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .summary-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+:host-context(body.dark) .summary-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+}
+
+:host-context(body.dark) .summary-icon.orange {
+    background: linear-gradient(135deg, #b45309, #92400e);
+}
+
+:host-context(body.dark) .summary-icon.purple {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+:host-context(body.dark) .booking-card.waiting-card {
+    border-left-color: #fde047;
+}
+
+:host-context(body.dark) .booking-card.completed-card {
+    border-left-color: #94a3b8;
+}
+
+:host-context(body.dark) .booking-card.cancelled-card {
+    border-left-color: #f87171;
+}
+
+:host-context(body.dark) .booking-status.confirmed {
+    background: rgba(22, 163, 74, 0.2);
+    color: #4ade80;
+}
+
+:host-context(body.dark) .booking-status.waiting {
+    background: rgba(234, 179, 8, 0.2);
+    color: #fde047;
+}
+
+:host-context(body.dark) .booking-status.completed {
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+}
+
+:host-context(body.dark) .booking-status.cancelled {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+:host-context(body.dark) .agenda-item.active {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: rgba(37, 99, 235, 0.25);
 }
 
 /* RESPONSIVE TABLET */

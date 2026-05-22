@@ -377,7 +377,7 @@ ion-button {
     width: 100px;
     height: 8px;
     border-radius: 999px;
-    background: #e2e8f0;
+    background: var(--border-light);
     overflow: hidden;
 
     div {
@@ -468,7 +468,7 @@ ion-button {
 
     p {
         margin: 5px 0 0;
-        color: #475569;
+        color: var(--text-muted);
         line-height: 1.55;
         font-size: 0.9rem;
         font-weight: 700;
@@ -697,4 +697,78 @@ ion-button {
         justify-content: center;
         text-align: center;
     }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .summary-icon.blue {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+:host-context(body.dark) .summary-icon.green {
+    background: linear-gradient(135deg, #15803d, #166534);
+}
+
+:host-context(body.dark) .summary-icon.orange {
+    background: linear-gradient(135deg, #b45309, #92400e);
+}
+
+:host-context(body.dark) .summary-icon.red {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+}
+
+:host-context(body.dark) .slot-item.available {
+    border-left-color: #4ade80;
+}
+
+:host-context(body.dark) .slot-item.full {
+    border-left-color: #f87171;
+}
+
+:host-context(body.dark) .slot-item.cancelled {
+    border-left-color: #64748b;
+}
+
+:host-context(body.dark) .slot-status.available {
+    background: rgba(22, 163, 74, 0.2);
+    color: #4ade80;
+}
+
+:host-context(body.dark) .slot-status.full {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+:host-context(body.dark) .slot-status.cancelled {
+    background: rgba(100, 116, 139, 0.2);
+    color: #94a3b8;
+}
+
+:host-context(body.dark) .guide-step span {
+    background: rgba(37, 99, 235, 0.2);
+}
+
+:host-context(body.dark) .guide-step p {
+    color: #94a3b8;
+}
+
+:host-context(body.dark) .fill-circle::after {
+    background: #0f172a;
+}
+
+:host-context(body.dark) .warning-card {
+    background: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.25);
+}
+
+:host-context(body.dark) .warning-card .warning-icon {
+    background: rgba(217, 119, 6, 0.2);
+}
+
+:host-context(body.dark) .warning-card .warning-icon ion-icon {
+    color: #fbbf24;
+}
+
+:host-context(body.dark) .warning-card p {
+    color: #94a3b8;
 }

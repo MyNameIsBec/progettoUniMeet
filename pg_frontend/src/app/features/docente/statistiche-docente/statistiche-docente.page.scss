@@ -3,6 +3,7 @@
   --text-dark: #0f172a;
   --text-muted: #64748b;
   --bg-light: #f8fbff;
+  --background-page: #f8fbff;
   color: var(--text-dark);
 }
 
@@ -16,8 +17,8 @@
 .stat-card {
   margin: 0;
   border-radius: 20px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--ion-card-background);
+  border: 1px solid var(--border-light);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
   ion-card-content {
     padding: 24px;
@@ -63,8 +64,8 @@
 }
 
 .topics-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--ion-card-background);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
   margin: 0;
@@ -182,4 +183,30 @@ ion-card-title {
   .topic-percent {
     text-align: left;
   }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .stat-icon.blue {
+  background: #1d4ed8;
+}
+
+:host-context(body.dark) .stat-icon.green {
+  background: #15803d;
+}
+
+:host-context(body.dark) .stat-icon.orange {
+  background: #d97706;
+}
+
+:host-context(body.dark) .stat-icon.red {
+  background: #dc2626;
+}
+
+:host-context(body.dark) .topic-bar {
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+}
+
+:host-context(body.dark) .topic-bar-container {
+  background: #1e293b;
 }

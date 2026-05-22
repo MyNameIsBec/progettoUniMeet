@@ -3,6 +3,7 @@
   --text-dark: #0f172a;
   --text-muted: #64748b;
   --bg-light: #f8fbff;
+  --background-page: #f8fbff;
   color: var(--text-dark);
 }
 
@@ -11,8 +12,8 @@
 }
 
 .faq-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--ion-card-background);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
   margin: 0;
@@ -52,9 +53,9 @@ ion-card-title {
 }
 
 .faq-item {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--ion-card-background);
   overflow: hidden;
   transition: all 0.3s ease;
   &:hover {
@@ -102,7 +103,7 @@ ion-card-title {
 
 .faq-item[open] summary {
   border-bottom: 1px solid #eef4ff;
-  background: #f8fbff;
+  background: var(--background-page);
   color: var(--primary-blue);
   > ion-icon {
     transform: rotate(90deg);
@@ -112,10 +113,10 @@ ion-card-title {
 
 .faq-answer {
   padding: 20px;
-  color: #475569;
+  color: var(--text-muted);
   line-height: 1.7;
   font-weight: 500;
-  background: #ffffff;
+  background: var(--ion-card-background);
 }
 
 .no-faq {
@@ -127,10 +128,10 @@ ion-card-title {
   color: var(--text-muted);
   background: var(--bg-light);
   border-radius: 20px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--border-light);
   ion-icon {
     font-size: 48px;
-    color: #cbd5e1;
+    color: var(--text-muted);
     margin-bottom: 12px;
   }
   p {
@@ -156,6 +157,21 @@ ion-card-title {
     font-weight: 700;
     font-size: 1.1rem;
   }
+}
+
+/* DARK MODE OVERRIDES */
+
+:host-context(body.dark) .faq-item[open] summary {
+  background: rgba(37, 99, 235, 0.1);
+  border-bottom-color: rgba(37, 99, 235, 0.2);
+}
+
+:host-context(body.dark) .faq-answer {
+  background: #0f172a;
+}
+
+:host-context(body.dark) .no-faq {
+  background: rgba(37, 99, 235, 0.05);
 }
 
 @media (max-width: 700px) {
