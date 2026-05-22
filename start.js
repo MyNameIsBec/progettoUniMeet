@@ -225,20 +225,14 @@ async function main() {
     IS_WIN ? 'prisma.cmd' : 'prisma'
   );
   log('PRISMA', `Avvio Prisma Studio su http://localhost:${PRISMA_PORT}...`);
-  let prismaUrlOpened = false;
   const prisma = spawn(prismaBin, ['studio', '--port', String(PRISMA_PORT)], {
     cwd: BACKEND,
     stdio: 'pipe',
   });
-  prisma.stdout.on('data', d => {
-    process.stdout.write(`[PRISMA] ${d}`);
-    const msg = d.toString();
-    if (msg.includes(String(PRISMA_PORT)) && !prismaUrlOpened) {
-      prismaUrlOpened = true;
-      setTimeout(() => openBrowser(`http://localhost:${PRISMA_PORT}`), 1500);
-    }
-  });
+  prisma.stdout.on('data', d => process.stdout.write(`[PRISMA] ${d}`));
   prisma.stderr.on('data', d => process.stderr.write(`[PRISMA] ${d}`));
+  // Aspetta che Prisma Studio sia pronto e apri il browser una sola volta
+  setTimeout(() => openBrowser(`http://localhost:${PRISMA_PORT}`), 8000);
 
   // ── 4. Frontend ──
   log('FRONTEND', 'Avvio frontend...');
