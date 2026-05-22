@@ -8,6 +8,7 @@ const ROOT = __dirname;
 const BACKEND = path.join(ROOT, 'pg_backend');
 const FRONTEND = path.join(ROOT, 'pg_frontend');
 const ENV_PATH = path.join(BACKEND, '.env');
+const IS_WIN = os.platform() === 'win32';
 
 function loadEnv() {
   if (!fs.existsSync(ENV_PATH)) return {};
