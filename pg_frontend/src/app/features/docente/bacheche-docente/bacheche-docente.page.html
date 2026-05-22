@@ -3,16 +3,16 @@
     <div class="hero-text-content">
       <span class="eyebrow">Bacheca</span>
       <h1>Bacheca docenti</h1>
-      <p>Gestisci le domande frequenti e le comunicazioni per il corso di {{ nomeCorsoDiStudi }}.</p>
+      <p>In questa sezione puoi gestire le FAQ (domande frequenti) e pubblicare le comunicazioni destinate agli studenti iscritti al corso di {{ nomeCorsoDiStudi }}.</p>
     </div>
     <div class="hero-status-card">
-      <div class="hero-status-icon">
-        <ion-icon name="help-circle-outline"></ion-icon>
+      <div class="hero-status-icon" style="background: #eff6ff; color: var(--primary-blue);">
+        <ion-icon name="information-circle-outline"></ion-icon>
       </div>
       <div class="status-details">
-        <span>{{ nomeCorsoDiStudi }}</span>
-        <strong>FAQ e comunicazioni</strong>
-        <small>{{ faqs.length }} domande</small>
+        <span>Bacheca Docenti</span>
+        <strong>Gestione FAQ</strong>
+        <small>Pubblica risposte per gli studenti del corso</small>
       </div>
     </div>
   </section>
@@ -35,50 +35,89 @@
       <ion-icon name="refresh-outline"></ion-icon>
       <p>Caricamento bacheca...</p>
     </div>
+    } @else if (corsiDisponibili.length === 0) {
+    <div class="empty-courses-state">
+      <ion-card class="empty-card">
+        <ion-card-content>
+          <div class="empty-icon-wrapper">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+          </div>
+          <h2>Nessun Corso di Studi Assegnato</h2>
+          <p>Al momento non risulti associato ad alcun Corso di Studi attivo nel sistema.</p>
+          <p class="sub-text">Contatta l'amministratore del portale per richiedere l'abilitazione e l'assegnazione dei tuoi corsi.</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
     } @else {
-    <ion-card class="faq-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="help-circle-outline"></ion-icon>
-          Domande frequenti
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="faq-toolbar">
-          <ion-button fill="outline" (click)="aggiungiFaq()">
+    <div class="bacheca-simple-grid">
+      <!-- FAQ MAIN CARD -->
+      <ion-card class="faq-main-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="help-circle-outline"></ion-icon>
+            Domande frequenti
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          @if (faqs.length === 0) {
+          <div class="no-faq">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <p>Nessuna FAQ presente. Clicca su "Nuova FAQ" nel pannello laterale per aggiungere la prima.</p>
+          </div>
+          }
+
+          <div class="faq-list">
+            @for (faq of faqs; track faq.id) {
+            <details [open]="faq.aperta" class="faq-item">
+              <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
+                <span>{{ faq.domanda }}</span>
+                <div class="faq-actions">
+                  <ion-button fill="clear" size="small" (click)="$event.stopPropagation(); modificaFaq(faq)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="$event.stopPropagation(); eliminaFaq(faq)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+              </summary>
+              <div class="faq-answer">{{ faq.risposta }}</div>
+            </details>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- SUPPORT CARD -->
+      <ion-card class="support-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="options-outline"></ion-icon>
+            Strumenti Bacheca
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>
+            Le risposte inserite in questa bacheca sono immediatamente visibili a tutti gli studenti iscritti al corso di <strong>{{ nomeCorsoDiStudi }}</strong>.
+          </p>
+          <p>
+            Mantenere aggiornate le risposte ai dubbi più comuni ti consente di risparmiare tempo prezioso riducendo le mail ripetitive.
+          </p>
+
+          <div class="support-highlight">
+            <ion-icon name="bulb-outline"></ion-icon>
+            <span>
+              Suggerimento: scrivi risposte concise ed esaurienti. Puoi anche modificarle o cancellarle in qualsiasi momento.
+            </span>
+          </div>
+
+          <ion-button expand="block" (click)="aggiungiFaq()" class="new-faq-btn">
             <ion-icon name="add-outline" slot="start"></ion-icon>
             Nuova FAQ
           </ion-button>
-        </div>
-
-        @if (faqs.length === 0) {
-        <div class="no-faq">
-          <ion-icon name="information-circle-outline"></ion-icon>
-          <p>Nessuna FAQ presente. Aggiungi la prima domanda frequente.</p>
-        </div>
-        }
-
-        <div class="faq-list">
-          @for (faq of faqs; track faq.id) {
-          <details [open]="faq.aperta" class="faq-item">
-            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
-              <span>{{ faq.domanda }}</span>
-              <div class="faq-actions">
-                <ion-button fill="clear" size="small" (click)="$event.stopPropagation(); modificaFaq(faq)">
-                  <ion-icon name="create-outline"></ion-icon>
-                </ion-button>
-                <ion-button fill="clear" size="small" color="danger" (click)="$event.stopPropagation(); eliminaFaq(faq)">
-                  <ion-icon name="trash-outline"></ion-icon>
-                </ion-button>
-                <ion-icon name="chevron-forward-outline"></ion-icon>
-              </div>
-            </summary>
-            <div class="faq-answer">{{ faq.risposta }}</div>
-          </details>
-          }
-        </div>
-      </ion-card-content>
-    </ion-card>
+        </ion-card-content>
+      </ion-card>
+    </div>
     }
   </section>
 </app-dashboard-layout>

@@ -82,14 +82,29 @@ export class ProfiloStudentePage implements OnInit {
     this.studenteService.getProfilo(user.id).subscribe({
       next: (data: any) => {
         this.studente = data;
+
+        // Carica le preferenze salvate in localStorage
+        let notifiche_app = true;
+        let reminder_ore = 24;
+        const savedPref = localStorage.getItem(`pref_${user.id}`);
+        if (savedPref) {
+          try {
+            const parsed = JSON.parse(savedPref);
+            notifiche_app = parsed.notifiche_app !== undefined ? parsed.notifiche_app : true;
+            reminder_ore = parsed.reminder_ore !== undefined ? parsed.reminder_ore : 24;
+          } catch (e) {
+            console.error('Errore parsing preferenze', e);
+          }
+        }
+
         this.form = {
           nome: data.nome,
           cognome: data.cognome,
           email: data.email,
           corsoDiStudi: data.corsoDiStudi || data.corso_di_studi,
-          notifiche_app: data.notifiche_app,
-          notifiche_email: data.notifiche_email,
-          reminder_ore: data.reminder_ore
+          notifiche_app: notifiche_app,
+          notifiche_email: data.notifiche_email !== undefined ? data.notifiche_email : true,
+          reminder_ore: reminder_ore
         };
         this.loading = false;
       },
@@ -108,6 +123,15 @@ export class ProfiloStudentePage implements OnInit {
       next: () => {
         this.salvataggioInCorso = false;
         
+        // Salva le preferenze in localStorage
+        const user = this.authService.getCurrentUser();
+        if (user) {
+          localStorage.setItem(`pref_${user.id}`, JSON.stringify({
+            notifiche_app: this.form.notifiche_app,
+            reminder_ore: this.form.reminder_ore
+          }));
+        }
+
         // Aggiorna la sessione locale per riflettere il cambio nome ovunque
         this.authService.updateUser({
           nome: this.form.nome,
@@ -203,14 +227,30 @@ export class ProfiloStudentePage implements OnInit {
 
   resetForm() {
     if (this.studente) {
+      const user = this.authService.getCurrentUser();
+      let notifiche_app = true;
+      let reminder_ore = 24;
+      if (user) {
+        const savedPref = localStorage.getItem(`pref_${user.id}`);
+        if (savedPref) {
+          try {
+            const parsed = JSON.parse(savedPref);
+            notifiche_app = parsed.notifiche_app !== undefined ? parsed.notifiche_app : true;
+            reminder_ore = parsed.reminder_ore !== undefined ? parsed.reminder_ore : 24;
+          } catch (e) {
+            console.error('Errore parsing preferenze', e);
+          }
+        }
+      }
+
       this.form = {
         nome: this.studente.nome,
         cognome: this.studente.cognome,
         email: this.studente.email,
         corsoDiStudi: this.studente.corsoDiStudi || this.studente.corso_di_studi,
-        notifiche_app: this.studente.notifiche_app,
-        notifiche_email: this.studente.notifiche_email,
-        reminder_ore: this.studente.reminder_ore
+        notifiche_app: notifiche_app,
+        notifiche_email: this.studente.notifiche_email !== undefined ? this.studente.notifiche_email : true,
+        reminder_ore: reminder_ore
       };
     }
   }

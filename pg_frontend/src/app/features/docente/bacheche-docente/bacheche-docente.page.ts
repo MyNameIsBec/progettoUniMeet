@@ -52,6 +52,8 @@ export class BachecheDocentePage implements OnInit {
       if (this.corsiDisponibili.length > 0) {
         this.cdsSelezionatoId = this.corsiDisponibili[0].id;
         await this.caricaBacheca();
+      } else {
+        this.loading = false;
       }
     } catch (err) {
       console.error('Errore caricamento corsi', err);

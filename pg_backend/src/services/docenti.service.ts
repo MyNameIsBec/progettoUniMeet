@@ -179,8 +179,8 @@ export async function creaSlot(idDocente: string, data: {
   const slot = await prisma.slotRicevimento.create({
     data: {
       data: new Date(data.data),
-      ora_inizio: data.oraInizio as any,
-      ora_fine: data.oraFine as any,
+      ora_inizio: start,
+      ora_fine: end,
       id_docente: idDocente,
       ...(!data.luogo ? {} : {
         luogo: {
@@ -218,9 +218,11 @@ export async function modificaSlot(idDocente: string, idSlot: string, data: any)
   if (!row) throw new Error('Slot not found');
 
   const updateData: any = {};
+  const baseDate = data.data ? data.data : row.data.toISOString().split('T')[0];
+
   if (data.data) updateData.data = new Date(data.data);
-  if (data.oraInizio) updateData.ora_inizio = data.oraInizio as any;
-  if (data.oraFine) updateData.ora_fine = data.oraFine as any;
+  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}`);
+  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}`);
   if (data.disponibilita !== undefined) updateData.disponibilita = data.disponibilita;
 
   await prisma.slotRicevimento.update({

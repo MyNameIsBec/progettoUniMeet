@@ -37,6 +37,7 @@ model Segnalazione {
   studente           Studente? @relation(fields: [matricola_studente], references: [matricola])
   id_docente         String?
   docente            Docente?  @relation(fields: [id_docente], references: [id_docente])
+  allegato           String?
 }
 
 model Docente {

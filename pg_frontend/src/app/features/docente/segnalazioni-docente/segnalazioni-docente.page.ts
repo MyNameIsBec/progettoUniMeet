@@ -128,17 +128,33 @@ export class SegnalazioniDocentePage implements OnInit {
     this.segnalazioneService.inviaSegnalazioneDocente(
       this.form.oggetto,
       this.form.descrizione,
-      docenteId
+      docenteId,
+      this.selectedFile
     ).subscribe({
-      next: () => {
+      next: async () => {
         this.form = { oggetto: '', descrizione: '' };
         this.selectedFile = null;
         this.invioInCorso = false;
         this.caricaSegnalazioni();
+        const toast = await this.toastController.create({
+          message: 'Segnalazione inviata con successo!',
+          duration: 2000,
+          color: 'success',
+          position: 'bottom'
+        });
+        await toast.present();
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Errore invio segnalazione', err);
         this.invioInCorso = false;
+        const errMsg = err.error?.error || err.error?.errors?.[0]?.msg || 'Errore durante l\'invio';
+        const toast = await this.toastController.create({
+          message: 'Errore durante l\'invio: ' + errMsg,
+          duration: 3000,
+          color: 'danger',
+          position: 'bottom'
+        });
+        await toast.present();
       }
     });
   }

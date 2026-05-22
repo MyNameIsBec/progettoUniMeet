@@ -64,6 +64,41 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- PREFERENZE NOTIFICHE -->
+    <ion-card class="profile-card notifications-card">
+      <ion-card-header>
+        <div class="card-title-row">
+          <div class="card-icon"><ion-icon name="notifications-outline"></ion-icon></div>
+          <div>
+            <ion-card-title>Preferenze notifiche</ion-card-title>
+            <p>Decidi come ricevere reminder e aggiornamenti.</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="toggle-list">
+          <div class="toggle-row">
+            <div>
+              <strong>Notifiche via app</strong>
+              <span>Avvisi nella sezione notifiche di UniMeet.</span>
+            </div>
+            <ion-toggle [(ngModel)]="form.notifiche_app"></ion-toggle>
+          </div>
+        </div>
+        <div class="form-field reminder-field">
+          <label>Tempo promemoria ricevimento</label>
+          <ion-item lines="none">
+            <ion-select [(ngModel)]="form.reminder_ore" interface="popover">
+              <ion-select-option [value]="1">1 ora prima</ion-select-option>
+              <ion-select-option [value]="3">3 ore prima</ion-select-option>
+              <ion-select-option [value]="24">24 ore prima</ion-select-option>
+              <ion-select-option [value]="48">48 ore prima</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
     <ion-card class="profile-card security-card">
       <ion-card-header>
         <div class="card-title-row">

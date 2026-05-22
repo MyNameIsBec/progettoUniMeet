@@ -66,8 +66,8 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
     try {
       const tuttePrenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniDocente(idDocente)) as any[];
 
-      const oggiStr = new Date().toISOString().split('T')[0];
-      this.prenotazioniOggiCount = tuttePrenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata').length;
+      const oggiStr = this.getLocalOggiStr();
+      this.prenotazioniOggiCount = tuttePrenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata' && p.stato !== 'annullato').length;
       this.richiesteInAttesaCount = tuttePrenotazioni.filter(p => p.stato === 'in_attesa').length;
       this.prossimiRicevimenti = tuttePrenotazioni.filter(p => p.stato === 'confermata' || p.stato === 'in_attesa').sort((a, b) => {
         const timeA = new Date(`${a.data}T${a.oraInizio || '00:00'}`).getTime();
@@ -108,6 +108,14 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
     }
   }
 
+  getLocalOggiStr(): string {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   async confermaPrenotazione(id: string) {
     try {
       await firstValueFrom(this.prenotazioneService.aggiornaStatoPrenotazione(id, 'confermata'));
@@ -123,7 +131,10 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
     if (!dataInput) return '';
     let dataStr = '';
     if (dataInput instanceof Date) {
-      dataStr = dataInput.toISOString().split('T')[0]!;
+      const year = dataInput.getFullYear();
+      const month = String(dataInput.getMonth() + 1).padStart(2, '0');
+      const day = String(dataInput.getDate()).padStart(2, '0');
+      dataStr = `${year}-${month}-${day}`;
     } else {
       dataStr = String(dataInput);
     }

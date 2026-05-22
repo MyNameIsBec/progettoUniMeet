@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "jspdf": "^4.2.1",
-    "pg": "^8.21.0"
+    "pg": "^8.21.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   }
 }

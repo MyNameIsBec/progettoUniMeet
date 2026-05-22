@@ -44,7 +44,7 @@
           Seleziona data
         </label>
         <ion-item lines="none">
-          <ion-input type="date" [value]="dataInizioSettimana.toISOString().split('T')[0]" (ionChange)="quandoDataSelezionata($event)"></ion-input>
+          <ion-input type="date" [value]="dataInizioSettimanaStr" (ionChange)="quandoDataSelezionata($event)"></ion-input>
         </ion-item>
       </div>
     </div>
@@ -111,7 +111,7 @@
 
             <div class="slot-calendar" [class.blurred]="!docenteSelezionato">
               <div class="calendar-empty"></div>
-              @for (giorno of giorniSettimana; track giorno) {
+              @for (giorno of giorniSettimana; track i; let i = $index) {
               <div class="day-header" [class.active-day]="isOggi(giorno)">
                 <strong>{{ giorno | date:'ccc':'':'it' }}</strong>
                 <span>{{ giorno | date:'dd/MM' }}</span>
@@ -120,7 +120,7 @@
 
               @for (ora of [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]; track ora) {
               <div class="time-cell">{{ ora }}:00</div>
-              @for (giorno of giorniSettimana; track giorno) {
+              @for (giorno of giorniSettimana; track i; let i = $index) {
               <div class="calendar-cell" [class.day-blocked]="isGiornoBloccato(giorno)">
                 @if (isGiornoBloccato(giorno)) {
                 <div class="blocked-indicator">

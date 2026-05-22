@@ -148,9 +148,20 @@ export class PrenotaPage implements OnInit {
     });
   }
 
+  get dataInizioSettimanaStr(): string {
+    const d = this.dataInizioSettimana;
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   isGiornoBloccato(giorno: Date): boolean {
     if (!giorno) return false;
-    const dataStr = giorno.toISOString().split('T')[0];
+    const year = giorno.getFullYear();
+    const month = String(giorno.getMonth() + 1).padStart(2, '0');
+    const day = String(giorno.getDate()).padStart(2, '0');
+    const dataStr = `${year}-${month}-${day}`;
     return this.giorniBloccati.some(b => b.data.split('T')[0] === dataStr);
   }
 

@@ -24,8 +24,9 @@
           <tr>
             <th>Stato</th>
             <th>Oggetto</th>
-            <th>Studente</th>
+            <th>Utente</th>
             <th class="hide-mobile">Email</th>
+            <th class="hide-mobile">Allegato</th>
             <th class="hide-mobile">Data invio</th>
             <th class="actions-col">Azioni</th>
           </tr>
@@ -44,10 +45,27 @@
                 <p>{{ s.descrizione }}</p>
               </td>
               <td class="studente-cell">
-                {{ s.studente?.nome }} {{ s.studente?.cognome }}
-                <span class="matricola">{{ s.matricola_studente }}</span>
+                @if (s.studente) {
+                  {{ s.studente.nome }} {{ s.studente.cognome }}
+                  <span class="matricola">Matr. {{ s.matricola_studente }}</span>
+                } @else if (s.docente) {
+                  {{ s.docente.nome }} {{ s.docente.cognome }}
+                  <span class="matricola">Docente</span>
+                } @else {
+                  -
+                }
               </td>
-              <td class="hide-mobile email-cell">{{ s.studente?.email }}</td>
+              <td class="hide-mobile email-cell">{{ s.studente?.email || s.docente?.email || '-' }}</td>
+              <td class="hide-mobile allegato-cell">
+                @if (s.allegato) {
+                  <a [href]="getAllegatoUrl(s.allegato)" target="_blank" class="allegato-link" title="Visualizza allegato" style="display: inline-flex; align-items: center; gap: 4px; color: var(--primary-blue, #2563eb); text-decoration: none; font-weight: 700;">
+                    <ion-icon name="document-attach-outline" style="font-size: 18px;"></ion-icon>
+                    <span>Apri</span>
+                  </a>
+                } @else {
+                  <span class="no-allegato" style="color: var(--text-muted); font-weight: 700;">-</span>
+                }
+              </td>
               <td class="hide-mobile data-cell">{{ s.data_invio | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="actions-col">
                 <div class="action-group">
@@ -73,7 +91,7 @@
           } @empty {
             @if (!inCaricamento) {
               <tr>
-                <td colspan="6" class="empty-row">Nessuna segnalazione trovata</td>
+                <td colspan="7" class="empty-row">Nessuna segnalazione trovata</td>
               </tr>
             }
           }

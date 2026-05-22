@@ -16,12 +16,14 @@ import {
 } from '../validators/segnalazioni.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
+import { upload } from '../middleware/upload';
 
 const router = Router();
 
 router.post(
   '/segnalazioni',
   authenticate,
+  upload.single('allegato'),
   creaSegnalazioneSchema,
   handleValidationErrors,
   createSegnalazione,
@@ -59,6 +61,7 @@ router.delete(
 router.post(
   '/segnalazioni/docente',
   authenticate,
+  upload.single('allegato'),
   creaSegnalazioneDocenteSchema,
   handleValidationErrors,
   createSegnalazioneDocente,

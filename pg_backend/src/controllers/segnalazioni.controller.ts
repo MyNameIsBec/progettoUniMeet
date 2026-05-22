@@ -3,7 +3,11 @@ import * as segnalazioniService from '../services/segnalazioni.service';
 
 export async function createSegnalazione(req: Request, res: Response) {
   try {
-    const segnalazione = await segnalazioniService.createSegnalazione(req.body);
+    const allegatoPath = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const segnalazione = await segnalazioniService.createSegnalazione({
+      ...req.body,
+      allegato: allegatoPath,
+    });
     return res.status(201).json(segnalazione);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Studente not found') {
@@ -64,7 +68,11 @@ export async function eliminaSegnalazione(req: Request, res: Response) {
 
 export async function createSegnalazioneDocente(req: Request, res: Response) {
   try {
-    const segnalazione = await segnalazioniService.createSegnalazioneDocente(req.body);
+    const allegatoPath = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const segnalazione = await segnalazioniService.createSegnalazioneDocente({
+      ...req.body,
+      allegato: allegatoPath,
+    });
     return res.status(201).json(segnalazione);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Docente not found') {

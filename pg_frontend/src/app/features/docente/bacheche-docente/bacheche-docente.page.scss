@@ -11,6 +11,29 @@
   margin: 0 34px 48px;
 }
 
+.cds-selector-section {
+  margin: 0 34px 24px;
+}
+
+.cds-selector-item {
+  --background: var(--ion-card-background);
+  --border-radius: 20px;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  max-width: 400px;
+  margin: 0;
+  
+  ion-select {
+    width: 100%;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    font-weight: 800;
+    color: var(--text-dark);
+  }
+}
+
+.faq-main-card,
 .faq-card {
   background: var(--ion-card-background);
   border: 1px solid var(--border-light);
@@ -84,6 +107,7 @@ ion-card-title {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
   ion-button {
     margin: 0;
     --padding-start: 6px;
@@ -95,7 +119,7 @@ ion-card-title {
   }
 }
 
-.faq-item summary > ion-icon {
+.faq-item summary .faq-actions > ion-icon {
   color: var(--text-muted);
   font-size: 18px;
   transition: transform 0.3s ease;
@@ -105,7 +129,8 @@ ion-card-title {
   border-bottom: 1px solid #eef4ff;
   background: var(--background-page);
   color: var(--primary-blue);
-  > ion-icon {
+  
+  .faq-actions > ion-icon {
     transform: rotate(90deg);
     color: var(--primary-blue);
   }
@@ -159,19 +184,69 @@ ion-card-title {
   }
 }
 
-/* DARK MODE OVERRIDES */
 
-:host-context(body.dark) .faq-item[open] summary {
-  background: rgba(37, 99, 235, 0.1);
-  border-bottom-color: rgba(37, 99, 235, 0.2);
+
+/* GRIGLIA PRINCIPALE */
+.bacheca-simple-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 0.9fr;
+  gap: 32px;
+  align-items: start;
 }
 
-:host-context(body.dark) .faq-answer {
-  background: #0f172a;
+/* SUPPORT CARD */
+.support-card {
+  background: var(--ion-card-background);
+  border: 1px solid var(--border-light);
+  border-radius: 28px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+  margin: 0;
+
+  ion-card-content p {
+    margin: 0 0 20px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  .new-faq-btn {
+    --border-radius: 16px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    height: 54px;
+    font-weight: 900;
+    text-transform: none;
+    font-size: 1rem;
+    --background: var(--primary-blue);
+    box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+  }
 }
 
-:host-context(body.dark) .no-faq {
-  background: rgba(37, 99, 235, 0.05);
+.support-highlight {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 20px;
+  color: #1e40af;
+  font-weight: 750;
+  margin: 28px 0;
+
+  ion-icon {
+    color: var(--primary-blue);
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+}
+
+/* RESPONSIVE OVERRIDES */
+@media (max-width: 1200px) {
+  .bacheca-simple-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
 
 @media (max-width: 700px) {
@@ -179,10 +254,170 @@ ion-card-title {
     margin-left: 16px;
     margin-right: 16px;
   }
+  .cds-selector-section {
+    margin-left: 16px;
+    margin-right: 16px;
+    margin-bottom: 16px;
+  }
+  .cds-selector-item {
+    max-width: 100%;
+  }
   ion-card-content {
     padding: 16px;
   }
   ion-card-header {
     padding: 24px 16px 12px;
+  }
+  .support-highlight {
+    margin: 20px 0;
+    padding: 16px;
+  }
+}
+
+/* EMPTY STATE */
+.empty-courses-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 16px;
+  width: 100%;
+  
+  .empty-card {
+    background: var(--ion-card-background);
+    border: 1px solid var(--border-light, #e2e8f0);
+    border-radius: 28px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    max-width: 600px;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    
+    ion-card-content {
+      padding: 48px 32px;
+    }
+    
+    .empty-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: #fef2f2;
+      color: #ef4444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      
+      ion-icon {
+        font-size: 40px;
+      }
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 850;
+      color: var(--text-dark, #0f172a);
+      margin: 0 0 12px;
+    }
+    
+    p {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--text-muted, #64748b);
+      margin: 0 0 16px;
+      font-weight: 500;
+      
+      &.sub-text {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin: 0;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+/* DARK MODE OVERRIDES */
+:host-context(body.dark) {
+  .faq-main-card,
+  .support-card {
+    background: var(--ion-card-background);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  }
+  
+  .cds-selector-item {
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    
+    ion-select {
+      color: var(--ion-text-color, #cbd5e1);
+    }
+  }
+
+  .faq-item {
+    background: var(--ion-card-background);
+    border-color: rgba(255, 255, 255, 0.08);
+    
+    &:hover {
+      border-color: var(--primary-blue);
+    }
+  }
+
+  .faq-item summary {
+    color: var(--ion-text-color, #cbd5e1);
+  }
+
+  .faq-item[open] summary {
+    background: rgba(37, 99, 235, 0.1);
+    border-bottom-color: rgba(37, 99, 235, 0.2);
+  }
+
+  .faq-answer {
+    background: var(--ion-card-background);
+    color: #cbd5e1;
+  }
+
+  .no-faq {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .support-highlight {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.25);
+    color: #93c5fd;
+    
+    ion-icon {
+      color: #60a5fa;
+    }
+  }
+
+  .support-card ion-card-content p {
+    color: #cbd5e1;
+  }
+
+  .empty-courses-state {
+    .empty-card {
+      background: var(--ion-card-background);
+      border-color: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      
+      .empty-icon-wrapper {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+      
+      h2 {
+        color: var(--ion-text-color, #f1f5f9);
+      }
+      
+      p {
+        color: #cbd5e1;
+        
+        &.sub-text {
+          color: #64748b;
+        }
+      }
+    }
   }
 }

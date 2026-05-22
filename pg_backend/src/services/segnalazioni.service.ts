@@ -8,6 +8,7 @@ export interface SegnalazioneConStudente {
   stato: string;
   matricola_studente: string | null;
   id_docente: string | null;
+  allegato: string | null;
   studente: {
     nome: string;
     cognome: string;
@@ -24,6 +25,7 @@ export async function createSegnalazione(data: {
   oggetto: string;
   descrizione: string;
   matricola_studente: string;
+  allegato?: string;
 }) {
   const studente = await prisma.studente.findUnique({
     where: { matricola: data.matricola_studente },
@@ -35,6 +37,7 @@ export async function createSegnalazione(data: {
       oggetto: data.oggetto,
       descrizione: data.descrizione,
       matricola_studente: data.matricola_studente,
+      allegato: data.allegato ?? null,
     },
   });
 
@@ -45,6 +48,7 @@ export async function createSegnalazione(data: {
     data_invio: segnalazione.data_invio.toISOString(),
     stato: segnalazione.stato,
     matricola_studente: segnalazione.matricola_studente,
+    allegato: segnalazione.allegato,
   };
 }
 
@@ -61,6 +65,7 @@ export async function getSegnalazioniByStudente(matricola: string) {
     data_invio: s.data_invio.toISOString(),
     stato: s.stato,
     matricola_studente: s.matricola_studente,
+    allegato: s.allegato,
   }));
 }
 
@@ -85,6 +90,7 @@ export async function getAllSegnalazioni(stato?: string): Promise<SegnalazioneCo
     stato: s.stato,
     matricola_studente: s.matricola_studente,
     id_docente: s.id_docente,
+    allegato: s.allegato,
     studente: s.studente,
     docente: s.docente,
   }));
@@ -116,6 +122,7 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
     stato: updated.stato,
     matricola_studente: updated.matricola_studente,
     id_docente: updated.id_docente,
+    allegato: updated.allegato,
     studente: updated.studente,
     docente: updated.docente,
   };
@@ -135,6 +142,7 @@ export async function createSegnalazioneDocente(data: {
   oggetto: string;
   descrizione: string;
   id_docente: string;
+  allegato?: string;
 }) {
   const docente = await prisma.docente.findUnique({
     where: { id_docente: data.id_docente },
@@ -146,6 +154,7 @@ export async function createSegnalazioneDocente(data: {
       oggetto: data.oggetto,
       descrizione: data.descrizione,
       id_docente: data.id_docente,
+      allegato: data.allegato ?? null,
     },
   });
 
@@ -156,6 +165,7 @@ export async function createSegnalazioneDocente(data: {
     data_invio: segnalazione.data_invio.toISOString(),
     stato: segnalazione.stato,
     id_docente: segnalazione.id_docente,
+    allegato: segnalazione.allegato,
   };
 }
 
@@ -172,5 +182,6 @@ export async function getSegnalazioniByDocente(idDocente: string) {
     data_invio: s.data_invio.toISOString(),
     stato: s.stato,
     id_docente: s.id_docente,
+    allegato: s.allegato,
   }));
 }

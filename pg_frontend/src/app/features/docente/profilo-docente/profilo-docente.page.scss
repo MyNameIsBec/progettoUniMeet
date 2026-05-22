@@ -144,3 +144,15 @@
 @media (max-width: 700px) {
   .form-grid { grid-template-columns: 1fr; }
 }
+
+.toggle-list { display: grid; gap: 16px; }
+
+.toggle-row {
+  padding: 20px; border-radius: 20px;
+  background: var(--background-page); border: 1px solid var(--border-light);
+  display: flex; justify-content: space-between; align-items: center;
+  strong { margin: 0; font-size: 1.1rem; font-weight: 850; color: var(--text-dark); }
+  span { display: block; text-transform: none; font-weight: 600; font-size: 0.95rem; color: var(--text-muted); margin-top: 2px; }
+}
+
+.reminder-field { margin-top: 24px; }

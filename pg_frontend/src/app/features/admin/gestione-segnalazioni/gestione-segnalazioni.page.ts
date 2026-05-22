@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel, AlertController,
+  IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel,
 } from '@ionic/angular/standalone';
+import { AlertController, IonicSafeString } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
+import { AuthService } from 'src/app/core/services/auth';
 
 @Component({
   selector: 'app-gestione-segnalazioni',
@@ -18,12 +20,13 @@ import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnala
   ],
 })
 export class GestioneSegnalazioniPage implements OnInit {
-  segnalazioni: (Segnalazione & { studente?: { nome: string; cognome: string; email: string } })[] = [];
+  segnalazioni: Segnalazione[] = [];
   filtroStato = '';
   inCaricamento = false;
 
   constructor(
     private segnalazioneService: SegnalazioneService,
+    private authService: AuthService,
     private alertController: AlertController,
   ) {}
 
@@ -53,18 +56,43 @@ export class GestioneSegnalazioniPage implements OnInit {
     });
   }
 
+  getAllegatoUrl(percorso: string | null | undefined): string {
+    if (!percorso) return '';
+    const nomeFile = percorso.split(/[\\/]/).pop();
+    return this.authService.getApiUrl() + '/uploads/' + nomeFile;
+  }
+
   async dettagli(s: any) {
+    const allegatoHtml = s.allegato
+      ? `<div style="margin-bottom:8px"><strong>Allegato:</strong> <a href="${this.getAllegatoUrl(s.allegato)}" target="_blank" style="color:#2563eb;text-decoration:underline;">Visualizza allegato</a></div>`
+      : '<div style="margin-bottom:8px"><strong>Allegato:</strong> Nessuno</div>';
+
+    const utenteInfo = s.studente
+      ? `
+        <div style="margin-bottom:8px"><strong>Studente:</strong> ${s.studente.nome} ${s.studente.cognome}</div>
+        <div style="margin-bottom:8px"><strong>Matricola:</strong> ${s.matricola_studente}</div>
+        <div style="margin-bottom:8px"><strong>Email:</strong> ${s.studente.email}</div>
+      `
+      : s.docente
+        ? `
+          <div style="margin-bottom:8px"><strong>Docente:</strong> ${s.docente.nome} ${s.docente.cognome}</div>
+          <div style="margin-bottom:8px"><strong>ID Docente:</strong> ${s.id_docente}</div>
+          <div style="margin-bottom:8px"><strong>Email:</strong> ${s.docente.email}</div>
+        `
+        : `
+          <div style="margin-bottom:8px"><strong>Utente:</strong> -</div>
+        `;
+
     const alert = await this.alertController.create({
       header: 'Dettagli segnalazione',
       subHeader: s.oggetto,
-      message: `
+      message: new IonicSafeString(`
         <div style="margin-bottom:12px"><strong>Descrizione:</strong><br>${s.descrizione}</div>
-        <div style="margin-bottom:8px"><strong>Studente:</strong> ${s.studente?.nome ?? '-'} ${s.studente?.cognome ?? ''}</div>
-        <div style="margin-bottom:8px"><strong>Matricola:</strong> ${s.matricola_studente}</div>
-        <div style="margin-bottom:8px"><strong>Email:</strong> ${s.studente?.email ?? '-'}</div>
+        ${utenteInfo}
         <div style="margin-bottom:8px"><strong>Data invio:</strong> ${new Date(s.data_invio).toLocaleString('it-IT')}</div>
+        ${allegatoHtml}
         <div><strong>Stato:</strong> ${this.statoLabel(s.stato)}</div>
-      `,
+      `),
       buttons: ['Chiudi'],
     });
     await alert.present();
@@ -105,6 +133,6 @@ export class GestioneSegnalazioniPage implements OnInit {
       IN_LAVORAZIONE: 'time-outline',
       CHIUSA: 'checkmark-circle-outline',
     };
-    return map[stato] ?? 'help-outline';
+    return map[stato] ?? 'help-circle-outline';
   }
 }

@@ -294,12 +294,17 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
   });
   if (giornoBloccato) throw new Error('Giorno bloccato');
 
+  const startStr = `${data.data}T${data.oraInizio}`;
+  const endStr = `${data.data}T${data.oraFine}`;
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+
   const overlap = await prisma.slotRicevimento.findFirst({
     where: {
       id_docente: data.docenteId,
       data: new Date(data.data),
       OR: [
-        { ora_inizio: { lt: data.oraFine as any }, ora_fine: { gt: data.oraInizio as any } },
+        { ora_inizio: { lt: end }, ora_fine: { gt: start } },
       ],
     },
   });
@@ -308,8 +313,8 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
   const slot = await prisma.slotRicevimento.create({
     data: {
       data: new Date(data.data),
-      ora_inizio: data.oraInizio as any,
-      ora_fine: data.oraFine as any,
+      ora_inizio: start,
+      ora_fine: end,
       disponibilita: data.disponibilita ?? true,
       id_docente: data.docenteId,
       ...(!data.luogo ? {} : {
@@ -353,9 +358,11 @@ export async function modificaSlot(idSlot: string, data: any): Promise<void> {
   if (!row) throw new Error('Slot not found');
 
   const updateData: any = {};
+  const baseDate = data.data ? data.data : row.data.toISOString().split('T')[0];
+
   if (data.data) updateData.data = new Date(data.data);
-  if (data.oraInizio) updateData.ora_inizio = data.oraInizio as any;
-  if (data.oraFine) updateData.ora_fine = data.oraFine as any;
+  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}`);
+  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}`);
   if (data.disponibilita !== undefined) updateData.disponibilita = data.disponibilita;
   if (data.docenteId) updateData.id_docente = data.docenteId;
 

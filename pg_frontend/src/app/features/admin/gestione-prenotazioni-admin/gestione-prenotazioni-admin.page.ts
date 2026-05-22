@@ -114,7 +114,7 @@ export class GestionePrenotazioniAdminPage implements OnInit {
       RIFIUTATA: 'close-circle-outline',
       ANNULLATA: 'ban-outline',
     };
-    return map[stato] ?? 'help-outline';
+    return map[stato] ?? 'help-circle-outline';
   }
 
   statoClasse(stato: string): string {

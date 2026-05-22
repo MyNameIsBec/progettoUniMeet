@@ -114,6 +114,11 @@
               <ion-select-option value="storico">Storico completo</ion-select-option>
             </ion-select>
           </div>
+
+          <button class="pdf-btn filter-pdf-btn" (click)="scaricaListaPDF()" title="Esporta lista in PDF">
+            <ion-icon name="download-outline"></ion-icon>
+            <span>Esporta PDF</span>
+          </button>
         </ion-card-content>
       </ion-card>
 
@@ -239,26 +244,49 @@
 
       <!-- AGENDA DI OGGI -->
       <ion-card class="side-card agenda-card">
-        <ion-card-header>
+        <ion-card-header class="agenda-header-row">
           <ion-card-title>
             <ion-icon name="calendar-outline"></ion-icon>
             Agenda di oggi
           </ion-card-title>
+          @if (agendaDiOggi.length > 0) {
+            <button class="pdf-btn" (click)="scaricaAgendaPDF()" title="Scarica Agenda in PDF">
+              <ion-icon name="download-outline"></ion-icon>
+              <span>PDF</span>
+            </button>
+          }
         </ion-card-header>
 
         <ion-card-content>
           <div class="agenda-list">
             @for (item of agendaDiOggi; track item.id) {
-              <div class="agenda-item active">
+              <div class="agenda-item" [ngClass]="{
+                'confirmed': checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato'),
+                'waiting': checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa'),
+                'completed': checkStato(item.stato, 'completata')
+              }">
                 <span>{{ item.oraInizio }}</span>
-                <div>
+                <div class="agenda-item-body">
                   <strong>{{ item.studente }}</strong>
                   <small>{{ item.argomento }}</small>
+                  <span class="agenda-badge" [ngClass]="{
+                    'confirmed': checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato'),
+                    'waiting': checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa'),
+                    'completed': checkStato(item.stato, 'completata')
+                  }">
+                    @if (checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato')) {
+                      Confermata
+                    } @else if (checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa')) {
+                      In attesa
+                    } @else if (checkStato(item.stato, 'completata')) {
+                      Completata
+                    }
+                  </span>
                 </div>
               </div>
             } @empty {
               <div class="agenda-empty">
-                <p>Nessun ricevimento confermato per la giornata di oggi.</p>
+                <p>Nessun ricevimento programmato per oggi.</p>
               </div>
             }
           </div>

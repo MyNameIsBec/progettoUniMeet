@@ -399,6 +399,59 @@ ion-button {
     flex-wrap: wrap;
 }
 
+.agenda-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.pdf-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    color: var(--primary-blue);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ion-icon {
+        font-size: 16px;
+    }
+
+    &:hover {
+        background: var(--primary-blue);
+        color: #ffffff;
+        border-color: var(--primary-blue);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    }
+
+    &.filter-pdf-btn {
+        height: 54px;
+        border-radius: 16px;
+        padding: 0 20px;
+        font-size: 0.95rem;
+    }
+}
+
+:host-context(body.dark) .pdf-btn {
+    background: rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.3);
+    color: #60a5fa;
+
+    &:hover {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+    }
+}
+
 /* SIDE COLUMN */
 .agenda-list {
     display: grid;
@@ -414,6 +467,24 @@ ion-button {
     grid-template-columns: 60px 1fr;
     gap: 14px;
     align-items: center;
+    border-left: 4px solid var(--border-light);
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: translateX(2px);
+    }
+
+    &.confirmed {
+        border-left: 4px solid #16a34a;
+    }
+
+    &.waiting {
+        border-left: 4px solid #f59e0b;
+    }
+
+    &.completed {
+        border-left: 4px solid #64748b;
+    }
 
     &.active {
         border-color: #bfdbfe;
@@ -436,9 +507,43 @@ ion-button {
     }
 
     small {
+        display: block;
         color: var(--text-muted);
         font-size: 0.85rem;
         font-weight: 700;
+    }
+
+    .agenda-item-body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .agenda-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        margin-top: 6px;
+        width: fit-content;
+
+        &.confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        &.waiting {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        &.completed {
+            background: #f1f5f9;
+            color: #475569;
+        }
     }
 }
 
@@ -590,6 +695,25 @@ ion-button {
     border-color: rgba(37, 99, 235, 0.25);
 }
 
+:host-context(body.dark) {
+    .agenda-badge {
+        &.confirmed {
+            background: rgba(22, 163, 74, 0.2);
+            color: #4ade80;
+        }
+
+        &.waiting {
+            background: rgba(234, 179, 8, 0.2);
+            color: #fde047;
+        }
+
+        &.completed {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+    }
+}
+
 :host-context(body.dark) .info-card .info-icon {
     background: rgba(37, 99, 235, 0.15);
 }
@@ -648,7 +772,8 @@ ion-button {
     }
 
     .search-field,
-    .select-field {
+    .select-field,
+    .filter-pdf-btn {
         width: 100%;
         min-width: 0;
     }

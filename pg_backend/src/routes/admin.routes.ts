@@ -46,7 +46,7 @@ router.get('/admin/slot', ...authz, slotFiltriSchema, handleValidationErrors, ge
 router.get('/admin/prenotazioni', ...authz, getAllPrenotazioni);
 router.put('/admin/prenotazioni/:id/stato', ...authz, aggiornaStatoPrenotazione);
 router.delete('/admin/prenotazioni/:id', ...authz, eliminaPrenotazione);
-router.get('/admin/giorni-bloccati', ...authz, getGiorniBloccati);
+router.get('/admin/giorni-bloccati', authenticate, getGiorniBloccati);
 router.post('/admin/giorni-bloccati', ...authz, bloccaGiornoSchema, handleValidationErrors, bloccaGiorno);
 router.delete('/admin/giorni-bloccati/:id', ...authz, sbloccaGiorno);
 

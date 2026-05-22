@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import 'dotenv/config'; // server v2
 import app from './app';
 import { prisma } from './prisma/client';
 

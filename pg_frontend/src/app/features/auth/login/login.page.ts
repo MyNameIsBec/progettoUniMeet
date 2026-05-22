@@ -39,10 +39,13 @@ export class LoginPage implements OnInit {
 
     this.urlDiRitorno = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
 
+    const savedEmail = localStorage.getItem('unimeet_remembered_email') ?? '';
+    const savedCheck = localStorage.getItem('unimeet_remembered_checkbox') === 'true';
+
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: [savedEmail, [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      rememberMe: [false]
+      rememberMe: [savedCheck]
     });
   }
 
@@ -61,6 +64,13 @@ export class LoginPage implements OnInit {
     this.authService.login(email, password, rememberMe).subscribe({
       next: () => {
         this.inCaricamento = false;
+        if (rememberMe) {
+          localStorage.setItem('unimeet_remembered_email', email);
+          localStorage.setItem('unimeet_remembered_checkbox', 'true');
+        } else {
+          localStorage.removeItem('unimeet_remembered_email');
+          localStorage.removeItem('unimeet_remembered_checkbox');
+        }
         const role = this.authService.getCurrentUser()?.role;
         const target = this.urlDiRitorno !== '/dashboard'
           ? this.urlDiRitorno

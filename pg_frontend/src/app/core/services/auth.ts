@@ -139,9 +139,27 @@ export class AuthService {
   isDocente(): boolean  { return this.hasRole('docente'); }
   isAdmin(): boolean    { return this.hasRole('amministratore'); }
 
-  private saveSessionToStorage(session: UserSession, persist: boolean = true): void {
-    const storage = persist ? localStorage : sessionStorage;
-    storage.setItem('unimeet_session', JSON.stringify(session));
+  private saveSessionToStorage(session: UserSession, persist?: boolean): void {
+    let targetStorage: Storage;
+    if (persist !== undefined) {
+      targetStorage = persist ? localStorage : sessionStorage;
+    } else {
+      if (localStorage.getItem('unimeet_session')) {
+        targetStorage = localStorage;
+      } else if (sessionStorage.getItem('unimeet_session')) {
+        targetStorage = sessionStorage;
+      } else {
+        targetStorage = localStorage; // Default fallback
+      }
+    }
+
+    if (targetStorage === localStorage) {
+      sessionStorage.removeItem('unimeet_session');
+    } else {
+      localStorage.removeItem('unimeet_session');
+    }
+
+    targetStorage.setItem('unimeet_session', JSON.stringify(session));
   }
 
   private loadSessionFromStorage(): void {

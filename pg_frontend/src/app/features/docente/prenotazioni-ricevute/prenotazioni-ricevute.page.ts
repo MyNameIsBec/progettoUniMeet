@@ -21,6 +21,7 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
 import { AuthService } from '../../../core/services/auth';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { ErroriService } from '../../../core/services/errori';
+import { exportAgendaPDF, exportListaPDF } from './pdf-generator';
 
 import { addIcons } from 'ionicons';
 import {
@@ -37,7 +38,8 @@ import {
   locationOutline,
   chatbubbleEllipsesOutline,
   flashOutline,
-  informationCircleOutline
+  informationCircleOutline,
+  downloadOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -99,7 +101,8 @@ export class PrenotazioniRicevutePage implements OnInit {
       locationOutline,
       chatbubbleEllipsesOutline,
       flashOutline,
-      informationCircleOutline
+      informationCircleOutline,
+      downloadOutline
     });
   }
 
@@ -144,14 +147,14 @@ export class PrenotazioniRicevutePage implements OnInit {
 
       // 2. Filtro Temporale
       if (this.filtroTempo !== 'storico') {
-        const datePren = new Date(p.data);
+        const [y, m, d] = p.data.split('-').map(Number);
+        const datePren = new Date(y, m - 1, d);
         const oggi = new Date();
         oggi.setHours(0, 0, 0, 0);
 
         if (this.filtroTempo === 'oggi') {
-          const dataPrenStr = datePren.toISOString().split('T')[0];
-          const oggiStr = oggi.toISOString().split('T')[0];
-          if (dataPrenStr !== oggiStr) return false;
+          const oggiStr = this.getLocalOggiStr();
+          if (p.data !== oggiStr) return false;
         } else if (this.filtroTempo === 'settimana') {
           const diff = oggi.getTime() - datePren.getTime();
           const giorniDiff = diff / (1000 * 60 * 60 * 24);
@@ -228,10 +231,51 @@ export class PrenotazioniRicevutePage implements OnInit {
     });
   }
 
+  getLocalOggiStr(): string {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   // Agenda di oggi
   get agendaDiOggi(): any[] {
-    const oggiStr = new Date().toISOString().split('T')[0];
-    return this.prenotazioni.filter(p => p.data === oggiStr && (this.checkStato(p.stato, 'confermata') || this.checkStato(p.stato, 'confermato')));
+    const oggiStr = this.getLocalOggiStr();
+    return this.prenotazioni.filter(p => p.data === oggiStr && !this.checkStato(p.stato, 'annullata') && !this.checkStato(p.stato, 'annullato'));
+  }
+
+  scaricaAgendaPDF() {
+    const agenda = this.agendaDiOggi;
+    if (agenda.length === 0) {
+      this.showToast('Nessuna prenotazione presente per oggi.', 'warning');
+      return;
+    }
+
+    const success = exportAgendaPDF(this.docente, agenda, this.getLocalOggiStr());
+    if (!success) {
+      this.showToast('Errore nell\'apertura della finestra di stampa. Abilita i popup.', 'danger');
+    }
+  }
+
+  scaricaListaPDF() {
+    const lista = this.filteredPrenotazioni;
+    if (lista.length === 0) {
+      this.showToast('Nessuna prenotazione presente nella lista filtrata.', 'warning');
+      return;
+    }
+
+    const success = exportListaPDF(
+      this.docente,
+      lista,
+      this.getLocalOggiStr(),
+      this.searchTerm,
+      this.filtroStato,
+      this.filtroTempo
+    );
+    if (!success) {
+      this.showToast('Errore nell\'apertura della finestra di stampa. Abilita i popup.', 'danger');
+    }
   }
 
   // Helper per verificare lo stato tollerando variazioni di casing
