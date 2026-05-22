@@ -54,6 +54,26 @@ Ogni strato ha una responsabilità ben distinta e non si mescola con gli altri.
 
 ---
 
+## Avvio completo (start.js)
+
+Nella **root del progetto** è presente `start.js` che avvia l'intera applicazione con un unico comando:
+
+```bash
+node start.js
+```
+
+Cosa fa:
+1. Avvia PostgreSQL se non in esecuzione (tenta `pg_ctl` / `brew services` / `systemctl`)
+2. Applica migrazioni Prisma (`prisma migrate deploy`)
+3. Genera il client Prisma (`prisma generate`)
+4. Avvia il backend (`pg_backend/`) su porta 5000
+5. Avvia il frontend (`pg_frontend/`) su porta 8100
+6. Apre automaticamente il browser su `http://localhost:8100` e Prisma Studio su `http://localhost:5557`
+
+Dipende dal modulo `pg` installato nella root `package.json` (usato per test di connessione DB).
+
+---
+
 ## Configurazione e Setup
 
 Il progetto usa **Prisma 7** come ORM per PostgreSQL. La connessione al DB è configurata in due file:
@@ -150,7 +170,7 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 | FAQ | 6 | Domande/Risposte distribuite tra le bacheche |
 | SlotRicevimento | 6 | Distribuiti tra i vari docenti in date diverse |
 | LuogoRicevimento | 3 | Aula 5, Studio 12, Lab 3 |
-| Prenotazione | 5 | Stati: CONFERMATO, IN_ATTESA, RIFIUTATO |
+| Prenotazione | 5 | Stati: CONFERMATA, IN_ATTESA, RIFIUTATA |
 | Documento | 3 | PDF, ZIP, DOCX associati alle prenotazioni |
 | Notifica | 5 | Vari tipi: CONFERMA, AVVISO, RIFIUTO, CANCELLAZIONE |
 
@@ -177,7 +197,7 @@ npx prisma generate
 | `auth.service.ts` | Registrazione (studente/docente/admin), login, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
 | `studenti.service.ts` | Profilo studente (GET, PUT). Restituisce `corsoDiStudi` oggetto annidato |
 | `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi. `getDettagliDocente` response include `corsi[]` e `corsiDiStudi[]` |
-| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/ANNULLATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo) e `studenteEmail` |
+| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo) e `studenteEmail`. `.toLowerCase()` su tutti gli stati in output per coerenza frontend |
 | `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
 | `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni |
 | `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
@@ -262,11 +282,13 @@ Endpoint prenotazioni (`prenotazioni.routes.ts`):
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/prenotazioni` | POST | JWT | Crea prenotazione |
-| `/api/prenotazioni/:id` | DELETE | JWT | Annulla prenotazione |
+| `/api/prenotazioni` | POST | JWT | Crea prenotazione (multipart per documenti) |
+| `/api/prenotazioni/:id` | DELETE | JWT | Annulla prenotazione (logica) |
+| `/api/prenotazioni/:id/fisico` | DELETE | JWT | Elimina prenotazione (fisica) |
+| `/api/prenotazioni/:id` | GET | JWT | Dettaglio prenotazione per ID |
 | `/api/prenotazioni/studente/:matricolaStudente` | GET | JWT | Prenotazioni dello studente |
 | `/api/prenotazioni/docente/:idDocente` | GET | JWT | Prenotazioni del docente |
-| `/api/prenotazioni/:id/stato` | PUT | JWT | Aggiorna stato prenotazione |
+| `/api/prenotazioni/:id/stato` | PUT | JWT | Aggiorna stato (IN_ATTESA/CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA) |
 
 ### ✅ Fase 3 completata — Corsi
 
@@ -488,13 +510,15 @@ Il backend è allineato con il `AuthService` Angular esistente:
 | 6 | CRUD Prenotazione, gestione stato | ✅ |
 | 7 | CRUD Notifiche (multi-ruolo: studente, docente, admin) | ✅ |
 | 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali (CRUD completo + filtri) | ✅ |
-| 9 | CRUD Documenti (upload/download per prenotazioni) | ❌ |
+| 9 | CRUD Documenti (upload/download per prenotazioni) | ✅ |
 | 10 | CRUD Segnalazioni: backend (routes, controller, service, validators) + frontend admin (pagina gestione) | ✅ |
 | 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin gestione-calendario | ✅ |
 
 ### Dettaglio API ancora da implementare
 
-#### Fase 9 — Documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`)
+#### ~~Fase 9 — Documenti~~ ✅ Completata
+
+Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`):
 - `POST /api/documenti/upload` — carica file (multipart, autenticato)
 - `GET /api/documenti/:id` — scarica file (autenticato)
 - `GET /api/prenotazioni/:id/documenti` — documenti di una prenotazione (autenticato)
@@ -504,7 +528,7 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 - [x] Amministratore: CRUD slot (creare, modificare, eliminare slot dalla dashboard)
 - [x] Amministratore: gestione segnalazioni (tabella, filtri, cambio stato)
-- [ ] Amministratore: gestire prenotazioni (eliminarle o modificarle)
+- [x] Amministratore: gestire prenotazioni (cambio stato, elimina, dettagli)
 - [x] Amministratore: bloccare giorni dal calendario (es. festivi)
 - [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
 

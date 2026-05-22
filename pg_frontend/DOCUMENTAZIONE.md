@@ -183,7 +183,7 @@ Tutti i servizi usano `providedIn: 'root'` e il pattern `BehaviorSubject` per lo
 
 | Servizio | File | Endpoint API principali |
 |----------|------|------------------------|
-| `AuthService` | `core/services/auth.ts` | POST `/api/login`, `/api/registrazione`, `/api/recupera-password`, `/api/reset-password` |
+| `AuthService` | `core/services/auth.ts` | POST `/api/login`, `/api/registrazione`, POST `/api/auth/change-password`, GET `/api/auth/profile`, POST `/api/auth/refresh`, `/api/recupera-password`, `/api/reset-password` |
 | `StudenteService` | `core/services/studente.ts` | GET/PUT/DELETE `/api/studenti/:matricola` |
 | `DocenteService` | `core/services/docente.ts` | GET `/api/docenti`, slot CRUD |
 | `PrenotazioneService` | `core/services/prenotazione.ts` | CRUD `/api/prenotazioni` |
@@ -303,3 +303,70 @@ provideIonicAngular({ mode: 'md' }),
 - **UI in italiano** — etichette, toast, messaggi
 - **RxJS** — Observable, Subscription, firstValueFrom, pipe, catchError
 - **Test** Jasmine + Karma, file `.spec.ts` co-locati
+
+---
+
+## 13. Proposta — Pagina "Impostazioni" (docenti e studenti)
+
+### Obiettivo
+Creare una pagina separata dal profilo in cui docenti e studenti possano configurare preferenze e comportamenti dell'app.
+
+### Impostazioni proposte
+
+| Impostazione | Tipo | Default | Descrizione |
+|---|---|---|---|
+| Tema | `light \| dark \| system` | `system` | Preferenza tema chiaro/scuro |
+| Notifiche app | boolean | `true` | Notifiche push/in-app |
+| Notifiche email | boolean | `true` | Notifiche via email |
+| Promemoria (ore prima) | `1 \| 3 \| 24 \| 48` | `24` | Anticipo promemoria ricevimento |
+| Lingua | `it \| en` | `it` | Lingua interfaccia (per futuro i18n) |
+
+### Backend — modifiche necessarie
+
+**Prisma schema** — aggiungere colonne a `Studente` e `Docente`:
+```
+notifiche_app    Boolean  @default(true)
+notifiche_email  Boolean  @default(true)
+reminder_ore     Int      @default(24)
+tema             String   @default("system")
+lingua           String   @default("it")
+```
+
+**Nuovo endpoint unificato** (via `/api/auth/`):
+- `GET /api/auth/impostazioni` — ottieni impostazioni utente corrente
+- `PUT /api/auth/impostazioni` — aggiorna impostazioni (con validatore)
+
+I metodi `getImpostazioni` e `aggiornaImpostazioni` vanno aggiunti ad `auth.service.ts` (backend) e chiamano il modello Prisma corrispondente in base al ruolo.
+
+### Frontend — nuove pagine
+
+```
+pg_frontend/src/app/features/docente/impostazioni-docente/
+  ├── impostazioni-docente.page.html
+  ├── impostazioni-docente.page.ts
+  └── impostazioni-docente.page.scss
+
+pg_frontend/src/app/features/studente/impostazioni-studente/
+  ├── impostazioni-studente.page.html
+  ├── impostazioni-studente.page.ts
+  └── impostazioni-studente.page.scss
+```
+
+**AuthService frontend** — aggiungere:
+- `getImpostazioni()` → `GET /api/auth/impostazioni`
+- `aggiornaImpostazioni(data)` → `PUT /api/auth/impostazioni`
+
+**Nuove route** in `app.routes.ts`:
+- `/impostazioni-docente` con `canActivate: [authGuard, roleGuard('docente')]`
+- `/impostazioni-studente` con `canActivate: [authGuard, roleGuard('studente')]`
+
+**Sidebar** — aggiungere voce "Impostazioni" (icona `settings-outline`) nei menu di docente e studente in `DashboardLayoutComponent`.
+
+**`variables.scss`** — aggiungere selettori `app-impostazioni-docente` e `app-impostazioni-studente` al blocco `body.dark`.
+
+### Da decidere
+
+1. **Separazione dal profilo**: le notifiche/reminder attualmente compaiono in `profilo-studente`. Vanno rimosse da lì se si spostano in Impostazioni?
+2. **Backend unificato vs per ruolo**: unico (`/api/auth/impostazioni`) è più semplice; separati (`/api/docenti/:id/impostazioni`, `/api/studenti/:matricola/impostazioni`) danno maggiore controllo.
+3. **Tema**: già gestito in topbar + localStorage. Va comunque salvato anche su DB per persistenza cross-device?
+4. **Altre impostazioni da aggiungere/rimuovere?**
