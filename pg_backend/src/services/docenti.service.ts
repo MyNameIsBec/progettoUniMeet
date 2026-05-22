@@ -137,7 +137,7 @@ export async function getSlots(idDocente: string, mese?: string) {
           id: s.luogo.id_luogo,
           aula: s.luogo.nome_aula,
           edificio: s.luogo.edificio,
-          piano: parseInt(s.luogo.piano),
+          piano: s.luogo.piano,
         }
       : undefined,
     prenotazioniCount: s.prenotazioni.length,
