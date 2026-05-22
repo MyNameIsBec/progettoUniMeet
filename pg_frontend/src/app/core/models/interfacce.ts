@@ -51,7 +51,7 @@ export interface LuogoRicevimento {
   id: string;
   aula: string;
   edificio: string;
-  piano: number;
+  piano: string;
   latitudine: number;
   longitudine: number;
 }
