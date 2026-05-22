@@ -225,7 +225,7 @@ async function main() {
     IS_WIN ? 'prisma.cmd' : 'prisma'
   );
   log('PRISMA', `Avvio Prisma Studio su http://localhost:${PRISMA_PORT}...`);
-  const prisma = spawn(prismaBin, ['studio', '--port', String(PRISMA_PORT)], {
+  const prisma = spawn(prismaBin, ['studio', '--port', String(PRISMA_PORT), '--browser', 'none'], {
     cwd: BACKEND,
     stdio: 'pipe',
   });
