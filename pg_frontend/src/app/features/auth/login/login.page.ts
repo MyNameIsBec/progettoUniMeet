@@ -28,6 +28,15 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      const role = this.authService.getCurrentUser()?.role;
+      const target = role === 'docente' ? '/dashboard-docente'
+        : role === 'amministratore' ? '/dashboard-admin'
+        : '/dashboard-studente';
+      this.router.navigateByUrl(target);
+      return;
+    }
+
     this.urlDiRitorno = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
 
     this.loginForm = this.fb.group({
