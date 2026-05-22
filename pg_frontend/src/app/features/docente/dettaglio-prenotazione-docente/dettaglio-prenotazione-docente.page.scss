@@ -1021,6 +1021,11 @@ ion-button {
   color: #f87171;
 }
 
+:host-context(body.dark) .notification-badge {
+  background: #dc2626;
+  color: #ffffff;
+}
+
 @media (max-width: 700px) {
   :host-context(body.dark) .status-card {
     border-top-color: #4ade80;

@@ -400,6 +400,11 @@
     color: #64748b;
 }
 
+:host-context(body.dark) .notifications-list-card,
+:host-context(body.dark) .management-card {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
 /* RESPONSIVE */
 @media (max-width: 1100px) {
     .notifications-layout {

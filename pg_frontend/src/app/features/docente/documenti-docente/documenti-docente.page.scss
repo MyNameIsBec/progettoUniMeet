@@ -224,6 +224,10 @@
     background: rgba(37, 99, 235, 0.1);
 }
 
+:host-context(body.dark) .filtro-btn.active {
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .filtri-bar,
