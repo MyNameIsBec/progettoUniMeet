@@ -689,6 +689,12 @@ ion-button {
 
 /* UPLOAD */
 
+.upload-preview {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
 .upload-box {
   min-height: 102px;
   margin-bottom: 18px;

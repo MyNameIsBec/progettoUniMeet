@@ -1031,4 +1031,105 @@ ion-modal.booking-modal {
 
 :host-context(body.dark) .day-blocked {
   background: rgba(244, 63, 94, 0.08) !important;
+}
+
+:host-context(body.dark) {
+  color: #e2e8f0;
+}
+
+:host-context(body.dark) .selection-form {
+  background: var(--ion-card-background);
+}
+
+:host-context(body.dark) .custom-field ion-item {
+  --background: rgba(255, 255, 255, 0.04);
+  --color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .custom-field label {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .selected-teacher-box {
+  background: var(--ion-card-background);
+}
+
+:host-context(body.dark) .selected-teacher-box h3 {
+  color: #e2e8f0;
+}
+
+:host-context(body.dark) .selected-teacher-box p {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .teacher-detail {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .teacher-detail ion-icon {
+  color: #64748b;
+}
+
+:host-context(body.dark) .calendar-overlay-message p {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .slot.selected {
+  background: #1e3a5f !important;
+  color: #93c5fd !important;
+  border-color: #60a5fa !important;
+}
+
+:host-context(body.dark) .important-icon {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+:host-context(body.dark) .important-card h3 {
+  color: #93c5fd;
+}
+
+:host-context(body.dark) .slot-hero-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .teacher-avatar {
+  background: #1d4ed8;
+  color: white;
+}
+
+:host-context(body.dark) .slot-text-info h3 {
+  color: #e2e8f0;
+}
+
+:host-context(body.dark) .slot-text-info p {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .form-section-title {
+  color: #e2e8f0;
+}
+
+:host-context(body.dark) .form-section-title ion-icon {
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .detail-pill.location {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+:host-context(body.dark) .detail-pill.location ion-icon {
+  color: #34d399;
+}
+
+:host-context(body.dark) .modal-toolbar-premium-native {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f1d3d 100%);
+}
+
+:host-context(body.dark) .modal-toolbar-premium-native .header-confirm-btn {
+  --background: #2563eb;
+  --color: #ffffff;
 }

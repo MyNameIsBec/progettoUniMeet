@@ -232,6 +232,25 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
 }
 
 
+export async function aggiungiDocumenti(idPrenotazione: string, files: Express.Multer.File[]) {
+  const prenotazione = await prisma.prenotazione.findUnique({
+    where: { id_prenotazione: idPrenotazione },
+  });
+  if (!prenotazione) throw new Error('Prenotazione not found');
+
+  await prisma.documento.createMany({
+    data: files.map((f) => ({
+      id_prenotazione: idPrenotazione,
+      nome_file: f.originalname,
+      tipo_file: f.mimetype,
+      dimensione: f.size,
+      percorso_file: f.filename,
+    })),
+  });
+
+  return getPrenotazioneById(idPrenotazione);
+}
+
 export async function getPrenotazioneById(id: string) {
   const prenotazione = await prisma.prenotazione.findUnique({
     where: { id_prenotazione: id },

@@ -35,7 +35,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const uploadsPath = path.join(process.cwd(), 'uploads');
+const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
 app.use('/api', authRoutes);
 app.use('/api', adminRoutes);

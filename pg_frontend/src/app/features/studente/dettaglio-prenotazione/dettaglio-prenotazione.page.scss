@@ -331,3 +331,68 @@ ion-button {
   .topic-box, .location-box, .document-item, .actions-card h2 { text-align: center; }
   .document-actions { justify-content: center; }
 }
+
+:host-context(body.dark) {
+  --dark: #e2e8f0;
+  --light: #1e293b;
+  --border: #334155;
+  --green-bg: rgba(22, 163, 74, 0.15);
+}
+
+:host-context(body.dark) ion-card {
+  background: var(--ion-card-background, #1e293b);
+}
+
+:host-context(body.dark) .back-link {
+  background: rgba(37, 99, 235, 0.1);
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .info-icon {
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .meta-box,
+:host-context(body.dark) .info-item,
+:host-context(body.dark) .topic-box,
+:host-context(body.dark) .location-box {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: #334155;
+}
+
+:host-context(body.dark) .document-icon.pdf {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+:host-context(body.dark) .document-icon.doc {
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .section-title {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+:host-context(body.dark) .map {
+  background: #0f172a;
+}
+
+:host-context(body.dark) .reminder-card {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+:host-context(body.dark) .reminder-icon {
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+}
+
+:host-context(body.dark) .topic-box p {
+  color: #94a3b8;
+}
+
+:host-context(body.dark) .map-header {
+  border-bottom-color: #334155;
+}

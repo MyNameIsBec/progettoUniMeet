@@ -74,6 +74,23 @@ export async function aggiornaStatoPrenotazione(req: Request, res: Response) {
   }
 }
 
+export async function uploadDocumentiPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const files = req.files as Express.Multer.File[] | undefined;
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: 'Nessun file caricato' });
+    }
+    const prenotazione = await prenotazioniService.aggiungiDocumenti(id, files);
+    return res.status(200).json(prenotazione);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 export async function getPrenotazioneById(req: Request, res: Response) {
   try {
     const id = req.params.id as string;

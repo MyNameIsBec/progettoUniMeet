@@ -138,7 +138,6 @@
       </ion-card>
       }
 
-      @if (prenotazione.documenti && prenotazione.documenti.length > 0) {
       <ion-card class="detail-card">
         <ion-card-header>
           <ion-card-title>
@@ -147,6 +146,7 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
+          @if (prenotazione.documenti && prenotazione.documenti.length > 0) {
           <div class="documents-list">
             @for (doc of prenotazione.documenti; track doc.id) {
             <div class="document-item">
@@ -166,9 +166,45 @@
             </div>
             }
           </div>
+          }
+          <div class="upload-box">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            <div>
+              <strong>Carica documento</strong>
+              <span>Trascina o seleziona un file (PDF, DOC, max 10 MB)</span>
+            </div>
+            <input type="file" #fileInput (change)="onFileSelected($event)" multiple hidden />
+            <ion-button fill="outline" size="small" (click)="fileInput.click()" [disabled]="uploadInProgress">
+              <ion-icon name="attach-outline" slot="start"></ion-icon>
+              Scegli file
+            </ion-button>
+          </div>
+          @if (fileDaCaricare.length > 0) {
+          <div class="upload-preview">
+            @for (file of fileDaCaricare; track file.name; let i = $index) {
+            <div class="document-item">
+              <div class="document-icon doc">
+                <ion-icon name="document-outline"></ion-icon>
+              </div>
+              <div class="document-info">
+                <h3>{{ file.name }}</h3>
+                <p>{{ (file.size / 1024 / 1024) | number:'1.1-1' }} MB</p>
+              </div>
+              <div class="document-actions">
+                <ion-button fill="clear" size="small" color="danger" (click)="rimuoviFile(i)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+            }
+            <ion-button expand="block" (click)="caricaDocumenti()" [disabled]="uploadInProgress">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              {{ uploadInProgress ? 'Caricamento...' : 'Carica ' + fileDaCaricare.length + ' file' }}
+            </ion-button>
+          </div>
+          }
         </ion-card-content>
       </ion-card>
-      }
 
       <ion-card class="detail-card">
         <ion-card-header>
