@@ -217,6 +217,6 @@ export class GestioneSlotAdminPage implements OnInit {
   }
 
   statoClasse(disponibile: boolean): string {
-    return disponibile ? 'stato-libero' : 'stato-occupato';
+    return disponibile ? 'status-libero' : 'status-occupato';
   }
 }

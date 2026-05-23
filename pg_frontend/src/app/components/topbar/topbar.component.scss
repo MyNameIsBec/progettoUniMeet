@@ -12,7 +12,7 @@
   z-index: 1000;
 }
 
-.mobile-header-left {
+.header-mobile-sinistra {
   display: none;
   align-items: center;
   gap: 16px;
@@ -22,7 +22,7 @@
   }
 }
 
-.menu-toggle {
+.toggle-menu {
   background: #f1f5f9;
   border: none;
   font-size: 26px;
@@ -75,7 +75,7 @@
 }
 
 /* MOBILE DROPDOWN DRAWER */
-.mobile-dropdown-overlay {
+.overlay-mobile {
   position: fixed;
   top: 0;
   left: 0;
@@ -87,7 +87,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-.mobile-top-menu {
+.menu-mobile-top {
   position: fixed;
   top: 0;
   left: -320px;
@@ -186,7 +186,7 @@
       }
     }
 
-    &.mobile-logout {
+    &.logout-mobile {
       margin-top: auto;
       border-top: 1px solid #f1f5f9;
       padding-top: 24px;
@@ -207,7 +207,7 @@
   margin-left: auto;
 }
 
-.notification-button {
+.btn-notifiche {
   position: relative;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -225,7 +225,7 @@
   }
 }
 
-.theme-toggle {
+.toggle-tema {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   width: 46px;
@@ -264,7 +264,7 @@
   border: 3px solid #ffffff;
 }
 
-.student-profile-mini {
+  .profilo-mini {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -303,7 +303,7 @@
   }
 }
 
-.student-avatar-small {
+.avatar-piccolo {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -324,7 +324,7 @@
     padding: 0 16px;
   }
 
-  .student-profile-mini {
+.profilo-mini {
     padding: 4px 10px 4px 4px;
     gap: 8px;
 

@@ -1,0 +1,3789 @@
+openapi: '3.0.0'
+info:
+  title: UniMeet API
+  description: API del sistema UniMeet per la gestione di ricevimenti docenti, prenotazioni, segnalazioni e bacheche di corsi di studi universitari.
+  version: '1.0.0'
+  contact:
+    name: UniMeet Team
+
+servers:
+  - url: http://localhost:3000/api
+    description: Server di sviluppo locale
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT ottenuto dal login
+
+  schemas:
+    # ─────────── ERROR MODELS ───────────
+    ErroreBase:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Messaggio di errore
+      required:
+        - error
+
+    ErroreValidazione:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              msg:
+                type: string
+              path:
+                type: string
+              location:
+                type: string
+              type:
+                type: string
+
+    Errore400:
+      type: object
+      properties:
+        error:
+          type: string
+
+    Errore401:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Token richiesto
+
+    Errore403:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Accesso negato
+
+    Errore404:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Risorsa non trovata
+
+    Errore409:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Email già in uso
+
+    Errore500:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Errore interno del server
+
+    MessaggioSuccesso:
+      type: object
+      properties:
+        messaggio:
+          type: string
+      required:
+        - messaggio
+
+    # ─────────── AUTH SCHEMAS ───────────
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: mario.rossi@studenti.unina.it
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+        utente:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            ruolo:
+              type: string
+              enum: [STUDENTE, DOCENTE, AMMINISTRATORE]
+            nome:
+              type: string
+            cognome:
+              type: string
+      required:
+        - token
+        - utente
+
+    RegistrazioneStudenteRequest:
+      type: object
+      required:
+        - matricola
+        - nome
+        - cognome
+        - email
+        - password
+        - corsoDiStudi
+      properties:
+        matricola:
+          type: string
+          example: N01234567
+        nome:
+          type: string
+          example: Mario
+        cognome:
+          type: string
+          example: Rossi
+        email:
+          type: string
+          format: email
+          example: mario.rossi@studenti.unina.it
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+        corsoDiStudi:
+          type: string
+          description: ID o nome del corso di studi
+          example: IN1010
+
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: mario.rossi@studenti.unina.it
+
+    ForgotPasswordResponse:
+      type: object
+      properties:
+        messaggio:
+          type: string
+          example: Se l'email esiste, riceverai un codice di verifica per il reset della password.
+      required:
+        - messaggio
+
+    VerificaCodiceRequest:
+      type: object
+      required:
+        - email
+        - codice
+      properties:
+        email:
+          type: string
+          format: email
+        codice:
+          type: string
+          example: 123456
+
+    ResetPasswordRequest:
+      type: object
+      required:
+        - email
+        - codice
+        - nuovaPassword
+      properties:
+        email:
+          type: string
+          format: email
+        codice:
+          type: string
+          example: 123456
+        nuovaPassword:
+          type: string
+          format: password
+          minLength: 8
+          example: nuovaPassword123
+
+    RegistrazioneDocenteRequest:
+      type: object
+      required:
+        - nome
+        - cognome
+        - email
+        - password
+        - ufficio
+      properties:
+        nome:
+          type: string
+          example: Luigi
+        cognome:
+          type: string
+          example: Verdi
+        email:
+          type: string
+          format: email
+          example: luigi.verdi@unina.it
+        password:
+          type: string
+          format: password
+          minLength: 8
+        ufficio:
+          type: string
+          example: Edificio 5, Stanza 12
+
+    RegistrazioneAdminRequest:
+      type: object
+      required:
+        - nome
+        - email
+        - password
+      properties:
+        nome:
+          type: string
+          example: Admin Uni
+        email:
+          type: string
+          format: email
+          example: admin@unimeet.it
+        password:
+          type: string
+          format: password
+          minLength: 8
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          format: password
+          example: vecchiaPassword123
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          example: nuovaPassword123
+
+    ProfiloResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        ruolo:
+          type: string
+          enum: [STUDENTE, DOCENTE, AMMINISTRATORE]
+        matricola:
+          type: string
+        corsoDiStudi:
+          type: object
+        ufficio:
+          type: string
+        corsi:
+          type: array
+          items:
+            type: object
+
+    # ─────────── ADMIN SCHEMAS ───────────
+    StatisticheResponse:
+      type: object
+      properties:
+        totaleStudenti:
+          type: integer
+        totaleDocenti:
+          type: integer
+        totaleAmministratori:
+          type: integer
+        totalePrenotazioni:
+          type: integer
+        totaleSegnalazioni:
+          type: integer
+        prenotazioniMeseCorrente:
+          type: integer
+        slotTotali:
+          type: integer
+        slotOccupati:
+          type: integer
+        slotLiberi:
+          type: integer
+        giorniBloccati:
+          type: integer
+
+    CreaUtenteRequest:
+      type: object
+      required:
+        - ruolo
+        - nome
+        - email
+        - password
+      properties:
+        ruolo:
+          type: string
+          enum: [studente, docente, amministratore]
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        cognome:
+          type: string
+        matricola:
+          type: string
+        corsoDiStudi:
+          type: string
+        ufficio:
+          type: string
+
+    ModificaUtenteRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        cognome:
+          type: string
+        matricola:
+          type: string
+        corsoDiStudi:
+          type: string
+        ufficio:
+          type: string
+
+    Slot:
+      type: object
+      properties:
+        id_slot:
+          type: string
+        data:
+          type: string
+          format: date
+        ora_inizio:
+          type: string
+          example: 09:00:00
+        ora_fine:
+          type: string
+          example: 10:00:00
+        disponibilita:
+          type: boolean
+        id_docente:
+          type: string
+        docente:
+          $ref: '#/components/schemas/DocenteSenzaPassword'
+        luogo:
+          $ref: '#/components/schemas/LuogoRicevimento'
+        prenotazioni:
+          type: array
+          items:
+            $ref: '#/components/schemas/Prenotazione'
+
+    SlotSenzaRelazioni:
+      type: object
+      properties:
+        id_slot:
+          type: string
+        data:
+          type: string
+          format: date
+        ora_inizio:
+          type: string
+        ora_fine:
+          type: string
+        disponibilita:
+          type: boolean
+        id_docente:
+          type: string
+
+    CreaSlotRequest:
+      type: object
+      required:
+        - docenteId
+        - data
+        - oraInizio
+        - oraFine
+      properties:
+        docenteId:
+          type: string
+        data:
+          type: string
+          format: date
+          example: '2026-06-15'
+        oraInizio:
+          type: string
+          example: '09:00'
+        oraFine:
+          type: string
+          example: '10:00'
+        disponibilita:
+          type: boolean
+          default: true
+        luogo:
+          $ref: '#/components/schemas/LuogoInput'
+
+    ModificaSlotRequest:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        oraInizio:
+          type: string
+        oraFine:
+          type: string
+        disponibilita:
+          type: boolean
+        docenteId:
+          type: string
+        luogo:
+          $ref: '#/components/schemas/LuogoInput'
+
+    LuogoInput:
+      type: object
+      properties:
+        nomeAula:
+          type: string
+          example: Aula 101
+        edificio:
+          type: string
+          example: Edificio Centrale
+        piano:
+          type: string
+          example: Primo piano
+
+    LuogoRicevimento:
+      type: object
+      properties:
+        id_luogo:
+          type: string
+        nome_aula:
+          type: string
+        edificio:
+          type: string
+        piano:
+          type: string
+        latitudine:
+          type: number
+          format: float
+          nullable: true
+        longitudine:
+          type: number
+          format: float
+          nullable: true
+        id_slot:
+          type: string
+
+    SlotDateResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          data:
+            type: string
+            format: date
+          count:
+            type: integer
+
+    BloccaGiornoRequest:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: string
+          format: date
+          example: '2026-06-14'
+        motivo:
+          type: string
+          default: Festivo
+          example: Festività nazionale
+
+    GiornoBloccato:
+      type: object
+      properties:
+        id_giorno:
+          type: string
+        data:
+          type: string
+          format: date
+        motivo:
+          type: string
+        creato_il:
+          type: string
+          format: date-time
+
+    # ─────────── PRENOTAZIONI SCHEMAS ───────────
+    Prenotazione:
+      type: object
+      properties:
+        id_prenotazione:
+          type: string
+        data_prenotazione:
+          type: string
+          format: date-time
+        argomento:
+          type: string
+        descrizione:
+          type: string
+          nullable: true
+        stato_prenotazione:
+          type: string
+          enum: [IN_ATTESA, CONFERMATO, COMPLETATO, ANNULLATO]
+          default: IN_ATTESA
+        matricola_studente:
+          type: string
+        id_slot:
+          type: string
+        slot:
+          $ref: '#/components/schemas/SlotSenzaRelazioni'
+        studente:
+          $ref: '#/components/schemas/StudenteSenzaPassword'
+        documenti:
+          type: array
+          items:
+            $ref: '#/components/schemas/Documento'
+
+    CreaPrenotazioneRequest:
+      type: object
+      required:
+        - argomento
+        - matricolaStudente
+        - idSlot
+      properties:
+        argomento:
+          type: string
+          example: Ricevimento tesi
+        descrizione:
+          type: string
+          example: Vorrei discutere la tesi
+        matricolaStudente:
+          type: string
+          example: N01234567
+        idSlot:
+          type: string
+
+    AggiornaStatoPrenotazioneRequest:
+      type: object
+      required:
+        - stato
+      properties:
+        stato:
+          type: string
+          enum: [IN_ATTESA, CONFERMATO, COMPLETATO, ANNULLATO]
+
+    Documento:
+      type: object
+      properties:
+        id_documento:
+          type: string
+        nome_file:
+          type: string
+        tipo_file:
+          type: string
+        dimensione:
+          type: integer
+        data_caricamento:
+          type: string
+          format: date-time
+        percorso_file:
+          type: string
+        id_prenotazione:
+          type: string
+
+    # ─────────── SEGNALAZIONI SCHEMAS ───────────
+    Segnalazione:
+      type: object
+      properties:
+        id_segnalazione:
+          type: string
+        oggetto:
+          type: string
+        descrizione:
+          type: string
+        data_invio:
+          type: string
+          format: date-time
+        stato:
+          type: string
+          enum: [APERTA, IN_LAVORAZIONE, RISOLTA, CHIUSA]
+          default: APERTA
+        matricola_studente:
+          type: string
+          nullable: true
+        id_docente:
+          type: string
+          nullable: true
+        studente:
+          $ref: '#/components/schemas/StudenteSenzaPassword'
+        docente:
+          $ref: '#/components/schemas/DocenteSenzaPassword'
+        allegato:
+          type: string
+          nullable: true
+
+    CreaSegnalazioneRequest:
+      type: object
+      required:
+        - oggetto
+        - descrizione
+      properties:
+        oggetto:
+          type: string
+          example: Problema con ricevimento
+        descrizione:
+          type: string
+          example: Descrizione del problema...
+        matricolaStudente:
+          type: string
+          example: N01234567
+
+    CreaSegnalazioneDocenteRequest:
+      type: object
+      required:
+        - oggetto
+        - descrizione
+        - idDocente
+      properties:
+        oggetto:
+          type: string
+        descrizione:
+          type: string
+        idDocente:
+          type: string
+
+    AggiornaStatoSegnalazioneRequest:
+      type: object
+      required:
+        - stato
+      properties:
+        stato:
+          type: string
+          enum: [APERTA, IN_LAVORAZIONE, RISOLTA, CHIUSA]
+
+    # ─────────── NOTIFICHE SCHEMAS ───────────
+    Notifica:
+      type: object
+      properties:
+        id_notifica:
+          type: string
+        titolo:
+          type: string
+        messaggio:
+          type: string
+        data_invio:
+          type: string
+          format: date-time
+        tipo:
+          type: string
+        letta:
+          type: boolean
+          default: false
+        destinatario_id:
+          type: string
+          nullable: true
+        destinatario_ruolo:
+          type: string
+          nullable: true
+
+    CreaNotificaRequest:
+      type: object
+      required:
+        - titolo
+        - messaggio
+        - tipo
+      properties:
+        titolo:
+          type: string
+          example: Nuova prenotazione
+        messaggio:
+          type: string
+          example: Hai una nuova prenotazione per il giorno...
+        tipo:
+          type: string
+          example: PRENOTAZIONE
+        destinatarioId:
+          type: string
+        destinatarioRuolo:
+          type: string
+          enum: [STUDENTE, DOCENTE, AMMINISTRATORE]
+
+    # ─────────── DOCENTI SCHEMAS ───────────
+    DocenteSenzaPassword:
+      type: object
+      properties:
+        id_docente:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        email:
+          type: string
+        ufficio:
+          type: string
+
+    DocenteDettaglio:
+      type: object
+      properties:
+        id_docente:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        email:
+          type: string
+        ufficio:
+          type: string
+        corsi:
+          type: array
+          items:
+            $ref: '#/components/schemas/Corso'
+        corsi_di_studi:
+          type: array
+          items:
+            type: object
+            properties:
+              id_corso_di_studi:
+                type: string
+              nome:
+                type: string
+
+    DocenteStatsResponse:
+      type: object
+      properties:
+        totaleSlots:
+          type: integer
+        totalePrenotazioni:
+          type: integer
+        prenotazioniConfermate:
+          type: integer
+        prenotazioniInAttesa:
+          type: integer
+        prenotazioniCompletate:
+          type: integer
+
+    CreaSlotDocenteRequest:
+      type: object
+      required:
+        - data
+        - oraInizio
+        - oraFine
+      properties:
+        data:
+          type: string
+          format: date
+          example: '2026-06-15'
+        oraInizio:
+          type: string
+          example: '09:00'
+        oraFine:
+          type: string
+          example: '10:00'
+        luogo:
+          $ref: '#/components/schemas/LuogoInput'
+
+    ModificaSlotDocenteRequest:
+      type: object
+      properties:
+        data:
+          type: string
+          format: date
+        oraInizio:
+          type: string
+        oraFine:
+          type: string
+        disponibilita:
+          type: boolean
+        luogo:
+          $ref: '#/components/schemas/LuogoInput'
+
+    # ─────────── STUDENTI SCHEMAS ───────────
+    StudenteSenzaPassword:
+      type: object
+      properties:
+        matricola:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        email:
+          type: string
+        id_corso_di_studi:
+          type: string
+        corso_di_studi:
+          $ref: '#/components/schemas/CorsoDiStudi'
+
+    StudenteProfilo:
+      type: object
+      properties:
+        matricola:
+          type: string
+        nome:
+          type: string
+        cognome:
+          type: string
+        email:
+          type: string
+        corso_di_studi:
+          $ref: '#/components/schemas/CorsoDiStudi'
+
+    AggiornaProfiloStudenteRequest:
+      type: object
+      properties:
+        nome:
+          type: string
+        cognome:
+          type: string
+        email:
+          type: string
+          format: email
+        corsoDiStudi:
+          type: string
+
+    ChangePasswordStudenteRequest:
+      type: object
+      required:
+        - vecchiaPw
+        - nuovaPw
+      properties:
+        vecchiaPw:
+          type: string
+          format: password
+          example: vecchiaPassword123
+        nuovaPw:
+          type: string
+          format: password
+          minLength: 8
+          example: nuovaPassword123
+
+    # ─────────── CORSI SCHEMAS ───────────
+    CorsoDiStudi:
+      type: object
+      properties:
+        id_corso_di_studi:
+          type: string
+        nome:
+          type: string
+
+    Corso:
+      type: object
+      properties:
+        id_corso:
+          type: string
+        nome_corso:
+          type: string
+        anno:
+          type: integer
+        cfu:
+          type: integer
+        id_docente:
+          type: string
+        id_corso_di_studi:
+          type: string
+          nullable: true
+        docente:
+          $ref: '#/components/schemas/DocenteSenzaPassword'
+
+    CreaCorsoRequest:
+      type: object
+      required:
+        - nomeCorso
+        - anno
+        - cfu
+        - idDocente
+      properties:
+        nomeCorso:
+          type: string
+          example: Ingegneria del Software
+        anno:
+          type: integer
+          example: 3
+        cfu:
+          type: integer
+          example: 9
+        idDocente:
+          type: string
+        idCorsoDiStudi:
+          type: string
+
+    AggiornaCorsoRequest:
+      type: object
+      properties:
+        nomeCorso:
+          type: string
+        anno:
+          type: integer
+        cfu:
+          type: integer
+        idDocente:
+          type: string
+        idCorsoDiStudi:
+          type: string
+
+    # ─────────── BACHECHE SCHEMAS ───────────
+    Bacheca:
+      type: object
+      properties:
+        id_bacheca:
+          type: string
+        titolo:
+          type: string
+        descrizione:
+          type: string
+        data_ultimo_aggiornamento:
+          type: string
+          format: date-time
+        id_corso_di_studi:
+          type: string
+        corso_di_studi:
+          $ref: '#/components/schemas/CorsoDiStudi'
+        faqs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FAQ'
+
+    AggiornaBachecaRequest:
+      type: object
+      properties:
+        titolo:
+          type: string
+          example: Bacheca Ingegneria Informatica
+        descrizione:
+          type: string
+          example: Benvenuti nella bacheca del corso di studi
+
+    FAQ:
+      type: object
+      properties:
+        id_faq:
+          type: string
+        domanda:
+          type: string
+        risposta:
+          type: string
+        data_pubblicazione:
+          type: string
+          format: date-time
+        ultima_modifica:
+          type: string
+          format: date-time
+        id_bacheca:
+          type: string
+
+    CreaFaqRequest:
+      type: object
+      required:
+        - domanda
+        - risposta
+      properties:
+        domanda:
+          type: string
+          example: Come prenoto un ricevimento?
+        risposta:
+          type: string
+          example: Accedi al sistema e seleziona uno slot disponibile
+
+    ModificaFaqRequest:
+      type: object
+      properties:
+        domanda:
+          type: string
+        risposta:
+          type: string
+
+paths:
+  # ═══════════════════════════════════════════
+  # AUTH
+  # ═══════════════════════════════════════════
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: Login utente
+      description: Autentica un utente (studente, docente o amministratore) e restituisce un token JWT.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Credenziali non valide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /registrazione:
+    post:
+      tags:
+        - Auth
+      summary: Registrazione studente
+      description: Crea un nuovo account studente.
+      operationId: registrazioneStudente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrazioneStudenteRequest'
+      responses:
+        '201':
+          description: Studente registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '409':
+          description: Email già in uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /recupera-password:
+    post:
+      tags:
+        - Auth
+      summary: Richiedi reset password
+      description: Invia una richiesta di reset password. Se l'email esiste, viene inviato un codice di verifica.
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: Richiesta elaborata (messaggio generico per sicurezza)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgotPasswordResponse'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /auth/verifica-codice:
+    post:
+      tags:
+        - Auth
+      summary: Verifica codice reset password
+      description: Verifica la validità del codice di reset password inviato via email.
+      operationId: verificaCodice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificaCodiceRequest'
+      responses:
+        '200':
+          description: Codice valido
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Codice non valido o scaduto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset password
+      description: Reimposta la password utilizzando il codice di verifica.
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reimpostata con successo
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Codice non valido o scaduto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /auth/register/docente:
+    post:
+      tags:
+        - Auth
+      summary: Registrazione docente
+      description: Registra un nuovo docente.
+      operationId: registrazioneDocente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrazioneDocenteRequest'
+      responses:
+        '201':
+          description: Docente registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '409':
+          description: Email già in uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /auth/register/admin:
+    post:
+      tags:
+        - Auth
+      summary: Registrazione amministratore
+      description: Registra un nuovo amministratore.
+      operationId: registrazioneAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrazioneAdminRequest'
+      responses:
+        '201':
+          description: Amministratore registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '409':
+          description: Email già in uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /auth/change-password:
+    post:
+      tags:
+        - Auth
+      summary: Cambio password
+      description: Cambia la password dell'utente autenticato. Richiede JWT.
+      operationId: changePassword
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: Password cambiata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token non valido o password errata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /auth/profile:
+    get:
+      tags:
+        - Auth
+      summary: Ottieni profilo
+      description: Restituisce il profilo dell'utente autenticato. Richiede JWT.
+      operationId: getProfile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profilo utente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfiloResponse'
+        '401':
+          description: Token richiesto o non valido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # ADMIN
+  # ═══════════════════════════════════════════
+  /admin/stats:
+    get:
+      tags:
+        - Admin
+      summary: Ottieni statistiche
+      description: Restituisce le statistiche generali del sistema (utenti, prenotazioni, slot, ecc.). Richiede ruolo amministratore.
+      operationId: adminGetStats
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statistiche del sistema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticheResponse'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/utenti:
+    get:
+      tags:
+        - Admin
+      summary: Elenco utenti
+      description: Restituisce l'elenco di tutti gli utenti. È possibile filtrare per ruolo. Richiede ruolo amministratore.
+      operationId: adminGetUtenti
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: ruolo
+          schema:
+            type: string
+            enum: [studente, docente, amministratore]
+          description: Filtro per ruolo utente
+          required: false
+      responses:
+        '200':
+          description: Elenco utenti
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Admin
+      summary: Crea utente
+      description: Crea un nuovo utente (studente, docente o amministratore). Richiede ruolo amministratore.
+      operationId: adminCreaUtente
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaUtenteRequest'
+      responses:
+        '201':
+          description: Utente creato con successo
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '409':
+          description: Email già in uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/utenti/{id}:
+    put:
+      tags:
+        - Admin
+      summary: Modifica utente
+      description: Aggiorna i dati di un utente esistente. Richiede ruolo amministratore.
+      operationId: adminModificaUtente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dell'utente (matricola per studenti, UUID per docenti/amministratori)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaUtenteRequest'
+      responses:
+        '200':
+          description: Utente aggiornato con successo
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Admin
+      summary: Elimina utente
+      description: Elimina un utente dal sistema. Richiede ruolo amministratore. Non è possibile eliminare il proprio account.
+      operationId: adminEliminaUtente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dell'utente
+      responses:
+        '204':
+          description: Utente eliminato con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato o tentativo di eliminare il proprio account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/slot-date:
+    get:
+      tags:
+        - Admin
+      summary: Date degli slot
+      description: Restituisce l'elenco delle date con slot disponibili. Richiede ruolo amministratore.
+      operationId: adminGetSlotDate
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Date degli slot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotDateResponse'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/slot:
+    get:
+      tags:
+        - Admin
+      summary: Elenco slot globali
+      description: Restituisce l'elenco degli slot con filtri opzionali. Richiede ruolo amministratore.
+      operationId: adminGetSlot
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: docenteId
+          schema:
+            type: string
+          description: Filtra per ID docente
+          required: false
+        - in: query
+          name: data
+          schema:
+            type: string
+            format: date
+          description: Filtra per data (YYYY-MM-DD)
+          required: false
+        - in: query
+          name: stato
+          schema:
+            type: string
+            enum: [libero, occupato, tutti]
+          description: Filtra per stato dello slot
+          required: false
+      responses:
+        '200':
+          description: Elenco slot
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '400':
+          description: Parametri di filtro non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Admin
+      summary: Crea slot
+      description: Crea un nuovo slot di ricevimento per un docente. Richiede ruolo amministratore.
+      operationId: adminCreaSlot
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaSlotRequest'
+      responses:
+        '201':
+          description: Slot creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotSenzaRelazioni'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '409':
+          description: Giorno bloccato o slot già esistente in questa fascia oraria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/slot/{idSlot}:
+    put:
+      tags:
+        - Admin
+      summary: Modifica slot
+      description: Aggiorna i dati di uno slot esistente. Richiede ruolo amministratore.
+      operationId: adminModificaSlot
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idSlot
+          required: true
+          schema:
+            type: string
+          description: ID dello slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaSlotRequest'
+      responses:
+        '200':
+          description: Slot aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Slot non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Admin
+      summary: Elimina slot
+      description: Elimina uno slot di ricevimento. Richiede ruolo amministratore.
+      operationId: adminEliminaSlot
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idSlot
+          required: true
+          schema:
+            type: string
+          description: ID dello slot
+      responses:
+        '204':
+          description: Slot eliminato con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Slot non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/prenotazioni:
+    get:
+      tags:
+        - Admin
+      summary: Elenco prenotazioni
+      description: Restituisce tutte le prenotazioni con filtri opzionali. Richiede ruolo amministratore.
+      operationId: adminGetPrenotazioni
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: stato
+          schema:
+            type: string
+            enum: [IN_ATTESA, CONFERMATO, COMPLETATO, ANNULLATO]
+          description: Filtra per stato prenotazione
+          required: false
+        - in: query
+          name: docenteId
+          schema:
+            type: string
+          description: Filtra per ID docente
+          required: false
+        - in: query
+          name: data
+          schema:
+            type: string
+            format: date
+          description: Filtra per data dello slot (YYYY-MM-DD)
+          required: false
+      responses:
+        '200':
+          description: Elenco prenotazioni
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prenotazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/prenotazioni/{id}/stato:
+    put:
+      tags:
+        - Admin
+      summary: Aggiorna stato prenotazione
+      description: Aggiorna lo stato di una prenotazione. Richiede ruolo amministratore.
+      operationId: adminAggiornaStatoPrenotazione
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaStatoPrenotazioneRequest'
+      responses:
+        '200':
+          description: Stato prenotazione aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prenotazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/prenotazioni/{id}:
+    delete:
+      tags:
+        - Admin
+      summary: Elimina prenotazione
+      description: Elimina una prenotazione dal sistema. Richiede ruolo amministratore.
+      operationId: adminEliminaPrenotazione
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      responses:
+        '204':
+          description: Prenotazione eliminata con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/giorni-bloccati:
+    get:
+      tags:
+        - Admin
+      summary: Elenco giorni bloccati
+      description: Restituisce l'elenco dei giorni bloccati (festivi, chiusure, ecc.). Richiede autenticazione.
+      operationId: adminGetGiorniBloccati
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Elenco giorni bloccati
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GiornoBloccato'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Admin
+      summary: Blocca giorno
+      description: Blocca un giorno specifico (es. festivo, chiusura). Richiede ruolo amministratore.
+      operationId: adminBloccaGiorno
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BloccaGiornoRequest'
+      responses:
+        '201':
+          description: Giorno bloccato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GiornoBloccato'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '409':
+          description: Giorno già bloccato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore409'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /admin/giorni-bloccati/{id}:
+    delete:
+      tags:
+        - Admin
+      summary: Sblocca giorno
+      description: Rimuove il blocco da un giorno specifico. Richiede ruolo amministratore.
+      operationId: adminSbloccaGiorno
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del giorno bloccato
+      responses:
+        '204':
+          description: Giorno sbloccato con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Giorno non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # PRENOTAZIONI
+  # ═══════════════════════════════════════════
+  /prenotazioni:
+    post:
+      tags:
+        - Prenotazioni
+      summary: Crea prenotazione
+      description: Crea una nuova prenotazione per un ricevimento. Accetta anche upload di file (multipart/form-data).
+      operationId: creaPrenotazione
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - argomento
+                - matricolaStudente
+                - idSlot
+              properties:
+                argomento:
+                  type: string
+                  description: Argomento del ricevimento
+                descrizione:
+                  type: string
+                  description: Descrizione opzionale
+                matricolaStudente:
+                  type: string
+                  description: Matricola dello studente
+                idSlot:
+                  type: string
+                  description: ID dello slot da prenotare
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File opzionali da allegare (PDF, immagini, ecc.)
+      responses:
+        '201':
+          description: Prenotazione creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prenotazione'
+        '400':
+          description: Slot non trovato o non disponibile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore400'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/studente/{matricolaStudente}:
+    get:
+      tags:
+        - Prenotazioni
+      summary: Prenotazioni per studente
+      description: Restituisce tutte le prenotazioni di uno studente specifico.
+      operationId: getPrenotazioniStudente
+      parameters:
+        - in: path
+          name: matricolaStudente
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      responses:
+        '200':
+          description: Elenco prenotazioni dello studente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prenotazione'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/docente/{idDocente}:
+    get:
+      tags:
+        - Prenotazioni
+      summary: Prenotazioni per docente
+      description: Restituisce tutte le prenotazioni per i ricevimenti di un docente specifico.
+      operationId: getPrenotazioniDocente
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+      responses:
+        '200':
+          description: Elenco prenotazioni del docente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prenotazione'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/{id}:
+    get:
+      tags:
+        - Prenotazioni
+      summary: Dettaglio prenotazione
+      description: Restituisce i dettagli di una prenotazione specifica.
+      operationId: getPrenotazioneById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      responses:
+        '200':
+          description: Dettaglio prenotazione
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prenotazione'
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Prenotazioni
+      summary: Elimina prenotazione
+      description: Elimina una prenotazione dal sistema.
+      operationId: eliminaPrenotazione
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      responses:
+        '204':
+          description: Prenotazione eliminata con successo (nessun contenuto)
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/{id}/stato:
+    put:
+      tags:
+        - Prenotazioni
+      summary: Aggiorna stato prenotazione
+      description: Aggiorna lo stato di una prenotazione (es. CONFERMATO, ANNULLATO).
+      operationId: aggiornaStatoPrenotazione
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaStatoPrenotazioneRequest'
+      responses:
+        '200':
+          description: Stato aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prenotazione'
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/{id}/annulla:
+    put:
+      tags:
+        - Prenotazioni
+      summary: Annulla prenotazione
+      description: Annulla una prenotazione esistente.
+      operationId: annullaPrenotazione
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      responses:
+        '204':
+          description: Prenotazione annullata con successo (nessun contenuto)
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /prenotazioni/{id}/documenti:
+    post:
+      tags:
+        - Prenotazioni
+      summary: Carica documenti
+      description: Carica uno o più documenti allegati a una prenotazione. Accetta multipart/form-data.
+      operationId: caricaDocumentiPrenotazione
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della prenotazione
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - files
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File da allegare (PDF, DOC, immagini, ecc.)
+      responses:
+        '200':
+          description: Documenti caricati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prenotazione'
+        '400':
+          description: Nessun file caricato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore400'
+        '404':
+          description: Prenotazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # SEGNALAZIONI
+  # ═══════════════════════════════════════════
+  /segnalazioni:
+    post:
+      tags:
+        - Segnalazioni
+      summary: Crea segnalazione (studente)
+      description: Crea una nuova segnalazione da parte di uno studente.
+      operationId: creaSegnalazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaSegnalazioneRequest'
+      responses:
+        '201':
+          description: Segnalazione creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Segnalazione'
+        '404':
+          description: Studente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    get:
+      tags:
+        - Segnalazioni
+      summary: Elenco segnalazioni
+      description: Restituisce tutte le segnalazioni con filtro opzionale per stato. Richiede autenticazione.
+      operationId: getSegnalazioni
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: stato
+          schema:
+            type: string
+            enum: [APERTA, IN_LAVORAZIONE, RISOLTA, CHIUSA]
+          description: Filtra per stato della segnalazione
+          required: false
+      responses:
+        '200':
+          description: Elenco segnalazioni
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segnalazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /segnalazioni/studente/{matricola}:
+    get:
+      tags:
+        - Segnalazioni
+      summary: Segnalazioni per studente
+      description: Restituisce tutte le segnalazioni effettuate da uno specifico studente.
+      operationId: getSegnalazioniStudente
+      parameters:
+        - in: path
+          name: matricola
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      responses:
+        '200':
+          description: Elenco segnalazioni dello studente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segnalazione'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /segnalazioni/{id}/stato:
+    put:
+      tags:
+        - Segnalazioni
+      summary: Aggiorna stato segnalazione
+      description: Aggiorna lo stato di una segnalazione. Richiede autenticazione.
+      operationId: aggiornaStatoSegnalazione
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della segnalazione
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaStatoSegnalazioneRequest'
+      responses:
+        '200':
+          description: Stato aggiornato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Segnalazione'
+        '400':
+          description: Stato non valido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore400'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '404':
+          description: Segnalazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /segnalazioni/{id}:
+    delete:
+      tags:
+        - Segnalazioni
+      summary: Elimina segnalazione
+      description: Elimina una segnalazione dal sistema. Richiede autenticazione.
+      operationId: eliminaSegnalazione
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della segnalazione
+      responses:
+        '204':
+          description: Segnalazione eliminata con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '404':
+          description: Segnalazione non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /segnalazioni/docente:
+    post:
+      tags:
+        - Segnalazioni
+      summary: Crea segnalazione (docente)
+      description: Crea una nuova segnalazione da parte di un docente.
+      operationId: creaSegnalazioneDocente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaSegnalazioneDocenteRequest'
+      responses:
+        '201':
+          description: Segnalazione creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Segnalazione'
+        '404':
+          description: Docente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /segnalazioni/docente/{idDocente}:
+    get:
+      tags:
+        - Segnalazioni
+      summary: Segnalazioni per docente
+      description: Restituisce tutte le segnalazioni effettuate da uno specifico docente.
+      operationId: getSegnalazioniDocente
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+      responses:
+        '200':
+          description: Elenco segnalazioni del docente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Segnalazione'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # NOTIFICHE
+  # ═══════════════════════════════════════════
+  /notifiche/{destinatarioId}:
+    get:
+      tags:
+        - Notifiche
+      summary: Ottieni notifiche
+      description: Restituisce le notifiche per un destinatario specifico. È possibile filtrare per ruolo.
+      operationId: getNotifiche
+      parameters:
+        - in: path
+          name: destinatarioId
+          required: true
+          schema:
+            type: string
+          description: ID del destinatario
+        - in: query
+          name: ruolo
+          schema:
+            type: string
+            enum: [STUDENTE, DOCENTE, AMMINISTRATORE]
+          description: Ruolo del destinatario
+          required: false
+      responses:
+        '200':
+          description: Elenco notifiche
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notifica'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /notifiche:
+    post:
+      tags:
+        - Notifiche
+      summary: Crea notifica
+      description: Crea una nuova notifica nel sistema.
+      operationId: creaNotifica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaNotificaRequest'
+      responses:
+        '201':
+          description: Notifica creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notifica'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /notifiche/{id}/letta:
+    put:
+      tags:
+        - Notifiche
+      summary: Segna come letta
+      description: Segna una notifica come letta.
+      operationId: segnaNotificaLetta
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della notifica
+      responses:
+        '200':
+          description: Notifica segnata come letta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '404':
+          description: Notifica non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /notifiche/{destinatarioId}/lette-tutte:
+    put:
+      tags:
+        - Notifiche
+      summary: Segna tutte come lette
+      description: Segna tutte le notifiche di un destinatario come lette.
+      operationId: segnaTutteNotificheLette
+      parameters:
+        - in: path
+          name: destinatarioId
+          required: true
+          schema:
+            type: string
+          description: ID del destinatario
+      responses:
+        '200':
+          description: Tutte le notifiche segnate come lette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /notifiche/{destinatarioId}/lette:
+    delete:
+      tags:
+        - Notifiche
+      summary: Elimina notifiche lette
+      description: Elimina tutte le notifiche già lette di un destinatario.
+      operationId: cancellaNotificheLette
+      parameters:
+        - in: path
+          name: destinatarioId
+          required: true
+          schema:
+            type: string
+          description: ID del destinatario
+      responses:
+        '200':
+          description: Notifiche lette eliminate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # DOCENTI
+  # ═══════════════════════════════════════════
+  /docenti:
+    get:
+      tags:
+        - Docenti
+      summary: Elenco docenti
+      description: Restituisce l'elenco dei docenti, con filtri opzionali per corso di studi o ricerca testuale.
+      operationId: getDocenti
+      parameters:
+        - in: query
+          name: corso
+          schema:
+            type: string
+          description: Filtra per ID corso di studi
+          required: false
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Ricerca testuale per nome/cognome
+          required: false
+      responses:
+        '200':
+          description: Elenco docenti
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocenteSenzaPassword'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /docenti/{id}:
+    get:
+      tags:
+        - Docenti
+      summary: Dettaglio docente
+      description: Restituisce i dettagli di un docente specifico, inclusi corsi e corsi di studi associati.
+      operationId: getDocenteById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+      responses:
+        '200':
+          description: Dettaglio docente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocenteDettaglio'
+        '404':
+          description: Docente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /docenti/{idDocente}/slots:
+    get:
+      tags:
+        - Docenti
+      summary: Slot del docente
+      description: Restituisce gli slot di ricevimento di un docente. Richiede autenticazione.
+      operationId: getSlotsDocente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+        - in: query
+          name: mese
+          schema:
+            type: string
+            example: '2026-06'
+          description: Filtra per mese (YYYY-MM)
+          required: false
+      responses:
+        '200':
+          description: Elenco slot del docente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+        '400':
+          description: Parametri di filtro non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Docenti
+      summary: Crea slot docente
+      description: Crea un nuovo slot di ricevimento per un docente. Richiede ruolo docente o amministratore.
+      operationId: creaSlotDocente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaSlotDocenteRequest'
+      responses:
+        '201':
+          description: Slot creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlotSenzaRelazioni'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /docenti/{idDocente}/slots/{idSlot}:
+    put:
+      tags:
+        - Docenti
+      summary: Modifica slot docente
+      description: Modifica uno slot di ricevimento esistente. Richiede ruolo docente o amministratore.
+      operationId: modificaSlotDocente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+        - in: path
+          name: idSlot
+          required: true
+          schema:
+            type: string
+          description: ID dello slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaSlotDocenteRequest'
+      responses:
+        '200':
+          description: Slot aggiornato
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Slot non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Docenti
+      summary: Elimina slot docente
+      description: Elimina uno slot di ricevimento. Richiede ruolo docente o amministratore.
+      operationId: eliminaSlotDocente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+        - in: path
+          name: idSlot
+          required: true
+          schema:
+            type: string
+          description: ID dello slot
+      responses:
+        '204':
+          description: Slot eliminato con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Slot non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /docenti/{idDocente}/statistiche:
+    get:
+      tags:
+        - Docenti
+      summary: Statistiche docente
+      description: Restituisce le statistiche relative ai ricevimenti di un docente. Richiede ruolo docente o amministratore.
+      operationId: getStatisticheDocente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idDocente
+          required: true
+          schema:
+            type: string
+          description: ID del docente
+      responses:
+        '200':
+          description: Statistiche del docente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocenteStatsResponse'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # STUDENTI
+  # ═══════════════════════════════════════════
+  /studenti/{matricola}/profilo:
+    get:
+      tags:
+        - Studenti
+      summary: Ottieni profilo studente
+      description: Restituisce il profilo pubblico di uno studente.
+      operationId: getProfiloStudente
+      parameters:
+        - in: path
+          name: matricola
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      responses:
+        '200':
+          description: Profilo studente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudenteProfilo'
+        '404':
+          description: Studente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    put:
+      tags:
+        - Studenti
+      summary: Aggiorna profilo studente
+      description: Aggiorna i dati del profilo di uno studente.
+      operationId: aggiornaProfiloStudente
+      parameters:
+        - in: path
+          name: matricola
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaProfiloStudenteRequest'
+      responses:
+        '200':
+          description: Profilo aggiornato
+        '404':
+          description: Studente o corso di studi non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /studenti/{matricola}/password:
+    put:
+      tags:
+        - Studenti
+      summary: Cambia password studente
+      description: Cambia la password di uno studente. Richiede che l'utente autenticato corrisponda allo studente.
+      operationId: cambiaPasswordStudente
+      parameters:
+        - in: path
+          name: matricola
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordStudenteRequest'
+      responses:
+        '200':
+          description: Password cambiata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessaggioSuccesso'
+        '401':
+          description: Password errata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato (l'utente non corrisponde)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Studente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /studenti/{matricola}:
+    delete:
+      tags:
+        - Studenti
+      summary: Elimina account studente
+      description: Elimina l'account di uno studente. Richiede che l'utente autenticato corrisponda allo studente o sia amministratore.
+      operationId: eliminaAccountStudente
+      parameters:
+        - in: path
+          name: matricola
+          required: true
+          schema:
+            type: string
+          description: Matricola dello studente
+      responses:
+        '200':
+          description: Account eliminato con successo
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Studente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # CORSI
+  # ═══════════════════════════════════════════
+  /corsi:
+    get:
+      tags:
+        - Corsi
+      summary: Elenco corsi
+      description: Restituisce l'elenco dei corsi. È possibile filtrare per docente.
+      operationId: getCorsi
+      parameters:
+        - in: query
+          name: docenteId
+          schema:
+            type: string
+          description: Filtra per ID del docente
+          required: false
+      responses:
+        '200':
+          description: Elenco corsi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Corso'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Corsi
+      summary: Crea corso
+      description: Crea un nuovo corso universitario.
+      operationId: creaCorso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaCorsoRequest'
+      responses:
+        '201':
+          description: Corso creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Corso'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /corsi/{id}:
+    get:
+      tags:
+        - Corsi
+      summary: Dettaglio corso
+      description: Restituisce i dettagli di un corso specifico.
+      operationId: getCorsoById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del corso
+      responses:
+        '200':
+          description: Dettaglio corso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Corso'
+        '404':
+          description: Corso non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    put:
+      tags:
+        - Corsi
+      summary: Aggiorna corso
+      description: Aggiorna i dati di un corso esistente.
+      operationId: aggiornaCorso
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del corso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaCorsoRequest'
+      responses:
+        '200':
+          description: Corso aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Corso'
+        '404':
+          description: Corso non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Corsi
+      summary: Elimina corso
+      description: Elimina un corso dal sistema.
+      operationId: eliminaCorso
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del corso
+      responses:
+        '204':
+          description: Corso eliminato con successo (nessun contenuto)
+        '404':
+          description: Corso non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  # ═══════════════════════════════════════════
+  # BACHECHE
+  # ═══════════════════════════════════════════
+  /bacheche/corso-di-studi/{idCorsoDiStudi}:
+    get:
+      tags:
+        - Bacheche
+      summary: Ottieni bacheca
+      description: Restituisce la bacheca associata a un corso di studi specifico.
+      operationId: getBachecaByCorsoDiStudi
+      parameters:
+        - in: path
+          name: idCorsoDiStudi
+          required: true
+          schema:
+            type: string
+          description: ID del corso di studi
+      responses:
+        '200':
+          description: Bacheca del corso di studi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bacheca'
+        '404':
+          description: Corso di studi non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    put:
+      tags:
+        - Bacheche
+      summary: Aggiorna bacheca
+      description: Aggiorna la bacheca di un corso di studi. Richiede ruolo docente o amministratore.
+      operationId: aggiornaBacheca
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idCorsoDiStudi
+          required: true
+          schema:
+            type: string
+          description: ID del corso di studi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AggiornaBachecaRequest'
+      responses:
+        '200':
+          description: Bacheca aggiornata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bacheca'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Bacheca non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /bacheche/corso-di-studi/{idCorsoDiStudi}/faq:
+    get:
+      tags:
+        - Bacheche
+      summary: Elenco FAQ
+      description: Restituisce le FAQ della bacheca di un corso di studi.
+      operationId: getFaqBacheca
+      parameters:
+        - in: path
+          name: idCorsoDiStudi
+          required: true
+          schema:
+            type: string
+          description: ID del corso di studi
+      responses:
+        '200':
+          description: Elenco FAQ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FAQ'
+        '404':
+          description: Bacheca non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    post:
+      tags:
+        - Bacheche
+      summary: Crea FAQ
+      description: Aggiunge una nuova FAQ alla bacheca di un corso di studi. Richiede ruolo docente o amministratore.
+      operationId: creaFaq
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: idCorsoDiStudi
+          required: true
+          schema:
+            type: string
+          description: ID del corso di studi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreaFaqRequest'
+      responses:
+        '201':
+          description: FAQ creata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FAQ'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: Bacheca non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+
+  /faq/{id}:
+    put:
+      tags:
+        - Bacheche
+      summary: Modifica FAQ
+      description: Modifica una FAQ esistente. Richiede ruolo docente o amministratore.
+      operationId: modificaFaq
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della FAQ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModificaFaqRequest'
+      responses:
+        '200':
+          description: FAQ aggiornata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FAQ'
+        '400':
+          description: Dati di input non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErroreValidazione'
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: FAQ non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'
+    delete:
+      tags:
+        - Bacheche
+      summary: Elimina FAQ
+      description: Elimina una FAQ dal sistema. Richiede ruolo docente o amministratore.
+      operationId: eliminaFaq
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID della FAQ
+      responses:
+        '204':
+          description: FAQ eliminata con successo (nessun contenuto)
+        '401':
+          description: Token richiesto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore401'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore403'
+        '404':
+          description: FAQ non trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore404'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errore500'

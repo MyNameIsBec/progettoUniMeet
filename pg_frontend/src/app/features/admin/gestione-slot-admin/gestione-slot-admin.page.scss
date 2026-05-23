@@ -181,7 +181,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   --background: #2563eb;
 }
 
-.filtri-card {
+.filters-card {
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid var(--border-light);
@@ -190,7 +190,7 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   margin-bottom: 24px;
 }
 
-.filtri-row {
+.filters-row {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -288,12 +288,12 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   font-weight: 700;
 }
 
-.stato-libero {
+.status-libero {
   background: #eafaf0;
   color: #16a34a;
 }
 
-.stato-occupato {
+.status-occupato {
   background: #fef2f2;
   color: #ef4444;
 }
@@ -399,12 +399,12 @@ ion-button {
 
 /* DARK MODE OVERRIDES */
 
-:host-context(body.dark) .stato-libero {
+:host-context(body.dark) .status-libero {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
 }
 
-:host-context(body.dark) .stato-occupato {
+:host-context(body.dark) .status-occupato {
     background: rgba(239, 68, 68, 0.15);
     color: #f87171;
 }
@@ -422,7 +422,7 @@ ion-button {
     padding: 16px 4%;
   }
 
-  .filtri-row {
+  .filters-row {
     flex-direction: column;
   }
 

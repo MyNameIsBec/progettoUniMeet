@@ -4,11 +4,11 @@
   color: var(--text-dark);
 }
 
-.auth-content {
+.wrapper-autenticazione {
   --background: var(--background-page);
 }
 
-.auth-wrapper {
+.container-autenticazione {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -20,7 +20,7 @@
     linear-gradient(135deg, #eef6ff 0%, var(--background-page) 70%);
 }
 
-.back-btn {
+.btn-back {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -39,7 +39,7 @@
   &:hover { color: var(--primary-blue); }
 }
 
-.auth-card {
+.card-autenticazione {
   width: 100%;
   max-width: 480px;
   background: var(--ion-card-background);
@@ -49,20 +49,20 @@
   padding: 36px 40px 32px;
 }
 
-.auth-logo { text-align: center; margin-bottom: 28px; }
+.logo-auth { text-align: center; margin-bottom: 28px; }
 
-.logo-row {
+.row-logo {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 }
 
-.logo-icon { font-size: 32px; color: var(--primary-blue); }
-.logo-name { font-size: 30px; font-weight: 800; color: var(--primary-blue); }
-.logo-sub  { margin: 6px 0 0; color: var(--text-muted); font-size: 15px; }
+.icon-logo { font-size: 32px; color: var(--primary-blue); }
+.name-logo { font-size: 30px; font-weight: 800; color: var(--primary-blue); }
+.sub-logo { margin: 6px 0 0; color: var(--text-muted); font-size: 15px; }
 
-.error-banner {
+.banner-errore {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -78,9 +78,9 @@
   ion-icon { font-size: 20px; flex-shrink: 0; }
 }
 
-.field-group { margin-bottom: 18px; }
+.gruppo-campo { margin-bottom: 18px; }
 
-.field-label {
+.label-campo {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
@@ -89,7 +89,7 @@
   font-family: Arial, sans-serif;
 }
 
-.field-wrap {
+.wrap-campo {
   display: flex;
   align-items: center;
   gap: 0;
@@ -110,7 +110,7 @@
   }
 }
 
-.field-icon {
+.icon-campo {
   flex-shrink: 0;
   font-size: 18px;
   color: var(--text-muted);
@@ -118,7 +118,7 @@
   margin-right: 2px;
 }
 
-.field-input {
+.input-campo {
   flex: 1;
   --padding-start: 10px;
   --padding-end: 10px;
@@ -144,7 +144,7 @@
   &:hover { color: var(--primary-blue); }
 }
 
-.field-error-msg {
+.messaggio-errore-campo {
   display: block;
   margin-top: 6px;
   font-size: 12px;
@@ -152,7 +152,7 @@
   color: #dc2626;
 }
 
-.form-options {
+.options-form {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -166,7 +166,7 @@
   color: var(--text-muted);
 }
 
-.submit-btn {
+.btn-submit {
   --border-radius: 10px;
   --background: var(--primary-blue);
   --background-activated: #1d4ed8;
@@ -177,7 +177,7 @@
   height: 50px;
 }
 
-.link-btn {
+.btn-link {
   background: none;
   border: none;
   cursor: pointer;
@@ -194,7 +194,7 @@
   &.bold { font-size: 15px; font-weight: 700; }
 }
 
-.switch-hint {
+.hint-switch {
   margin: 20px 0 0;
   text-align: center;
   font-size: 14px;
@@ -202,36 +202,36 @@
   font-family: Arial, sans-serif;
 }
 
-:host-context(body.dark) .auth-wrapper {
+:host-context(body.dark) .container-autenticazione {
   background:
     radial-gradient(circle at 20% 10%, rgba(37, 99, 235, 0.18), transparent 35%),
     linear-gradient(135deg, #020617 0%, #0f172a 70%);
 }
 
-:host-context(body.dark) .auth-card {
+:host-context(body.dark) .card-autenticazione {
   border-color: #1e293b;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
 }
 
-:host-context(body.dark) .field-wrap {
+:host-context(body.dark) .wrap-campo {
   border-color: #334155;
   background: #0f172a;
 }
 
-:host-context(body.dark) .field-wrap:focus-within {
+:host-context(body.dark) .wrap-campo:focus-within {
   border-color: #60a5fa;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
-:host-context(body.dark) .error-banner {
+:host-context(body.dark) .banner-errore {
   background: rgba(220, 38, 38, 0.1);
   border-color: rgba(220, 38, 38, 0.3);
 }
 
 @media (max-width: 520px) {
-  .auth-card { padding: 28px 22px 24px; }
+  .card-autenticazione { padding: 28px 22px 24px; }
 
-  .form-options {
+  .options-form {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;

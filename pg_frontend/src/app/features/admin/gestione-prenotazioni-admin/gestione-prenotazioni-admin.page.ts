@@ -118,7 +118,7 @@ export class GestionePrenotazioniAdminPage implements OnInit {
   }
 
   statoClasse(stato: string): string {
-    return 'stato-' + stato.toLowerCase();
+    return 'status-' + stato.toLowerCase();
   }
 
   formattaData(data: string): string {

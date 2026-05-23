@@ -96,7 +96,7 @@ ion-chip.active {
   background: #f8faff;
 }
 
-.stato-badge {
+.status-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -107,28 +107,28 @@ ion-chip.active {
   white-space: nowrap;
 }
 
-.stato-badge ion-icon {
+.status-badge ion-icon {
   font-size: 14px;
 }
 
-.stato-in_attesa {
+.status-in_attesa {
   background: #fefce8;
   color: #ca8a04;
 }
 
-.stato-confermato,
-.stato-confermata {
+.status-confermato,
+.status-confermata {
   background: #eafaf0;
   color: #16a34a;
 }
 
-.stato-rifiutato,
-.stato-rifiutata {
+.status-rifiutato,
+.status-rifiutata {
   background: #fef2f2;
   color: #ef4444;
 }
 
-.stato-annullata {
+.status-annullata {
   background: #f1f5f9;
   color: var(--text-muted);
 }
@@ -199,7 +199,7 @@ ion-chip.active {
   justify-content: flex-end;
 }
 
-.stato-select {
+.status-select {
   --background: #f8fbff;
   --color: #0f172a;
   --placeholder-color: #64748b;
@@ -254,22 +254,22 @@ ion-chip.active {
 
 /* DARK MODE OVERRIDES */
 
-:host-context(body.dark) .stato-in_attesa {
+:host-context(body.dark) .status-in_attesa {
     background: rgba(234, 179, 8, 0.15);
     color: #fde047;
 }
 
-:host-context(body.dark) .stato-confermato {
+:host-context(body.dark) .status-confermato {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
 }
 
-:host-context(body.dark) .stato-rifiutato {
+:host-context(body.dark) .status-rifiutato {
     background: rgba(239, 68, 68, 0.15);
     color: #f87171;
 }
 
-:host-context(body.dark) .stato-annullata {
+:host-context(body.dark) .status-annullata {
     background: rgba(100, 116, 139, 0.2);
     color: #94a3b8;
 }
@@ -295,7 +295,7 @@ ion-chip.active {
     max-width: 140px;
   }
 
-  .stato-select {
+  .status-select {
     min-width: 90px;
     font-size: 11px;
   }
@@ -312,12 +312,12 @@ ion-chip.active {
     font-size: 12px;
   }
 
-  .stato-badge {
+  .status-badge {
     font-size: 10px;
     padding: 2px 8px;
   }
 
-  .stato-select {
+  .status-select {
     min-width: 80px;
     font-size: 10px;
     --padding-start: 4px;

@@ -38,7 +38,7 @@
           @for (p of prenotazioni; track p.id) {
             <tr>
               <td>
-                <div class="stato-badge" [class]="statoClasse(p.stato)">
+                <div class="status-badge" [class]="statoClasse(p.stato)">
                   <ion-icon [name]="statoIcona(p.stato)"></ion-icon>
                   <span>{{ statoLabel(p.stato) }}</span>
                 </div>
@@ -65,7 +65,7 @@
                     [value]="p.stato"
                     (ionChange)="cambiaStato(p, $event.detail.value)"
                     interface="popover"
-                    class="stato-select"
+                    class="status-select"
                   >
                     <ion-select-option value="IN_ATTESA">In attesa</ion-select-option>
                     <ion-select-option value="CONFERMATA">Confermata</ion-select-option>

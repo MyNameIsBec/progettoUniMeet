@@ -35,7 +35,7 @@
           @for (s of segnalazioni; track s.id_segnalazione) {
             <tr>
               <td>
-                <div class="stato-badge" [class]="'stato-' + s.stato.toLowerCase()">
+                <div class="status-badge" [class]="'status-' + s.stato.toLowerCase()">
                   <ion-icon [name]="statoIcona(s.stato)"></ion-icon>
                   <span>{{ statoLabel(s.stato) }}</span>
                 </div>
@@ -73,7 +73,7 @@
                     [value]="s.stato"
                     (ionChange)="cambiaStato(s, $event.detail.value)"
                     interface="popover"
-                    class="stato-select"
+                    class="status-select"
                   >
                     <ion-select-option value="APERTA">Aperta</ion-select-option>
                     <ion-select-option value="IN_LAVORAZIONE">In lavorazione</ion-select-option>

@@ -113,17 +113,17 @@ ion-chip.active {
   font-size: 16px;
 }
 
-.ruolo-studente {
+.role-studente {
   background: #eaf2ff;
   color: #2563eb;
 }
 
-.ruolo-docente {
+.role-docente {
   background: #eafaf0;
   color: #16a34a;
 }
 
-.ruolo-amministratore {
+.role-amministratore {
   background: #fef2f2;
   color: #ef4444;
 }
@@ -281,17 +281,17 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
 
 /* DARK MODE OVERRIDES */
 
-:host-context(body.dark) .ruolo-studente {
+:host-context(body.dark) .role-studente {
     background: rgba(37, 99, 235, 0.15);
     color: #60a5fa;
 }
 
-:host-context(body.dark) .ruolo-docente {
+:host-context(body.dark) .role-docente {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
 }
 
-:host-context(body.dark) .ruolo-amministratore {
+:host-context(body.dark) .role-amministratore {
     background: rgba(239, 68, 68, 0.15);
     color: #f87171;
 }

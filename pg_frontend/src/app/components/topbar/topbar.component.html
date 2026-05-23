@@ -1,6 +1,6 @@
 <header class="topbar">
-  <div class="mobile-header-left">
-    <button class="menu-toggle" (click)="toggleMenu()">
+  <div class="header-mobile-sinistra">
+    <button class="toggle-menu" (click)="toggleMenu()">
       <ion-icon name="menu-outline"></ion-icon>
     </button>
 
@@ -14,9 +14,9 @@
   </div>
 
   @if (menuAperto) {
-  <div class="mobile-dropdown-overlay" (click)="toggleMenu()"></div>
+  <div class="overlay-mobile" (click)="toggleMenu()"></div>
   }
-  <nav class="mobile-top-menu" [class.open]="menuAperto">
+  <nav class="menu-mobile-top" [class.open]="menuAperto">
     <div class="drawer-header">
       <div class="drawer-logo-container">
         <ion-icon name="calendar-outline" class="main-logo-icon"></ion-icon>
@@ -36,7 +36,7 @@
       </a>
       }
       
-      <a class="mobile-logout" (click)="logout(); chiudiMenu()">
+      <a class="logout-mobile" (click)="logout(); chiudiMenu()">
         <ion-icon name="log-out-outline"></ion-icon>
         <span>Logout</span>
       </a>
@@ -44,16 +44,16 @@
   </nav>
 
   <div class="topbar-actions">
-    <button class="theme-toggle" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
+    <button class="toggle-tema" (click)="toggleDarkMode()" [attr.title]="isDarkMode ? 'Modalità chiara' : 'Modalità scura'">
       <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
     </button>
 
-    <button class="notification-button" [routerLink]="getNotificheRoute()">
+    <button class="btn-notifiche" [routerLink]="getNotificheRoute()">
       <ion-icon name="notifications-outline"></ion-icon>
     </button>
 
-    <div class="student-profile-mini" (click)="vaiAlProfilo()">
-      <div class="student-avatar-small">
+    <div class="profilo-mini" (click)="vaiAlProfilo()">
+      <div class="avatar-piccolo">
         <ion-icon name="person-outline"></ion-icon>
       </div>
       <div>

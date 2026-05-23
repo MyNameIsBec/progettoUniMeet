@@ -834,7 +834,7 @@ body.dark {
     }
   }
 
-  .filtri-card,
+  .filters-card,
   .slot-card {
     background: #0f172a !important;
     border: 1px solid rgba(37, 99, 235, 0.1) !important;
@@ -870,64 +870,64 @@ body.dark {
     color: #64748b !important;
   }
 
-  .stato-libero {
+  .status-libero {
     background: rgba(22, 163, 74, 0.15) !important;
     color: #4ade80 !important;
   }
 
-  .stato-occupato {
+  .status-occupato {
     background: rgba(239, 68, 68, 0.15) !important;
     color: #f87171 !important;
   }
 
-  .stato-aperta {
+  .status-aperta {
     background: rgba(239, 68, 68, 0.15) !important;
     color: #f87171 !important;
   }
 
-  .stato-in_lavorazione {
+  .status-in_lavorazione {
     background: rgba(37, 99, 235, 0.15) !important;
     color: #60a5fa !important;
   }
 
-  .stato-chiusa {
+  .status-chiusa {
     background: rgba(22, 163, 74, 0.15) !important;
     color: #4ade80 !important;
   }
 
-  .stato-in_attesa {
+  .status-in_attesa {
     background: rgba(234, 179, 8, 0.15) !important;
     color: #fde047 !important;
   }
 
-  .stato-confermato,
-  .stato-confermata {
+  .status-confermato,
+  .status-confermata {
     background: rgba(22, 163, 74, 0.15) !important;
     color: #4ade80 !important;
   }
 
-  .stato-rifiutato,
-  .stato-rifiutata {
+  .status-rifiutato,
+  .status-rifiutata {
     background: rgba(239, 68, 68, 0.15) !important;
     color: #f87171 !important;
   }
 
-  .stato-annullata {
+  .status-annullata {
     background: rgba(100, 116, 139, 0.2) !important;
     color: #94a3b8 !important;
   }
 
-  .ruolo-studente {
+  .role-studente {
     background: rgba(37, 99, 235, 0.15) !important;
     color: #60a5fa !important;
   }
 
-  .ruolo-docente {
+  .role-docente {
     background: rgba(22, 163, 74, 0.15) !important;
     color: #4ade80 !important;
   }
 
-  .ruolo-amministratore {
+  .role-amministratore {
     background: rgba(239, 68, 68, 0.15) !important;
     color: #f87171 !important;
   }
@@ -1164,7 +1164,7 @@ body.dark {
     color: #94a3b8 !important;
   }
 
-  .stato-select {
+  .status-select {
     --background: rgba(255, 255, 255, 0.03) !important;
     --color: #ffffff !important;
     --border-color: rgba(255, 255, 255, 0.1) !important;
