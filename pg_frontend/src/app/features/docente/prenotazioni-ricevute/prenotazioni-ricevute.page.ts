@@ -21,7 +21,7 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
 import { AuthService } from '../../../core/services/auth';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { ErroriService } from '../../../core/services/errori';
-import { exportAgendaPDF, exportListaPDF } from './pdf-generator';
+import { exportAgendaPDF } from './pdf-generator';
 
 import { addIcons } from 'ionicons';
 import {
@@ -253,26 +253,6 @@ export class PrenotazioniRicevutePage implements OnInit {
     }
 
     const success = exportAgendaPDF(this.docente, agenda, this.getLocalOggiStr());
-    if (!success) {
-      this.showToast('Errore nell\'apertura della finestra di stampa. Abilita i popup.', 'danger');
-    }
-  }
-
-  scaricaListaPDF() {
-    const lista = this.filteredPrenotazioni;
-    if (lista.length === 0) {
-      this.showToast('Nessuna prenotazione presente nella lista filtrata.', 'warning');
-      return;
-    }
-
-    const success = exportListaPDF(
-      this.docente,
-      lista,
-      this.getLocalOggiStr(),
-      this.searchTerm,
-      this.filtroStato,
-      this.filtroTempo
-    );
     if (!success) {
       this.showToast('Errore nell\'apertura della finestra di stampa. Abilita i popup.', 'danger');
     }

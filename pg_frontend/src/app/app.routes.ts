@@ -132,9 +132,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/dashboard-admin/dashboard-admin.page').then(m => m.DashboardAdminPage),
   },
   {
-    path: 'gestione-utenti-admin',
+    path: 'gestione-account',
     canActivate: [authGuard, roleGuard('amministratore')],
-    loadComponent: () => import('./features/admin/gestione-utenti-admin/gestione-utenti.page').then(m => m.GestioneUtentiPage),
+    loadComponent: () => import('./features/admin/gestione-account/gestione-account.page').then(m => m.GestioneAccountPage),
   },
   {
     path: 'gestione-slot-admin',

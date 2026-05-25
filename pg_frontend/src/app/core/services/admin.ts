@@ -11,7 +11,7 @@ export interface AdminStats {
   prenotazioniOggi: number;
 }
 
-export interface UtenteUnificato {
+export interface ProfiloAccount {
   id: string;
   ruolo: string;
   nome: string;
@@ -22,7 +22,7 @@ export interface UtenteUnificato {
   ufficio?: string;
 }
 
-export interface CreaUtenteRequest {
+export interface CreaAccountRequest {
   ruolo: string;
   nome: string;
   cognome?: string;
@@ -103,20 +103,20 @@ export class AdminService {
     return this.http.get<AdminStats>(`${this.api}/stats`);
   }
 
-  getUtenti(ruolo?: string): Observable<UtenteUnificato[]> {
+  getAccount(ruolo?: string): Observable<ProfiloAccount[]> {
     const params = ruolo ? `?ruolo=${ruolo}` : '';
-    return this.http.get<UtenteUnificato[]>(`${this.api}/utenti${params}`);
+    return this.http.get<ProfiloAccount[]>(`${this.api}/utenti${params}`);
   }
 
-  creaUtente(dati: CreaUtenteRequest): Observable<UtenteUnificato> {
-    return this.http.post<UtenteUnificato>(`${this.api}/utenti`, dati);
+  creaAccount(dati: CreaAccountRequest): Observable<ProfiloAccount> {
+    return this.http.post<ProfiloAccount>(`${this.api}/utenti`, dati);
   }
 
-  modificaUtente(id: string, dati: Partial<CreaUtenteRequest>): Observable<UtenteUnificato> {
-    return this.http.put<UtenteUnificato>(`${this.api}/utenti/${id}`, dati);
+  modificaAccount(id: string, dati: Partial<CreaAccountRequest>): Observable<ProfiloAccount> {
+    return this.http.put<ProfiloAccount>(`${this.api}/utenti/${id}`, dati);
   }
 
-  eliminaUtente(id: string): Observable<void> {
+  eliminaAccount(id: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/utenti/${id}`);
   }
 

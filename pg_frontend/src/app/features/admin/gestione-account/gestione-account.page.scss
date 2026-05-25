@@ -6,7 +6,7 @@
   color: var(--text-dark);
 }
 
-.utenti-content {
+.accounts-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px 8%;
@@ -66,12 +66,12 @@ ion-chip.active {
   overflow-x: auto;
 }
 
-.utenti-table {
+.accounts-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.utenti-table th {
+.accounts-table th {
   text-align: left;
   padding: 16px 20px;
   font-size: 12px;
@@ -83,7 +83,7 @@ ion-chip.active {
   background: #fafcff;
 }
 
-.utenti-table td {
+.accounts-table td {
   padding: 14px 20px;
   border-bottom: 1px solid var(--border-light);
   font-size: 14px;
@@ -91,11 +91,11 @@ ion-chip.active {
   vertical-align: middle;
 }
 
-.utenti-table tr:last-child td {
+.accounts-table tr:last-child td {
   border-bottom: none;
 }
 
-.utenti-table tr:hover td {
+.accounts-table tr:hover td {
   background: #f8faff;
 }
 
@@ -371,8 +371,8 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
     width: 100%;
   }
 
-  .utenti-table th,
-  .utenti-table td {
+  .accounts-table th,
+  .accounts-table td {
     padding: 10px 12px;
   }
 }

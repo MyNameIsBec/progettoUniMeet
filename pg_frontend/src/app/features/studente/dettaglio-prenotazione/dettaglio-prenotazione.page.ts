@@ -153,7 +153,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
             Luogo Ricevimento
           </div>
           <div style="font-size: 1.1rem; font-weight: 950; color: #0f172a; margin-bottom: 4px;">
-            ${this.prenotazione.luogoRicevimento?.aula || this.prenotazione.luogo}
+            ${this.prenotazione.luogoRicevimento?.aula || 'Aula da definire'}
           </div>
           <div style="color: #64748b; font-size: 0.9rem; font-weight: 700;">
             Edificio ${this.prenotazione.luogoRicevimento?.edificio || '-'} • Piano ${this.prenotazione.luogoRicevimento?.piano ?? '-'}

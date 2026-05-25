@@ -5,21 +5,21 @@ export interface VoceMenuNavigazione {
   esatto?: boolean;
 }
 
-export interface Utente {
+export interface Studente {
   id: string;
   nome: string;
   cognome: string;
   email: string;
-  ruolo: 'studente' | 'docente' | 'admin';
-}
-
-export interface Studente extends Utente {
   matricola: string;
   corsoDiStudi: string;
   corsoDiStudiId?: string;
 }
 
-export interface Docente extends Utente {
+export interface Docente {
+  id: string;
+  nome: string;
+  cognome: string;
+  email: string;
   ufficio: string;
   materia: string;
   coloreAvatar?: string;
@@ -31,8 +31,10 @@ export interface Docente extends Utente {
   corsiDiStudi?: { id: string; nome: string }[];
 }
 
-export interface Amministratore extends Utente {
-  dipartimento?: string;
+export interface Amministratore {
+  id: string;
+  nome: string;
+  email: string;
 }
 
 export interface CorsoDiStudi {
@@ -91,7 +93,6 @@ export interface Prenotazione {
   descrizione?: string;
   stato: 'in_attesa' | 'confermata' | 'completata' | 'annullata';
   documenti?: Documento[];
-  luogo: string;
   luogoRicevimento?: LuogoRicevimento;
   studente?: string;
 }

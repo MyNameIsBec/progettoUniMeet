@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
   getStats,
-  getUtenti,
-  creaUtente,
-  modificaUtente,
-  eliminaUtente,
+  getAccount,
+  creaAccount,
+  modificaAccount,
+  eliminaAccount,
   getSlotDate,
   creaSlot,
   modificaSlot,
@@ -18,8 +18,8 @@ import {
   sbloccaGiorno,
 } from '../controllers/admin.controller';
 import {
-  creaUtenteSchema,
-  modificaUtenteSchema,
+  creaAccountSchema,
+  modificaAccountSchema,
   slotFiltriSchema,
   creaSlotSchema,
   modificaSlotSchema,
@@ -34,10 +34,10 @@ const router = Router();
 const authz = [authenticate, authorize('AMMINISTRATORE')];
 
 router.get('/admin/stats', ...authz, getStats);
-router.get('/admin/utenti', ...authz, getUtenti);
-router.post('/admin/utenti', ...authz, creaUtenteSchema, handleValidationErrors, creaUtente);
-router.put('/admin/utenti/:id', ...authz, modificaUtenteSchema, handleValidationErrors, modificaUtente);
-router.delete('/admin/utenti/:id', ...authz, eliminaUtente);
+router.get('/admin/utenti', ...authz, getAccount);
+router.post('/admin/utenti', ...authz, creaAccountSchema, handleValidationErrors, creaAccount);
+router.put('/admin/utenti/:id', ...authz, modificaAccountSchema, handleValidationErrors, modificaAccount);
+router.delete('/admin/utenti/:id', ...authz, eliminaAccount);
 router.get('/admin/slot-date', ...authz, getSlotDate);
 router.post('/admin/slot', ...authz, creaSlotSchema, handleValidationErrors, creaSlot);
 router.put('/admin/slot/:idSlot', ...authz, modificaSlotSchema, handleValidationErrors, modificaSlot);

@@ -96,7 +96,6 @@ export async function createPrenotazione(
       materia: p.slot.docente.corsi?.[0]?.nome_corso ?? '',
       data: p.slot.data.toISOString().split('T')[0],
       ora: formatTime(p.slot.ora_inizio),
-      luogo: fmtLuogo(p.slot.luogo),
       luogoRicevimento: mapLuogoRicevimento(p.slot.luogo),
       argomento: p.argomento,
       descrizione: p.descrizione,

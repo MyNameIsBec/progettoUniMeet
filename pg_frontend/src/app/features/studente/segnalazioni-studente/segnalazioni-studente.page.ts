@@ -7,6 +7,8 @@ import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/da
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
 import { firstValueFrom } from 'rxjs';
+import { addIcons } from 'ionicons';
+import { sendOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-segnalazioni-studente',
@@ -37,7 +39,9 @@ export class SegnalazioniStudentePage implements OnInit {
     private authService: AuthService,
     private alertController: AlertController,
     private toastController: ToastController
-  ) { }
+  ) {
+    addIcons({ sendOutline });
+  }
 
   async eliminaSegnalazione(id: string) {
     const alert = await this.alertController.create({

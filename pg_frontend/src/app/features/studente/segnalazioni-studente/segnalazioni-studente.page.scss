@@ -321,12 +321,17 @@
         font-weight: 900;
         text-transform: uppercase;
 
-        &.working {
+        &.aperta {
             background: #fff9c4;
             color: #a16207;
         }
 
-        &.solved {
+        &.in_lavorazione {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        &.chiusa {
             background: #dcfce7;
             color: #15803d;
         }

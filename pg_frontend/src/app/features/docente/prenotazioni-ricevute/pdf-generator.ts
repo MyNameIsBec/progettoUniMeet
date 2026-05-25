@@ -48,7 +48,7 @@ export function exportAgendaPDF(docente: any, agenda: any[], localOggiStr: strin
         <td style="font-weight: 700; color: #1e3a8a; width: 12%;">${item.oraInizio} - ${item.oraFine}</td>
         <td style="font-weight: 600; width: 22%;">${item.studente}</td>
         <td style="width: 28%;">${item.argomento}</td>
-        <td style="color: #4b5563; width: 20%;">${item.luogo || 'Studio Docente'}</td>
+        <td style="color: #4b5563; width: 20%;">${item.luogoRicevimento?.aula || 'Studio Docente'}</td>
         <td style="width: 18%; text-align: center;">${statusBadge}</td>
       </tr>
     `;
@@ -298,7 +298,7 @@ export function exportListaPDF(
         <td style="font-weight: 700; color: #1e3a8a; width: 12%;">${item.oraInizio} - ${item.oraFine}</td>
         <td style="font-weight: 600; width: 22%;">${item.studente}</td>
         <td style="width: 25%;">${item.argomento}</td>
-        <td style="color: #4b5563; width: 16%;">${item.luogo || 'Studio Docente'}</td>
+        <td style="color: #4b5563; width: 16%;">${item.luogoRicevimento?.aula || 'Studio Docente'}</td>
         <td style="width: 10%; text-align: center;">${statusBadge}</td>
       </tr>
     `;

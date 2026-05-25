@@ -11,20 +11,20 @@ export async function getStats(_req: Request, res: Response) {
   }
 }
 
-export async function getUtenti(req: Request, res: Response) {
+export async function getAccount(req: Request, res: Response) {
   try {
     const ruolo = req.query.ruolo as string | undefined;
-    const utenti = await adminService.getAllUsers(ruolo);
-    return res.status(200).json(utenti);
+    const accounts = await adminService.getAllAccounts(ruolo);
+    return res.status(200).json(accounts);
   } catch {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export async function creaUtente(req: Request, res: Response) {
+export async function creaAccount(req: Request, res: Response) {
   try {
-    const utente = await adminService.createUser(req.body);
-    return res.status(201).json(utente);
+    const account = await adminService.createAccount(req.body);
+    return res.status(201).json(account);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Email already in use') {
       return res.status(409).json({ error: err.message });
@@ -33,11 +33,11 @@ export async function creaUtente(req: Request, res: Response) {
   }
 }
 
-export async function modificaUtente(req: Request, res: Response) {
+export async function modificaAccount(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
-    const utente = await adminService.updateUser(id, req.body);
-    return res.status(200).json(utente);
+    const account = await adminService.updateAccount(id, req.body);
+    return res.status(200).json(account);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'User not found') {
       return res.status(404).json({ error: err.message });
@@ -46,11 +46,11 @@ export async function modificaUtente(req: Request, res: Response) {
   }
 }
 
-export async function eliminaUtente(req: Request, res: Response) {
+export async function eliminaAccount(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
     const adminId = req.user?.id;
-    await adminService.deleteUser(id, adminId);
+    await adminService.deleteAccount(id, adminId);
     return res.status(204).send();
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'User not found') {

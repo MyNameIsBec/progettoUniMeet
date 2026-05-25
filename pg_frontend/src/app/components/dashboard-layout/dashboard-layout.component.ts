@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { TopbarComponent } from '../topbar/topbar.component';
 import { IonContent } from '@ionic/angular/standalone';
@@ -15,35 +16,32 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, SidebarComponent, TopbarComponent, IonContent]
 })
 export class DashboardLayoutComponent implements OnInit, OnDestroy {
-  @Input() ruoloUtente: string = '';
-  @Input() nomeUtente: string = '';
-  @Input() vociMenu: VoceMenuNavigazione[] = [];
+  ruoloCorrente: string = '';
+  nomeAccount: string = '';
+  vociMenu: VoceMenuNavigazione[] = [];
+  private userSub?: Subscription;
 
-  private userSub: Subscription | null = null;
-
-  constructor(private auth: AuthService) { }
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-    this.userSub = this.auth.currentUser$.subscribe(user => {
+    this.userSub = this.authService.currentUser$.subscribe((user) => {
       if (user) {
-        this.ruoloUtente = user.role;
-        this.nomeUtente = `${user.nome} ${user.cognome}`;
-        if (!this.vociMenu || this.vociMenu.length === 0) {
-          this.configuraMenu(user.role);
-        }
+        this.ruoloCorrente = user.role;
+        this.nomeAccount = `${user.nome} ${user.cognome}`;
+        this.configuraMenu(user.role);
       }
     });
   }
 
   ngOnDestroy() {
-    if (this.userSub) this.userSub.unsubscribe();
+    this.userSub?.unsubscribe();
   }
 
   private configuraMenu(role: string) {
     if (role === 'amministratore') {
       this.vociMenu = [
         { etichetta: 'Dashboard', percorso: '/dashboard-admin', icona: 'stats-chart-outline', esatto: true },
-        { etichetta: 'Utenti', percorso: '/gestione-utenti-admin', icona: 'people-outline' },
+        { etichetta: 'Account', percorso: '/gestione-account', icona: 'people-outline' },
         { etichetta: 'Slot', percorso: '/gestione-slot-admin', icona: 'calendar-outline' },
         { etichetta: 'Prenotazioni', percorso: '/gestione-prenotazioni-admin', icona: 'calendar-number-outline' },
         { etichetta: 'Calendario', percorso: '/gestione-calendario', icona: 'calendar-outline' },

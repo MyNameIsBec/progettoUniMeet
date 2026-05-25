@@ -1,4 +1,4 @@
-<app-dashboard-layout [ruoloUtente]="'amministratore'">
+<app-dashboard-layout>
   <div class="admin-dashboard">
 
     <div class="stats-grid">
@@ -66,9 +66,9 @@
     <div class="quick-actions">
       <h3>Azioni rapide</h3>
       <div class="actions-row">
-        <ion-button [routerLink]="['/gestione-utenti-admin']" [queryParams]="{crea: true}" color="primary">
+        <ion-button [routerLink]="['/gestione-account']" [queryParams]="{crea: true}" color="primary">
           <ion-icon name="person-add-outline" slot="start"></ion-icon>
-          Crea utente
+          Crea account
         </ion-button>
         <ion-button [routerLink]="['/gestione-slot-admin']" [queryParams]="{stato: 'occupato', data: oggi}" color="primary" fill="outline">
           <ion-icon name="time-outline" slot="start"></ion-icon>

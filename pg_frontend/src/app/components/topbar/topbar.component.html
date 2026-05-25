@@ -8,7 +8,7 @@
       <ion-icon name="calendar-outline"></ion-icon>
       <div>
         <strong>UniMeet</strong>
-        <span>Area {{ ruoloUtente | titlecase }}</span>
+        <span>Area {{ ruoloAccount | titlecase }}</span>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@
         <ion-icon name="calendar-outline" class="main-logo-icon"></ion-icon>
         <div class="logo-text">
           <h1>UniMeet</h1>
-          <span>Area {{ ruoloUtente | titlecase }}</span>
+          <span>Area {{ ruoloAccount | titlecase }}</span>
         </div>
       </div>
     </div>
@@ -48,17 +48,19 @@
       <ion-icon [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
     </button>
 
+    @if (!ruoloAdmin) {
     <button class="btn-notifiche" [routerLink]="getNotificheRoute()">
       <ion-icon name="notifications-outline"></ion-icon>
     </button>
+    }
 
     <div class="profilo-mini" (click)="vaiAlProfilo()">
       <div class="avatar-piccolo">
         <ion-icon name="person-outline"></ion-icon>
       </div>
       <div>
-        <strong>{{ nomeUtente }}</strong>
-        <span>{{ ruoloUtente | titlecase }}</span>
+        <strong>{{ nomeAccount }}</strong>
+        <span>{{ ruoloAccount | titlecase }}</span>
       </div>
     </div>
   </div>

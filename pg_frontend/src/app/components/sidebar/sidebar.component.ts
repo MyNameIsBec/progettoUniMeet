@@ -13,7 +13,7 @@ import { AuthService } from '../../core/services/auth';
   imports: [CommonModule, RouterLink, IonIcon]
 })
 export class SidebarComponent {
-  @Input() ruoloUtente: string = 'studente';
+  @Input() ruoloCorrente: string = 'studente';
   @Input() vociMenu: VoceMenuNavigazione[] = [];
 
   constructor(private router: Router, private auth: AuthService) { }

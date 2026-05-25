@@ -43,10 +43,7 @@ export class AuthService {
   }
 
   login(email: string, password: string, rememberMe: boolean = false): Observable<UserSession> {
-    return this.http.post<UserSession>(
-      `${this.apiUrl}/api/login`,
-      { email, password }
-    ).pipe(
+    return this.http.post<UserSession>(`${this.apiUrl}/api/login`, { email, password }).pipe(
       tap(session => {
         session.role = session.role.toLowerCase() as UserRole;
         this.currentUserSubject.next(session);
@@ -62,10 +59,7 @@ export class AuthService {
   }
 
   registraStudente(dati: RegistrazioneStudente): Observable<UserSession> {
-    return this.http.post<UserSession>(
-      `${this.apiUrl}/api/registrazione`,
-      dati
-    ).pipe(
+    return this.http.post<UserSession>(`${this.apiUrl}/api/registrazione`, dati).pipe(
       tap(session => {
         session.role = session.role.toLowerCase() as UserRole;
         this.currentUserSubject.next(session);
@@ -85,8 +79,7 @@ export class AuthService {
 
   richiediResetPassword(email: string): Observable<{ messaggio: string }> {
     return this.http.post<{ messaggio: string }>(
-      `${this.apiUrl}/api/recupera-password`,
-      { email }
+      `${this.apiUrl}/api/recupera-password`, { email }
     );
   }
 
@@ -108,10 +101,10 @@ export class AuthService {
     return this.http.get<any>(`${this.apiUrl}/api/auth/profile`);
   }
 
-  changePassword(oldPassword: string, newPassword: string): Observable<{ messaggio: string }> {
+  changePassword(vecchiaPassword: string, newPassword: string): Observable<{ messaggio: string }> {
     return this.http.post<{ messaggio: string }>(
       `${this.apiUrl}/api/auth/change-password`,
-      { oldPassword, newPassword }
+      { vecchiaPassword, newPassword }
     );
   }
 
@@ -136,8 +129,8 @@ export class AuthService {
   }
 
   isStudente(): boolean { return this.hasRole('studente'); }
-  isDocente(): boolean  { return this.hasRole('docente'); }
-  isAdmin(): boolean    { return this.hasRole('amministratore'); }
+  isDocente(): boolean { return this.hasRole('docente'); }
+  isAdmin(): boolean { return this.hasRole('amministratore'); }
 
   private saveSessionToStorage(session: UserSession, persist?: boolean): void {
     let targetStorage: Storage;

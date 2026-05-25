@@ -73,11 +73,11 @@
           <div>
             <span>
               <ion-icon name="location-outline"></ion-icon>
-              {{ prossimoRicevimento.luogo }}
+              {{ prossimoRicevimento.luogoRicevimento?.aula || '' }}
             </span>
           </div>
 
-          <a routerLink="/dettaglio-prenotazione">
+          <a [routerLink]="['/dettaglio-prenotazione', prossimoRicevimento.id]">
             Vai al dettaglio
             <ion-icon name="arrow-forward-outline"></ion-icon>
           </a>
@@ -132,7 +132,7 @@
             <div class="appointment-meta">
               <span>
                 <ion-icon name="location-outline"></ion-icon>
-                {{ prenotazione.luogo }}
+                {{ prenotazione.luogoRicevimento?.aula || '' }}
               </span>
             </div>
           </div>
@@ -149,11 +149,11 @@
           </div>
 
           <div class="appointment-actions">
-            <ion-button fill="outline" routerLink="/dettaglio-prenotazione">
+            <ion-button fill="outline" [routerLink]="['/dettaglio-prenotazione', prenotazione.id]">
               Vedi dettagli
             </ion-button>
 
-            <ion-button fill="outline" color="danger">
+            <ion-button fill="outline" color="danger" (click)="annullaPrenotazione(prenotazione.id)">
               Annulla
             </ion-button>
           </div>

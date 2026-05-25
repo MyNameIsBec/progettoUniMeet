@@ -88,7 +88,7 @@ export class GestioneSlotAdminPage implements OnInit {
 
   async caricaDocenti(): Promise<void> {
     if (this.docentiPromise) return this.docentiPromise;
-    this.docentiPromise = firstValueFrom(this.admin.getUtenti('docente'))
+    this.docentiPromise = firstValueFrom(this.admin.getAccount('docente'))
       .then(data => { this.docenti = data; })
       .catch(() => { this.docenti = []; })
       .finally(() => { this.docentiPromise = null; });

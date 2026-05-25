@@ -16,8 +16,8 @@ import { Subscription } from 'rxjs';
 export class TopbarComponent implements OnInit, OnDestroy {
   @Input() vociMenuMobile: VoceMenuNavigazione[] = [];
 
-  nomeUtente: string = '';
-  ruoloUtente: string = ' ';
+  nomeAccount: string = '';
+  ruoloAccount: string = ' ';
   menuAperto = false;
   isDarkMode = false;
 
@@ -29,8 +29,8 @@ export class TopbarComponent implements OnInit, OnDestroy {
     this.isDarkMode = document.body.classList.contains('dark');
     this.userSub = this.auth.currentUser$.subscribe(user => {
       if (user) {
-        this.nomeUtente = `${user.nome} ${user.cognome}`;
-        this.ruoloUtente = user.role;
+        this.nomeAccount = `${user.nome} ${user.cognome}`;
+        this.ruoloAccount = user.role;
       }
     });
   }
@@ -56,15 +56,19 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   private getProfileRoute(): string {
-    switch (this.ruoloUtente) {
+    switch (this.ruoloAccount) {
       case 'amministratore': return '/dashboard-admin';
       case 'docente': return '/profilo-docente';
       default: return '/profilo-studente';
     }
   }
 
+  get ruoloAdmin(): boolean {
+    return this.ruoloAccount === 'amministratore';
+  }
+
   getNotificheRoute(): string {
-    switch (this.ruoloUtente) {
+    switch (this.ruoloAccount) {
       case 'docente': return '/notifiche-docente';
       default: return '/notifiche-studente';
     }

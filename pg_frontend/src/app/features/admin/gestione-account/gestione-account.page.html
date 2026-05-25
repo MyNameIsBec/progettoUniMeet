@@ -1,5 +1,5 @@
-<app-dashboard-layout [ruoloUtente]="'amministratore'">
-  <div class="utenti-content">
+<app-dashboard-layout>
+  <div class="accounts-content">
     <div class="toolbar-row">
       <div class="filter-chips">
         <ion-chip [class.active]="!filtroRuolo" (click)="onFiltroRuolo('')">
@@ -17,7 +17,7 @@
       </div>
       <ion-button fill="solid" class="crea-btn" (click)="apriModaleCrea()">
         <ion-icon name="add-outline" slot="start"></ion-icon>
-        Crea utente
+        Crea account
       </ion-button>
     </div>
 
@@ -26,7 +26,7 @@
     </ion-searchbar>
 
     <div class="table-wrap">
-      <table class="utenti-table">
+      <table class="accounts-table">
         <thead>
           <tr>
             <th>Ruolo</th>
@@ -37,26 +37,26 @@
           </tr>
         </thead>
         <tbody>
-          @for (u of utentiFiltrati; track u.id) {
+          @for (a of accountsFiltrati; track a.id) {
           <tr>
             <td>
-              <div class="ruolo-badge" [class]="'ruolo-' + u.ruolo">
-                <ion-icon [name]="ruoloIcona(u.ruolo)"></ion-icon>
-                <span>{{ ruoloLabel(u.ruolo) }}</span>
+              <div class="ruolo-badge" [class]="'ruolo-' + a.ruolo">
+                <ion-icon [name]="ruoloIcona(a.ruolo)"></ion-icon>
+                <span>{{ ruoloLabel(a.ruolo) }}</span>
               </div>
             </td>
-            <td class="nome-cell">{{ u.nome }} {{ u.cognome }}</td>
-            <td class="email-cell">{{ u.email }}</td>
+            <td class="nome-cell">{{ a.nome }} {{ a.cognome }}</td>
+            <td class="email-cell">{{ a.email }}</td>
             <td class="hide-mobile dettagli-cell">
-              @if (u.matricola) { <span>{{ u.matricola }}</span> }
-              @if (u.corsoDiStudi) { <span> · {{ u.corsoDiStudi }}</span> }
-              @if (u.ufficio) { <span>{{ u.ufficio }}</span> }
+              @if (a.matricola) { <span>{{ a.matricola }}</span> }
+              @if (a.corsoDiStudi) { <span> · {{ a.corsoDiStudi }}</span> }
+              @if (a.ufficio) { <span>{{ a.ufficio }}</span> }
             </td>
             <td class="actions-col">
-              <button class="icon-btn edit" (click)="apriModaleModifica(u)" title="Modifica">
+              <button class="icon-btn edit" (click)="apriModaleModifica(a)" title="Modifica">
                 <ion-icon name="create-outline"></ion-icon>
               </button>
-              <button class="icon-btn delete" (click)="confermaEliminazione(u)" title="Elimina">
+              <button class="icon-btn delete" (click)="confermaEliminazione(a)" title="Elimina">
                 <ion-icon name="trash-outline"></ion-icon>
               </button>
             </td>
@@ -64,7 +64,7 @@
           } @empty {
           @if (!inCaricamento) {
           <tr>
-            <td colspan="5" class="empty-row">Nessun utente trovato</td>
+            <td colspan="5" class="empty-row">Nessun account trovato</td>
           </tr>
           }
           }
@@ -88,7 +88,7 @@
           <div class="form-grid">
             <div class="field-group">
               <label>Ruolo</label>
-              <ion-select [(ngModel)]="formDati.ruolo" [disabled]="!!utenteInModifica">
+              <ion-select [(ngModel)]="formDati.ruolo" [disabled]="!!accountInModifica">
                 <ion-select-option value="studente">Studente</ion-select-option>
                 <ion-select-option value="docente">Docente</ion-select-option>
                 <ion-select-option value="amministratore">Amministratore</ion-select-option>
@@ -109,7 +109,7 @@
               <ion-input type="email" [(ngModel)]="formDati.email" placeholder="email@univ.it"></ion-input>
             </div>
             <div class="field-group">
-              <label>{{ utenteInModifica ? 'Nuova password (lascia vuoto per non cambiarla)' : 'Password' }}</label>
+              <label>{{ accountInModifica ? 'Nuova password (lascia vuoto per non cambiarla)' : 'Password' }}</label>
               <ion-input type="password" [(ngModel)]="formDati.password" placeholder="Minimo 8 caratteri"></ion-input>
             </div>
             @if (formDati.ruolo === 'studente') {
@@ -131,8 +131,8 @@
           </div>
           <div class="modal-actions">
             <ion-button fill="outline" (click)="chiudiModale()">Annulla</ion-button>
-            <ion-button (click)="salvaUtente()">
-              {{ utenteInModifica ? 'Salva modifiche' : 'Crea utente' }}
+            <ion-button (click)="salvaAccount()">
+              {{ accountInModifica ? 'Salva modifiche' : 'Crea account' }}
             </ion-button>
           </div>
         </ion-content>

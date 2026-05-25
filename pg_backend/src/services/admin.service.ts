@@ -12,7 +12,7 @@ export interface AdminStats {
   prenotazioniOggi: number;
 }
 
-export interface UtenteUnificato {
+export interface ProfiloAccount {
   id: string;
   ruolo: string;
   nome: string;
@@ -61,7 +61,7 @@ export async function getStats(): Promise<AdminStats> {
   return { totaleStudenti, totaleDocenti, totalePrenotazioni, slotAttivi, prenotazioniOggi };
 }
 
-async function trovaUtentePerId(id: string): Promise<{ tabella: string; dati: any } | null> {
+async function trovaAccountPerId(id: string): Promise<{ tabella: string; dati: any } | null> {
   let user: any = await prisma.studente.findUnique({ where: { matricola: id } });
   if (user) return { tabella: 'studente', dati: user };
 
@@ -74,8 +74,8 @@ async function trovaUtentePerId(id: string): Promise<{ tabella: string; dati: an
   return null;
 }
 
-export async function getAllUsers(ruolo?: string): Promise<UtenteUnificato[]> {
-  const results: UtenteUnificato[] = [];
+export async function getAllAccounts(ruolo?: string): Promise<ProfiloAccount[]> {
+  const results: ProfiloAccount[] = [];
 
   if (!ruolo || ruolo === 'studente') {
     const studenti = await prisma.studente.findMany({
@@ -112,7 +112,7 @@ export async function getAllUsers(ruolo?: string): Promise<UtenteUnificato[]> {
   return results;
 }
 
-export async function createUser(data: any): Promise<UtenteUnificato> {
+export async function createAccount(data: any): Promise<ProfiloAccount> {
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
   if (data.ruolo === 'studente') {
@@ -171,8 +171,8 @@ export async function createUser(data: any): Promise<UtenteUnificato> {
   };
 }
 
-export async function updateUser(id: string, data: any): Promise<UtenteUnificato> {
-  const found = await trovaUtentePerId(id);
+export async function updateAccount(id: string, data: any): Promise<ProfiloAccount> {
+  const found = await trovaAccountPerId(id);
   if (!found) throw new Error('User not found');
 
   const updateData: any = {};
@@ -217,8 +217,8 @@ export async function updateUser(id: string, data: any): Promise<UtenteUnificato
   };
 }
 
-export async function deleteUser(id: string, adminId?: string): Promise<void> {
-  const found = await trovaUtentePerId(id);
+export async function deleteAccount(id: string, adminId?: string): Promise<void> {
+  const found = await trovaAccountPerId(id);
   if (!found) throw new Error('User not found');
 
   if (adminId && found.tabella === 'amministratore' && (found.dati as any).id_admin === adminId) {

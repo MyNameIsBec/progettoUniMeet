@@ -46,7 +46,7 @@
           </div>
           <div>
             <span>Luogo</span>
-            <strong>{{ prenotazione.luogo }}</strong>
+            <strong>{{ prenotazione.luogoRicevimento?.aula || 'Aula da definire' }}</strong>
           </div>
         </div>
       </ion-card-content>
@@ -104,7 +104,7 @@
               <div class="info-icon"><ion-icon name="location-outline"></ion-icon></div>
               <div>
                 <span>Luogo</span>
-                <strong>{{ prenotazione.luogo }}</strong>
+                <strong>{{ prenotazione.luogoRicevimento?.aula || 'Aula da definire' }}</strong>
               </div>
             </div>
             <div class="info-item">

@@ -8,12 +8,12 @@ import {
   IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
 } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { AdminService, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/services/admin';
+import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/services/admin';
 
 @Component({
-  selector: 'app-gestione-utenti',
-  templateUrl: './gestione-utenti.page.html',
-  styleUrls: ['./gestione-utenti.page.scss'],
+  selector: 'app-gestione-account',
+  templateUrl: './gestione-account.page.html',
+  styleUrls: ['./gestione-account.page.scss'],
   standalone: true,
   imports: [
     IonLabel, IonIcon, IonButton, IonSearchbar,
@@ -22,37 +22,36 @@ import { AdminService, UtenteUnificato, CreaUtenteRequest } from 'src/app/core/s
     CommonModule, FormsModule, DashboardLayoutComponent,
   ],
 })
-export class GestioneUtentiPage implements OnInit {
+export class GestioneAccountPage implements OnInit {
   filtroRuolo = '';
   searchTerm = '';
-  utenti: UtenteUnificato[] = [];
-  utentiFiltrati: UtenteUnificato[] = [];
-  inCaricamento = false;
-
+  accounts: ProfiloAccount[] = [];
+  accountsFiltrati: ProfiloAccount[] = [];
   mostraModale = false;
   modaleTitolo = '';
-  utenteInModifica: UtenteUnificato | null = null;
-  formDati: CreaUtenteRequest = this.formVuoto();
+  accountInModifica: ProfiloAccount | null = null;
+  inCaricamento = false;
+  formDati: CreaAccountRequest = this.formVuoto();
 
   constructor(private admin: AdminService, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.caricaUtenti();
+    this.caricaAccounts();
     if (this.route.snapshot.queryParams['crea'] === 'true') {
       this.apriModaleCrea();
     }
   }
 
-  formVuoto(): CreaUtenteRequest {
+  formVuoto(): CreaAccountRequest {
     return { ruolo: 'studente', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '' };
   }
 
-  caricaUtenti(ruolo?: string) {
+  caricaAccounts(ruolo?: string) {
     this.inCaricamento = true;
-    this.admin.getUtenti(ruolo).subscribe({
+    this.admin.getAccount(ruolo).subscribe({
       next: (data) => {
-        this.utenti = data;
+        this.accounts = data;
         this.applicaFiltro();
         this.inCaricamento = false;
       },
@@ -63,23 +62,23 @@ export class GestioneUtentiPage implements OnInit {
   onFiltroRuolo(ruolo: string) {
     this.filtroRuolo = ruolo;
     if (ruolo) {
-      this.caricaUtenti(ruolo);
+      this.caricaAccounts(ruolo);
     } else {
-      this.caricaUtenti();
+      this.caricaAccounts();
     }
   }
 
   applicaFiltro() {
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) {
-      this.utentiFiltrati = [...this.utenti];
+      this.accountsFiltrati = [...this.accounts];
     } else {
-      this.utentiFiltrati = this.utenti.filter(
-        (u) =>
-          u.nome.toLowerCase().includes(term) ||
-          u.cognome.toLowerCase().includes(term) ||
-          u.email.toLowerCase().includes(term) ||
-          (u.matricola && u.matricola.toLowerCase().includes(term))
+      this.accountsFiltrati = this.accounts.filter(
+        (a) =>
+          a.nome.toLowerCase().includes(term) ||
+          a.cognome.toLowerCase().includes(term) ||
+          a.email.toLowerCase().includes(term) ||
+          (a.matricola && a.matricola.toLowerCase().includes(term))
       );
     }
   }
@@ -104,24 +103,24 @@ export class GestioneUtentiPage implements OnInit {
   }
 
   apriModaleCrea() {
-    this.modaleTitolo = 'Crea utente';
-    this.utenteInModifica = null;
+    this.modaleTitolo = 'Crea account';
+    this.accountInModifica = null;
     this.formDati = this.formVuoto();
     this.mostraModale = true;
   }
 
-  apriModaleModifica(utente: UtenteUnificato) {
-    this.modaleTitolo = 'Modifica utente';
-    this.utenteInModifica = utente;
+  apriModaleModifica(account: ProfiloAccount) {
+    this.modaleTitolo = 'Modifica account';
+    this.accountInModifica = account;
     this.formDati = {
-      ruolo: utente.ruolo,
-      nome: utente.nome,
-      cognome: utente.cognome || '',
-      email: utente.email,
+      ruolo: account.ruolo,
+      nome: account.nome,
+      cognome: account.cognome || '',
+      email: account.email,
       password: '',
-      matricola: utente.matricola,
-      corsoDiStudi: utente.corsoDiStudi,
-      ufficio: utente.ufficio,
+      matricola: account.matricola,
+      corsoDiStudi: account.corsoDiStudi,
+      ufficio: account.ufficio,
     };
     this.mostraModale = true;
   }
@@ -130,8 +129,8 @@ export class GestioneUtentiPage implements OnInit {
     this.mostraModale = false;
   }
 
-  salvaUtente() {
-    if (this.utenteInModifica) {
+  salvaAccount() {
+    if (this.accountInModifica) {
       const dati: any = {
         nome: this.formDati.nome,
         email: this.formDati.email,
@@ -142,26 +141,26 @@ export class GestioneUtentiPage implements OnInit {
       if (this.formDati.corsoDiStudi) dati.corsoDiStudi = this.formDati.corsoDiStudi;
       if (this.formDati.ufficio) dati.ufficio = this.formDati.ufficio;
 
-      this.admin.modificaUtente(this.utenteInModifica.id, dati).subscribe({
+      this.admin.modificaAccount(this.accountInModifica.id, dati).subscribe({
         next: () => {
           this.chiudiModale();
-          this.caricaUtenti(this.filtroRuolo || undefined);
+          this.caricaAccounts(this.filtroRuolo || undefined);
         },
       });
     } else {
-      this.admin.creaUtente(this.formDati).subscribe({
+      this.admin.creaAccount(this.formDati).subscribe({
         next: () => {
           this.chiudiModale();
-          this.caricaUtenti(this.filtroRuolo || undefined);
+          this.caricaAccounts(this.filtroRuolo || undefined);
         },
       });
     }
   }
 
-  confermaEliminazione(utente: UtenteUnificato) {
-    if (confirm(`Eliminare ${utente.nome} ${utente.cognome}? L'operazione è irreversibile.`)) {
-      this.admin.eliminaUtente(utente.id).subscribe({
-        next: () => this.caricaUtenti(this.filtroRuolo || undefined),
+  confermaEliminazione(account: ProfiloAccount) {
+    if (confirm(`Eliminare ${account.nome} ${account.cognome}? L'operazione e irreversibile.`)) {
+      this.admin.eliminaAccount(account.id).subscribe({
+        next: () => this.caricaAccounts(this.filtroRuolo || undefined),
         error: (err) => {
           const msg = err.error?.error || 'Errore durante l\'eliminazione';
           alert(msg);

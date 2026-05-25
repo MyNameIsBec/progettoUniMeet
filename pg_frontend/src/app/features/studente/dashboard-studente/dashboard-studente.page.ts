@@ -67,6 +67,13 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
     }
   }
 
+  annullaPrenotazione(id: string) {
+    this.prenotazioneService.annullaPrenotazione(id).subscribe({
+      next: () => this.caricaDatiDashboard(this.idStudenteCorrente),
+      error: (err) => console.error('Errore annullamento prenotazione', err)
+    });
+  }
+
   get prenotazioniFutureCount(): number {
     return this.totaleConfermate;
   }

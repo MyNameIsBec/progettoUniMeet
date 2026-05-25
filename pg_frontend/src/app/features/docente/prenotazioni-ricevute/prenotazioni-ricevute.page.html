@@ -115,10 +115,6 @@
             </ion-select>
           </div>
 
-          <button class="pdf-btn filter-pdf-btn" (click)="scaricaListaPDF()" title="Esporta lista in PDF">
-            <ion-icon name="download-outline"></ion-icon>
-            <span>Esporta PDF</span>
-          </button>
         </ion-card-content>
       </ion-card>
 
@@ -189,7 +185,7 @@
                     <ion-icon name="location-outline"></ion-icon>
                     <div>
                       <span>Luogo</span>
-                      <strong>{{ booking.luogo || 'Studio Docente' }}</strong>
+                      <strong>{{ booking.luogoRicevimento?.aula || 'Studio Docente' }}</strong>
                     </div>
                   </div>
 

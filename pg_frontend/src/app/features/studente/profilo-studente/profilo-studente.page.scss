@@ -342,3 +342,21 @@
         transform: rotate(360deg);
     }
 }
+
+:host-context(body.dark) .form-field ion-item {
+    --background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .form-field ion-item:focus-within {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--primary-blue);
+}
+
+:host-context(body.dark) .form-field label {
+    color: #cbd5e1;
+}
+
+:host-context(body.dark) ion-select {
+    color: #e2e8f0;
+}

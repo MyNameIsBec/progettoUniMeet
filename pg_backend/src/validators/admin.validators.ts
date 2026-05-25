@@ -1,7 +1,7 @@
 import { body, query, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
-export const creaUtenteSchema = [
+export const creaAccountSchema = [
   body('ruolo').isIn(['studente', 'docente', 'amministratore']).withMessage('Ruolo non valido'),
   body('nome').isString().notEmpty().trim(),
   body('email').isEmail().normalizeEmail(),
@@ -12,7 +12,7 @@ export const creaUtenteSchema = [
   body('ufficio').if(body('ruolo').equals('docente')).isString().notEmpty().trim(),
 ];
 
-export const modificaUtenteSchema = [
+export const modificaAccountSchema = [
   body('nome').optional().isString().notEmpty().trim(),
   body('email').optional().isEmail().normalizeEmail(),
   body('password').optional().isString().isLength({ min: 8 }),
