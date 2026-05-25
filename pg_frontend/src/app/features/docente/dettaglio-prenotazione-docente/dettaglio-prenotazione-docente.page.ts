@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonTextarea, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { AuthService } from '../../../core/services/auth';
@@ -17,7 +17,6 @@ import { Prenotazione } from '../../../core/models/interfacce';
   imports: [
     CommonModule, FormsModule, RouterLink,
     IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonTextarea,
-    IonHeader, IonToolbar, IonTitle, IonContent,
     DashboardLayoutComponent
   ]
 })

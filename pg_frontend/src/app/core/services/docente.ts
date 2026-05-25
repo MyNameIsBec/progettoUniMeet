@@ -5,9 +5,7 @@ import { Docente } from "../models/interfacce";
 import { AuthService } from './auth';
 import { SlotRicevimento } from "../models/interfacce";
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class DocenteService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }

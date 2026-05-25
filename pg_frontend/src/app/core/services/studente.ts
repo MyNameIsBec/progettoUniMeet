@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth';
 import { Observable } from 'rxjs';
-import { Corso, Studente } from "../models/interfacce";
+import { Studente } from "../models/interfacce";
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root'})
 export class StudenteService {
   constructor(private http: HttpClient, private authService: AuthService) { }
 

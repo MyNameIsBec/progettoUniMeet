@@ -34,10 +34,6 @@ export class AuthService {
     this.loadSessionFromStorage();
   }
 
-  setURL(ip: string): void {
-    this.apiUrl = `http://${ip}:5000`;
-  }
-
   getApiUrl(): string {
     return this.apiUrl;
   }
@@ -127,10 +123,6 @@ export class AuthService {
   getToken(): string | null {
     return this.currentUserSubject.value?.token ?? null;
   }
-
-  isStudente(): boolean { return this.hasRole('studente'); }
-  isDocente(): boolean { return this.hasRole('docente'); }
-  isAdmin(): boolean { return this.hasRole('amministratore'); }
 
   private saveSessionToStorage(session: UserSession, persist?: boolean): void {
     let targetStorage: Storage;

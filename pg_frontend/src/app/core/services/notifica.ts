@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable, interval, switchMap, startWith } from "rxjs";
+import { Observable } from "rxjs";
 
 export interface Notifica {
   id: string;
@@ -38,13 +38,6 @@ export class NotificaService {
 
   cancellaNotificheLette(destinatarioId: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/${destinatarioId}/lette`)
-  }
-
-  interrogaServer(destinatarioId: string): Observable<Notifica[]> {
-    return interval(30000).pipe(
-      startWith(0),
-      switchMap(() => this.getNotifiche(destinatarioId))
-    )
   }
 
 }

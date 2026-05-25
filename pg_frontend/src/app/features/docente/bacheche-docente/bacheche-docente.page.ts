@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonTextarea, IonItem, IonSelect, IonSelectOption, IonHeader, IonToolbar, IonTitle, IonContent, AlertController } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonItem, IonSelect, IonSelectOption, AlertController } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { BachecaService } from '../../../core/services/bacheca';
 import { DocenteService } from '../../../core/services/docente';
@@ -16,10 +15,9 @@ import { FAQ, Bacheca } from '../../../core/models/interfacce';
   styleUrls: ['./bacheche-docente.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, RouterLink,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonTextarea,
+    CommonModule, FormsModule,
+    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton,
     IonItem, IonSelect, IonSelectOption,
-    IonHeader, IonToolbar, IonTitle, IonContent,
     DashboardLayoutComponent
   ]
 })

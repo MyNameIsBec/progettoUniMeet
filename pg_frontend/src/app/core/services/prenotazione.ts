@@ -45,8 +45,4 @@ export class PrenotazioneService {
     return this.http.post<Prenotazione>(`${this.api}/${id}/documenti`, formData);
   }
 
-  puoAnnullare(dataSlot: string, limiteOre: number = 24): boolean {
-    const diff = new Date(dataSlot).getTime() - new Date().getTime();
-    return diff > limiteOre * 60 * 60 * 1000;
-  }
 }

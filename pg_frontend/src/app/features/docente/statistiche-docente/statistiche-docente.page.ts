@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AuthService } from '../../../core/services/auth';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
@@ -14,9 +13,8 @@ import { DocenteService } from '../../../core/services/docente';
   styleUrls: ['./statistiche-docente.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, RouterLink,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton,
-    IonHeader, IonToolbar, IonTitle, IonContent,
+    CommonModule,
+    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
     DashboardLayoutComponent
   ]
 })

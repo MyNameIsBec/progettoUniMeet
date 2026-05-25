@@ -12,21 +12,11 @@ export interface Segnalazione {
   matricola_studente?: string | null;
   id_docente?: string | null;
   allegato?: string | null;
-  studente?: {
-    nome: string;
-    cognome: string;
-    email: string;
-  } | null;
-  docente?: {
-    nome: string;
-    cognome: string;
-    email: string;
-  } | null;
+  studente?: { nome: string; cognome: string; email: string } | null;
+  docente?: {nome: string; cognome: string; email: string } | null;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root'})
 export class SegnalazioneService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
