@@ -44,16 +44,28 @@
     &.blue {
         background: #eff6ff;
         color: #2563eb;
+
+        ion-icon {
+            color: #2563eb;
+        }
     }
 
     &.yellow {
         background: #fffbeb;
         color: #d97706;
+
+        ion-icon {
+            color: #d97706;
+        }
     }
 
     &.green {
         background: #f0fdf4;
         color: #16a34a;
+
+        ion-icon {
+            color: #16a34a;
+        }
     }
 }
 
@@ -520,16 +532,28 @@
 :host-context(body.dark) .stat-icon.blue {
     background: linear-gradient(135deg, #1d4ed8, #1e40af);
     color: #ffffff;
+
+    ion-icon {
+        color: #ffffff;
+    }
 }
 
 :host-context(body.dark) .stat-icon.yellow {
     background: linear-gradient(135deg, #b45309, #92400e);
     color: #ffffff;
+
+    ion-icon {
+        color: #ffffff;
+    }
 }
 
 :host-context(body.dark) .stat-icon.green {
     background: linear-gradient(135deg, #15803d, #166534);
     color: #ffffff;
+
+    ion-icon {
+        color: #ffffff;
+    }
 }
 
 :host-context(body.dark) .info-icon.blue {

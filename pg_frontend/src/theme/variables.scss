@@ -231,13 +231,12 @@ body.dark {
     border-color: rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(20px);
 
-    .menu-toggle {
+    .toggle-menu {
       background: rgba(255, 255, 255, 0.03) !important;
       color: #e2e8f0 !important;
     }
 
-    .notification-button,
-    .theme-toggle {
+    .btn-notifiche {
       background: rgba(255, 255, 255, 0.03) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
 
@@ -255,12 +254,34 @@ body.dark {
       }
     }
 
-    .student-profile-mini {
+    .toggle-tema {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+
+      ion-icon {
+        color: #fbbf24 !important;
+      }
+
+      &:hover {
+        background: rgba(37, 99, 235, 0.15) !important;
+        border-color: #2563eb !important;
+
+        ion-icon {
+          color: #fbbf24 !important;
+        }
+      }
+    }
+
+    .profilo-mini {
       background: rgba(255, 255, 255, 0.03) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
 
       strong {
         color: #ffffff !important;
+      }
+
+      span {
+        color: #94a3b8 !important;
       }
 
       &:hover {
@@ -269,7 +290,7 @@ body.dark {
       }
     }
 
-    .student-avatar-small {
+    .avatar-piccolo {
       background: rgba(255, 255, 255, 0.05) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
       color: #60a5fa !important;
@@ -342,7 +363,7 @@ body.dark {
     }
   }
 
-  .mobile-top-menu {
+  .menu-mobile-top {
     background: #0f172a !important;
 
     .drawer-header {
@@ -371,6 +392,24 @@ body.dark {
 
         ion-icon {
           color: #ffffff !important;
+        }
+      }
+
+      &.logout-mobile {
+        color: #ef4444 !important;
+        border-top-color: rgba(255, 255, 255, 0.1) !important;
+
+        ion-icon {
+          color: #ef4444 !important;
+        }
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.1) !important;
+          color: #f87171 !important;
+
+          ion-icon {
+            color: #f87171 !important;
+          }
         }
       }
     }

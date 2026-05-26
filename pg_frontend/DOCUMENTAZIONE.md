@@ -408,7 +408,18 @@ pg_frontend/src/app/features/studente/impostazioni-studente/
 
 ---
 
-### 14.3 Docente — piano edificio non numerico
+### 14.3 Topbar dark mode — classi CSS errate in variables.scss
+
+**Problema:** I selettori `body.dark` in `theme/variables.scss` usavano nomi di classi inesistenti per gli elementi della topbar: `.menu-toggle`, `.notification-button`, `.theme-toggle`, `.student-profile-mini`, `.student-avatar-small` invece dei reali `.toggle-menu`, `.btn-notifiche`, `.toggle-tema`, `.profilo-mini`, `.avatar-piccolo`. Anche il menu mobile era selezionato con `.mobile-top-menu` invece di `.menu-mobile-top`. Di conseguenza, il tema scuro non si applicava a questi elementi, che restavano con sfondo bianco e testo scuro anche in dark mode.
+
+**Fix (commit `[da assegnare]`):** Corretti tutti i selettori in `theme/variables.scss:234-345` per corrispondere alle classi reali del template `topbar.component.html`.
+
+**File modificati:**
+- `src/theme/variables.scss`
+
+---
+
+### 14.4 Docente — piano edificio non numerico
 
 **Problema:** Il campo `piano` del luogo era tipizzato come `number` nell'interfaccia TypeScript e passato a `parseInt()` nel backend. Valori come "Primo piano" o "Piano terra" producevano `NaN` e non venivano visualizzati correttamente.
 
@@ -422,12 +433,9 @@ pg_frontend/src/app/features/studente/impostazioni-studente/
 
 ## 15. Bug Hunt — Piano di fix (22/05/2026)
 
-### Fase 6 — URL relativi in services (medio)
+### ~~Fase 6 — URL relativi in services~~ ✅ Completata
 
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 6.1 | Sostituire `'api/admin/...'` con `${this.authService.getApiUrl()}/api/admin/...` | `core/services/admin.ts` (tutti i metodi) | media |
-| 6.2 | Stessa cosa in segnalazione service | `core/services/segnalazione.ts` (tutti i metodi) | media |
+Tutti i service (admin, segnalazione, auth, studente, docente, bacheca, notifica, documento, prenotazione) usano già il pattern `private get api()` con `${this.authService.getApiUrl()}`. Nessun URL relativo nudo presente.
 
 ### Fase 7 — Missing Ionic imports (check completo)
 

@@ -44,7 +44,7 @@
           @if (password.invalid && password.touched) {
             <span class="messaggio-errore-campo">
               @if (password.errors?.['required']) { La password è obbligatoria }
-              @if (password.errors?.['minlength']) { Minimo 6 caratteri }
+              @if (password.errors?.['minlength']) { Minimo 8 caratteri }
             </span>
           }
         </div>
