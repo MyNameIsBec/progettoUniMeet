@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   IonIcon,
@@ -16,17 +15,8 @@ import { AdminService, AdminStats } from 'src/app/core/services/admin';
   templateUrl: './dashboard-admin.page.html',
   styleUrls: ['./dashboard-admin.page.scss'],
   standalone: true,
-  imports: [
-    IonIcon,
-    IonCard,
-    IonCardContent,
-    IonButton,
-    CommonModule,
-    FormsModule,
-    RouterLink,
-    DashboardLayoutComponent,
-  ],
-})
+  imports: [ IonIcon, IonCard, IonCardContent, IonButton, CommonModule, RouterLink, DashboardLayoutComponent ]})
+
 export class DashboardAdminPage implements OnInit {
   stats: AdminStats = {
     totaleStudenti: 0,

@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption, AlertController,
-} from '@ionic/angular/standalone';
+import { IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption, AlertController} from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
 
@@ -13,12 +11,9 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
   templateUrl: './gestione-prenotazioni-admin.page.html',
   styleUrls: ['./gestione-prenotazioni-admin.page.scss'],
   standalone: true,
-  imports: [
-    IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption,
-    CommonModule, FormsModule, DashboardLayoutComponent,
-  ],
-})
-export class GestionePrenotazioniAdminPage implements OnInit {
+  imports: [ IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption, CommonModule, FormsModule, DashboardLayoutComponent]})
+
+  export class GestionePrenotazioniAdminPage implements OnInit {
   prenotazioni: PrenotazioneAdmin[] = [];
   filtroStato = '';
   inCaricamento = false;

@@ -1,4 +1,3 @@
-
 import { Component, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonContent, IonButton, IonIcon, IonCard, IonCardContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -16,7 +15,7 @@ export class HomePage implements AfterViewInit {
   @ViewChild(IonContent, { static: true }) content?: IonContent;
 
   activeSection: string = 'home';
-  isDarkMode = false;
+  isDarkMode = true;
 
   private cdr = inject(ChangeDetectorRef);
 
@@ -60,8 +59,8 @@ export class HomePage implements AfterViewInit {
       return;
     }
 
-    const top = section.offsetTop - 80;
-    await this.content.scrollToPoint(0, top > 0 ? top : 0, 400);
+    const top = section.offsetTop - 80; //header fisso
+    await section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   }
 }

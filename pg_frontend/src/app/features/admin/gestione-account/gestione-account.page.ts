@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import {
-  IonLabel, IonIcon, IonButton, IonSearchbar,
-  IonModal, IonInput, IonSelect, IonSelectOption, IonChip,
-  IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
-} from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
+import { IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent} from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/services/admin';
 
@@ -15,14 +11,9 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
   templateUrl: './gestione-account.page.html',
   styleUrls: ['./gestione-account.page.scss'],
   standalone: true,
-  imports: [
-    IonLabel, IonIcon, IonButton, IonSearchbar,
-    IonModal, IonInput, IonSelect, IonSelectOption, IonChip,
-    IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
-    CommonModule, FormsModule, DashboardLayoutComponent,
-  ],
-})
-export class GestioneAccountPage implements OnInit {
+  imports: [ IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, CommonModule, FormsModule, DashboardLayoutComponent]})
+
+  export class GestioneAccountPage implements OnInit {
   filtroRuolo = '';
   searchTerm = '';
   accounts: ProfiloAccount[] = [];
@@ -44,7 +35,7 @@ export class GestioneAccountPage implements OnInit {
   }
 
   formVuoto(): CreaAccountRequest {
-    return { ruolo: 'studente', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '' };
+    return { ruolo: ' ', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '' };
   }
 
   caricaAccounts(ruolo?: string) {

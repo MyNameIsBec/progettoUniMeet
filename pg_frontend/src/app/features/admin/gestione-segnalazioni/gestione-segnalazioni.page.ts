@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel,
-} from '@ionic/angular/standalone';
+import { IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel} from '@ionic/angular/standalone';
 import { AlertController, IonicSafeString } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
@@ -14,12 +12,9 @@ import { AuthService } from 'src/app/core/services/auth';
   templateUrl: './gestione-segnalazioni.page.html',
   styleUrls: ['./gestione-segnalazioni.page.scss'],
   standalone: true,
-  imports: [
-    IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel,
-    CommonModule, FormsModule, DashboardLayoutComponent,
-  ],
-})
-export class GestioneSegnalazioniPage implements OnInit {
+  imports: [ IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel, CommonModule, FormsModule, DashboardLayoutComponent]})
+
+  export class GestioneSegnalazioniPage implements OnInit {
   segnalazioni: Segnalazione[] = [];
   filtroStato = '';
   inCaricamento = false;

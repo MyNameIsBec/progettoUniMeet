@@ -11,14 +11,9 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
   templateUrl: 'reset-password.page.html',
   styleUrls: ['reset-password.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    IonContent, IonButton, IonIcon, IonInput, IonSpinner
-  ]
-})
-export class ResetPasswordPage implements OnInit {
+  imports: [ CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonSpinner ]})
 
+  export class ResetPasswordPage implements OnInit {
   resetForm!: FormGroup;
   inCaricamento = false;
   resetCompletato = false;

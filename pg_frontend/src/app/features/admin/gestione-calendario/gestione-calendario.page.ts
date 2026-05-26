@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
-  IonItem, IonLabel, IonInput, IonDatetime,
-} from '@ionic/angular/standalone';
+import { IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonItem, IonLabel, IonInput, IonDatetime} from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, GiornoBloccato } from 'src/app/core/services/admin';
 
@@ -13,13 +10,9 @@ import { AdminService, GiornoBloccato } from 'src/app/core/services/admin';
   templateUrl: './gestione-calendario.page.html',
   styleUrls: ['./gestione-calendario.page.scss'],
   standalone: true,
-  imports: [
-    IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent,
-    IonItem, IonLabel, IonInput, IonDatetime,
-    CommonModule, FormsModule, DashboardLayoutComponent,
-  ],
-})
-export class GestioneCalendarioPage implements OnInit {
+  imports: [ IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonItem, IonLabel, IonInput, IonDatetime, CommonModule, FormsModule, DashboardLayoutComponent]})
+
+  export class GestioneCalendarioPage implements OnInit {
   giorniBloccati: GiornoBloccato[] = [];
   inCaricamento = false;
 
@@ -65,7 +58,7 @@ export class GestioneCalendarioPage implements OnInit {
 
   salvaGiorno() {
     if (!this.formData) return;
-    const data = this.formData.split('T')[0] || this.formData;
+    const data = this.formData.split('T')[0];
     this.admin.bloccaGiorno({ data, motivo: this.formMotivo || undefined }).subscribe({
       next: () => {
         this.chiudiModale();

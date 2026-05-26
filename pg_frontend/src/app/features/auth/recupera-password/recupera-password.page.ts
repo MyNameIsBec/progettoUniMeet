@@ -12,14 +12,9 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
   templateUrl: 'recupera-password.page.html',
   styleUrls: ['recupera-password.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    IonContent, IonButton, IonIcon, IonInput, IonSpinner
-  ]
-})
-export class RecuperaPasswordPage implements OnInit {
+  imports: [ CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonSpinner ]})
 
+  export class RecuperaPasswordPage implements OnInit {
   recuperoForm!: FormGroup;
   codiceForm!: FormGroup;
   passwordForm!: FormGroup;
