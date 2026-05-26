@@ -51,6 +51,7 @@ model Docente {
   slot_ricevimento SlotRicevimento[]
   corsi_di_studi   DocenteCorsoDiStudi[]
   segnalazioni     Segnalazione[]
+  faqs             FAQ[]
 }
 
 model DocenteCorsoDiStudi {
@@ -98,6 +99,8 @@ model FAQ {
   ultima_modifica    DateTime @updatedAt
   id_bacheca         String
   bacheca            Bacheca  @relation(fields: [id_bacheca], references: [id_bacheca])
+  id_docente         String?
+  docente            Docente? @relation(fields: [id_docente], references: [id_docente])
 }
 
 model SlotRicevimento {

@@ -178,18 +178,27 @@ async function main() {
   // ──────────────────────────── FAQ ────────────────────────────
   console.log('\n── FAQ ──');
   const faqList = [
-    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1' },
-    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1' },
-    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2' },
-    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2' },
-    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1' },
-    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2' },
-    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3' },
-    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3' },
+    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
+    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
+    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
+    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', bacheca: 'cds-1', docente: 'anna.neri@unime.it' },
+    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', bacheca: 'cds-1', docente: 'anna.neri@unime.it' },
+    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', bacheca: 'cds-1', docente: 'paolo.russo@unime.it' },
+    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2', docente: 'giuseppe.verdi@unime.it' },
+    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2', docente: 'maria.bianco@unime.it' },
+    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2', docente: 'paolo.russo@unime.it' },
+    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', bacheca: 'cds-2', docente: 'maria.bianco@unime.it' },
+    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3', docente: 'elena.colombo@unime.it' },
+    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3', docente: 'elena.colombo@unime.it' },
   ];
   for (const f of faqList) {
     const faq = await prisma.fAQ.create({
-      data: { domanda: f.domanda, risposta: f.risposta, id_bacheca: bachecheCreati[f.bacheca]!.id_bacheca },
+      data: {
+        domanda: f.domanda,
+        risposta: f.risposta,
+        id_bacheca: bachecheCreati[f.bacheca]!.id_bacheca,
+        id_docente: docentiCreati[f.docente]!.id_docente,
+      },
     });
     console.log(`  Q: ${faq.domanda}`);
   }

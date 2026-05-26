@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
-import { FAQ } from '../../../core/models/interfacce';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
+import { Bacheca, FAQ } from '../../../core/models/interfacce';
 import { BachecaService } from '../../../core/services/bacheca';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
@@ -31,6 +31,9 @@ export interface LinkUtile {
     IonCardHeader,
     IonCardTitle,
     IonButton,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
     DashboardLayoutComponent
   ]
 })
@@ -59,7 +62,17 @@ export class BachecaStudentePage implements OnInit {
     private studenteService: StudenteService
   ) { }
 
+  public bacheca?: Bacheca;
   public listaFaq: FAQ[] = [];
+  public docentiDisponibili: { id: string; nome: string }[] = [];
+  public docenteSelezionato: string = 'tutti';
+
+  get listaFaqFiltrate(): FAQ[] {
+    if (this.docenteSelezionato === 'tutti') {
+      return this.listaFaq;
+    }
+    return this.listaFaq.filter(faq => faq.idDocente === this.docenteSelezionato);
+  }
 
   async ngOnInit() {
     try {
@@ -69,7 +82,9 @@ export class BachecaStudentePage implements OnInit {
         if (profilo.corsoDiStudiId != null) {
           const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
           if (bacheca != null) {
+            this.bacheca = bacheca;
             this.listaFaq = bacheca.faqs ?? [];
+            this.docentiDisponibili = this.estraiDocenti(this.listaFaq);
           }
         }
       }
@@ -78,7 +93,21 @@ export class BachecaStudentePage implements OnInit {
     }
   }
 
+  private estraiDocenti(faqs: FAQ[]): { id: string; nome: string }[] {
+    const mappa = new Map<string, string>();
+    for (const faq of faqs) {
+      if (faq.idDocente && faq.nomeDocente) {
+        mappa.set(faq.idDocente, faq.nomeDocente);
+      }
+    }
+    return Array.from(mappa, ([id, nome]) => ({ id, nome }));
+  }
+
   public invertiStatoFaq(faq: FAQ): void {
     faq.aperta = !faq.aperta;
+  }
+
+  public onDocenteChange(event: CustomEvent): void {
+    this.docenteSelezionato = (event.detail.value as string) ?? 'tutti';
   }
 }

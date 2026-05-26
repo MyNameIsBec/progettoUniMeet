@@ -2,10 +2,17 @@
   <!-- PAGE HEADER -->
   <section class="premium-hero">
     <div class="hero-text-content">
+      @if (bacheca) {
+      <span class="eyebrow">{{ bacheca.nomeCorsoDiStudi }}</span>
+      <h1>{{ bacheca.titolo }}</h1>
+      <p>{{ bacheca.descrizione }}</p>
+      <small class="hero-update">Ultimo aggiornamento: {{ bacheca.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</small>
+      } @else {
       <span class="eyebrow">Informazioni</span>
       <h1>FAQ e Bacheca</h1>
       <p>Qui trovi le risposte alle domande più comuni, le comunicazioni del tuo corso e i collegamenti utili ai servizi
         universitari.</p>
+      }
     </div>
 
     <div class="hero-status-card">
@@ -33,23 +40,40 @@
       </ion-card-header>
 
       <ion-card-content>
+
+        @if (docentiDisponibili.length > 1) {
+        <ion-segment [value]="docenteSelezionato" (ionChange)="onDocenteChange($event)" class="docente-filter">
+          <ion-segment-button value="tutti">
+            <ion-label>Tutti</ion-label>
+          </ion-segment-button>
+          @for (doc of docentiDisponibili; track doc.id) {
+          <ion-segment-button [value]="doc.id">
+            <ion-label>{{ doc.nome }}</ion-label>
+          </ion-segment-button>
+          }
+        </ion-segment>
+        }
+
         <div class="faq-list">
 
-          @if (listaFaq.length === 0) {
+          @if (listaFaqFiltrate.length === 0) {
           <div class="no-faq">
             <ion-icon name="information-circle-outline"></ion-icon>
             <p>Non ci sono comunicazioni o FAQ per questo corso.</p>
           </div>
           }
 
-          @for (faq of listaFaq; track faq.id) {
+          @for (faq of listaFaqFiltrate; track faq.id) {
           <details [open]="faq.aperta" class="faq-details">
             <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
               <span>{{ faq.domanda }}</span>
               <ion-icon name="chevron-forward-outline"></ion-icon>
             </summary>
             <div class="faq-content">
-              {{ faq.risposta }}
+              <p>{{ faq.risposta }}</p>
+              @if (faq.nomeDocente) {
+              <small class="faq-docente">{{ faq.nomeDocente }}</small>
+              }
             </div>
           </details>
           }

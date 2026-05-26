@@ -138,6 +138,42 @@ ion-card-title {
     background: #ffffff;
 }
 
+.faq-content p {
+    margin: 0 0 8px;
+}
+
+.faq-docente {
+    display: block;
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+/* HERO UPDATE DATE */
+.hero-update {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    font-weight: 600;
+}
+
+/* DOCENTE FILTER */
+.docente-filter {
+    margin-bottom: 20px;
+    --background: var(--bg-light);
+    border-radius: 12px;
+}
+
+:host-context(body.dark) .docente-filter {
+    --background: rgba(255, 255, 255, 0.05);
+}
+
+:host-context(body.dark) .faq-docente {
+    color: #60a5fa;
+}
+
 /* SUPPORTO */
 .support-card ion-card-content p {
     margin: 0 0 20px;

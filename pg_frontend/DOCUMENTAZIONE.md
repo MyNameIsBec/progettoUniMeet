@@ -119,8 +119,8 @@ File: `src/app/core/models/interfacce.ts`
 | `SlotRicevimento` | — | id, docenteId, data, oraInizio, oraFine, disponibilita, luogo |
 | `Prenotazione` | — | id, studenteId, docente, materia, data, ora, stato, luogo, documenti, studente |
 | `Documento` | — | id, nomeFile, tipo, studente, prenotazioneId, data, percorso |
-| `Bacheca` | — | id, titolo, descrizione, faqs[], corsoDiStudi |
-| `FAQ` | — | id, domanda, risposta, aperta |
+| `Bacheca` | — | id, titolo, descrizione, faqs[], corsoDiStudi, nomeCorsoDiStudi, dataUltimoAggiornamento |
+| `FAQ` | — | id, domanda, risposta, aperta, idDocente?, nomeDocente? |
 
 ---
 
@@ -431,6 +431,65 @@ pg_frontend/src/app/features/studente/impostazioni-studente/
 
 ---
 
+### 14.5 Bacheca studente — selettore docente e info bacheca
+
+**Problema:** La pagina bacheca-studente mostrava solo l'elenco delle FAQ senza indicare il nome/descrizione della bacheca. Inoltre, in presenza di FAQ di più docenti, non c'era modo di filtrarle.
+
+**Causa radice:** Il frontend salvava solo `bacheca.faqs` e ignorava `bacheca.titolo`, `bacheca.descrizione`, `bacheca.nomeCorsoDiStudi`. Il modello `FAQ` non aveva un campo `id_docente`, quindi non era possibile associare una FAQ a un docente specifico.
+
+**Fix:**
+- **Backend (Prisma):** aggiunto campo `id_docente` (opzionale, FK → `Docente`) al modello `FAQ`, con relazione inversa `faqs` su `Docente`
+- **Backend (migration):** creata e applicata `20260526184543_add_id_docente_to_faq`
+- **Backend (service):** `BachecaResponse` ora include `nomeCorsoDiStudi`; `FAQResponse` ora include `idDocente`, `nomeDocente`; `mapBacheca` fa join con `CorsoDiStudi` e `Docente`; `createFaq` accetta `idDocente`
+- **Backend (validators):** `idDocente` opzionale in `creaFaqSchema`
+- **Backend (seed):** ogni FAQ ora assegnata a un docente specifico; aggiunte nuove FAQ per docenti con corsi in cds-1 (Neri, Russo)
+- **Frontend (model):** aggiunti `idDocente`, `nomeDocente` a `FAQ`
+- **Frontend (page TS):** salvato l'oggetto `bacheca` completo; estratta lista `docentiDisponibili` dalle FAQ; aggiunto `docenteSelezionato` e getter `listaFaqFiltrate`
+- **Frontend (page HTML):** hero mostra titolo, descrizione, nomeCorsoDiStudi, dataUltimoAggiornamento; aggiunto `ion-segment` per filtrare per docente; ogni FAQ mostra `nomeDocente` nella risposta
+
+**File modificati:**
+- `pg_backend/prisma/schema.prisma`
+- `pg_backend/src/services/bacheca.service.ts`
+- `pg_backend/src/validators/bacheca.validators.ts`
+- `pg_backend/prisma/seed.ts`
+- `pg_backend/prisma/migrations/20260526184543_add_id_docente_to_faq/`
+- `pg_frontend/src/app/core/models/interfacce.ts`
+- `pg_frontend/src/app/features/studente/bacheca-studente/bacheca-studente.page.ts`
+- `pg_frontend/src/app/features/studente/bacheca-studente/bacheca-studente.page.html`
+- `pg_frontend/src/app/features/studente/bacheca-studente/bacheca-studente.page.scss`
+- `pg_backend/prisma.config.ts`
+
+---
+
+### 14.6 Logout non rosso in dark mode (mobile + desktop)
+
+**Problema:** Il testo "Logout" e la sua icona non apparivano rossi (`#ef4444`) quando la dark mode era attiva, né nel menu mobile (drawer) né nella sidebar desktop.
+
+**Causa radice:** In `variables.scss`, i selettori `body.dark .menu-mobile-top .menu-items a { color: #94a3b8 !important; }` e `body.dark .sidebar-nav a { color: #94a3b8 !important; }` impostavano il colore grigio su TUTTI i link, incluso logout. La regola specifica per `.logout-mobile` / `.logout-link` nei componenti non aveva `!important` e veniva sovrascritta.
+
+**Fix:** Aggiunte regole `:host-context(body.dark)` nei component stylesheet dei rispettivi componenti con `!important` per ripristinare il rosso:
+- `topbar.component.scss`: `:host-context(body.dark) .menu-mobile-top .menu-items a.logout-mobile { color: #ef4444 !important; }`
+- `sidebar.component.scss`: `:host-context(body.dark) .sidebar .logout-link { color: #ef4444 !important; }`
+
+**File modificati:**
+- `pg_frontend/src/app/components/topbar/topbar.component.scss`
+- `pg_frontend/src/app/components/sidebar/sidebar.component.scss`
+
+---
+
+### 14.7 TS5103 — ignoreDeprecations non valido
+
+**Problema:** TypeScript restituiva errore `TS5103: Invalid value for '--ignoreDeprecations'` durante la compilazione del frontend.
+
+**Causa radice:** Il `tsconfig.json` conteneva `"ignoreDeprecations": "6.0"`. L'unico valore valido per questa opzione era `"5.0"` (introdotto in TypeScript 5.0), e TypeScript 5.9 ha rimosso completamente il supporto per questa opzione.
+
+**Fix:** Rimosso `"ignoreDeprecations": "6.0"` dal `tsconfig.json`.
+
+**File modificati:**
+- `pg_frontend/tsconfig.json`
+
+---
+
 ## 15. Bug Hunt — Piano di fix (22/05/2026)
 
 ### ~~Fase 6 — URL relativi in services~~ ✅ Completata
@@ -443,7 +502,7 @@ Tutti i service (admin, segnalazione, auth, studente, docente, bacheca, notifica
 |---|------|------|-------|
 | 7.1 | Scansionare TUTTI i .html delle feature pages e verificare che ogni componente Ionic usato sia importato nel .ts corrispondente | Tutte le feature pages | media |
 
-### Fix già applicati (questa sessione)
+### Fix applicati (sessione 26/05/2026)
 
 | # | Bug | Fix |
 |---|-----|-----|
@@ -451,3 +510,6 @@ Tutti i service (admin, segnalazione, auth, studente, docente, bacheca, notifica
 | 2 | `elenco-docenti`: non filtrava per CorsoDiStudi dello studente | Ora carica profilo studente e passa `mioCorso` alla API |
 | 3 | `prenota`: `(user as any).corsoDiStudi` sempre undefined | Iniettato `StudenteService`, caricato profilo per ottenere `corsoDiStudi` |
 | 4 | `bacheca-studente`: doppia chiamata API per le FAQ | Usa `bacheca.faqs` embeddati invece di chiamata separata |
+| 5 | `FAQ`: nessun filtro per docente, nessuna info bacheca | Aggiunto `id_docente` al modello, selettore docente frontend, mostra titolo/descrizione bacheca (vd. 14.5) |
+| 6 | Logout non rosso in dark mode (mobile + desktop) | Aggiunte regole `:host-context(body.dark)` nei component stylesheet (vd. 14.6) |
+| 7 | `tsconfig.json`: TS5103 ignoreDeprecations non valido | Rimossa opzione `ignoreDeprecations: "6.0"` (vd. 14.7) |

@@ -9,6 +9,7 @@ export const aggiornaBachecaSchema = [
 export const creaFaqSchema = [
   body('domanda').isString().notEmpty().withMessage('Domanda obbligatoria'),
   body('risposta').isString().notEmpty().withMessage('Risposta obbligatoria'),
+  body('idDocente').optional({ values: 'null' }).isString().notEmpty().withMessage('idDocente non valido'),
 ];
 
 export const modificaFaqSchema = [

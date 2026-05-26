@@ -349,3 +349,11 @@
     font-size: 10px;
   }
 }
+
+:host-context(body.dark) .menu-mobile-top .menu-items a.logout-mobile {
+  color: #ef4444 !important;
+
+  ion-icon {
+    color: #ef4444 !important;
+  }
+}

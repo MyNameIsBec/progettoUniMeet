@@ -113,3 +113,20 @@
     }
   }
 }
+
+:host-context(body.dark) .sidebar .logout-link {
+  color: #ef4444 !important;
+
+  ion-icon {
+    color: #ef4444 !important;
+  }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #f87171 !important;
+
+    ion-icon {
+      color: #f87171 !important;
+    }
+  }
+}

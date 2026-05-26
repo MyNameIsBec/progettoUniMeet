@@ -113,4 +113,6 @@ export interface FAQ {
   risposta: string;
   aperta: boolean;
   dataPubblicazione?: string;
+  idDocente?: string;
+  nomeDocente?: string;
 }
