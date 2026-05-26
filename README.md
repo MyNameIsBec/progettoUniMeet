@@ -18,41 +18,14 @@ Applicazione web per la gestione di prenotazioni di ricevimento tra studenti e d
 
 ## Setup rapido
 
-### 1. Clona e installa dipendenze
+### 1. Clona il repository
 
 ```bash
-# Backend
-cd pg_backend
-npm install
-
-# Frontend
-cd ../pg_frontend
-npm install
+git clone <repo-url>
+cd progettoUniMeet
 ```
 
-### 2. Avvia PostgreSQL
-
-**Linux (systemd):**
-```bash
-sudo systemctl start postgresql
-```
-
-**macOS (Homebrew):**
-```bash
-brew services start postgresql@16
-```
-
-**Windows:**
-```powershell
-net start postgresql-<versione>
-```
-
-**Docker (alternativa):**
-```bash
-docker run -d --name pg_prenotazioni -e POSTGRES_PASSWORD=YOLO -e POSTGRES_DB=prenotazioni_db -p 5432:5432 postgres:latest
-```
-
-### 3. Configura il database
+### 2. Configura il database
 
 Assicurati che le credenziali in `pg_backend/.env` corrispondano al tuo DB locale:
 
@@ -62,7 +35,7 @@ DATABASE_URL="postgresql://postgres:YOLO@127.0.0.1:5432/prenotazioni_db?schema=p
 
 Se il tuo utente PostgreSQL ha password diversa, modifica `YOLO`.
 
-### 4. Avvio in un unico comando (root) — **consigliato**
+### 3. Avvio in un unico comando — **consigliato**
 
 Dalla root del progetto, un solo comando fa **tutto**:
 
@@ -71,7 +44,7 @@ node start.js
 ```
 
 Lo script:
-1. Installa automaticamente le dipendenze se `node_modules` manca
+1. Installa automaticamente le dipendenze (backend + frontend)
 2. Verifica/avvia PostgreSQL (nativo o Docker)
 3. Crea il database e applica le migrazioni se necessario
 4. Popola con dati di test se il DB è vuoto
@@ -81,32 +54,35 @@ Lo script:
 8. Apre automaticamente i browser
 9. Arresta tutto con `Ctrl+C`
 
-### Flag opzionali
+#### Flag opzionali
 
 | Flag | Cosa fa |
 |------|---------|
 | `--no-start` | Solo install + setup DB + seed, non avvia i servizi |
-| `--no-seed` | Salva il seed (solo setup DB) |
+| `--no-seed` | Salta il seed (solo setup DB) |
 | `--reset` | Ricrea il database da zero (drop + create + setup + seed) |
 
 ```bash
-node start.js              # install + setup + seed + start
-node start.js --no-start   # solo setup (utile per CI/preparazione)
-node start.js --no-seed    # setup + start, senza dati di test
-node start.js --reset      # reset DB + re-seed + start
+node start.js                # install + setup + seed + start
+node start.js --no-start     # solo setup (utile per CI/preparazione)
+node start.js --no-seed      # setup + start, senza dati di test
+node start.js --reset        # reset DB + re-seed + start
 ```
 
-### 5. Passaggi manuali (alternativa)
+### 4. Passaggi manuali (alternativa)
 
 ```bash
+# Terminale 1 — Backend
 cd pg_backend
-node setup-db.js    # crea DB, applica migrazioni, genera client
-npm run seed        # popola con dati di test (opzionale ma consigliato)
-npm run dev         # avvia server su http://localhost:5000
+npm install
+node setup-db.js
+npm run seed
+npm run dev
 
-# in un altro terminale:
+# Terminale 2 — Frontend
 cd pg_frontend
-npx ionic serve     # avvia su http://localhost:4200
+npm install
+npx ionic serve
 ```
 
 ---
@@ -134,7 +110,7 @@ npx ionic serve     # avvia su http://localhost:4200
 | **Admin** | `admin@unimeet.it` | Admin |
 | **Admin** | `superadmin@unimeet.it` | Super Admin |
 
-### Seed dati (opzionale)
+### Seed dati
 
 ```bash
 cd pg_backend
@@ -162,6 +138,13 @@ Inserisce nel database:
 
 ## Comandi utili
 
+### Root
+
+| Comando | Cosa fa |
+|---------|---------|
+| `node start.js` | Avvia tutto (install + setup DB + seed + servizi) |
+| `node start.js --no-start` | Solo setup (install + DB + seed) |
+
 ### Backend (`pg_backend/`)
 
 | Comando | Cosa fa |
@@ -178,7 +161,7 @@ Inserisce nel database:
 
 | Comando | Cosa fa |
 |---------|---------|
-| `npx ionic serve` | Avvia il dev server su `http://localhost:8100` |
+| `npx ionic serve` | Avvia il dev server su `http://localhost:4200` |
 | `npm run start` | Alternativa a `ionic serve` |
 | `npm run build` | Build di produzione |
 | `npm run test` | Esegue i test (Jasmine + Karma) |
@@ -198,6 +181,12 @@ createdb -U postgres prenotazioni_db
 # Riapplica migrazioni e seed
 node setup-db.js
 npm run seed
+```
+
+Oppure da root:
+
+```bash
+node start.js --reset
 ```
 
 ---
