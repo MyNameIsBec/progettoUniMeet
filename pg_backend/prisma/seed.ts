@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pkg from 'pg';
 import bcrypt from 'bcrypt';
+import fs from 'fs';
+import path from 'path';
 
 const { Pool } = pkg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -33,7 +35,7 @@ async function main() {
   await prisma.corsoDiStudi.deleteMany({});
   console.log('✨ Database cleared.\n');
 
-  const PW = await bcrypt.hash('password123', SALT_ROUNDS);
+  const PW = await bcrypt.hash('Password123', SALT_ROUNDS);
 
   // ──────────────────────────── CORSO DI STUDI ────────────────────────────
   console.log('── CorsoDiStudi ──');
@@ -55,11 +57,11 @@ async function main() {
   // ──────────────────────────── STUDENTE ────────────────────────────
   console.log('\n── Studente ──');
   const studenti = [
-    { matricola: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unime.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unime.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unime.it', corsoDiStudi: 'cds-2' },
-    { matricola: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unime.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unime.it', corsoDiStudi: 'cds-3' },
+    { matricola: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unimeet.it', corsoDiStudi: 'cds-2' },
+    { matricola: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
+    { matricola: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unimeet.it', corsoDiStudi: 'cds-3' },
   ];
   const studentiCreati: Record<string, any> = {};
   for (const s of studenti) {
@@ -77,11 +79,11 @@ async function main() {
   // ──────────────────────────── DOCENTE ────────────────────────────
   console.log('\n── Docente ──');
   const docenti = [
-    { nome: 'Giuseppe', cognome: 'Verdi', email: 'giuseppe.verdi@unime.it', ufficio: 'Edificio D, Stanza 12' },
-    { nome: 'Anna', cognome: 'Neri', email: 'anna.neri@unime.it', ufficio: 'Edificio A, Stanza 5' },
-    { nome: 'Maria', cognome: 'Bianco', email: 'maria.bianco@unime.it', ufficio: 'Edificio B, Stanza 8' },
-    { nome: 'Paolo', cognome: 'Russo', email: 'paolo.russo@unime.it', ufficio: 'Edificio C, Stanza 3' },
-    { nome: 'Elena', cognome: 'Colombo', email: 'elena.colombo@unime.it', ufficio: 'Edificio E, Stanza 10' },
+    { nome: 'Giuseppe', cognome: 'Verdi', email: 'giuseppe.verdi@unimeet.it', ufficio: 'Edificio D, Stanza 12' },
+    { nome: 'Anna', cognome: 'Neri', email: 'anna.neri@unimeet.it', ufficio: 'Edificio A, Stanza 5' },
+    { nome: 'Maria', cognome: 'Bianco', email: 'maria.bianco@unimeet.it', ufficio: 'Edificio B, Stanza 8' },
+    { nome: 'Paolo', cognome: 'Russo', email: 'paolo.russo@unimeet.it', ufficio: 'Edificio C, Stanza 3' },
+    { nome: 'Elena', cognome: 'Colombo', email: 'elena.colombo@unimeet.it', ufficio: 'Edificio E, Stanza 10' },
   ];
   const docentiCreati: Record<string, any> = {};
   for (const d of docenti) {
@@ -96,13 +98,13 @@ async function main() {
   // ──────────────────────────── DOCENTE CORSO DI STUDI ────────────────────────────
   console.log('\n── DocenteCorsoDiStudi ──');
   const associazioni = [
-    { docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
-    { docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-2' },
-    { docente: 'anna.neri@unime.it', corsoDiStudi: 'cds-1' },
-    { docente: 'maria.bianco@unime.it', corsoDiStudi: 'cds-2' },
-    { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-1' },
-    { docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-2' },
-    { docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
+    { docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
+    { docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-2' },
+    { docente: 'anna.neri@unimeet.it', corsoDiStudi: 'cds-1' },
+    { docente: 'maria.bianco@unimeet.it', corsoDiStudi: 'cds-2' },
+    { docente: 'paolo.russo@unimeet.it', corsoDiStudi: 'cds-1' },
+    { docente: 'paolo.russo@unimeet.it', corsoDiStudi: 'cds-2' },
+    { docente: 'elena.colombo@unimeet.it', corsoDiStudi: 'cds-3' },
   ];
   for (const a of associazioni) {
     await prisma.docenteCorsoDiStudi.create({
@@ -117,8 +119,8 @@ async function main() {
   // ──────────────────────────── AMMINISTRATORE ────────────────────────────
   console.log('\n── Amministratore ──');
   const adminData = [
-    { nome: 'Admin', email: 'admin@unime.it' },
-    { nome: 'Super Admin', email: 'superadmin@unime.it' },
+    { nome: 'Admin', email: 'admin@unimeet.it' },
+    { nome: 'Super Admin', email: 'superadmin@unimeet.it' },
   ];
   for (const a of adminData) {
     await prisma.amministratore.upsert({
@@ -132,13 +134,13 @@ async function main() {
   // ──────────────────────────── CORSO ────────────────────────────
   console.log('\n── Corso ──');
   const corsi = [
-    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unime.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unime.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unime.it', corsoDiStudi: 'cds-2' },
-    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unime.it', corsoDiStudi: 'cds-2' },
-    { id: 'corso-6', nome: 'Analisi Matematica', anno: 2025, cfu: 12, docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
-    { id: 'corso-7', nome: 'Geometria', anno: 2025, cfu: 9, docente: 'elena.colombo@unime.it', corsoDiStudi: 'cds-3' },
+    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unimeet.it', corsoDiStudi: 'cds-1' },
+    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unimeet.it', corsoDiStudi: 'cds-2' },
+    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unimeet.it', corsoDiStudi: 'cds-2' },
+    { id: 'corso-6', nome: 'Analisi Matematica', anno: 2025, cfu: 12, docente: 'elena.colombo@unimeet.it', corsoDiStudi: 'cds-3' },
+    { id: 'corso-7', nome: 'Geometria', anno: 2025, cfu: 9, docente: 'elena.colombo@unimeet.it', corsoDiStudi: 'cds-3' },
   ];
   const corsiCreati: Record<string, any> = {};
   for (const c of corsi) {
@@ -178,18 +180,18 @@ async function main() {
   // ──────────────────────────── FAQ ────────────────────────────
   console.log('\n── FAQ ──');
   const faqList = [
-    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
-    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
-    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unime.it' },
-    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', bacheca: 'cds-1', docente: 'anna.neri@unime.it' },
-    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', bacheca: 'cds-1', docente: 'anna.neri@unime.it' },
-    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', bacheca: 'cds-1', docente: 'paolo.russo@unime.it' },
-    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2', docente: 'giuseppe.verdi@unime.it' },
-    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2', docente: 'maria.bianco@unime.it' },
-    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2', docente: 'paolo.russo@unime.it' },
-    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', bacheca: 'cds-2', docente: 'maria.bianco@unime.it' },
-    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3', docente: 'elena.colombo@unime.it' },
-    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3', docente: 'elena.colombo@unime.it' },
+    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', bacheca: 'cds-1', docente: 'anna.neri@unimeet.it' },
+    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', bacheca: 'cds-1', docente: 'anna.neri@unimeet.it' },
+    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', bacheca: 'cds-1', docente: 'paolo.russo@unimeet.it' },
+    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2', docente: 'maria.bianco@unimeet.it' },
+    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2', docente: 'paolo.russo@unimeet.it' },
+    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', bacheca: 'cds-2', docente: 'maria.bianco@unimeet.it' },
+    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3', docente: 'elena.colombo@unimeet.it' },
+    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3', docente: 'elena.colombo@unimeet.it' },
   ];
   for (const f of faqList) {
     const faq = await prisma.fAQ.create({
@@ -206,12 +208,12 @@ async function main() {
   // ──────────────────────────── SLOT RICEVIMENTO ────────────────────────────
   console.log('\n── SlotRicevimento ──');
   const slotData = [
-    { data: '2026-05-15', inizio: '10:00', fine: '11:00', disp: true, docente: 'giuseppe.verdi@unime.it' },
-    { data: '2026-05-15', inizio: '11:00', fine: '12:00', disp: true, docente: 'giuseppe.verdi@unime.it' },
-    { data: '2026-05-18', inizio: '14:00', fine: '15:30', disp: true, docente: 'anna.neri@unime.it' },
-    { data: '2026-05-20', inizio: '09:00', fine: '10:00', disp: false, docente: 'maria.bianco@unime.it' },
-    { data: '2026-05-22', inizio: '15:00', fine: '16:00', disp: true, docente: 'paolo.russo@unime.it' },
-    { data: '2026-05-22', inizio: '16:00', fine: '17:00', disp: true, docente: 'paolo.russo@unime.it' },
+    { data: '2026-05-15', inizio: '10:00', fine: '11:00', disp: true, docente: 'giuseppe.verdi@unimeet.it' },
+    { data: '2026-05-15', inizio: '11:00', fine: '12:00', disp: true, docente: 'giuseppe.verdi@unimeet.it' },
+    { data: '2026-05-18', inizio: '14:00', fine: '15:30', disp: true, docente: 'anna.neri@unimeet.it' },
+    { data: '2026-05-20', inizio: '09:00', fine: '10:00', disp: false, docente: 'maria.bianco@unimeet.it' },
+    { data: '2026-05-22', inizio: '15:00', fine: '16:00', disp: true, docente: 'paolo.russo@unimeet.it' },
+    { data: '2026-05-22', inizio: '16:00', fine: '17:00', disp: true, docente: 'paolo.russo@unimeet.it' },
   ];
   const slotsCreati: any[] = [];
   for (const s of slotData) {
@@ -284,6 +286,19 @@ async function main() {
       },
     });
     console.log(`  ${d.file} (${(d.dim / 1024).toFixed(0)} KB)`);
+  }
+
+  // ──────────────────────────── FILE FISICI SEED ────────────────────────────
+  console.log('\n── File fisici seed ──');
+  const uploadsDir = path.join(__dirname, '../uploads');
+  for (const d of documenti) {
+    const nomeFile = d.percorso.replace('/uploads/', '');
+    const filePath = path.join(uploadsDir, nomeFile);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    fs.writeFileSync(filePath, `Placeholder: ${d.file} (${d.tipo})`);
+    console.log(`  Creato file: ${nomeFile}`);
   }
 
   // ──────────────────────────── SEGNALAZIONE ────────────────────────────
