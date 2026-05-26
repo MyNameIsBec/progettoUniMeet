@@ -1,16 +1,36 @@
-# Backend Prenotazioni Ricevimento — Setup DB Locale
+# UniMeet — Piattaforma di Prenotazione Ricevimento
 
-## Requisiti
+Applicazione web per la gestione di prenotazioni di ricevimento tra studenti e docenti universitari.
 
-- **PostgreSQL** (versione 14+)
+- **Frontend**: Angular 20 (standalone) + Ionic 8
+- **Backend**: Node.js + Express + TypeScript
+- **Database**: PostgreSQL + Prisma ORM
+
+---
+
+## Prerequisiti
+
 - **Node.js** 18+
 - **npm**
+- **PostgreSQL** 14+ (o Docker)
 
 ---
 
 ## Setup rapido
 
-### 1. Avvia PostgreSQL
+### 1. Clona e installa dipendenze
+
+```bash
+# Backend
+cd pg_backend
+npm install
+
+# Frontend
+cd ../pg_frontend
+npm install
+```
+
+### 2. Avvia PostgreSQL
 
 **Linux (systemd):**
 ```bash
@@ -22,14 +42,19 @@ sudo systemctl start postgresql
 brew services start postgresql@16
 ```
 
-**Windows:** avvia il servizio da `Services.msc` o con:
+**Windows:**
 ```powershell
 net start postgresql-<versione>
 ```
 
-### 2. Configura il database
+**Docker (alternativa):**
+```bash
+docker run -d --name pg_prenotazioni -e POSTGRES_PASSWORD=YOLO -e POSTGRES_DB=prenotazioni_db -p 5432:5432 postgres:latest
+```
 
-Assicurati che le credenziali in `.env` corrispondano al tuo DB locale:
+### 3. Configura il database
+
+Assicurati che le credenziali in `pg_backend/.env` corrispondano al tuo DB locale:
 
 ```env
 DATABASE_URL="postgresql://postgres:YOLO@127.0.0.1:5432/prenotazioni_db?schema=public"
@@ -37,32 +62,58 @@ DATABASE_URL="postgresql://postgres:YOLO@127.0.0.1:5432/prenotazioni_db?schema=p
 
 Se il tuo utente PostgreSQL ha password diversa, modifica `YOLO`.
 
-### 3. Esegui lo script di setup
+### 4. Avvio del backend
 
-**Cross-platform (Windows, Linux, macOS):**
 ```bash
 cd pg_backend
-node setup-db.js
+node setup-db.js    # crea DB, applica migrazioni, genera client
+npm run seed        # popola con dati di test (opzionale ma consigliato)
+npm run dev         # avvia server su http://localhost:5000
 ```
 
-**Solo Unix:** puoi anche usare lo script bash:
+### 5. Avvio del frontend
+
+```bash
+cd pg_frontend
+npx ionic serve     # avvia su http://localhost:8100
+```
+
+Oppure:
+
+```bash
+cd pg_frontend
+npm run start       # alternativa a ionic serve
+```
+
+---
+
+## Dati di test
+
+### Password comune
+
+> **⚠️ Tutti gli utenti condividono la password: `Password123`**
+
+### Account disponibili
+
+| Ruolo | Email | Nome |
+|-------|-------|------|
+| **Studente** | `mario.rossi@studenti.unimeet.it` | Mario Rossi |
+| **Studente** | `lisa.bianchi@studenti.unimeet.it` | Lisa Bianchi |
+| **Studente** | `luca.ferrari@studenti.unimeet.it` | Luca Ferrari |
+| **Studente** | `sofia.romano@studenti.unimeet.it` | Sofia Romano |
+| **Studente** | `marco.esposito@studenti.unimeet.it` | Marco Esposito |
+| **Docente** | `giuseppe.verdi@unimeet.it` | Giuseppe Verdi |
+| **Docente** | `anna.neri@unimeet.it` | Anna Neri |
+| **Docente** | `maria.bianco@unimeet.it` | Maria Bianco |
+| **Docente** | `paolo.russo@unimeet.it` | Paolo Russo |
+| **Docente** | `elena.colombo@unimeet.it` | Elena Colombo |
+| **Admin** | `admin@unimeet.it` | Admin |
+| **Admin** | `superadmin@unimeet.it` | Super Admin |
+
+### Seed dati (opzionale)
+
 ```bash
 cd pg_backend
-chmod +x setup-db.sh
-./setup-db.sh
-```
-
-Lo script:
-1. Verifica i prerequisiti (Node.js, npm)
-2. Legge `DATABASE_URL` dal file `.env`
-3. Verifica che PostgreSQL sia raggiungibile
-4. Crea il database `prenotazioni_db` se non esiste
-5. Applica tutte le migrazioni Prisma
-6. Genera il Prisma Client
-
-### 4. Popola con dati di test (opzionale)
-
-```bash
 npm run seed
 ```
 
@@ -70,71 +121,24 @@ Inserisce nel database:
 
 | Tabella | Righe |
 |---------|-------|
+| CorsoDiStudi | 3 |
 | Studente | 5 |
-| Docente | 4 |
+| Docente | 5 |
 | Amministratore | 2 |
-| Corso | 5 |
+| Corso | 7 |
 | Bacheca | 3 |
-| FAQ | 6 |
+| FAQ | 12 |
 | SlotRicevimento | 6 |
 | LuogoRicevimento | 3 |
-| Prenotazione | 5 (CONFERMATO, IN_ATTESA, RIFIUTATO) |
+| Prenotazione | 5 |
 | Documento | 3 |
-| Notifica | 5 |
-
-> **⚠️ Password di tutti gli utenti: `password123`**
-
-### 5. Avvia il server
-
-```bash
-npm run dev
-```
-
-Il server parte su `http://localhost:5000`.
-
----
-
-## Alternative: PostgreSQL via Docker
-
-Se preferisci Docker invece dell'installazione nativa:
-
-```bash
-docker run -d \
-  --name pg_prenotazioni \
-  -e POSTGRES_PASSWORD=YOLO \
-  -e POSTGRES_DB=prenotazioni_db \
-  -p 5432:5432 \
-  postgres:latest
-
-# Poi esegui migrazioni e seed
-npx prisma migrate deploy
-npx prisma generate
-npm run seed
-```
-
----
-
-## Reset del database
-
-Per ricreare tutto da zero:
-
-```bash
-# Elimina e ricrea il DB
-dropdb -U postgres prenotazioni_db
-createdb -U postgres prenotazioni_db
-
-# Oppure via Docker
-docker rm -f pg_prenotazioni
-# poi riesegui il container come sopra
-
-# Riapplica migrazioni e seed
-node setup-db.js
-npm run seed
-```
+| File (`uploads/`) | 3 (placeholder) |
 
 ---
 
 ## Comandi utili
+
+### Backend (`pg_backend/`)
 
 | Comando | Cosa fa |
 |---------|---------|
@@ -145,8 +149,32 @@ npm run seed
 | `npx prisma studio` | Apri interfaccia grafica per esplorare i dati |
 | `node setup-db.js` | Setup completo DB (cross-platform) |
 | `./setup-db.sh` | Setup completo DB (Unix) |
-| `npx prisma migrate deploy` | Applica migrazioni pendenti |
-| `npx prisma generate` | Rigenera il client Prisma |
+
+### Frontend (`pg_frontend/`)
+
+| Comando | Cosa fa |
+|---------|---------|
+| `npx ionic serve` | Avvia il dev server su `http://localhost:8100` |
+| `npm run start` | Alternativa a `ionic serve` |
+| `npm run build` | Build di produzione |
+| `npm run test` | Esegue i test (Jasmine + Karma) |
+| `npm run lint` | ESLint |
+
+---
+
+## Reset del database
+
+```bash
+cd pg_backend
+
+# Elimina e ricrea il DB
+dropdb -U postgres prenotazioni_db
+createdb -U postgres prenotazioni_db
+
+# Riapplica migrazioni e seed
+node setup-db.js
+npm run seed
+```
 
 ---
 
