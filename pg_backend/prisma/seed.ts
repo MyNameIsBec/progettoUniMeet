@@ -234,9 +234,9 @@ async function main() {
   // ──────────────────────────── LUOGO RICEVIMENTO ────────────────────────────
   console.log('\n── LuogoRicevimento ──');
   const luoghi = [
-    { aula: 'Aula 5', edificio: 'Edificio D', piano: 'Primo piano', lat: 38.1938, lon: 15.5540, slot: slotsCreati[0]! },
-    { aula: 'Studio 12', edificio: 'Edificio A', piano: 'Secondo piano', lat: 38.1940, lon: 15.5535, slot: slotsCreati[2]! },
-    { aula: 'Lab 3', edificio: 'Edificio C', piano: 'Piano terra', lat: 38.1935, lon: 15.5545, slot: slotsCreati[4]! },
+    { aula: 'Aula 5', edificio: 'Edificio 8 — Viale delle Scienze', piano: 'Primo piano', lat: 38.1089, lon: 13.3489, slot: slotsCreati[0]! },
+    { aula: 'Studio 12', edificio: 'Edificio 6 — Viale delle Scienze', piano: 'Secondo piano', lat: 38.1080, lon: 13.3475, slot: slotsCreati[2]! },
+    { aula: 'Lab 3', edificio: 'Edificio 19 — Viale delle Scienze', piano: 'Piano terra', lat: 38.1097, lon: 13.3500, slot: slotsCreati[4]! },
   ];
   for (const l of luoghi) {
     await prisma.luogoRicevimento.create({
