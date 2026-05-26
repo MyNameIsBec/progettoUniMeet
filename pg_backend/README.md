@@ -75,7 +75,7 @@ npm run dev         # avvia server su http://localhost:5000
 
 ```bash
 cd pg_frontend
-npx ionic serve     # avvia su http://localhost:8100
+npx ionic serve     # avvia su http://localhost:4200
 ```
 
 Oppure:
@@ -84,6 +84,22 @@ Oppure:
 cd pg_frontend
 npm run start       # alternativa a ionic serve
 ```
+
+### 6. Avvio con un unico comando (root)
+
+Dalla root del progetto, puoi avviare **tutto** (PostgreSQL + Backend + Frontend + Prisma Studio) con:
+
+```bash
+node start.js
+```
+
+Lo script:
+1. Verifica/avvia PostgreSQL (nativo o Docker)
+2. Avvia il backend su `http://localhost:5000`
+3. Avvia Prisma Studio su `http://localhost:5557`
+4. Avvia il frontend su `http://localhost:4200`
+5. Apre automaticamente i browser quando i servizi sono pronti
+6. Gestisce lo shutdown graceful con `Ctrl+C`
 
 ---
 
