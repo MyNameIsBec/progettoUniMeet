@@ -10,6 +10,16 @@ const FRONTEND = path.join(ROOT, 'pg_frontend');
 const ENV_PATH = path.join(BACKEND, '.env');
 const IS_WIN = os.platform() === 'win32';
 
+// ── Flags ──
+const flags = { reset: false, noSeed: false, noStart: false };
+for (const arg of process.argv.slice(2)) {
+  if (arg === '--reset')   flags.reset = true;
+  if (arg === '--no-seed')  flags.noSeed = true;
+  if (arg === '--no-start') flags.noStart = true;
+}
+
+// ── Utilities ──
+
 function loadEnv() {
   if (!fs.existsSync(ENV_PATH)) return {};
   const env = {};
@@ -23,24 +33,6 @@ function loadEnv() {
 function log(tag, msg) {
   const ts = new Date().toLocaleTimeString('it-IT');
   console.log(`[${ts}][${tag}] ${msg}`);
-}
-
-function checkDeps() {
-  let ok = true;
-  const backendNodeModules = path.join(BACKEND, 'node_modules');
-  const frontendNodeModules = path.join(FRONTEND, 'node_modules');
-
-  if (!fs.existsSync(backendNodeModules)) {
-    log('INFO', 'Backend: cartella node_modules mancante.');
-    log('INFO', '  Esegui: cd pg_backend && npm install');
-    ok = false;
-  }
-  if (!fs.existsSync(frontendNodeModules)) {
-    log('INFO', 'Frontend: cartella node_modules mancante.');
-    log('INFO', '  Esegui: cd pg_frontend && npm install');
-    ok = false;
-  }
-  return ok;
 }
 
 function openBrowser(url) {
@@ -153,6 +145,81 @@ async function startDocker() {
   return false;
 }
 
+// ── Nuove funzioni: install / setup / seed ──
+
+function installDeps(dir, label) {
+  const nm = path.join(dir, 'node_modules');
+  if (fs.existsSync(nm)) {
+    log('INSTALL', `${label}: dipendenze già presenti`);
+    return;
+  }
+  log('INSTALL', `${label}: npm install in corso...`);
+  execSync('npm install', { cwd: dir, stdio: 'inherit' });
+  log('INSTALL', `${label}: completato ✅`);
+}
+
+async function connectPg(config) {
+  const { Client } = require('pg');
+  const client = new Client({
+    user: config.user,
+    password: config.password,
+    host: config.host,
+    port: config.port,
+    database: 'postgres',
+  });
+  await client.connect();
+  return client;
+}
+
+async function dbExists(client, dbName) {
+  const res = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName]);
+  return res.rows.length > 0;
+}
+
+async function hasSeedData(config) {
+  const { Client } = require('pg');
+  let client;
+  try {
+    client = new Client({
+      user: config.user,
+      password: config.password,
+      host: config.host,
+      port: config.port,
+      database: config.dbName,
+    });
+    await client.connect();
+    const res = await client.query('SELECT COUNT(*)::int AS cnt FROM "Studente"');
+    return res.rows[0].cnt > 0;
+  } catch {
+    return false;
+  } finally {
+    if (client) await client.end();
+  }
+}
+
+function parseDbUrl(urlStr) {
+  const url = new URL(urlStr);
+  return {
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    host: url.hostname,
+    port: parseInt(url.port) || 5432,
+    dbName: url.pathname.replace(/^\//, ''),
+  };
+}
+
+async function runSetupDb() {
+  log('SETUP', 'Eseguo setup-db.js...');
+  execSync('node setup-db.js', { cwd: BACKEND, stdio: 'inherit' });
+  log('SETUP', 'Database pronto ✅');
+}
+
+async function runSeed() {
+  log('SEED', 'Popolo il database con dati di test...');
+  execSync('npm run seed', { cwd: BACKEND, stdio: 'inherit' });
+  log('SEED', 'Dati di test inseriti ✅');
+}
+
 async function main() {
   console.log('');
   console.log('═══════════════════════════════════════════');
@@ -160,15 +227,15 @@ async function main() {
   console.log('═══════════════════════════════════════════');
   console.log('');
 
-  if (!checkDeps()) {
-    console.log('\n⚠️  Esegui npm install nelle cartelle indicate e riprova.\n');
-    process.exit(1);
-  }
-  console.log('  Dipendenze OK ✅');
+  // ── 0. Installa dipendenze se mancanti ──
+  console.log('  Controllo dipendenze...');
+  installDeps(BACKEND, 'Backend');
+  installDeps(FRONTEND, 'Frontend');
   console.log('');
 
   const env = loadEnv();
   const dbUrl = env.DATABASE_URL || 'postgresql://postgres:YOLO@localhost:5432/prenotazioni_db';
+  const config = parseDbUrl(dbUrl);
 
   // ── 1. PostgreSQL ──
   log('DB', 'Verifico PostgreSQL...');
@@ -205,6 +272,46 @@ async function main() {
   log('DB', 'PostgreSQL connesso. ✅');
   console.log('');
 
+  // ── 1.5 Setup database / reset / seed ──
+  const pgClient = await connectPg(config);
+
+  if (flags.reset) {
+    log('RESET', 'Reset del database...');
+    await pgClient.query(`DROP DATABASE IF EXISTS "${config.dbName}" WITH (FORCE)`);
+    await pgClient.query(`CREATE DATABASE "${config.dbName}"`);
+    log('RESET', 'Database ricreato ✅');
+    await pgClient.end();
+    await runSetupDb();
+    if (!flags.noSeed) await runSeed();
+  } else {
+    const exists = await dbExists(pgClient, config.dbName);
+    await pgClient.end();
+
+    if (!exists) {
+      log('SETUP', 'Database non trovato, eseguo setup...');
+      await runSetupDb();
+    }
+
+    if (!flags.noSeed) {
+      const seeded = await hasSeedData(config);
+      if (!seeded) {
+        await runSeed();
+      } else {
+        log('SEED', 'Dati di test già presenti, skip');
+      }
+    }
+  }
+
+  if (flags.noStart) {
+    console.log('');
+    console.log('═══════════════════════════════════════════');
+    console.log('  Setup completato.                        ');
+    console.log('  Per avviare i servizi:  node start.js    ');
+    console.log('═══════════════════════════════════════════');
+    console.log('');
+    return;
+  }
+
   // ── 2. Backend ──
   log('BACKEND', 'Avvio backend...');
   const backend = spawn('npm', ['run', 'dev'], {
@@ -219,7 +326,6 @@ async function main() {
 
   // ── 3. Prisma Studio ──
   const PRISMA_PORT = 5557;
-  // Usa il binario locale invece di npx per evitare doppi processi
   const prismaBin = path.join(
     BACKEND, 'node_modules', '.bin',
     IS_WIN ? 'prisma.cmd' : 'prisma'
@@ -232,7 +338,6 @@ async function main() {
   });
   prisma.stdout.on('data', d => process.stdout.write(`[PRISMA] ${d}`));
   prisma.stderr.on('data', d => process.stderr.write(`[PRISMA] ${d}`));
-  // Aspetta che Prisma Studio sia pronto e apri il browser una sola volta
   setTimeout(() => openBrowser(`http://localhost:${PRISMA_PORT}`), 8000);
 
   // ── 4. Frontend ──

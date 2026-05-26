@@ -62,44 +62,52 @@ DATABASE_URL="postgresql://postgres:YOLO@127.0.0.1:5432/prenotazioni_db?schema=p
 
 Se il tuo utente PostgreSQL ha password diversa, modifica `YOLO`.
 
-### 4. Avvio del backend
+### 4. Avvio in un unico comando (root) — **consigliato**
 
-```bash
-cd pg_backend
-node setup-db.js    # crea DB, applica migrazioni, genera client
-npm run seed        # popola con dati di test (opzionale ma consigliato)
-npm run dev         # avvia server su http://localhost:5000
-```
-
-### 5. Avvio del frontend
-
-```bash
-cd pg_frontend
-npx ionic serve     # avvia su http://localhost:4200
-```
-
-Oppure:
-
-```bash
-cd pg_frontend
-npm run start       # alternativa a ionic serve
-```
-
-### 6. Avvio con un unico comando (root)
-
-Dalla root del progetto, puoi avviare **tutto** (PostgreSQL + Backend + Frontend + Prisma Studio) con:
+Dalla root del progetto, un solo comando fa **tutto**:
 
 ```bash
 node start.js
 ```
 
 Lo script:
-1. Verifica/avvia PostgreSQL (nativo o Docker)
-2. Avvia il backend su `http://localhost:5000`
-3. Avvia Prisma Studio su `http://localhost:5557`
-4. Avvia il frontend su `http://localhost:4200`
-5. Apre automaticamente i browser quando i servizi sono pronti
-6. Gestisce lo shutdown graceful con `Ctrl+C`
+1. Installa automaticamente le dipendenze se `node_modules` manca
+2. Verifica/avvia PostgreSQL (nativo o Docker)
+3. Crea il database e applica le migrazioni se necessario
+4. Popola con dati di test se il DB è vuoto
+5. Avvia Backend su `http://localhost:5000`
+6. Avvia Prisma Studio su `http://localhost:5557`
+7. Avvia Frontend su `http://localhost:4200`
+8. Apre automaticamente i browser
+9. Arresta tutto con `Ctrl+C`
+
+### Flag opzionali
+
+| Flag | Cosa fa |
+|------|---------|
+| `--no-start` | Solo install + setup DB + seed, non avvia i servizi |
+| `--no-seed` | Salva il seed (solo setup DB) |
+| `--reset` | Ricrea il database da zero (drop + create + setup + seed) |
+
+```bash
+node start.js              # install + setup + seed + start
+node start.js --no-start   # solo setup (utile per CI/preparazione)
+node start.js --no-seed    # setup + start, senza dati di test
+node start.js --reset      # reset DB + re-seed + start
+```
+
+### 5. Passaggi manuali (alternativa)
+
+```bash
+cd pg_backend
+node setup-db.js    # crea DB, applica migrazioni, genera client
+npm run seed        # popola con dati di test (opzionale ma consigliato)
+npm run dev         # avvia server su http://localhost:5000
+
+# in un altro terminale:
+cd pg_frontend
+npx ionic serve     # avvia su http://localhost:4200
+```
 
 ---
 
