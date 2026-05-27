@@ -3,7 +3,7 @@
     <div class="hero-text-content">
       <span class="eyebrow">Bacheca</span>
       <h1>Bacheca docenti</h1>
-      <p>In questa sezione puoi gestire le FAQ (domande frequenti) e pubblicare le comunicazioni destinate agli studenti iscritti al corso di {{ nomeCorsoDiStudi }}.</p>
+      <p>In questa sezione puoi gestire le FAQ (domande frequenti) e pubblicare le comunicazioni destinate agli studenti iscritti al corso di <strong>{{ nomeCorso }}</strong>.</p>
     </div>
     <div class="hero-status-card">
       <div class="hero-status-icon" style="background: #eff6ff; color: var(--primary-blue);">
@@ -17,12 +17,12 @@
     </div>
   </section>
 
-  @if (corsiDisponibili.length > 1) {
+  @if (bacheche.length > 1) {
   <section class="cds-selector-section">
     <ion-item lines="none" class="cds-selector-item">
-      <ion-select [value]="cdsSelezionatoId" (ionChange)="onCdsChange($event)" interface="popover" label="Corso di Studi">
-        @for (cds of corsiDisponibili; track cds.id) {
-        <ion-select-option [value]="cds.id">{{ cds.nome }}</ion-select-option>
+      <ion-select [value]="corsoSelezionatoId" (ionChange)="onCorsoChange($event)" interface="popover" label="Corso">
+        @for (b of bacheche; track b.idCorso) {
+        <ion-select-option [value]="b.idCorso">{{ b.nomeCorso }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
@@ -35,15 +35,15 @@
       <ion-icon name="refresh-outline"></ion-icon>
       <p>Caricamento bacheca...</p>
     </div>
-    } @else if (corsiDisponibili.length === 0) {
+    } @else if (bacheche.length === 0) {
     <div class="empty-courses-state">
       <ion-card class="empty-card">
         <ion-card-content>
           <div class="empty-icon-wrapper">
             <ion-icon name="alert-circle-outline"></ion-icon>
           </div>
-          <h2>Nessun Corso di Studi Assegnato</h2>
-          <p>Al momento non risulti associato ad alcun Corso di Studi attivo nel sistema.</p>
+          <h2>Nessun Corso Assegnato</h2>
+          <p>Al momento non risulti associato ad alcun corso attivo nel sistema.</p>
           <p class="sub-text">Contatta l'amministratore del portale per richiedere l'abilitazione e l'assegnazione dei tuoi corsi.</p>
         </ion-card-content>
       </ion-card>
@@ -55,14 +55,14 @@
         <ion-card-header>
           <ion-card-title>
             <ion-icon name="help-circle-outline"></ion-icon>
-            Domande frequenti
+            Domande frequenti - {{ nomeCorso }}
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
           @if (faqs.length === 0) {
           <div class="no-faq">
             <ion-icon name="information-circle-outline"></ion-icon>
-            <p>Nessuna FAQ presente. Clicca su "Nuova FAQ" nel pannello laterale per aggiungere la prima.</p>
+            <p>Nessuna FAQ presente per questo corso. Clicca su "Nuova FAQ" nel pannello laterale per aggiungere la prima.</p>
           </div>
           }
 
@@ -98,7 +98,7 @@
         </ion-card-header>
         <ion-card-content>
           <p>
-            Le risposte inserite in questa bacheca sono immediatamente visibili a tutti gli studenti iscritti al corso di <strong>{{ nomeCorsoDiStudi }}</strong>.
+            Le risposte inserite in questa bacheca sono immediatamente visibili a tutti gli studenti iscritti al corso di <strong>{{ nomeCorso }}</strong>.
           </p>
           <p>
             Mantenere aggiornate le risposte ai dubbi più comuni ti consente di risparmiare tempo prezioso riducendo le mail ripetitive.

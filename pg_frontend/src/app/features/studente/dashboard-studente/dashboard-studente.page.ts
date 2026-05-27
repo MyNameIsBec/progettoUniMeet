@@ -84,10 +84,12 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
       const profilo = await firstValueFrom(this.studenteService.getProfilo(matricola));
       
       if (profilo.corsoDiStudiId) {
-        const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
-        if (bacheca && bacheca.faqs) {
-          this.listaFaq = bacheca.faqs;
+        const bacheche = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
+        const tutteFaq: FAQ[] = [];
+        for (const b of bacheche) {
+          if (b.faqs) tutteFaq.push(...b.faqs);
         }
+        this.listaFaq = tutteFaq;
       }
 
       const tutte = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(matricola));

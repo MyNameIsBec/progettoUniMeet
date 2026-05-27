@@ -2,11 +2,11 @@
   <!-- PAGE HEADER -->
   <section class="premium-hero">
     <div class="hero-text-content">
-      @if (bacheca) {
-      <span class="eyebrow">{{ bacheca.nomeCorsoDiStudi }}</span>
-      <h1>{{ bacheca.titolo }}</h1>
-      <p>{{ bacheca.descrizione }}</p>
-      <small class="hero-update">Ultimo aggiornamento: {{ bacheca.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</small>
+      @if (bachecaCorrente) {
+      <span class="eyebrow">{{ bachecaCorrente.nomeCorsoDiStudi }}</span>
+      <h1>{{ bachecaCorrente.titolo }}</h1>
+      <p>{{ bachecaCorrente.descrizione }}</p>
+      <small class="hero-update">Ultimo aggiornamento: {{ bachecaCorrente.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</small>
       } @else {
       <span class="eyebrow">Informazioni</span>
       <h1>FAQ e Bacheca</h1>
@@ -27,6 +27,19 @@
     </div>
   </section>
 
+  <!-- Course selector -->
+  @if (bacheche.length > 1) {
+  <section class="cds-selector-section">
+    <ion-item lines="none" class="cds-selector-item">
+      <ion-select [value]="corsoSelezionatoId" (ionChange)="onCorsoChange($event)" interface="popover" label="Corso">
+        @for (b of bacheche; track b.idCorso) {
+        <ion-select-option [value]="b.idCorso">{{ b.nomeCorso }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  </section>
+  }
+
   <!-- MAIN GRID -->
   <section class="bacheca-simple-grid">
 
@@ -35,7 +48,11 @@
       <ion-card-header>
         <ion-card-title>
           <ion-icon name="help-circle-outline"></ion-icon>
+          @if (bachecaCorrente) {
+          {{ bachecaCorrente.nomeCorso }}
+          } @else {
           Bacheca del tuo Corso
+          }
         </ion-card-title>
       </ion-card-header>
 
@@ -100,7 +117,7 @@
         </p>
 
         <p>
-          Potrai specificare l’argomento del ricevimento, descrivere brevemente
+          Potrai specificare l'argomento del ricevimento, descrivere brevemente
           il problema e allegare documenti utili.
         </p>
 

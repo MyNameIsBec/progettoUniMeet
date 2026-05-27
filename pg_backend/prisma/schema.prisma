@@ -71,14 +71,15 @@ model Amministratore {
 }
 
 model Corso {
-  id_corso          String      @id @default(uuid())
+  id_corso          String       @id @default(uuid())
   nome_corso        String
   anno              Int
   cfu               Int
   id_docente        String
-  docente           Docente     @relation(fields: [id_docente], references: [id_docente])
+  docente           Docente      @relation(fields: [id_docente], references: [id_docente])
   id_corso_di_studi String?
   corso_di_studi    CorsoDiStudi? @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+  bacheca           Bacheca?
 }
 
 model Bacheca {
@@ -86,8 +87,10 @@ model Bacheca {
   titolo                    String
   descrizione               String
   data_ultimo_aggiornamento DateTime     @updatedAt
-  id_corso_di_studi         String       @unique
+  id_corso_di_studi         String
   corso_di_studi            CorsoDiStudi @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+  id_corso                  String       @unique
+  corso                     Corso        @relation(fields: [id_corso], references: [id_corso])
   faqs                      FAQ[]
 }
 

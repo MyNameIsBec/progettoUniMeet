@@ -159,46 +159,56 @@ async function main() {
 
   // ──────────────────────────── BACHECA ────────────────────────────
   console.log('\n── Bacheca ──');
-  const bacheche = [
-    { titolo: 'Bacheca di Informatica', descrizione: 'Avvisi e materiale per il Corso di Studi in Informatica', corsoDiStudi: 'cds-1' },
-    { titolo: 'Bacheca di Ingegneria Informatica', descrizione: 'Avvisi e materiale per il Corso di Studi in Ingegneria Informatica', corsoDiStudi: 'cds-2' },
-    { titolo: 'Bacheca di Matematica', descrizione: 'Annunci e risorse per il Corso di Studi in Matematica', corsoDiStudi: 'cds-3' },
+  const bachecheData = [
+    { corsoId: 'corso-1', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Programmazione Web', descrizione: 'Avvisi e materiale per il corso di Programmazione Web' },
+    { corsoId: 'corso-2', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Basi di Dati', descrizione: 'Avvisi e materiale per il corso di Basi di Dati' },
+    { corsoId: 'corso-3', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Ingegneria del Software', descrizione: 'Avvisi e materiale per il corso di Ingegneria del Software' },
+    { corsoId: 'corso-4', corsoDiStudi: 'cds-2', titolo: 'Bacheca - Reti di Calcolatori', descrizione: 'Avvisi e materiale per il corso di Reti di Calcolatori' },
+    { corsoId: 'corso-5', corsoDiStudi: 'cds-2', titolo: 'Bacheca - Intelligenza Artificiale', descrizione: 'Avvisi e materiale per il corso di Intelligenza Artificiale' },
+    { corsoId: 'corso-6', corsoDiStudi: 'cds-3', titolo: 'Bacheca - Analisi Matematica', descrizione: 'Annunci e risorse per il corso di Analisi Matematica' },
+    { corsoId: 'corso-7', corsoDiStudi: 'cds-3', titolo: 'Bacheca - Geometria', descrizione: 'Annunci e risorse per il corso di Geometria' },
   ];
   const bachecheCreati: Record<string, any> = {};
-  for (const b of bacheche) {
-    bachecheCreati[b.corsoDiStudi] = await prisma.bacheca.upsert({
-      where: { id_corso_di_studi: corsiDiStudi[b.corsoDiStudi]!.id_corso_di_studi },
-      update: {},
-      create: {
+  for (const b of bachecheData) {
+    bachecheCreati[b.corsoId] = await prisma.bacheca.create({
+      data: {
         titolo: b.titolo, descrizione: b.descrizione,
         id_corso_di_studi: corsiDiStudi[b.corsoDiStudi]!.id_corso_di_studi,
+        id_corso: corsiCreati[b.corsoId]!.id_corso,
       },
     });
-    console.log(`  ${b.titolo}`);
+    console.log(`  ${b.titolo} → ${b.corsoId}`);
   }
 
   // ──────────────────────────── FAQ ────────────────────────────
   console.log('\n── FAQ ──');
   const faqList = [
-    { domanda: "Come si svolge l'esame?", risposta: 'Prova pratica al computer e discussione orale.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
-    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
-    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', bacheca: 'cds-1', docente: 'giuseppe.verdi@unimeet.it' },
-    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', bacheca: 'cds-1', docente: 'anna.neri@unimeet.it' },
-    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', bacheca: 'cds-1', docente: 'anna.neri@unimeet.it' },
-    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', bacheca: 'cds-1', docente: 'paolo.russo@unimeet.it' },
-    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', bacheca: 'cds-2', docente: 'giuseppe.verdi@unimeet.it' },
-    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", bacheca: 'cds-2', docente: 'maria.bianco@unimeet.it' },
-    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', bacheca: 'cds-2', docente: 'paolo.russo@unimeet.it' },
-    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', bacheca: 'cds-2', docente: 'maria.bianco@unimeet.it' },
-    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', bacheca: 'cds-3', docente: 'elena.colombo@unimeet.it' },
-    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', bacheca: 'cds-3', docente: 'elena.colombo@unimeet.it' },
+    // Programmazione Web (corso-1)
+    { domanda: "Come si svolge l'esame di Programmazione Web?", risposta: 'Prova pratica al computer e discussione orale.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
+    { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
+    // Basi di Dati (corso-2)
+    { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', corso: 'corso-2', docente: 'giuseppe.verdi@unimeet.it' },
+    // Ingegneria del Software (corso-3)
+    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
+    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
+    // Reti di Calcolatori (corso-4)
+    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', corso: 'corso-4', docente: 'maria.bianco@unimeet.it' },
+    { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", corso: 'corso-4', docente: 'maria.bianco@unimeet.it' },
+    // Intelligenza Artificiale (corso-5)
+    { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
+    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
+    // Analisi Matematica (corso-6)
+    { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', corso: 'corso-6', docente: 'elena.colombo@unimeet.it' },
+    // Geometria (corso-7)
+    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', corso: 'corso-7', docente: 'elena.colombo@unimeet.it' },
   ];
   for (const f of faqList) {
     const faq = await prisma.fAQ.create({
       data: {
         domanda: f.domanda,
         risposta: f.risposta,
-        id_bacheca: bachecheCreati[f.bacheca]!.id_bacheca,
+        id_bacheca: bachecheCreati[f.corso]!.id_bacheca,
         id_docente: docentiCreati[f.docente]!.id_docente,
       },
     });

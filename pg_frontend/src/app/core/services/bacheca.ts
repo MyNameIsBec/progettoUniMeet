@@ -13,16 +13,24 @@ export class BachecaService {
     return `${this.authService.getApiUrl()}/api/bacheche`;
   }
 
-  getBachecaPerCorsoDiStudi(idCorsoDiStudi: string): Observable<Bacheca> {
-    return this.http.get<Bacheca>(`${this.api}/corso-di-studi/${idCorsoDiStudi}`);
+  getBachecaPerCorsoDiStudi(idCorsoDiStudi: string): Observable<Bacheca[]> {
+    return this.http.get<Bacheca[]>(`${this.api}/corso-di-studi/${idCorsoDiStudi}`);
   }
 
-  getFaq(idCorsoDiStudi: string): Observable<FAQ[]> {
-    return this.http.get<FAQ[]>(`${this.api}/corso-di-studi/${idCorsoDiStudi}/faq`)
+  getBachecaByCorso(idCorso: string): Observable<Bacheca> {
+    return this.http.get<Bacheca>(`${this.api}/corso/${idCorso}`);
   }
 
-  aggiungiFaq(idCorsoDiStudi: string, faq: Partial<FAQ>): Observable<FAQ> {
-    return this.http.post<FAQ>(`${this.api}/corso-di-studi/${idCorsoDiStudi}/faq`, faq)
+  getBachecheDocente(): Observable<Bacheca[]> {
+    return this.http.get<Bacheca[]>(`${this.api}/docente/me`);
+  }
+
+  getFaq(idCorso: string): Observable<FAQ[]> {
+    return this.http.get<FAQ[]>(`${this.api}/corso/${idCorso}/faq`)
+  }
+
+  aggiungiFaq(idCorso: string, faq: Partial<FAQ>): Observable<FAQ> {
+    return this.http.post<FAQ>(`${this.api}/corso/${idCorso}/faq`, faq)
   }
 
   aggiornaFaq(idBacheca: string, faq: Partial<FAQ>): Observable<FAQ> {

@@ -103,6 +103,8 @@ export interface Bacheca {
   descrizione: string;
   idCorsoDiStudi?: string;
   nomeCorsoDiStudi?: string;
+  idCorso: string;
+  nomeCorso: string;
   faqs?: FAQ[];
   dataUltimoAggiornamento?: string;
 }

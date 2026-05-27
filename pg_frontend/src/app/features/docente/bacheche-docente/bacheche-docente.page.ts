@@ -5,8 +5,6 @@ import { firstValueFrom } from 'rxjs';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonItem, IonSelect, IonSelectOption, AlertController } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { BachecaService } from '../../../core/services/bacheca';
-import { DocenteService } from '../../../core/services/docente';
-import { AuthService } from '../../../core/services/auth';
 import { FAQ, Bacheca } from '../../../core/models/interfacce';
 
 @Component({
@@ -24,57 +22,49 @@ import { FAQ, Bacheca } from '../../../core/models/interfacce';
 export class BachecheDocentePage implements OnInit {
   public bacheca: Bacheca | null = null;
   public faqs: FAQ[] = [];
-  public corsiDisponibili: { id: string; nome: string }[] = [];
-  public cdsSelezionatoId: string = '';
-  public nomeCorsoDiStudi = '';
+  public bacheche: Bacheca[] = [];
+  public corsoSelezionatoId: string = '';
+  public nomeCorso = '';
   public loading = true;
 
   constructor(
     private bachecaService: BachecaService,
-    private docenteService: DocenteService,
-    private authService: AuthService,
     private alertCtrl: AlertController
   ) {}
 
   async ngOnInit() {
-    await this.caricaCorsi();
+    await this.caricaBacheche();
   }
 
-  async caricaCorsi() {
+  async caricaBacheche() {
+    this.loading = true;
     try {
-      const user = this.authService.getCurrentUser();
-      if (!user) return;
-
-      const docente = await firstValueFrom(this.docenteService.getDettagliDocente(user.id)) as any;
-      this.corsiDisponibili = docente.corsiDiStudi || [];
-      if (this.corsiDisponibili.length > 0) {
-        this.cdsSelezionatoId = this.corsiDisponibili[0].id;
-        await this.caricaBacheca();
+      this.bacheche = await firstValueFrom(this.bachecaService.getBachecheDocente());
+      if (this.bacheche.length > 0) {
+        this.corsoSelezionatoId = this.bacheche[0].idCorso;
+        this.selezionaBacheca(this.bacheche[0]);
       } else {
         this.loading = false;
       }
     } catch (err) {
-      console.error('Errore caricamento corsi', err);
+      console.error('Errore caricamento bacheche', err);
       this.loading = false;
     }
   }
 
-  async onCdsChange(event: any) {
-    this.cdsSelezionatoId = event.detail.value;
-    await this.caricaBacheca();
+  onCorsoChange(event: any) {
+    const idCorso = event.detail.value;
+    const bacheca = this.bacheche.find(b => b.idCorso === idCorso);
+    if (bacheca) {
+      this.selezionaBacheca(bacheca);
+    }
   }
 
-  async caricaBacheca() {
-    if (!this.cdsSelezionatoId) return;
-    this.loading = true;
-    try {
-      const cds = this.corsiDisponibili.find(c => c.id === this.cdsSelezionatoId);
-      this.nomeCorsoDiStudi = cds?.nome || '';
-      this.bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(this.cdsSelezionatoId));
-      this.faqs = await firstValueFrom(this.bachecaService.getFaq(this.cdsSelezionatoId));
-    } catch (err) {
-      console.error('Errore caricamento bacheca', err);
-    }
+  private selezionaBacheca(bacheca: Bacheca) {
+    this.bacheca = bacheca;
+    this.corsoSelezionatoId = bacheca.idCorso;
+    this.nomeCorso = bacheca.nomeCorso;
+    this.faqs = bacheca.faqs ?? [];
     this.loading = false;
   }
 
@@ -92,8 +82,9 @@ export class BachecheDocentePage implements OnInit {
           handler: async (data) => {
             if (!data.domanda || !data.risposta) return false;
             try {
-              await firstValueFrom(this.bachecaService.aggiungiFaq(this.cdsSelezionatoId, { domanda: data.domanda, risposta: data.risposta }));
-              await this.caricaBacheca();
+              await firstValueFrom(this.bachecaService.aggiungiFaq(this.corsoSelezionatoId, { domanda: data.domanda, risposta: data.risposta }));
+              const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
+              this.selezionaBacheca(aggiornata);
             } catch (err) {
               console.error('Errore creazione FAQ', err);
             }
@@ -120,7 +111,8 @@ export class BachecheDocentePage implements OnInit {
             if (!data.domanda || !data.risposta) return false;
             try {
               await firstValueFrom(this.bachecaService.aggiornaFaq('', { ...faq, domanda: data.domanda, risposta: data.risposta }));
-              await this.caricaBacheca();
+              const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
+              this.selezionaBacheca(aggiornata);
             } catch (err) {
               console.error('Errore modifica FAQ', err);
             }
@@ -144,7 +136,8 @@ export class BachecheDocentePage implements OnInit {
           handler: async () => {
             try {
               await firstValueFrom(this.bachecaService.eliminaFaq(faq.id));
-              await this.caricaBacheca();
+              const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
+              this.selezionaBacheca(aggiornata);
             } catch (err) {
               console.error('Errore eliminazione FAQ', err);
             }

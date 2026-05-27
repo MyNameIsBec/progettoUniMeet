@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonSegment, IonSegmentButton, IonLabel, IonItem, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { Bacheca, FAQ } from '../../../core/models/interfacce';
 import { BachecaService } from '../../../core/services/bacheca';
 import { AuthService } from '../../../core/services/auth';
@@ -24,6 +25,7 @@ export interface LinkUtile {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     IonIcon,
     IonCard,
@@ -34,6 +36,9 @@ export interface LinkUtile {
     IonSegment,
     IonSegmentButton,
     IonLabel,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
     DashboardLayoutComponent
   ]
 })
@@ -62,16 +67,20 @@ export class BachecaStudentePage implements OnInit {
     private studenteService: StudenteService
   ) { }
 
-  public bacheca?: Bacheca;
+  public bacheche: Bacheca[] = [];
+  public bachecaCorrente?: Bacheca;
   public listaFaq: FAQ[] = [];
   public docentiDisponibili: { id: string; nome: string }[] = [];
   public docenteSelezionato: string = 'tutti';
+  public corsoSelezionatoId: string = '';
+  public loading = true;
 
   get listaFaqFiltrate(): FAQ[] {
-    if (this.docenteSelezionato === 'tutti') {
-      return this.listaFaq;
+    let faqs = this.listaFaq;
+    if (this.docenteSelezionato !== 'tutti') {
+      faqs = faqs.filter(faq => faq.idDocente === this.docenteSelezionato);
     }
-    return this.listaFaq.filter(faq => faq.idDocente === this.docenteSelezionato);
+    return faqs;
   }
 
   async ngOnInit() {
@@ -80,17 +89,32 @@ export class BachecaStudentePage implements OnInit {
       if (user != null) {
         const profilo = await firstValueFrom(this.studenteService.getProfilo(user.id));
         if (profilo.corsoDiStudiId != null) {
-          const bacheca = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
-          if (bacheca != null) {
-            this.bacheca = bacheca;
-            this.listaFaq = bacheca.faqs ?? [];
-            this.docentiDisponibili = this.estraiDocenti(this.listaFaq);
+          this.bacheche = await firstValueFrom(this.bachecaService.getBachecaPerCorsoDiStudi(profilo.corsoDiStudiId));
+          if (this.bacheche.length > 0) {
+            this.selezionaBacheca(this.bacheche[0]);
           }
         }
       }
     } catch (error) {
       console.error('Errore durante il caricamento della bacheca', error);
     }
+    this.loading = false;
+  }
+
+  onCorsoChange(event: any) {
+    const idCorso = event.detail.value;
+    const bacheca = this.bacheche.find(b => b.idCorso === idCorso);
+    if (bacheca) {
+      this.selezionaBacheca(bacheca);
+    }
+  }
+
+  private selezionaBacheca(bacheca: Bacheca) {
+    this.bachecaCorrente = bacheca;
+    this.corsoSelezionatoId = bacheca.idCorso;
+    this.listaFaq = bacheca.faqs ?? [];
+    this.docentiDisponibili = this.estraiDocenti(this.listaFaq);
+    this.docenteSelezionato = 'tutti';
   }
 
   private estraiDocenti(faqs: FAQ[]): { id: string; nome: string }[] {
