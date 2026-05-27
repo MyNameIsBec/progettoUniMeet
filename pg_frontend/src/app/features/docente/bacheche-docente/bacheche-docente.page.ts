@@ -69,7 +69,6 @@ export class BachecheDocentePage implements OnInit {
   }
 
   async aggiungiFaq() {
-    const user = this.authService.getCurrentUser();
     const alert = await this.alertCtrl.create({
       header: 'Nuova FAQ',
       inputs: [
@@ -86,7 +85,6 @@ export class BachecheDocentePage implements OnInit {
               await firstValueFrom(this.bachecaService.aggiungiFaq(this.corsoSelezionatoId, {
                 domanda: data.domanda,
                 risposta: data.risposta,
-                idDocente: user?.id
               }));
               const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
               this.selezionaBacheca(aggiornata);
@@ -103,7 +101,6 @@ export class BachecheDocentePage implements OnInit {
   }
 
   async modificaFaq(faq: FAQ) {
-    const user = this.authService.getCurrentUser();
     const alert = await this.alertCtrl.create({
       header: 'Modifica FAQ',
       inputs: [
@@ -117,7 +114,7 @@ export class BachecheDocentePage implements OnInit {
           handler: async (data) => {
             if (!data.domanda || !data.risposta) return false;
             try {
-              await firstValueFrom(this.bachecaService.aggiornaFaq('', { ...faq, domanda: data.domanda, risposta: data.risposta, idDocente: user?.id }));
+              await firstValueFrom(this.bachecaService.aggiornaFaq('', { ...faq, domanda: data.domanda, risposta: data.risposta, }));
               const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
               this.selezionaBacheca(aggiornata);
             } catch (err) {
