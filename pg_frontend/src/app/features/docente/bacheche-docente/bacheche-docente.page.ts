@@ -12,13 +12,7 @@ import { FAQ, Bacheca } from '../../../core/models/interfacce';
   templateUrl: './bacheche-docente.page.html',
   styleUrls: ['./bacheche-docente.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, FormsModule,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton,
-    IonItem, IonSelect, IonSelectOption,
-    DashboardLayoutComponent
-  ]
-})
+  imports: [ CommonModule, FormsModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonItem, IonSelect, IonSelectOption, DashboardLayoutComponent]})
 export class BachecheDocentePage implements OnInit {
   public bacheca: Bacheca | null = null;
   public faqs: FAQ[] = [];

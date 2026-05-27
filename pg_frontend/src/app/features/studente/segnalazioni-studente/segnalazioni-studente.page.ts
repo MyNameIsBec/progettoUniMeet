@@ -6,6 +6,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
+import { ErroriService } from 'src/app/core/services/errori';
 import { firstValueFrom } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { sendOutline } from 'ionicons/icons';
@@ -37,6 +38,7 @@ export class SegnalazioniStudentePage implements OnInit {
   constructor(
     private segnalazioneService: SegnalazioneService, 
     private authService: AuthService,
+    private erroriService: ErroriService,
     private alertController: AlertController,
     private toastController: ToastController
   ) {
@@ -66,14 +68,9 @@ export class SegnalazioniStudentePage implements OnInit {
                 });
                 await toast.present();
               },
-              error: async (err) => {
+              error: (err) => {
                 console.error('Errore durante l\'eliminazione segnalazione', err);
-                const toast = await this.toastController.create({
-                  message: 'Errore durante l\'eliminazione: ' + (err.error?.error || 'Server error'),
-                  duration: 3000,
-                  color: 'danger'
-                });
-                await toast.present();
+                this.erroriService.gestoreErrori(err);
               }
             });
           }
@@ -112,7 +109,10 @@ export class SegnalazioniStudentePage implements OnInit {
         this.segnalazioni = data;
         this.aggiornaStatistiche();
       },
-      error: (err) => console.error('Errore caricamento segnalazioni', err)
+      error: (err) => {
+        console.error('Errore caricamento segnalazioni', err);
+        this.erroriService.gestoreErrori(err);
+      }
     });
   }
 
@@ -152,17 +152,10 @@ export class SegnalazioniStudentePage implements OnInit {
         });
         await toast.present();
       },
-      error: async (err) => {
+      error: (err) => {
         console.error('Errore invio segnalazione', err);
         this.invioInCorso = false;
-        const errMsg = err.error?.error || err.error?.errors?.[0]?.msg || 'Errore durante l\'invio';
-        const toast = await this.toastController.create({
-          message: 'Errore durante l\'invio: ' + errMsg,
-          duration: 3000,
-          color: 'danger',
-          position: 'bottom'
-        });
-        await toast.present();
+        this.erroriService.gestoreErrori(err);
       }
     });
   }

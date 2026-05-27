@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class LoginPage implements OnInit {
 
-  loginForm!: FormGroup;
+  loginForm!: FormGroup; //inizializzato dopo
   inCaricamento = false;
   errorMessage = '';
   private urlDiRitorno = '/dashboard';
@@ -36,8 +36,6 @@ export class LoginPage implements OnInit {
       this.router.navigateByUrl(target);
       return;
     }
-
-    this.urlDiRitorno = this.route.snapshot.queryParams['returnUrl'] ?? '/dashboard';
 
     const savedEmail = localStorage.getItem('unimeet_remembered_email') ?? '';
     const savedCheck = localStorage.getItem('unimeet_remembered_checkbox') === 'true';
@@ -72,13 +70,9 @@ export class LoginPage implements OnInit {
           localStorage.removeItem('unimeet_remembered_checkbox');
         }
         const role = this.authService.getCurrentUser()?.role;
-        const target = this.urlDiRitorno !== '/dashboard'
-          ? this.urlDiRitorno
-          : role === 'docente'
-            ? '/dashboard-docente'
-            : role === 'amministratore'
-              ? '/dashboard-admin'
-              : '/dashboard-studente';
+        const target = this.urlDiRitorno !== '/dashboard' 
+        ? this.urlDiRitorno : role === 'docente' ? '/dashboard-docente' : role === 'amministratore'
+        ? '/dashboard-admin' : '/dashboard-studente';
         this.router.navigateByUrl(target);
       },
       error: (err: HttpErrorResponse) => {

@@ -13,8 +13,7 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-  AlertController,
-  ToastController
+  AlertController
 } from '@ionic/angular/standalone';
 
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
@@ -69,22 +68,15 @@ export class GestioneSlotPage implements OnInit {
   docente: any = null;
   slots: any[] = [];
   filteredSlots: any[] = [];
-
-  // Contatori statistici
   slotAttiviCount = 0;
   disponibiliCount = 0;
   pieniCount = 0;
   annullatiCount = 0;
-
-  // Filtri e Ricerca
   searchTerm = '';
   filtroStato = 'tutti';
-
-  // Form State
   inModifica = false;
   slotInModificaId: string | null = null;
   salvataggioInCorso = false;
-
   form = {
     data: '',
     oraInizio: '',
@@ -93,16 +85,13 @@ export class GestioneSlotPage implements OnInit {
     edificio: '',
     piano: ''
   };
-
-  // Media riempimento slot
   mediaRiempimento = 0;
 
   constructor(
     private authService: AuthService,
     private docenteService: DocenteService,
     private erroriService: ErroriService,
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController
+    private alertCtrl: AlertController
   ) {
     addIcons({
       calendarClearOutline,
@@ -162,13 +151,10 @@ export class GestioneSlotPage implements OnInit {
 
   applicaFiltri() {
     this.filteredSlots = this.slots.filter(s => {
-      // Filtro per stato dello slot
       if (this.filtroStato === 'disponibile' && !s.disponibilita) return false;
       if (this.filtroStato === 'parziale' && (s.disponibilita || s.prenotazioniCount === 0)) return false;
       if (this.filtroStato === 'pieno' && (s.disponibilita || s.prenotazioniCount === 0)) return false;
       if (this.filtroStato === 'annullato' && (s.disponibilita || s.prenotazioniCount > 0)) return false;
-
-      // Ricerca libera per data, orario o luogo
       if (this.searchTerm.trim()) {
         const term = this.searchTerm.toLowerCase();
         const dataStr = this.formattazioneDataSemplice(s.data).toLowerCase();
@@ -183,23 +169,21 @@ export class GestioneSlotPage implements OnInit {
 
   salvaSlot() {
     if (!this.form.data || !this.form.oraInizio || !this.form.oraFine) {
-      this.showToast('Compila tutti i campi obbligatori (Giorno, Ora Inizio, Ora Fine)', 'warning');
+      this.erroriService.mostraAvviso('Compila tutti i campi obbligatori (Giorno, Ora Inizio, Ora Fine)');
       return;
     }
-
-    // Verifica la validità degli orari
     const [hInizio, mInizio] = this.form.oraInizio.split(':').map(Number);
     const [hFine, mFine] = this.form.oraFine.split(':').map(Number);
     const inizioMs = hInizio! * 60 + mInizio!;
     const fineMs = hFine! * 60 + mFine!;
 
     if (fineMs <= inizioMs) {
-      this.showToast("L'ora di fine deve essere successiva all'ora di inizio", 'danger');
+      this.erroriService.mostraAvviso("L'ora di fine deve essere successiva all'ora di inizio");
       return;
     }
 
     if (fineMs - inizioMs > 60) {
-      this.showToast('La durata dello slot non può superare 1 ora', 'danger');
+      this.erroriService.mostraAvviso('La durata dello slot non può superare 1 ora');
       return;
     }
 
@@ -222,7 +206,7 @@ export class GestioneSlotPage implements OnInit {
     if (this.inModifica && this.slotInModificaId) {
       this.docenteService.modificaSlot(this.docente.id, this.slotInModificaId, payload).subscribe({
         next: () => {
-          this.showToast('Slot aggiornato con successo!', 'success');
+          this.erroriService.mostraSuccesso('Slot aggiornato con successo!');
           this.caricaSlots();
           this.resetForm();
         },
@@ -234,7 +218,7 @@ export class GestioneSlotPage implements OnInit {
     } else {
       this.docenteService.creaSlot(this.docente.id, payload).subscribe({
         next: () => {
-          this.showToast('Slot creato con successo!', 'success');
+          this.erroriService.mostraSuccesso('Slot creato con successo!');
           this.caricaSlots();
           this.resetForm();
         },
@@ -280,7 +264,7 @@ export class GestioneSlotPage implements OnInit {
   eseguiEliminazione(slotId: string) {
     this.docenteService.eliminaSlot(this.docente.id, slotId).subscribe({
       next: () => {
-        this.showToast('Slot eliminato con successo!', 'success');
+        this.erroriService.mostraSuccesso('Slot eliminato con successo!');
         this.caricaSlots();
       },
       error: (err) => {
@@ -303,17 +287,6 @@ export class GestioneSlotPage implements OnInit {
     };
   }
 
-  async showToast(msg: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      color: color,
-      position: 'top'
-    });
-    await toast.present();
-  }
-
-  // Helper per visualizzazione date in formato italiano
   formattazioneDataMese(dataStr: string): string {
     if (!dataStr) return '';
     const date = new Date(dataStr);

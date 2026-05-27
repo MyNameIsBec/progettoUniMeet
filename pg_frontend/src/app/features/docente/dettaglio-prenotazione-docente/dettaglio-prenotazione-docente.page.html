@@ -206,26 +206,6 @@
         </ion-card-content>
       </ion-card>
 
-      <ion-card class="detail-card">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="create-outline"></ion-icon>
-            Note
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="notes-box">
-            <ion-textarea [(ngModel)]="note" placeholder="Aggiungi note personali su questa prenotazione..." rows="4"></ion-textarea>
-            <div class="notes-actions">
-              <ion-button fill="outline" size="small" (click)="salvaNote()">
-                <ion-icon name="save-outline" slot="start"></ion-icon>
-                Salva note
-              </ion-button>
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
-
     </div>
 
     <div class="detail-right-column">

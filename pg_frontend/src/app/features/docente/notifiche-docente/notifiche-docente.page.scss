@@ -387,6 +387,10 @@
     background: rgba(37, 99, 235, 0.15);
 }
 
+:host-context(body.dark) .notification-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
 :host-context(body.dark) .info-card {
     background: rgba(37, 99, 235, 0.1);
     border-color: rgba(37, 99, 235, 0.2);

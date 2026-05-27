@@ -69,7 +69,7 @@
           <label class="field-label">Matricola</label>
           <div class="field-wrap" [class.has-error]="matricola.invalid && matricola.touched">
             <ion-icon name="card-outline" class="field-icon"></ion-icon>
-            <ion-input formControlName="matricola" placeholder="Es. 0612700123" class="field-input"
+            <ion-input formControlName="matricola" placeholder="Es. 0758735" class="field-input"
               inputmode="numeric"></ion-input>
           </div>
           @if (matricola.invalid && matricola.touched) {
@@ -142,17 +142,7 @@
             </span>
           }
         </div>
-        <div class="field-group terms-group">
-          <ion-checkbox formControlName="terms" labelPlacement="end" class="terms-check">
-            Accetto i <button type="button" class="link-btn">Termini di utilizzo</button>
-            e la <button type="button" class="link-btn">Privacy Policy</button>
-          </ion-checkbox>
-          @if (terms.invalid && terms.touched) {
-            <span class="field-error-msg">
-              Devi accettare i termini per continuare
-            </span>
-          }
-        </div>
+
         <ion-button expand="block" type="submit" class="submit-btn" [disabled]="inCaricamento">
           @if (inCaricamento) {
             <ion-spinner name="crescent" slot="start"></ion-spinner>

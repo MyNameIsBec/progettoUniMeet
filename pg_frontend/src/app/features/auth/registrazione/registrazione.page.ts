@@ -12,16 +12,14 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
   templateUrl: 'registrazione.page.html',
   styleUrls: ['registrazione.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner]
+  imports: [CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonSpinner]
 })
 export class RegistrazionePage implements OnInit {
-
   registrazioneForm!: FormGroup;
   inCaricamento = false;
   mostraPassword = false;
   mostraConfermaPassword = false;
   errorMessage = '';
-
 
   constructor(
     private fb: FormBuilder,
@@ -43,7 +41,6 @@ export class RegistrazionePage implements OnInit {
           Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
         ]],
         confirmPassword: ['', Validators.required],
-        terms: [false, Validators.requiredTrue]
       },
       { validators: passwordMatchValidator }
     );
@@ -56,7 +53,6 @@ export class RegistrazionePage implements OnInit {
   get corsoDiStudi() { return this.registrazioneForm.get('corsoDiStudi')!; }
   get password() { return this.registrazioneForm.get('password')!; }
   get confirmPassword() { return this.registrazioneForm.get('confirmPassword')!; }
-  get terms() { return this.registrazioneForm.get('terms')!; }
 
   get forzaPassword(): number {
     const val = this.password.value ?? '';

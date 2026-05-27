@@ -33,9 +33,9 @@ export class BachecaService {
     return this.http.post<FAQ>(`${this.api}/corso/${idCorso}/faq`, faq)
   }
 
-  aggiornaFaq(idBacheca: string, faq: Partial<FAQ>): Observable<FAQ> {
-    return this.http.put<FAQ>(`${this.authService.getApiUrl()}/api/faq/${faq.id}`, faq)
-  }
+  aggiornaFaq(idFaq: string, faq: Partial<FAQ>): Observable<FAQ>  {
+  return this.http.put<FAQ>( `${this.authService.getApiUrl()}/api/faq/${idFaq}`, faq)
+}
 
   eliminaFaq(idFaq: string): Observable<void> {
     return this.http.delete<void>(`${this.authService.getApiUrl()}/api/faq/${idFaq}`)

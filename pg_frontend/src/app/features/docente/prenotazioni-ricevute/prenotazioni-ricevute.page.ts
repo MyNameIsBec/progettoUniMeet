@@ -13,8 +13,7 @@ import {
   IonButton,
   IonSelect,
   IonSelectOption,
-  AlertController,
-  ToastController
+  AlertController
 } from '@ionic/angular/standalone';
 
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
@@ -66,26 +65,20 @@ export class PrenotazioniRicevutePage implements OnInit {
   docente: any = null;
   prenotazioni: any[] = [];
   filteredPrenotazioni: any[] = [];
-
-  // Contatori
   totaleRicevute = 0;
   inAttesaCount = 0;
   confermateCount = 0;
   completateCount = 0;
-
-  // Filtri
   searchTerm = '';
   filtroStato = 'tutti';
   filtroTempo = 'storico';
-
   loading = true;
 
   constructor(
     private authService: AuthService,
     private prenotazioneService: PrenotazioneService,
     private erroriService: ErroriService,
-    private alertCtrl: AlertController,
-    private toastCtrl: ToastController
+    private alertCtrl: AlertController
   ) {
     addIcons({
       calendarOutline,
@@ -138,20 +131,16 @@ export class PrenotazioniRicevutePage implements OnInit {
 
   applicaFiltri() {
     this.filteredPrenotazioni = this.prenotazioni.filter(p => {
-      // 1. Filtro Stato
       const statoLower = p.stato.toLowerCase();
       if (this.filtroStato === 'confermata' && statoLower !== 'confermata' && statoLower !== 'confermato') return false;
       if (this.filtroStato === 'in-attesa' && statoLower !== 'in_attesa' && statoLower !== 'in-attesa') return false;
       if (this.filtroStato === 'annullata' && statoLower !== 'annullata' && statoLower !== 'annullato') return false;
       if (this.filtroStato === 'completata' && statoLower !== 'completata') return false;
-
-      // 2. Filtro Temporale
       if (this.filtroTempo !== 'storico') {
         const [y, m, d] = p.data.split('-').map(Number);
         const datePren = new Date(y, m - 1, d);
         const oggi = new Date();
         oggi.setHours(0, 0, 0, 0);
-
         if (this.filtroTempo === 'oggi') {
           const oggiStr = this.getLocalOggiStr();
           if (p.data !== oggiStr) return false;
@@ -163,8 +152,6 @@ export class PrenotazioniRicevutePage implements OnInit {
           if (datePren.getMonth() !== oggi.getMonth() || datePren.getFullYear() !== oggi.getFullYear()) return false;
         }
       }
-
-      // 3. Ricerca Libera (Studente, Argomento)
       if (this.searchTerm.trim()) {
         const term = this.searchTerm.toLowerCase();
         const studenteStr = p.studente.toLowerCase();
@@ -179,7 +166,7 @@ export class PrenotazioniRicevutePage implements OnInit {
   confermaPrenotazione(id: string) {
     this.prenotazioneService.aggiornaStatoPrenotazione(id, 'CONFERMATA').subscribe({
       next: () => {
-        this.showToast('Prenotazione confermata con successo!', 'success');
+        this.erroriService.mostraSuccesso('Prenotazione confermata con successo!');
         this.caricaPrenotazioni();
       },
       error: (err) => this.erroriService.gestoreErrori(err)
@@ -207,7 +194,7 @@ export class PrenotazioniRicevutePage implements OnInit {
   eseguiAnnullamento(id: string) {
     this.prenotazioneService.aggiornaStatoPrenotazione(id, 'ANNULLATA').subscribe({
       next: () => {
-        this.showToast('Ricevimento annullato.', 'warning');
+        this.erroriService.mostraAvviso('Ricevimento annullato.');
         this.caricaPrenotazioni();
       },
       error: (err) => this.erroriService.gestoreErrori(err)
@@ -217,14 +204,14 @@ export class PrenotazioniRicevutePage implements OnInit {
   confermaTutteInAttesa() {
     const pending = this.prenotazioni.filter(p => this.checkStato(p.stato, 'in_attesa'));
     if (pending.length === 0) {
-      this.showToast('Nessuna prenotazione in attesa da confermare.', 'warning');
+      this.erroriService.mostraAvviso('Nessuna prenotazione in attesa da confermare.');
       return;
     }
 
     const requests = pending.map(p => this.prenotazioneService.aggiornaStatoPrenotazione(p.id, 'CONFERMATA'));
     forkJoin(requests).subscribe({
       next: () => {
-        this.showToast(`Confermate ${pending.length} richieste in attesa!`, 'success');
+        this.erroriService.mostraSuccesso(`Confermate ${pending.length} richieste in attesa!`);
         this.caricaPrenotazioni();
       },
       error: (err) => this.erroriService.gestoreErrori(err)
@@ -239,7 +226,6 @@ export class PrenotazioniRicevutePage implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  // Agenda di oggi
   get agendaDiOggi(): any[] {
     const oggiStr = this.getLocalOggiStr();
     return this.prenotazioni.filter(p => p.data === oggiStr && !this.checkStato(p.stato, 'annullata') && !this.checkStato(p.stato, 'annullato'));
@@ -248,23 +234,21 @@ export class PrenotazioniRicevutePage implements OnInit {
   scaricaAgendaPDF() {
     const agenda = this.agendaDiOggi;
     if (agenda.length === 0) {
-      this.showToast('Nessuna prenotazione presente per oggi.', 'warning');
+      this.erroriService.mostraAvviso('Nessuna prenotazione presente per oggi.');
       return;
     }
 
     const success = exportAgendaPDF(this.docente, agenda, this.getLocalOggiStr());
     if (!success) {
-      this.showToast('Errore nell\'apertura della finestra di stampa. Abilita i popup.', 'danger');
+      this.erroriService.gestoreErrori({ status: 0 } as any);
     }
   }
 
-  // Helper per verificare lo stato tollerando variazioni di casing
   checkStato(stato: string, atteso: string): boolean {
     if (!stato) return false;
     return stato.toLowerCase() === atteso.toLowerCase();
   }
 
-  // Genera iniziali studente
   getIniziali(nomeCognome: string): string {
     if (!nomeCognome) return '??';
     const parts = nomeCognome.split(' ');
@@ -272,16 +256,15 @@ export class PrenotazioniRicevutePage implements OnInit {
     return iniziali.substring(0, 2).toUpperCase();
   }
 
-  // Colore avatar studente in base al nome per estetica dinamica
   getAvatarColor(nomeCognome: string): string {
-    const colors = ['blue', 'green', 'purple', 'orange', 'red'];
-    let hash = 0;
-    for (let i = 0; i < nomeCognome.length; i++) {
-      hash = nomeCognome.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % colors.length;
-    return colors[index] || 'blue';
+  const colors = ['blue', 'green', 'purple', 'orange', 'red'];
+  let somma = 0;
+  for (const lettera of nomeCognome) {
+    somma += lettera.charCodeAt(0);
   }
+  const index = somma % colors.length;
+  return colors[index];
+}
 
   formattazioneData(dataStr: string): string {
     if (!dataStr) return '';
@@ -292,13 +275,4 @@ export class PrenotazioniRicevutePage implements OnInit {
     return dataStr;
   }
 
-  async showToast(msg: string, color: 'success' | 'warning' | 'danger') {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 3000,
-      color: color,
-      position: 'top'
-    });
-    await toast.present();
-  }
 }

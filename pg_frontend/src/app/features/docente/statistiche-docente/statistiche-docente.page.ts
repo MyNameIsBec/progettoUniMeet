@@ -12,19 +12,14 @@ import { DocenteService } from '../../../core/services/docente';
   templateUrl: './statistiche-docente.page.html',
   styleUrls: ['./statistiche-docente.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
-    DashboardLayoutComponent
-  ]
-})
+  imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, DashboardLayoutComponent ]})
 export class StatisticheDocentePage implements OnInit {
-  public loading = true;
-  public totalePrenotazioni = 0;
-  public confermate = 0;
-  public inAttesa = 0;
-  public annullate = 0;
-  public argomenti: { nome: string; conteggio: number; percentuale: number }[] = [];
+  loading = true;
+  totalePrenotazioni = 0;
+  confermate = 0;
+  inAttesa = 0;
+  annullate = 0;
+  argomenti: { nome: string; conteggio: number; percentuale: number }[] = [];
 
   constructor(
     private authService: AuthService,
@@ -41,7 +36,6 @@ export class StatisticheDocentePage implements OnInit {
     try {
       const user = this.authService.getCurrentUser();
       if (!user) return;
-
       const prenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniDocente(user.id)) as any[];
       this.totalePrenotazioni = prenotazioni.length;
       this.confermate = prenotazioni.filter(p => p.stato === 'confermata' || p.stato === 'completata').length;

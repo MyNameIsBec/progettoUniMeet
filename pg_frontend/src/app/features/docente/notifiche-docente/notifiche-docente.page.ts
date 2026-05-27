@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
+import { ErroriService } from '../../../core/services/errori';
 
 import { addIcons } from 'ionicons';
 import {
@@ -26,14 +27,14 @@ import {
   templateUrl: './notifiche-docente.page.html',
   styleUrls: ['./notifiche-docente.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent]
+  imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, DashboardLayoutComponent]
 })
 
 export class NotificheDocentePage implements OnInit {
+  docenteId: string = '';
   notifiche: Notifica[] = [];
   filtriNotifiche: Notifica[] = [];
   filtroAttivo: string = 'Tutte';
-
   info = {
     nonLette: 0,
     promemoria: 0,
@@ -42,7 +43,8 @@ export class NotificheDocentePage implements OnInit {
 
   constructor(
     private notificaService: NotificaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private erroriService: ErroriService
   ) {
     addIcons({
       mailOutline,
@@ -61,25 +63,24 @@ export class NotificheDocentePage implements OnInit {
   }
 
   ngOnInit() {
+    const user = this.authService.getCurrentUser();
+    if(!user?.id) return;
+    this.docenteId = user.id;
+ 
     this.caricaNotifiche();
   }
 
   caricaNotifiche() {
-    const user = this.authService.getCurrentUser();
-    let docenteId = "";
-    if (user != null) {
-      docenteId = user.id;
-    } else {
-      return
-    }
-
-    this.notificaService.getNotifiche(docenteId).subscribe({
+    this.notificaService.getNotifiche(this.docenteId).subscribe({
       next: (data) => {
         this.notifiche = data;
         this.applicaFiltri(this.filtroAttivo);
         this.aggiornaStatistiche();
       },
-      error: (err) => console.error('Errore nel caricamento notifiche docente', err)
+      error: (err) => {
+        console.error('Errore nel caricamento notifiche docente', err);
+        this.erroriService.gestoreErrori(err);
+      }
     });
   }
 
@@ -109,7 +110,6 @@ export class NotificheDocentePage implements OnInit {
 
   segnaComeLetta(notifica: Notifica) {
     if (notifica.letta) return;
-
     this.notificaService.segnaComeLetta(notifica.id).subscribe(() => {
       notifica.letta = true;
       this.aggiornaStatistiche();
@@ -117,32 +117,16 @@ export class NotificheDocentePage implements OnInit {
   }
 
   segnaTutteComeLette() {
-    const user = this.authService.getCurrentUser();
-    let docenteId = "";
-    if (user != null) {
-      docenteId = user.id;
-    } else {
-      return
-    }
-    if (!docenteId) return;
-
-    this.notificaService.segnaTutteComeLette(docenteId).subscribe(() => {
+    if (!this.docenteId) return;
+    this.notificaService.segnaTutteComeLette(this.docenteId).subscribe(() => {
       this.notifiche.forEach(n => n.letta = true);
       this.aggiornaStatistiche();
     });
   }
 
   cancellaNotificheLette() {
-    const user = this.authService.getCurrentUser();
-    let docenteId = "";
-    if (user != null) {
-      docenteId = user.id;
-    } else {
-      return
-    }
-    if (!docenteId) return;
-
-    this.notificaService.cancellaNotificheLette(docenteId).subscribe(() => {
+    if (!this.docenteId) return;
+    this.notificaService.cancellaNotificheLette(this.docenteId).subscribe(() => {
       this.notifiche = this.notifiche.filter(n => !n.letta);
       this.applicaFiltri(this.filtroAttivo);
       this.aggiornaStatistiche();

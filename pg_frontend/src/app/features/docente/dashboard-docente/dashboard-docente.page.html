@@ -90,7 +90,7 @@
             <div class="appointment-item">
 
               <div class="student-avatar" [ngClass]="{'blue': p.stato === 'confermata', 'green': p.stato === 'in_attesa'}">
-                <span>{{ getIniziali(p.studente) }}</span>
+                <span>{{ getIniziali(p.studente ?? '') }}</span>
               </div>
 
               <div class="appointment-info">
@@ -105,7 +105,7 @@
 
                   <span>
                     <ion-icon name="time-outline"></ion-icon>
-                    {{ p.oraInizio }}
+                    {{ p.ora }}
                   </span>
 
                   <span>

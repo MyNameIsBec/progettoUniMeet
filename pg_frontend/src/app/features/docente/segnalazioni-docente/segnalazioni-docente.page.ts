@@ -19,7 +19,8 @@ export class SegnalazioniDocentePage implements OnInit {
   segnalazioni: Segnalazione[] = [];
   selectedFile: File | null = null;
   invioInCorso: boolean = false;
-
+  docenteId: string = '';
+  user: any = null;
   form = {
     oggetto: '',
     descrizione: ''
@@ -44,8 +45,7 @@ export class SegnalazioniDocentePage implements OnInit {
       message: 'Vuoi eliminare questa segnalazione dallo storico? Questa azione è irreversibile.',
       buttons: [
         { text: 'Annulla', role: 'cancel' },
-        {
-          text: 'Elimina',
+        { text: 'Elimina',
           cssClass: 'delete-button-confirm',
           handler: () => {
             this.segnalazioneService.eliminaSegnalazione(id).subscribe({
@@ -76,11 +76,15 @@ export class SegnalazioniDocentePage implements OnInit {
   }
 
   ngOnInit() {
+    const user = this.authService.getCurrentUser();
+    if(!user?.id) return;
+    this.docenteId = user.id;
+ 
     this.caricaSegnalazioni();
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
+    const file = event.target.files[0]; //1 file alla volta
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         alert('Il file è troppo grande. Massimo 5MB.');
@@ -91,15 +95,8 @@ export class SegnalazioniDocentePage implements OnInit {
   }
 
   caricaSegnalazioni() {
-    const user = this.authService.getCurrentUser();
-    let docenteId = '';
-    if (user != null) {
-      docenteId = user.id;
-    } else {
-      return;
-    }
-
-    this.segnalazioneService.getSegnalazioniByDocente(docenteId).subscribe({
+  
+    this.segnalazioneService.getSegnalazioniByDocente(this.docenteId).subscribe({
       next: (data) => {
         this.segnalazioni = data;
         this.aggiornaStatistiche();
@@ -115,11 +112,9 @@ export class SegnalazioniDocentePage implements OnInit {
   }
 
   inviaSegnalazione() {
-    const user = this.authService.getCurrentUser();
-    let docenteId = '';
-
-    if (user != null && this.form.oggetto != '' && this.form.descrizione != '') {
-      docenteId = user.id;
+    this.docenteId = '';
+    if (this.form.oggetto != '' && this.form.descrizione != '') {
+      this.docenteId = this.user.id;
     } else {
       return;
     }
@@ -128,7 +123,7 @@ export class SegnalazioniDocentePage implements OnInit {
     this.segnalazioneService.inviaSegnalazioneDocente(
       this.form.oggetto,
       this.form.descrizione,
-      docenteId,
+      this.docenteId,
       this.selectedFile
     ).subscribe({
       next: async () => {

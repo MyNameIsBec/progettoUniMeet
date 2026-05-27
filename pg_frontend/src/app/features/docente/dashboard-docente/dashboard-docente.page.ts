@@ -25,10 +25,10 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
   public richiesteInAttesaCount: number = 0;
   public riempimentoMedio: number = 0;
 
-  public prossimiRicevimenti: any[] = [];
-  public recentiPrenotazioni: any[] = [];
+  public prossimiRicevimenti: Prenotazione[] = [];
+  public recentiPrenotazioni: Prenotazione[] = [];
   public recentiSlots: SlotRicevimento[] = [];
-  public argomentiRichiesti: { nome: string; percentuale: string }[] = [];
+  public argomentiRichiesti: { nome: string; percentuale: number }[] = [];
 
   private userSub: Subscription | null = null;
 
@@ -92,14 +92,11 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
 
       const stats = await firstValueFrom(this.docenteService.getStatistiche(idDocente));
       if (stats && stats.argomenti) {
-        const totaleArgomenti = stats.argomenti.reduce((sum: number, a: any) => sum + a.conteggio, 0);
-        this.argomentiRichiesti = stats.argomenti.map((a: any) => {
-          const percento = totaleArgomenti > 0 ? Math.round((a.conteggio / totaleArgomenti) * 100) : 0;
-          return {
-            nome: a.nome,
-            percentuale: `${percento}%`
-          };
-        }).sort((a: any, b: any) => parseInt(b.percentuale) - parseInt(a.percentuale)).slice(0, 3);
+        const totale = stats.argomenti.reduce((s, a) => s + a.conteggio, 0);
+        this.argomentiRichiesti = stats.argomenti.map(a => ({
+          nome: a.nome,
+          percentuale: totale ? Math.round((a.conteggio / totale) * 100) : 0
+        })).sort((a, b) => b.percentuale - a.percentuale).slice(0, 3);
       }
 
 
@@ -139,7 +136,6 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
       dataStr = String(dataInput);
     }
     const parti = dataStr.split('-');
-    if (parti.length !== 3) return dataStr;
     return `${parti[2]}/${parti[1]}/${parti[0]}`;
   }
 

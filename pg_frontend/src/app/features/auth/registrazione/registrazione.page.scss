@@ -1,5 +1,4 @@
 :host {
-  font-family: Arial, sans-serif;
   --background-page: #ffffff;
   color: var(--text-dark);
 }
@@ -31,7 +30,6 @@
   color: var(--text-muted);
   font-size: 14px;
   font-weight: 600;
-  font-family: Arial, sans-serif;
   transition: color 0.2s;
   ion-icon { font-size: 18px; }
   &:hover { color: var(--primary-blue); }
@@ -89,7 +87,6 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--text-dark);
-  font-family: Arial, sans-serif;
 }
 
 .field-wrap {
@@ -222,7 +219,6 @@
   color: var(--primary-blue);
   font-size: 14px;
   font-weight: 600;
-  font-family: Arial, sans-serif;
   padding: 0;
   transition: opacity 0.2s;
   &:hover { opacity: 0.75; }
@@ -234,7 +230,6 @@
   text-align: center;
   font-size: 14px;
   color: var(--text-muted);
-  font-family: Arial, sans-serif;
 }
 
 :host-context(body.dark) .auth-wrapper {

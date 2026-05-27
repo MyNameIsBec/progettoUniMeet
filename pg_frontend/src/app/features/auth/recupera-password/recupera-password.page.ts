@@ -18,13 +18,11 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
   recuperoForm!: FormGroup;
   codiceForm!: FormGroup;
   passwordForm!: FormGroup;
-
   inCaricamento = false;
   errorMessage = '';
   emailDestinazione = '';
   mostraPassword = false;
   mostraConfermaPassword = false;
-
   step: 'email' | 'codice' | 'password' | 'completato' = 'email';
 
   constructor(
@@ -84,7 +82,6 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
 
     this.inCaricamento = true;
     this.errorMessage = '';
-
     this.authService.richiediResetPassword(this.email.value).subscribe({
       next: () => {
         this.inCaricamento = false;
@@ -103,7 +100,6 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
 
     this.inCaricamento = true;
     this.errorMessage = '';
-
     this.authService.verificaCodice(this.emailDestinazione, this.codice.value).subscribe({
       next: () => {
         this.inCaricamento = false;

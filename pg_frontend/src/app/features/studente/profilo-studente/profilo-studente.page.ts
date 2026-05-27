@@ -20,6 +20,7 @@ import {
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
+import { ErroriService } from '../../../core/services/errori';
 
 @Component({
   selector: 'app-profilo-studente',
@@ -62,6 +63,7 @@ export class ProfiloStudentePage implements OnInit {
   constructor(
     private authService: AuthService,
     private studenteService: StudenteService,
+    private erroriService: ErroriService,
     private alertCtrl: AlertController,
     private router: Router
   ) {}
@@ -111,6 +113,7 @@ export class ProfiloStudentePage implements OnInit {
       error: (err) => {
         console.error('Errore caricamento profilo', err);
         this.loading = false;
+        this.erroriService.gestoreErrori(err);
       }
     });
   }
@@ -140,11 +143,11 @@ export class ProfiloStudentePage implements OnInit {
 
         this.showToast('Profilo aggiornato con successo!');
       },
-      error: (err) => {
-        console.error('Errore salvataggio profilo', err);
-        this.salvataggioInCorso = false;
-        this.showToast('Errore durante il salvataggio.');
-      }
+        error: (err) => {
+          console.error('Errore salvataggio profilo', err);
+          this.salvataggioInCorso = false;
+          this.erroriService.gestoreErrori(err);
+        }
     });
   }
 
@@ -182,7 +185,10 @@ export class ProfiloStudentePage implements OnInit {
     if (!this.studente) return;
     this.studenteService.cambiaPassword(this.studente.matricola, vecchia, nuova).subscribe({
       next: (res) => this.showToast(res.messaggio),
-      error: (err) => this.showToast(err.error?.error || 'Errore nel cambio password')
+      error: (err) => {
+      console.error('Errore cambio password', err);
+      this.erroriService.gestoreErrori(err);
+    }
     });
   }
 
@@ -213,14 +219,18 @@ export class ProfiloStudentePage implements OnInit {
         this.authService.logout();
         this.router.navigate(['/login']);
       },
-      error: (err) => this.showToast('Errore durante l\'eliminazione dell\'account.')
+      error: (err) => {
+      console.error('Errore eliminazione account', err);
+      this.erroriService.gestoreErrori(err);
+    }
     });
   }
 
-  async showToast(msg: string) {
+  async showToast(msg: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const alert = await this.alertCtrl.create({
       message: msg,
-      buttons: ['OK']
+      buttons: ['OK'],
+      cssClass: color === 'danger' ? 'danger-alert' : ''
     });
     await alert.present();
   }

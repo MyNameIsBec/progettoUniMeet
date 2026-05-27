@@ -599,33 +599,7 @@ ion-button {
   gap: 8px;
 }
 
-/* NOTE */
-
-.notes-box {
-  display: grid;
-  gap: 16px;
-}
-
-.notes-box ion-textarea {
-  --background: var(--background-page);
-  --color: var(--text-dark);
-  --placeholder-color: #94a3b8;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 14px;
-  --padding-bottom: 14px;
-  min-height: 145px;
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-}
-
-.notes-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
 /* SIDE CARDS */
-
 .actions-card ion-card-content {
   display: grid;
   gap: 12px;

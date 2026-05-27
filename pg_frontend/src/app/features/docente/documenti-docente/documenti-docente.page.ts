@@ -63,13 +63,13 @@ export class DocumentiDocentePage implements OnInit, OnDestroy {
           for (const doc of dp.documenti) {
             const ext = doc.nomeFile.toLowerCase();
             docs.push({
-              id: doc.id ?? doc.nomeFile,
+              id: doc.id,
               nomeFile: doc.nomeFile,
               tipo: ext.endsWith('.pdf') ? 'pdf' : (ext.endsWith('.doc') || ext.endsWith('.docx') ? 'doc' : 'altro'),
-              studente: match ? match.studente : dp.studenteId,
+              studente: dp.studenteId,
               prenotazioneId: dp.id,
               data: match ? match.data : '',
-              percorso: doc.percorso ?? ''
+              percorso: doc.percorso 
             });
           }
         }

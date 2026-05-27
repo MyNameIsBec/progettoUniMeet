@@ -184,9 +184,6 @@ ion-card-title {
   }
 }
 
-
-
-/* GRIGLIA PRINCIPALE */
 .bacheca-simple-grid {
   display: grid;
   grid-template-columns: 1.5fr 0.9fr;
@@ -194,7 +191,6 @@ ion-card-title {
   align-items: start;
 }
 
-/* SUPPORT CARD */
 .support-card {
   background: var(--ion-card-background);
   border: 1px solid var(--border-light);
@@ -241,7 +237,6 @@ ion-card-title {
   }
 }
 
-/* RESPONSIVE OVERRIDES */
 @media (max-width: 1200px) {
   .bacheca-simple-grid {
     grid-template-columns: 1fr;
@@ -274,7 +269,6 @@ ion-card-title {
   }
 }
 
-/* EMPTY STATE */
 .empty-courses-state {
   display: flex;
   justify-content: center;
@@ -336,7 +330,6 @@ ion-card-title {
   }
 }
 
-/* DARK MODE OVERRIDES */
 :host-context(body.dark) {
   .faq-main-card,
   .support-card {

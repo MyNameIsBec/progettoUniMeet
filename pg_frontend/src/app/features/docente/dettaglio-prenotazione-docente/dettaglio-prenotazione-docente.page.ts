@@ -14,13 +14,9 @@ import { Prenotazione } from '../../../core/models/interfacce';
   templateUrl: './dettaglio-prenotazione-docente.page.html',
   styleUrls: ['./dettaglio-prenotazione-docente.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule, FormsModule, RouterLink,
-    IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonTextarea,
-    DashboardLayoutComponent
-  ]
-})
-export class DettaglioPrenotazioneDocentePage implements OnInit {
+  imports: [ CommonModule, FormsModule, RouterLink, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent ]})
+
+  export class DettaglioPrenotazioneDocentePage implements OnInit {
   public prenotazione: Prenotazione | null = null;
   public loading = true;
   public note = '';
@@ -140,7 +136,4 @@ export class DettaglioPrenotazioneDocentePage implements OnInit {
     }
   }
 
-  salvaNote() {
-    console.log('Note salvate:', this.note);
-  }
 }
