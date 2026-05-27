@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption, AlertController} from '@ionic/angular/standalone';
+import { IonIcon, IonChip, IonLabel, IonSelect, IonSelectOption, AlertController } from '@ionic/angular/standalone';
+import { IonicSafeString } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
 
@@ -58,7 +59,7 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
     const alert = await this.alertController.create({
       header: 'Dettagli prenotazione',
       subHeader: p.argomento,
-      message: `
+      message: new IonicSafeString(`
         <div style="margin-bottom:12px"><strong>Descrizione:</strong><br>${p.descrizione || '—'}</div>
         <div style="margin-bottom:8px"><strong>Studente:</strong> ${p.studente.nome} ${p.studente.cognome} (${p.studente.matricola})</div>
         <div style="margin-bottom:8px"><strong>Email:</strong> ${p.studente.email}</div>
@@ -66,7 +67,7 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
         <div style="margin-bottom:8px"><strong>Slot:</strong> ${this.formattaData(p.slot.data)} — ${p.slot.oraInizio} - ${p.slot.oraFine}</div>
         <div style="margin-bottom:8px"><strong>Stato:</strong> ${this.statoLabel(p.stato)}</div>
         <div><strong>Documenti:</strong> ${p.documentiCount}</div>
-      `,
+      `),
       buttons: ['Chiudi'],
     });
     await alert.present();

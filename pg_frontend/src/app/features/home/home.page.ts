@@ -32,7 +32,8 @@ export class HomePage implements AfterViewInit {
 
 
   ngAfterViewInit() {
-    const sections = document.querySelectorAll('section[id]');
+    const sectionIds = ['home', 'funzionalita', 'come-funziona'];
+    const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     if (sections.length === 0) return;
 
     const observer = new IntersectionObserver(
@@ -41,10 +42,11 @@ export class HomePage implements AfterViewInit {
           if (entry.isIntersecting) {
             this.activeSection = entry.target.id;
             this.cdr.detectChanges();
+            break;
           }
         }
       },
-      { rootMargin: '-40% 0px -55% 0px' }
+      { rootMargin: '-80px 0px -50% 0px', threshold: 0 }
     );
 
     sections.forEach((s) => observer.observe(s));

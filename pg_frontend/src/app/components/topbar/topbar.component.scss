@@ -350,10 +350,23 @@
   }
 }
 
-:host-context(body.dark) .menu-mobile-top .menu-items a.logout-mobile {
-  color: #ef4444 !important;
+:host-context(body.dark) .overlay-mobile {
+  background: rgba(0, 0, 0, 0.6);
+}
 
-  ion-icon {
-    color: #ef4444 !important;
+:host-context(body.dark) .menu-mobile-top {
+  box-shadow: 20px 0 60px rgba(0, 0, 0, 0.6);
+}
+
+:host-context(body.dark) .menu-mobile-top .menu-items a.logout-mobile {
+  color: #ef4444;
+  border-top-color: rgba(255, 255, 255, 0.1);
+
+  ion-icon { color: #ef4444; }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    ion-icon { color: #f87171; }
   }
 }

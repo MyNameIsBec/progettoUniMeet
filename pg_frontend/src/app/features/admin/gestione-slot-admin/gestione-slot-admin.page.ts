@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { IonIcon, IonButton, IonLabel, IonSelect, IonSelectOption, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent} from '@ionic/angular/standalone';
-import { AlertController } from '@ionic/angular';
+import { IonIcon, IonButton, IonLabel, IonSelect, IonSelectOption, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent } from '@ionic/angular/standalone';
+import { AlertController, ToastController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AdminService, SlotGriglia, SlotDate, FiltriSlot, CreaSlotRequest } from 'src/app/core/services/admin';
 
@@ -34,6 +34,7 @@ export class GestioneSlotAdminPage implements OnInit {
     private admin: AdminService,
     private route: ActivatedRoute,
     private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
   ) {
   }
 
@@ -155,7 +156,22 @@ export class GestioneSlotAdminPage implements OnInit {
     await alert.present();
   }
 
+  private async mostraErrore(msg: string) {
+    const toast = await this.toastCtrl.create({ message: msg, duration: 3000, color: 'danger' });
+    await toast.present();
+  }
+
+  private async mostraSuccesso(msg: string) {
+    const toast = await this.toastCtrl.create({ message: msg, duration: 2000, color: 'success' });
+    await toast.present();
+  }
+
   salvaSlot() {
+    if (!this.formDati.data || !this.formDati.oraInizio || !this.formDati.oraFine || !this.formDati.docenteId) {
+      this.mostraErrore('Compila tutti i campi obbligatori (docente, data, ora inizio, ora fine)');
+      return;
+    }
+
     const dati: any = {
       data: this.formDati.data,
       oraInizio: this.formDati.oraInizio,
@@ -175,6 +191,10 @@ export class GestioneSlotAdminPage implements OnInit {
           this.chiudiModale();
           this.caricaSlot();
           this.caricaDate();
+          this.mostraSuccesso('Slot modificato con successo');
+        },
+        error: (err) => {
+          this.mostraErrore(err.error?.error || 'Errore durante la modifica dello slot');
         },
       });
     } else {
@@ -183,21 +203,40 @@ export class GestioneSlotAdminPage implements OnInit {
           this.chiudiModale();
           this.caricaSlot();
           this.caricaDate();
+          this.mostraSuccesso('Slot creato con successo');
+        },
+        error: (err) => {
+          this.mostraErrore(err.error?.error || 'Errore durante la creazione dello slot');
         },
       });
     }
   }
 
-  confermaEliminazione(s: SlotGriglia) {
-    const msg = `Eliminare lo slot del ${s.data} (${s.oraInizio}-${s.oraFine}) di ${s.docente.nome} ${s.docente.cognome}?`;
-    if (confirm(msg)) {
-      this.admin.eliminaSlot(s.id).subscribe({
-        next: () => {
-          this.caricaSlot();
-          this.caricaDate();
+  async confermaEliminazione(s: SlotGriglia) {
+    const alert = await this.alertCtrl.create({
+      header: 'Elimina slot',
+      message: `Eliminare lo slot del ${s.data} (${s.oraInizio}-${s.oraFine}) di ${s.docente.nome} ${s.docente.cognome}?`,
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Elimina',
+          role: 'destructive',
+          handler: () => {
+            this.admin.eliminaSlot(s.id).subscribe({
+              next: () => {
+                this.caricaSlot();
+                this.caricaDate();
+                this.mostraSuccesso('Slot eliminato con successo');
+              },
+              error: (err) => {
+                this.mostraErrore(err.error?.error || 'Errore durante l\'eliminazione dello slot');
+              },
+            });
+          },
         },
-      });
-    }
+      ],
+    });
+    await alert.present();
   }
 
   statoLabel(disponibile: boolean): string {
