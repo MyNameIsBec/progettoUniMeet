@@ -206,7 +206,6 @@ npx prisma generate
 | `email.service.ts` | ✅ Invio email con nodemailer (logga in console se SMTP non configurato) |
 | `codice-verifica.service.ts` | ✅ Generazione, verifica e consumo codici 6 cifre (riusabile per 2FA) |
 | `cleanup.service.ts` | *(da implementare)* Pulizia automatica dati vecchi (prenotazioni, slot, codici verifica, notifiche) con node-cron |
-| `aulae.service.ts` | *(da implementare)* CRUD aule disponibili per ricevimento |
 
 ---
 
@@ -356,15 +355,6 @@ Endpoint segnalazioni (`segnalazioni.routes.ts`):
 | `/api/segnalazioni/:id/stato` | PATCH | Admin | Aggiorna stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) |
 | `/api/segnalazioni/:id` | DELETE | Admin | Elimina segnalazione |
 
-Endpoint aule (`aulae.routes.ts`):
-
-| Endpoint | Metodo | Auth | Descrizione |
-|----------|--------|------|-------------|
-| `/api/aulae` | GET | JWT | Elenco aule disponibili |
-| `/api/aulae` | POST | Admin | Crea aula |
-| `/api/aulae/:id` | PUT | Admin | Modifica aula |
-| `/api/aulae/:id` | DELETE | Admin | Elimina aula |
-
 ---
 
 ## validators/
@@ -406,7 +396,6 @@ File validator aggiuntivo:
 | `bacheca.validators.ts` | ✅ Aggiornamento bacheca, creazione/modifica FAQ |
 | `notifiche.validators.ts` | ✅ Creazione notifiche multi-ruolo |
 | `documenti.validators.ts` | *(da implementare)* Upload documenti |
-| `aulae.validators.ts` | *(da implementare)* Creazione/modifica aule |
 
 ---
 
@@ -505,7 +494,6 @@ Il backend è allineato con il `AuthService` Angular esistente:
 - **CorsoDiStudi**: entità autonoma (non enum) per permettere gestione admin. `Docente` può insegnare in più CorsoDiStudi (tabella join `DocenteCorsoDiStudi`). `Studente` ha FK `id_corso_di_studi`. `Bacheca` appartiene a `CorsoDiStudi` anziché a `Corso`.
 - **materia docente**: non è più un campo diretto su `Docente`. Si deriva da `docente.corsi[0]?.nome_corso` nel response.
 - **luogo**: nei response delle prenotazioni, `luogo` è una stringa formattata "Aula 5, Edificio D (Primo piano)". L'oggetto completo è disponibile in `luogoRicevimento`.
-- **TipoDiDocenza**: il docente può essere `ORDINARIO` (ufficio fisso, luogo bloccato all'ufficio) o `CONTRATTO` (sceglie un'aula dalla lista `Aula` nel DB). Campo gestito solo dall'admin.
 
 ---
 
@@ -686,72 +674,22 @@ Job schedulato con `node-cron` in `server.ts` alle 3:00 ogni notte.
 
 Hard delete (nessuna archiviazione).
 
-### 2. TipoDiDocenza su Docente
+### 2. Registrazione docente — selezione corso di studi e corso
 
-Aggiungere campo `tipo_di_docenza` al modello `Docente` nello schema Prisma:
+Quando un docente crea/aggiorna il suo profilo, deve poter selezionare:
 
-```prisma
-model Docente {
-  ...
-  tipo_di_docenza String @default("ORDINARIO")  // "ORDINARIO" | "CONTRATTO"
-  ...
-}
-```
+- **Corso di studi** (`<ion-select>` da `GET /api/corsi-di-studio`) — come già fa lo studente in registrazione.
+- **Corso insegnato** (`<ion-select>` da `GET /api/corsi`, filtrato per corso di studi selezionato) — dropdown che elenca i corsi presenti nel DB.
 
-Comportamento:
-- **Ordinario**: ha un ufficio fisso (`Docente.ufficio`). Il luogo dello slot è bloccato all'ufficio.
-- **Contratto**: non ha ufficio. Sceglie un'aula dalla tabella `Aula` tramite dropdown.
+**Backend** (`auth.service.ts`, `docenti.service.ts`): aggiornare la registrazione docente (`POST /api/auth/register/docente`) e modifica profilo per accettare `corsoDiStudi` e `corso`, salvando le relazioni nelle tabelle `DocenteCorsoDiStudi` e `Corso` (FK `id_docente`).
 
-Il campo è gestibile solo dall'admin (registrazione/modifica docente).
+**Frontend:**
+- `registrazione pagina admin` — aggiungere i due dropdown nel form di creazione docente.
+- `profilo-docente.page.html` — aggiungere i due dropdown (modificabili).
 
-### 3. Nuova tabella Aula
-
-Modello standalone (non legato a SlotRicevimento):
-
-```prisma
-model Aula {
-  id_aula     String  @id @default(uuid())
-  nome_aula   String
-  edificio    String
-  piano       String
-  latitudine  Float?
-  longitudine Float?
-}
-```
-
-API completa CRUD (`aulae.routes.ts`, `aulae.controller.ts`, `aulae.service.ts`, `aulae.validators.ts`) accessibile solo ad admin per creazione/modifica/eliminazione, JWT per lettura.
-
-### 4. Creazione slot — comportamento differenziato
-
-**Frontend** (`gestione-slot.page.ts/html`):
-
-- **Docente ORDINARIO**: campo `nomeAula` precompilato e readonly con `docente.ufficio`. Campi `edificio` e `piano` nascosti. Mappa facoltativa per coordinate.
-- **Docente CONTRATTO**: `nomeAula` diventa `<ion-select>` popolato da `GET /api/aulae`. Alla selezione si auto-compilano `edificio` e `piano` (readonly). Mappa facoltativa.
-
-**Backend** (`docenti.service.ts`, `docenti.validators.ts`):
-- Se `tipo_di_docenza === "ORDINARIO"`, ignorare il luogo inviato e usare `docente.ufficio`.
-- Se `tipo_di_docenza === "CONTRATTO"`, validare che l'aula scelta esista nella tabella `Aula`.
-
-### 5. Registrazione studente — corso di studi
-
-Già implementata: dropdown `<ion-select>` popolato da `GET /api/corsi-di-studio`. Il campo `corsoDiStudi` invia il nome (stringa). Opzionale migrare a `id_corso_di_studi` per robustezza.
-
-### 6. Spostamento toggle tema
+### 3. Spostamento toggle tema
 
 - **Rimuovere** il pulsante `<button class="toggle-tema">` da `topbar.component.html` e la logica associata (TS, SCSS).
 - **Aggiungere** un `ion-toggle` "Tema scuro" nelle pagine `profilo-studente.page.html` e `profilo-docente.page.html`, solo per ruolo studente e docente (non admin).
-
-### 7. Eliminazione TODO.md
-
-Il file `pg_backend/TODO.md` non è più aggiornato (molte fasi completate risultano ancora non spuntate). Eliminato in favore di `DOCUMENTAZIONE.md`.
-
----
-
-## Seed dati di test — aggiornamenti previsti
-
-| Tabella | Righe | Dettaglio |
-|---------|-------|-----------|
-| Docente | 5 | 3 ORDINARIO (Verde, Neri, Bianco), 2 CONTRATTO (Russo, Colombo) |
-| Aula | 4-5 | Aula 5, Studio 12, Lab 3, Aula Magna, Aula 7 |
 
 ---

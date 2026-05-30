@@ -27,6 +27,7 @@ interface ProfiloForm {
 export class ProfiloDocentePage implements OnInit {
   loading = true;
   docente: any = null;
+  isDarkMode = false;
 
   form: ProfiloForm = {
     nome: '',
@@ -45,10 +46,17 @@ export class ProfiloDocentePage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.isDarkMode = document.body.classList.contains('dark');
     this.docente = this.authService.getCurrentUser();
     if (this.docente) {
       await this.caricaProfilo();
     }
+  }
+
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    document.body.classList.toggle('dark', this.isDarkMode);
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
   async caricaProfilo() {

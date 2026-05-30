@@ -40,7 +40,14 @@ export class ProfiloStudentePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isDarkMode = document.body.classList.contains('dark');
     this.caricaProfilo();
+  }
+
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    document.body.classList.toggle('dark', this.isDarkMode);
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
   caricaProfilo() {
