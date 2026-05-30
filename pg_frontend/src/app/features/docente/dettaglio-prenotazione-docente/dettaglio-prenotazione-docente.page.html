@@ -309,6 +309,17 @@
         </ion-card-content>
       </ion-card>
 
+      @if (prenotazione.luogoRicevimento?.latitudine != null && prenotazione.luogoRicevimento?.longitudine != null) {
+      <ion-card class="detail-card map-card">
+        <ion-card-content>
+          <div class="map-header">
+            <h3>LUOGO RICEVIMENTO</h3>
+          </div>
+          <div id="map-docente" class="map-container"></div>
+        </ion-card-content>
+      </ion-card>
+      }
+
     </div>
   </div>
 

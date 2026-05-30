@@ -206,7 +206,7 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
 
   const updated = await prisma.prenotazione.update({
     where: { id_prenotazione: id },
-    data: { stato_prenotazione: stato },
+    data: { stato_prenotazione: stato.toUpperCase() },
     include: {
       slot: {
         include: {

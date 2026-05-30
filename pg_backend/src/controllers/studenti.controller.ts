@@ -24,9 +24,6 @@ export async function aggiornaProfilo(req: Request, res: Response) {
     if (err instanceof Error && err.message === 'Studente not found') {
       return res.status(404).json({ error: err.message });
     }
-    if (err instanceof Error && err.message === 'Corso di studi not found') {
-      return res.status(404).json({ error: err.message });
-    }
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

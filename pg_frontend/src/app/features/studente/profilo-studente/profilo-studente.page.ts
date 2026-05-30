@@ -2,21 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonSelect,
-  IonSelectOption,
-  IonToggle,
-  AlertController,
-} from '@ionic/angular/standalone';
-
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonInput, IonItem, IonSelect, IonSelectOption, IonToggle, AlertController} from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
@@ -25,22 +11,7 @@ import { ErroriService } from '../../../core/services/errori';
 @Component({
   selector: 'app-profilo-studente',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonIcon,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonButton,
-    IonItem,
-    IonInput,
-    IonSelect,
-    IonSelectOption,
-    IonToggle,
-    DashboardLayoutComponent,
-  ],
+  imports: [ CommonModule, FormsModule, IonIcon, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton,IonItem, IonInput, IonSelect, IonSelectOption, IonToggle, DashboardLayoutComponent],
   templateUrl: './profilo-studente.page.html',
   styleUrls: ['./profilo-studente.page.scss'],
 })
@@ -56,9 +27,9 @@ export class ProfiloStudentePage implements OnInit {
     notifiche_email: true,
     reminder_ore: 24
   };
-
   loading = true;
   salvataggioInCorso = false;
+
 
   constructor(
     private authService: AuthService,
@@ -69,7 +40,6 @@ export class ProfiloStudentePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isDarkMode = document.body.classList.contains('dark');
     this.caricaProfilo();
   }
 
@@ -79,13 +49,11 @@ export class ProfiloStudentePage implements OnInit {
       this.loading = false;
       return;
     }
-
     this.loading = true;
     this.studenteService.getProfilo(user.id).subscribe({
       next: (data: any) => {
         this.studente = data;
 
-        // Carica le preferenze salvate in localStorage
         let notifiche_app = true;
         let reminder_ore = 24;
         const savedPref = localStorage.getItem(`pref_${user.id}`);
@@ -125,8 +93,6 @@ export class ProfiloStudentePage implements OnInit {
     this.studenteService.aggiornaProfilo(this.studente.matricola, this.form).subscribe({
       next: () => {
         this.salvataggioInCorso = false;
-        
-        // Salva le preferenze in localStorage
         const user = this.authService.getCurrentUser();
         if (user) {
           localStorage.setItem(`pref_${user.id}`, JSON.stringify({
@@ -135,7 +101,6 @@ export class ProfiloStudentePage implements OnInit {
           }));
         }
 
-        // Aggiorna la sessione locale per riflettere il cambio nome ovunque
         this.authService.updateUser({
           nome: this.form.nome,
           cognome: this.form.cognome
@@ -170,6 +135,10 @@ export class ProfiloStudentePage implements OnInit {
             }
             if (data.nuovaPw !== data.confermaPw) {
               this.showToast('Le password non coincidono');
+              return false;
+            }
+            if (data.vecchiaPw === data.nuovaPw) {
+              this.showToast('La nuova password non può essere uguale alla password attuale');
               return false;
             }
             this.eseguiCambioPassword(data.vecchiaPw, data.nuovaPw);
@@ -265,9 +234,4 @@ export class ProfiloStudentePage implements OnInit {
     }
   }
 
-  toggleDarkMode() {
-    this.isDarkMode = !this.isDarkMode;
-    document.body.classList.toggle('dark', this.isDarkMode);
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
-  }
 }

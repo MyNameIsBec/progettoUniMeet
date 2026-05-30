@@ -22,6 +22,7 @@ export interface RegistrazioneStudente {
   corsoDiStudi: string;
 }
 
+import { CorsoDiStudi } from '../models/interfacce';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -52,6 +53,10 @@ export class AuthService {
     this.currentUserSubject.next(null);
     localStorage.removeItem('unimeet_session');
     sessionStorage.removeItem('unimeet_session');
+  }
+
+  getCorsiDiStudio(): Observable<CorsoDiStudi[]> {
+    return this.http.get<CorsoDiStudi[]>(`${this.apiUrl}/api/corsi-di-studio`);
   }
 
   registraStudente(dati: RegistrazioneStudente): Observable<UserSession> {

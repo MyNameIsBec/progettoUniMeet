@@ -140,6 +140,8 @@ export async function getSlots(idDocente: string, mese?: string) {
           aula: s.luogo.nome_aula,
           edificio: s.luogo.edificio,
           piano: s.luogo.piano,
+          latitudine: s.luogo.latitudine,
+          longitudine: s.luogo.longitudine,
         }
       : undefined,
     prenotazioniCount: s.prenotazioni.length,
@@ -150,7 +152,7 @@ export async function creaSlot(idDocente: string, data: {
   data: string;
   oraInizio: string;
   oraFine: string;
-  luogo?: { nomeAula: string; edificio: string; piano: string };
+  luogo?: { nomeAula: string; edificio: string; piano: string; latitudine?: number; longitudine?: number };
 }) {
   const dataSlot = new Date(data.data);
   const existing = await prisma.slotRicevimento.findFirst({
@@ -188,6 +190,8 @@ export async function creaSlot(idDocente: string, data: {
             nome_aula: data.luogo.nomeAula,
             edificio: data.luogo.edificio,
             piano: data.luogo.piano,
+            ...(data.luogo.latitudine != null ? { latitudine: data.luogo.latitudine } : {}),
+            ...(data.luogo.longitudine != null ? { longitudine: data.luogo.longitudine } : {}),
           },
         },
       }),

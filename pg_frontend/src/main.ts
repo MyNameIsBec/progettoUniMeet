@@ -1,17 +1,16 @@
+import { registerLocaleData } from '@angular/common';
+import localeIt from '@angular/common/locales/it';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { LOCALE_ID } from '@angular/core';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+registerLocaleData(localeIt);
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { intercettoreAutenticazione } from './app/core/interceptors/auth-interceptor';
 import { addIcons } from 'ionicons';
-import { registerLocaleData } from '@angular/common';
-import localeIt from '@angular/common/locales/it';
-import { LOCALE_ID } from '@angular/core';
-
-registerLocaleData(localeIt);
 
 import {
   addOutline,
@@ -42,6 +41,7 @@ import {
   documentTextOutline,
   documentOutline,
   documentAttachOutline,
+  downloadOutline,
   eyeOffOutline,
   eyeOutline,
   fileTrayFullOutline,
@@ -130,6 +130,7 @@ addIcons({
   documentTextOutline,
   documentOutline,
   documentAttachOutline,
+  downloadOutline,
   eyeOffOutline,
   eyeOutline,
   fileTrayFullOutline,

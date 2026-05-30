@@ -1,16 +1,6 @@
 import { Router } from 'express';
-import {
-  getCorsi,
-  getCorsoById,
-  createCorso,
-  updateCorso,
-  deleteCorso,
-} from '../controllers/corsi.controller';
-import {
-  creaCorsoSchema,
-  modificaCorsoSchema,
-  handleValidationErrors,
-} from '../validators/corsi.validators';
+import { getCorsi, getCorsoById, createCorso, updateCorso, deleteCorso } from '../controllers/corsi.controller';
+import { creaCorsoSchema, modificaCorsoSchema, handleValidationErrors } from '../validators/corsi.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
 

@@ -1,7 +1,6 @@
 import { Component, ViewChild, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { IonHeader, IonToolbar, IonContent, IonButton, IonIcon, IonCard, IonCardContent, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { moonOutline, sunnyOutline } from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-home',
@@ -20,7 +19,6 @@ export class HomePage implements AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ moonOutline, sunnyOutline });
     this.isDarkMode = document.body.classList.contains('dark');
   }
 

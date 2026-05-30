@@ -5,7 +5,6 @@ export const aggiornaStudenteSchema = [
   body('nome').optional().isString().notEmpty().trim(),
   body('cognome').optional().isString().notEmpty().trim(),
   body('email').optional().isEmail().normalizeEmail(),
-  body('corsoDiStudi').optional().isString().notEmpty().trim(),
 ];
 
 export const cambiaPasswordStudenteSchema = [

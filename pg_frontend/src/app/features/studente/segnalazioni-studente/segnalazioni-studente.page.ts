@@ -1,15 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonInput, IonItem, IonTextarea } from '@ionic/angular/standalone';
-import { AlertController, ToastController } from '@ionic/angular';
-import { DashboardLayoutComponent } from 'src/app/components/dashboard-layout/dashboard-layout.component';
-import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
-import { AuthService } from 'src/app/core/services/auth';
-import { ErroriService } from 'src/app/core/services/errori';
-import { firstValueFrom } from 'rxjs';
-import { addIcons } from 'ionicons';
-import { sendOutline } from 'ionicons/icons';
+import {IonIcon, IonCard, IonCardContent, IonItem, IonTextarea, IonButton, IonCardHeader, IonCardTitle, IonInput, AlertController, ToastController } from '@ionic/angular/standalone';
+import { AuthService } from '../../../core/services/auth';
+import { SegnalazioneService, Segnalazione } from '../../../core/services/segnalazione';
+import { ErroriService } from '../../../core/services/errori';
+import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
 @Component({
   selector: 'app-segnalazioni-studente',
@@ -42,7 +38,6 @@ export class SegnalazioniStudentePage implements OnInit {
     private alertController: AlertController,
     private toastController: ToastController
   ) {
-    addIcons({ sendOutline });
   }
 
   async eliminaSegnalazione(id: string) {

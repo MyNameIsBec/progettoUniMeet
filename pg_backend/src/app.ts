@@ -10,27 +10,8 @@ import notificheRoutes from './routes/notifiche.routes';
 import segnalazioniRoutes from './routes/segnalazioni.routes';
 import corsiRoutes from './routes/corsi.routes';
 import bachecheRoutes from './routes/bacheche.routes';
-
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
-const swaggerOptions = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'API UniMeet',
-            version: '1.0.0',
-            description: 'Documentazione API del progetto'
-        },
-        servers: [
-            {
-                url: 'http://localhost:3000'
-            }
-        ]
-    },
-    apis: ['./routes/*.js']
-};
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-
+import corsiDiStudioRoutes from './routes/corsi-di-studio.routes';
+ 
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -46,11 +27,6 @@ app.use('/api', notificheRoutes);
 app.use('/api', segnalazioniRoutes);
 app.use('/api', corsiRoutes);
 app.use('/api', bachecheRoutes);
-
-app.use(
-    '/api-docs',
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerSpec)
-);
+app.use('/api', corsiDiStudioRoutes);
 
 export default app;

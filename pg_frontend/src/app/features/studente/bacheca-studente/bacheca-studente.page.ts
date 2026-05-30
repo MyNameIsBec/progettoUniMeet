@@ -23,25 +23,7 @@ export interface LinkUtile {
   templateUrl: './bacheca-studente.page.html',
   styleUrls: ['./bacheca-studente.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink,
-    IonIcon,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonButton,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonItem,
-    IonSelect,
-    IonSelectOption,
-    DashboardLayoutComponent
-  ]
-})
+  imports: [ CommonModule, FormsModule, RouterLink, IonIcon, IonCard, IonCardContent, IonCardHeader,IonCardTitle,IonButton,IonSegment,IonSegmentButton,IonLabel,IonItem,IonSelect,IonSelectOption,DashboardLayoutComponent]})
 export class BachecaStudentePage implements OnInit {
 
   public collegamentiUtili: LinkUtile[] = [
@@ -117,15 +99,15 @@ export class BachecaStudentePage implements OnInit {
     this.docenteSelezionato = 'tutti';
   }
 
-  private estraiDocenti(faqs: FAQ[]): { id: string; nome: string }[] {
-    const mappa = new Map<string, string>();
-    for (const faq of faqs) {
-      if (faq.idDocente && faq.nomeDocente) {
-        mappa.set(faq.idDocente, faq.nomeDocente);
-      }
+  private estraiDocenti(faqs: FAQ[]) {
+  const mappa = new Map<string, string>();
+  faqs.forEach(faq => {
+    if (faq.idDocente && faq.nomeDocente) {
+      mappa.set(faq.idDocente, faq.nomeDocente);
     }
-    return Array.from(mappa, ([id, nome]) => ({ id, nome }));
-  }
+  });
+  return [...mappa].map(([id, nome]) => ({ id, nome }));
+}
 
   public invertiStatoFaq(faq: FAQ): void {
     faq.aperta = !faq.aperta;

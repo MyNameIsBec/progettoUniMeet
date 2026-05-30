@@ -3,14 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import { Geolocation } from '@capacitor/geolocation';
-import {
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonButton,
-  IonSpinner,
-  IonContent
-} from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonButton, IonSpinner, IonContent } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { AuthService } from '../../../core/services/auth';
@@ -37,12 +30,10 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   loading = true;
   error = false;
   title = "LUOGO RICEVIMENTO";
-
   private map: L.Map | undefined;
   private userMarker: L.Marker | undefined;
   private meetingMarker: L.Marker | undefined;
 
-  // Icona Verde per l'utente
   private userIcon = L.divIcon({
     className: 'custom-marker user-location',
     html: `<div class="marker-pin"></div><div class="marker-pulse"></div>`,
@@ -50,7 +41,6 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
     iconAnchor: [15, 15]
   });
 
-  // Icona Blu per il luogo del ricevimento
   private meetingIcon = L.divIcon({
     className: 'custom-marker meeting-location',
     html: `<div class="marker-pin"></div>`,
@@ -82,10 +72,8 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
-    // Se i dati sono già caricati, inizializza la mappa
-    if (!this.loading && this.prenotazione) {
-      this.initMap();
-      this.refreshMarkers();
+    if (this.map) {
+      this.map.invalidateSize();
     }
   }
 
@@ -94,7 +82,7 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
 
     const container = document.getElementById('map');
     if (!container) {
-      console.warn('Contenitore mappa non trovato, riprovo tra 200ms...');
+      console.error('Div mappa non trovato');
       setTimeout(() => this.initMap(), 200);
       return;
     }
@@ -108,12 +96,10 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map);
 
-    // Aggiungiamo i controlli dello zoom in una posizione più comoda
     L.control.zoom({
       position: 'bottomright'
     }).addTo(this.map);
 
-    // Forza il ricalcolo delle dimensioni
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
@@ -124,30 +110,13 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   private refreshMarkers() {
     if (!this.map || !this.prenotazione) return;
 
-    // 1. Gestione Marker Utente (Posizione attuale)
-    this.trackUserLocation().then(coords => {
-      if (!coords || !this.map) return;
+    if (this.meetingMarker) this.map.removeLayer(this.meetingMarker);
+    if (this.userMarker) this.map.removeLayer(this.userMarker);
 
-      const userLatLng: L.LatLngExpression = [coords.latitude, coords.longitude];
-      if (this.userMarker) this.map.removeLayer(this.userMarker);
-
-      this.userMarker = L.marker(userLatLng, { icon: this.userIcon })
-        .addTo(this.map)
-        .bindPopup('Tua posizione')
-        .openPopup();
-
-      this.fitMapBounds();
-    });
-
-    // 2. Gestione Marker Ricevimento
     const lat = this.prenotazione.luogoRicevimento?.latitudine || 38.1156;
     const lng = this.prenotazione.luogoRicevimento?.longitudine || 13.3614;
 
-    if (this.meetingMarker) this.map.removeLayer(this.meetingMarker);
-
-    this.meetingMarker = L.marker([lat, lng], { icon: this.meetingIcon })
-      .addTo(this.map)
-      .bindPopup(`
+    this.meetingMarker = L.marker([lat, lng], { icon: this.meetingIcon }).addTo(this.map).bindPopup(`
         <div style="padding: 5px; min-width: 150px;">
           <div style="color: #2563eb; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">
             Luogo Ricevimento
@@ -161,7 +130,22 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
         </div>
       `);
 
-    this.fitMapBounds();
+    this.map.setView([lat, lng], 15);
+
+    this.trackUserLocation().then(coords => {
+      if (!coords || !this.map) return;
+
+      const userLatLng: L.LatLngExpression = [coords.latitude, coords.longitude];
+
+      this.userMarker = L.marker(userLatLng, { icon: this.userIcon })
+        .addTo(this.map)
+        .bindPopup('Tua posizione');
+
+      if (this.meetingMarker) {
+        const group = L.featureGroup([this.userMarker, this.meetingMarker]);
+        this.map.fitBounds(group.getBounds().pad(0.5), { maxZoom: 16 });
+      }
+    });
   }
 
   private async trackUserLocation() {
@@ -195,7 +179,6 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
         this.prenotazione = data;
         this.loading = false;
 
-        // Aspettiamo che Angular renderizzi il div#map
         setTimeout(() => {
           this.initMap();
           this.refreshMarkers();
@@ -224,9 +207,6 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
       });
     }
   }
-
-
-
 
   getStatoLabel(stato: string): string {
     const labels: Record<string, string> = {
@@ -262,7 +242,6 @@ export class DettaglioPrenotazionePage implements OnInit, OnDestroy {
   apriDocumento(percorso: string) {
     if (!percorso) return;
     
-    // Safety: estraiamo solo il nome del file se per qualche motivo arriva il percorso completo
     const nomeFile = percorso.split(/[\\/]/).pop();
     const url = this.authService.getApiUrl() + '/uploads/' + nomeFile;
     

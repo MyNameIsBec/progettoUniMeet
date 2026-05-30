@@ -1,18 +1,10 @@
 import { Router } from 'express';
 import {
-  getElencoDocenti,
-  getDettagliDocente,
-  getSlots,
-  creaSlot,
-  modificaSlot,
-  eliminaSlot,
-  getStatistiche,
+  getElencoDocenti, getDettagliDocente, getSlots, creaSlot,
+  modificaSlot, eliminaSlot, getStatistiche,
 } from '../controllers/docenti.controller';
 import {
-  creaSlotSchema,
-  modificaSlotSchema,
-  slotFiltriSchema,
-  handleValidationErrors,
+  creaSlotSchema, modificaSlotSchema, slotFiltriSchema, handleValidationErrors,
 } from '../validators/docenti.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorizeDocente } from '../middleware/authorize';

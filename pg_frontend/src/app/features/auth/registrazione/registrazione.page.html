@@ -83,7 +83,11 @@
           <label class="field-label">Corso di Studi</label>
           <div class="field-wrap" [class.has-error]="corsoDiStudi.invalid && corsoDiStudi.touched">
             <ion-icon name="school-outline" class="field-icon"></ion-icon>
-            <ion-input formControlName="corsoDiStudi" placeholder="Es. Informatica" class="field-input"></ion-input>
+            <ion-select formControlName="corsoDiStudi" interface="popover" placeholder="Seleziona corso di studi" class="field-input">
+              @for (cds of corsiDiStudio; track cds.id) {
+              <ion-select-option [value]="cds.nome">{{ cds.nome }}</ion-select-option>
+              }
+            </ion-select>
           </div>
           @if (corsoDiStudi.invalid && corsoDiStudi.touched) {
           <span class="field-error-msg">

@@ -1,18 +1,11 @@
 import { Router } from 'express';
 import {
-  createPrenotazione,
-  annullaPrenotazione,
-  getPrenotazioniStudente,
-  getPrenotazioniDocente,
-  aggiornaStatoPrenotazione,
-  getPrenotazioneById,
-  eliminaPrenotazione,
-  uploadDocumentiPrenotazione,
+  createPrenotazione, annullaPrenotazione, getPrenotazioniStudente,
+  getPrenotazioniDocente, aggiornaStatoPrenotazione, getPrenotazioneById,
+  eliminaPrenotazione, uploadDocumentiPrenotazione,
 } from '../controllers/prenotazioni.controller';
 import {
-  creaPrenotazioneSchema,
-  aggiornaStatoSchema,
-  handleValidationErrors,
+  creaPrenotazioneSchema, aggiornaStatoSchema, handleValidationErrors,
 } from '../validators/prenotazioni.validators';
 import { authenticate } from '../middleware/authenticate';
 import { upload } from '../middleware/upload';

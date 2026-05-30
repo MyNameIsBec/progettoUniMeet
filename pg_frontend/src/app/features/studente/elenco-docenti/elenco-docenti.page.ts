@@ -1,21 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  IonIcon,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonButton
-} from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
 import { Docente } from '../../../core/models/interfacce';
 import { AuthService } from '../../../core/services/auth';
 import { StudenteService } from '../../../core/services/studente';
 import { DocenteService } from '../../../core/services/docente';
 import { firstValueFrom } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 
 @Component({
@@ -23,26 +15,13 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
   templateUrl: './elenco-docenti.page.html',
   styleUrls: ['./elenco-docenti.page.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    IonIcon,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    IonButton,
-    FormsModule,
-    DashboardLayoutComponent
-  ]
-})
+  imports: [ CommonModule,RouterLink,IonIcon,IonCard,IonCardContent,IonCardHeader,IonCardTitle,IonButton,FormsModule,DashboardLayoutComponent]})
 export class ElencoDocentiPage {
   public listaDocenti: Docente[] = [];
   public docentiOriginali: Docente[] = []; 
   public ricerca: string = '';
 
-  constructor(private authService: AuthService, private studenteService: StudenteService, private docenteService: DocenteService) {
-  }
+  constructor(private authService: AuthService, private studenteService: StudenteService, private docenteService: DocenteService) {}
 
   private mioCorso: string = '';
 
@@ -65,10 +44,7 @@ export class ElencoDocentiPage {
   async caricaDocenti() {
     try {
       const docenti = await firstValueFrom(this.docenteService.getDocentiPerCorso(this.mioCorso || '', this.ricerca));
-      this.listaDocenti = docenti.map(d => ({ 
-        ...d, 
-        iniziali: d.iniziali || `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??'
-      }));
+      this.listaDocenti = docenti.map(d => ({ ...d, iniziali: `${d.nome?.[0] || ''}${d.cognome?.[0] || ''}`.toUpperCase() || '??' }));
       this.docentiOriginali = [...this.listaDocenti];
     } catch (error) {
       console.error('Errore caricamento docenti', error);

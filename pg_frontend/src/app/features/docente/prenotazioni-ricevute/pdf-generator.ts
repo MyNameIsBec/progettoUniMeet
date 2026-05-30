@@ -19,9 +19,9 @@ export function exportAgendaPDF(docente: any, agenda: any[], localOggiStr: strin
   let rowsHtml = '';
   agenda.forEach((item, index) => {
     let statusBadge = '';
-    if (checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato')) {
+    if (checkStato(item.stato, 'confermata')) {
       statusBadge = `<span style="background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;">Confermata</span>`;
-    } else if (checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa')) {
+    } else if (checkStato(item.stato, 'in_attesa')) {
       statusBadge = `<span style="background-color: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;">In attesa</span>`;
     } else if (checkStato(item.stato, 'completata')) {
       statusBadge = `<span style="background-color: #f3f4f6; color: #374151; padding: 4px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;">Completata</span>`;

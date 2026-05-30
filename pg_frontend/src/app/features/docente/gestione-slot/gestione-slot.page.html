@@ -144,6 +144,14 @@
               </ion-item>
             </div>
 
+            <div class="custom-field map-field">
+              <label>Seleziona posizione sulla mappa</label>
+              <div #mapContainer class="slot-map"></div>
+              @if (form.latitudine != null && form.longitudine != null) {
+                <small class="coords-hint">Lat: {{ form.latitudine.toFixed(6) }}, Lng: {{ form.longitudine.toFixed(6) }}</small>
+              }
+            </div>
+
           </div>
 
           <div class="form-actions">
@@ -286,7 +294,7 @@
 
           <div class="guide-step">
             <span>2</span>
-            <p>Specifica il luogo (aula, edificio e piano).</p>
+            <p>Specifica il luogo (aula, edificio, piano) e seleziona la posizione sulla mappa.</p>
           </div>
 
           <div class="guide-step">

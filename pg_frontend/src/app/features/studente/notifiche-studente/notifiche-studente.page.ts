@@ -5,21 +5,7 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
 import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
 
-import { addIcons } from 'ionicons';
-import {
-  mailOutline,
-  mailUnreadOutline,
-  timeOutline,
-  megaphoneOutline,
-  notificationsOffOutline,
-  chevronForwardOutline,
-  mailOpenOutline,
-  trashOutline,
-  informationCircleOutline,
-  notificationsOutline,
-  checkmarkCircleOutline,
-  documentTextOutline
-} from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-notifiche-studente',
@@ -33,6 +19,7 @@ export class NotificheStudentePage implements OnInit {
   notifiche: Notifica[] = [];
   filtriNotifiche: Notifica[] = [];
   filtroAttivo: string = 'Tutte';
+  matricola: string ='';
 
   info = {
     nonLette: 0,
@@ -44,36 +31,22 @@ export class NotificheStudentePage implements OnInit {
     private notificaService: NotificaService,
     private authService: AuthService
   ) {
-    addIcons({
-      mailOutline,
-      mailUnreadOutline,
-      timeOutline,
-      megaphoneOutline,
-      notificationsOffOutline,
-      chevronForwardOutline,
-      mailOpenOutline,
-      trashOutline,
-      informationCircleOutline,
-      notificationsOutline,
-      checkmarkCircleOutline,
-      documentTextOutline
-    });
   }
 
   ngOnInit() {
-    this.caricaNotifiche();
-  }
-
-  caricaNotifiche() {
     const user = this.authService.getCurrentUser();
-    let matricola = "";
     if (user != null) {
-      matricola = user.id;
+      this.matricola = user.id;
     } else {
       return
     }
 
-    this.notificaService.getNotifiche(matricola).subscribe({
+    this.caricaNotifiche();
+  }
+
+  caricaNotifiche() {
+
+    this.notificaService.getNotifiche(this.matricola).subscribe({
       next: (data) => {
         this.notifiche = data;
         this.applicaFiltri(this.filtroAttivo);
@@ -117,32 +90,14 @@ export class NotificheStudentePage implements OnInit {
   }
 
   segnaTutteComeLette() {
-    const user = this.authService.getCurrentUser();
-    let matricola = "";
-    if (user != null) {
-      matricola = user.id;
-    } else {
-      return
-    }
-    if (!matricola) return;
-
-    this.notificaService.segnaTutteComeLette(matricola).subscribe(() => {
+    this.notificaService.segnaTutteComeLette(this.matricola).subscribe(() => {
       this.notifiche.forEach(n => n.letta = true);
       this.aggiornaStatistiche();
     });
   }
 
   cancellaNotificheLette() {
-    const user = this.authService.getCurrentUser();
-    let matricola = "";
-    if (user != null) {
-      matricola = user.id;
-    } else {
-      return
-    }
-    if (!matricola) return;
-
-    this.notificaService.cancellaNotificheLette(matricola).subscribe(() => {
+    this.notificaService.cancellaNotificheLette(this.matricola).subscribe(() => {
       this.notifiche = this.notifiche.filter(n => !n.letta);
       this.applicaFiltri(this.filtroAttivo);
       this.aggiornaStatistiche();

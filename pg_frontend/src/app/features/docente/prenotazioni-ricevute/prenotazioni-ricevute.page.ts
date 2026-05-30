@@ -22,24 +22,7 @@ import { PrenotazioneService } from '../../../core/services/prenotazione';
 import { ErroriService } from '../../../core/services/errori';
 import { exportAgendaPDF } from './pdf-generator';
 
-import { addIcons } from 'ionicons';
-import {
-  calendarOutline,
-  calendarClearOutline,
-  calendarNumberOutline,
-  chevronForwardOutline,
-  hourglassOutline,
-  checkmarkCircleOutline,
-  documentTextOutline,
-  searchOutline,
-  filterOutline,
-  timeOutline,
-  locationOutline,
-  chatbubbleEllipsesOutline,
-  flashOutline,
-  informationCircleOutline,
-  downloadOutline
-} from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-prenotazioni-ricevute',
@@ -80,23 +63,6 @@ export class PrenotazioniRicevutePage implements OnInit {
     private erroriService: ErroriService,
     private alertCtrl: AlertController
   ) {
-    addIcons({
-      calendarOutline,
-      calendarClearOutline,
-      calendarNumberOutline,
-      chevronForwardOutline,
-      hourglassOutline,
-      checkmarkCircleOutline,
-      documentTextOutline,
-      searchOutline,
-      filterOutline,
-      timeOutline,
-      locationOutline,
-      chatbubbleEllipsesOutline,
-      flashOutline,
-      informationCircleOutline,
-      downloadOutline
-    });
   }
 
   ngOnInit() {
@@ -124,18 +90,15 @@ export class PrenotazioniRicevutePage implements OnInit {
 
   calcolaStatistiche() {
     this.totaleRicevute = this.prenotazioni.length;
-    this.inAttesaCount = this.prenotazioni.filter(p => this.checkStato(p.stato, 'in_attesa')).length;
-    this.confermateCount = this.prenotazioni.filter(p => this.checkStato(p.stato, 'confermata') || this.checkStato(p.stato, 'confermato')).length;
-    this.completateCount = this.prenotazioni.filter(p => this.checkStato(p.stato, 'completata')).length;
+    this.inAttesaCount = this.prenotazioni.filter(p => p.stato === 'in_attesa').length;
+    this.confermateCount = this.prenotazioni.filter(p => p.stato === 'confermata').length;
+    this.completateCount = this.prenotazioni.filter(p => p.stato === 'completata').length;
   }
 
   applicaFiltri() {
     this.filteredPrenotazioni = this.prenotazioni.filter(p => {
       const statoLower = p.stato.toLowerCase();
-      if (this.filtroStato === 'confermata' && statoLower !== 'confermata' && statoLower !== 'confermato') return false;
-      if (this.filtroStato === 'in-attesa' && statoLower !== 'in_attesa' && statoLower !== 'in-attesa') return false;
-      if (this.filtroStato === 'annullata' && statoLower !== 'annullata' && statoLower !== 'annullato') return false;
-      if (this.filtroStato === 'completata' && statoLower !== 'completata') return false;
+      if (this.filtroStato !== 'tutti' && statoLower !== this.filtroStato) return false;
       if (this.filtroTempo !== 'storico') {
         const [y, m, d] = p.data.split('-').map(Number);
         const datePren = new Date(y, m - 1, d);
@@ -202,7 +165,7 @@ export class PrenotazioniRicevutePage implements OnInit {
   }
 
   confermaTutteInAttesa() {
-    const pending = this.prenotazioni.filter(p => this.checkStato(p.stato, 'in_attesa'));
+    const pending = this.prenotazioni.filter(p => p.stato === 'in_attesa');
     if (pending.length === 0) {
       this.erroriService.mostraAvviso('Nessuna prenotazione in attesa da confermare.');
       return;
@@ -228,7 +191,7 @@ export class PrenotazioniRicevutePage implements OnInit {
 
   get agendaDiOggi(): any[] {
     const oggiStr = this.getLocalOggiStr();
-    return this.prenotazioni.filter(p => p.data === oggiStr && !this.checkStato(p.stato, 'annullata') && !this.checkStato(p.stato, 'annullato'));
+    return this.prenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata');
   }
 
   scaricaAgendaPDF() {

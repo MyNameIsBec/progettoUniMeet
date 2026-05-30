@@ -67,18 +67,18 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
       const tuttePrenotazioni = await firstValueFrom(this.prenotazioneService.getPrenotazioniDocente(idDocente)) as any[];
 
       const oggiStr = this.getLocalOggiStr();
-      this.prenotazioniOggiCount = tuttePrenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata' && p.stato !== 'annullato').length;
+      this.prenotazioniOggiCount = tuttePrenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata').length;
       this.richiesteInAttesaCount = tuttePrenotazioni.filter(p => p.stato === 'in_attesa').length;
       this.prossimiRicevimenti = tuttePrenotazioni.filter(p => p.stato === 'confermata' || p.stato === 'in_attesa').sort((a, b) => {
-        const timeA = new Date(`${a.data}T${a.oraInizio || '00:00'}`).getTime();
-        const timeB = new Date(`${b.data}T${b.oraInizio || '00:00'}`).getTime();
-        return timeA - timeB;
+        const cmp = b.data.localeCompare(a.data);
+        if (cmp !== 0) return cmp;
+        return (b.oraInizio || '').localeCompare(a.oraInizio || '');
       }).slice(0, 3);
 
       this.recentiPrenotazioni = tuttePrenotazioni.sort((a, b) => {
-        const timeA = new Date(`${a.data}T${a.oraInizio || '00:00'}`).getTime();
-        const timeB = new Date(`${b.data}T${b.oraInizio || '00:00'}`).getTime();
-        return timeB - timeA;
+        const cmp = b.data.localeCompare(a.data);
+        if (cmp !== 0) return cmp;
+        return (b.oraInizio || '').localeCompare(a.oraInizio || '');
       }).slice(0, 3);
 
       const tuttiSlots = await firstValueFrom(this.docenteService.getSlots(idDocente));

@@ -1,18 +1,12 @@
 import { Router } from 'express';
 import {
-  createSegnalazione,
-  getSegnalazioniByStudente,
-  getAllSegnalazioni,
-  aggiornaStatoSegnalazione,
-  eliminaSegnalazione,
-  createSegnalazioneDocente,
+  createSegnalazione, getSegnalazioniByStudente, getAllSegnalazioni,
+  aggiornaStatoSegnalazione, eliminaSegnalazione, createSegnalazioneDocente,
   getSegnalazioniByDocente,
 } from '../controllers/segnalazioni.controller';
 import {
-  creaSegnalazioneSchema,
-  creaSegnalazioneDocenteSchema,
-  aggiornaStatoSchema,
-  handleValidationErrors,
+  creaSegnalazioneSchema, creaSegnalazioneDocenteSchema,
+  aggiornaStatoSchema, handleValidationErrors,
 } from '../validators/segnalazioni.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';

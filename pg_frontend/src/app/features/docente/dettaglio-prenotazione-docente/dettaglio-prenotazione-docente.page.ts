@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import * as L from 'leaflet';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonTextarea } from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { PrenotazioneService } from '../../../core/services/prenotazione';
@@ -16,7 +17,8 @@ import { Prenotazione } from '../../../core/models/interfacce';
   standalone: true,
   imports: [ CommonModule, FormsModule, RouterLink, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent ]})
 
-  export class DettaglioPrenotazioneDocentePage implements OnInit {
+  export class DettaglioPrenotazioneDocentePage implements OnInit, OnDestroy {
+  private map: L.Map | null = null;
   public prenotazione: Prenotazione | null = null;
   public loading = true;
   public note = '';
@@ -41,6 +43,41 @@ import { Prenotazione } from '../../../core/models/interfacce';
       console.error('Errore caricamento prenotazione', err);
     }
     this.loading = false;
+    setTimeout(() => this.initMap(), 500);
+  }
+
+  private initMap() {
+    if (this.map) return;
+    const container = document.getElementById('map-docente');
+    if (!container || !this.prenotazione?.luogoRicevimento?.latitudine || !this.prenotazione?.luogoRicevimento?.longitudine) return;
+
+    this.map = L.map('map-docente', { zoomControl: false }).setView(
+      [this.prenotazione.luogoRicevimento.latitudine, this.prenotazione.luogoRicevimento.longitudine], 15
+    );
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(this.map);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+    L.marker([this.prenotazione.luogoRicevimento.latitudine, this.prenotazione.luogoRicevimento.longitudine]).addTo(this.map)
+      .bindPopup(`
+        <div style="padding:5px;min-width:150px;">
+          <strong style="color:#2563eb;">${this.prenotazione.luogoRicevimento.aula || 'Luogo'}</strong><br>
+          <span style="color:#64748b;">Edificio ${this.prenotazione.luogoRicevimento.edificio || '-'}</span>
+        </div>
+      `);
+
+    setTimeout(() => this.map?.invalidateSize(), 800);
+  }
+
+  ngOnDestroy() {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
   }
 
   getIniziali(nome?: string): string {
@@ -57,11 +94,11 @@ import { Prenotazione } from '../../../core/models/interfacce';
   private statoBase(stato: string): string {
     if (!stato) return '';
     const s = stato.toLowerCase();
-    if (s === 'confermata' || s === 'confermato') return 'confermata';
-    if (s === 'in_attesa' || s === 'in-attesa' || s === 'in attesa') return 'in_attesa';
-    if (s === 'completata' || s === 'completato') return 'completata';
-    if (s === 'annullata' || s === 'annullato') return 'annullata';
-    if (s === 'rifiutata' || s === 'rifiutato') return 'rifiutata';
+    if (s === 'confermata') return 'confermata';
+    if (s === 'in_attesa') return 'in_attesa';
+    if (s === 'completata') return 'completata';
+    if (s === 'annullata') return 'annullata';
+    if (s === 'rifiutata') return 'rifiutata';
     return '';
   }
 

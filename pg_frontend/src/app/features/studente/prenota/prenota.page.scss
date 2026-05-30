@@ -574,7 +574,8 @@ ion-modal.booking-modal {
   --height: 96% !important;
   --max-height: 96% !important;
   --border-radius: 28px !important;
-  
+  --background: var(--ion-background-color);
+
   &::part(content) {
     border-radius: 28px !important;
     padding: 0 !important;
@@ -991,8 +992,12 @@ ion-modal.booking-modal {
 }
 
 :host-context(body.dark) .slot-hero-card {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--ion-card-background);
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+:host-context(body.dark) .modal-scroll-area {
+  background: var(--ion-background-color);
 }
 
 :host-context(body.dark) .booking-form-wrapper {
@@ -1037,9 +1042,7 @@ ion-modal.booking-modal {
   color: #e2e8f0;
 }
 
-:host-context(body.dark) .selection-form {
-  background: var(--ion-card-background);
-}
+
 
 :host-context(body.dark) .custom-field ion-item {
   --background: rgba(255, 255, 255, 0.04);
@@ -1051,49 +1054,7 @@ ion-modal.booking-modal {
   color: #94a3b8;
 }
 
-:host-context(body.dark) .selected-teacher-box {
-  background: var(--ion-card-background);
-}
 
-:host-context(body.dark) .selected-teacher-box h3 {
-  color: #e2e8f0;
-}
-
-:host-context(body.dark) .selected-teacher-box p {
-  color: #94a3b8;
-}
-
-:host-context(body.dark) .teacher-detail {
-  color: #94a3b8;
-}
-
-:host-context(body.dark) .teacher-detail ion-icon {
-  color: #64748b;
-}
-
-:host-context(body.dark) .calendar-overlay-message p {
-  color: #94a3b8;
-}
-
-:host-context(body.dark) .slot.selected {
-  background: #1e3a5f !important;
-  color: #93c5fd !important;
-  border-color: #60a5fa !important;
-}
-
-:host-context(body.dark) .important-icon {
-  background: #1d4ed8;
-  color: #ffffff;
-}
-
-:host-context(body.dark) .important-card h3 {
-  color: #93c5fd;
-}
-
-:host-context(body.dark) .slot-hero-card {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
-}
 
 :host-context(body.dark) .teacher-avatar {
   background: #1d4ed8;

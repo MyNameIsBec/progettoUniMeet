@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import * as L from 'leaflet';
 
 import {
   IonIcon,
@@ -21,27 +22,7 @@ import { AuthService } from '../../../core/services/auth';
 import { DocenteService } from '../../../core/services/docente';
 import { ErroriService } from '../../../core/services/errori';
 
-import { addIcons } from 'ionicons';
-import {
-  calendarClearOutline,
-  calendarNumberOutline,
-  addCircleOutline,
-  checkmarkCircleOutline,
-  peopleOutline,
-  closeCircleOutline,
-  createOutline,
-  saveOutline,
-  refreshOutline,
-  listOutline,
-  searchOutline,
-  filterOutline,
-  timeOutline,
-  locationOutline,
-  trashOutline,
-  informationCircleOutline,
-  pieChartOutline,
-  alertCircleOutline
-} from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-gestione-slot',
@@ -64,7 +45,12 @@ import {
     DashboardLayoutComponent
   ]
 })
-export class GestioneSlotPage implements OnInit {
+export class GestioneSlotPage implements OnInit, AfterViewInit {
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
+  private map: L.Map | null = null;
+  private marker: L.Marker | null = null;
+  private defaultLat = 38.1157;
+  private defaultLng = 13.3615;
   docente: any = null;
   slots: any[] = [];
   filteredSlots: any[] = [];
@@ -83,7 +69,9 @@ export class GestioneSlotPage implements OnInit {
     oraFine: '',
     nomeAula: '',
     edificio: '',
-    piano: ''
+    piano: '',
+    latitudine: null as number | null,
+    longitudine: null as number | null
   };
   mediaRiempimento = 0;
 
@@ -93,26 +81,6 @@ export class GestioneSlotPage implements OnInit {
     private erroriService: ErroriService,
     private alertCtrl: AlertController
   ) {
-    addIcons({
-      calendarClearOutline,
-      calendarNumberOutline,
-      addCircleOutline,
-      checkmarkCircleOutline,
-      peopleOutline,
-      closeCircleOutline,
-      createOutline,
-      saveOutline,
-      refreshOutline,
-      listOutline,
-      searchOutline,
-      filterOutline,
-      timeOutline,
-      locationOutline,
-      trashOutline,
-      informationCircleOutline,
-      pieChartOutline,
-      alertCircleOutline
-    });
   }
 
   ngOnInit() {
@@ -120,6 +88,50 @@ export class GestioneSlotPage implements OnInit {
     if (this.docente) {
       this.caricaSlots();
     }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => this.inizializzaMappa(), 500);
+  }
+
+  private inizializzaMappa() {
+    if (!this.mapContainer) return;
+    this.map = L.map(this.mapContainer.nativeElement, {
+      center: [this.defaultLat, this.defaultLng],
+      zoom: 15,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(this.map);
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.posizionaMarker(e.latlng.lat, e.latlng.lng);
+    });
+  }
+
+  private creaIconaMarker() {
+    return L.divIcon({
+      className: 'custom-marker-icon',
+      html: '<div style="background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    });
+  }
+
+  private posizionaMarker(lat: number, lng: number) {
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    } else if (this.map) {
+      this.marker = L.marker([lat, lng], { draggable: true, icon: this.creaIconaMarker() }).addTo(this.map);
+      this.marker.on('dragend', () => {
+        const pos = this.marker!.getLatLng();
+        this.form.latitudine = pos.lat;
+        this.form.longitudine = pos.lng;
+      });
+    }
+    this.form.latitudine = lat;
+    this.form.longitudine = lng;
   }
 
   caricaSlots() {
@@ -150,7 +162,10 @@ export class GestioneSlotPage implements OnInit {
   }
 
   applicaFiltri() {
+    const adesso = new Date();
     this.filteredSlots = this.slots.filter(s => {
+      const dataOraSlot = new Date(`${s.data}T${s.oraFine || '00:00'}`);
+      if (dataOraSlot < adesso) return false;
       if (this.filtroStato === 'disponibile' && !s.disponibilita) return false;
       if (this.filtroStato === 'parziale' && (s.disponibilita || s.prenotazioniCount === 0)) return false;
       if (this.filtroStato === 'pieno' && (s.disponibilita || s.prenotazioniCount === 0)) return false;
@@ -187,6 +202,11 @@ export class GestioneSlotPage implements OnInit {
       return;
     }
 
+    if (hInizio! < 9 || hFine! > 18 || (hFine === 18 && mFine! > 0)) {
+      this.erroriService.mostraAvviso('Gli slot sono consentiti solo nella fascia oraria 9:00 - 18:00');
+      return;
+    }
+
     this.salvataggioInCorso = true;
 
     const payload: any = {
@@ -195,11 +215,13 @@ export class GestioneSlotPage implements OnInit {
       oraFine: this.form.oraFine
     };
 
-    if (this.form.nomeAula || this.form.edificio || this.form.piano) {
+    if (this.form.nomeAula || this.form.edificio || this.form.piano || this.form.latitudine != null) {
       payload.luogo = {
         nomeAula: this.form.nomeAula || 'N/D',
         edificio: this.form.edificio || 'N/D',
-        piano: String(this.form.piano || '0')
+        piano: String(this.form.piano || '0'),
+        ...(this.form.latitudine != null ? { latitudine: this.form.latitudine } : {}),
+        ...(this.form.longitudine != null ? { longitudine: this.form.longitudine } : {}),
       };
     }
 
@@ -239,8 +261,13 @@ export class GestioneSlotPage implements OnInit {
       oraFine: slot.oraFine,
       nomeAula: slot.luogo?.aula || '',
       edificio: slot.luogo?.edificio || '',
-      piano: slot.luogo?.piano !== undefined ? String(slot.luogo.piano) : ''
+      piano: slot.luogo?.piano !== undefined ? String(slot.luogo.piano) : '',
+      latitudine: slot.luogo?.latitudine ?? null,
+      longitudine: slot.luogo?.longitudine ?? null
     };
+    if (slot.luogo?.latitudine != null && slot.luogo?.longitudine != null) {
+      setTimeout(() => this.posizionaMarker(slot.luogo.latitudine, slot.luogo.longitudine), 300);
+    }
   }
 
   async confermaEliminaSlot(slotId: string) {
@@ -283,8 +310,14 @@ export class GestioneSlotPage implements OnInit {
       oraFine: '',
       nomeAula: '',
       edificio: '',
-      piano: ''
+      piano: '',
+      latitudine: null,
+      longitudine: null
     };
+    if (this.marker) {
+      this.marker.remove();
+      this.marker = null;
+    }
   }
 
   formattazioneDataMese(dataStr: string): string {

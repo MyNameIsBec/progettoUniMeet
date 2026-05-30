@@ -55,7 +55,6 @@ export class PrenotaPage implements OnInit {
     this.caricaGiorniBloccati();
     await this.caricaDocenti();
 
-    // Gestione parametro query per pre-selezionare il docente
     this.route.queryParams.subscribe(params => {
       const docenteId = params['docenteId'];
       if (docenteId) {
@@ -66,7 +65,6 @@ export class PrenotaPage implements OnInit {
   }
 
   private selezionaDocente(id: string) {
-    // Cerchiamo il docente nell'elenco già caricato
     const docente = this.elencoDocenti.find(d => String(d.id) === String(id));
     if (docente) {
       this.docenteSelezionato = docente;
@@ -100,7 +98,6 @@ export class PrenotaPage implements OnInit {
   }
 
   settimanaPrecedente() {
-    // Non permettiamo di andare prima di oggi
     const oggi = new Date();
     oggi.setHours(0, 0, 0, 0);
     const nuovaData = new Date(this.dataInizioSettimana);
@@ -189,10 +186,7 @@ export class PrenotaPage implements OnInit {
     const oggi = new Date();
     return this.tuttiGliSlot.filter(s => {
       const dataSlot = new Date(s.data);
-      // Filtra slot passati (giorni precedenti)
       if (dataSlot < oggi && dataSlot.toDateString() !== oggi.toDateString()) return false;
-      
-      // Filtra slot passati (stesso giorno ma ora passata)
       if (dataSlot.toDateString() === oggi.toDateString()) {
         const [ore, minuti] = s.oraInizio.split(':').map(Number);
         const oraAttuale = new Date();
@@ -245,7 +239,7 @@ export class PrenotaPage implements OnInit {
         this.isBookingInProgress = false;
         alert('Prenotazione effettuata con successo!');
         this.chiudiModale();
-        this.caricaSlots(String(this.filtriRicerca.docenteId)); // Ricarica per mostrare lo slot come occupato
+        this.caricaSlots(String(this.filtriRicerca.docenteId)); // ricarica per mostrare lo slot come occupato
       },
       error: (err) => {
         console.error('Errore prenotazione', err);

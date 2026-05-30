@@ -24,7 +24,7 @@ export class RiepilogoPrenotazioniPage implements OnInit {
   public prenotazioniOriginali: Prenotazione[] = []; // Backup per il filtraggio
 
   public ricerca: string = '';
-  public statoSelezionato: string = 'tutti';
+  public statoSelezionato: string = 'future';
 
   constructor(
     private authService: AuthService, 
@@ -32,7 +32,24 @@ export class RiepilogoPrenotazioniPage implements OnInit {
     private studenteService: StudenteService,
     private alertController: AlertController,
     private toastController: ToastController
-  ) {
+  ) {}
+
+  async ngOnInit() {
+    try {
+      const user = this.authService.getCurrentUser();
+      if (user != null) {
+        this.prenotazioniOriginali = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(user.id));
+        this.prenotazioniOriginali.sort((a, b) => {
+          const cmp = b.data.localeCompare(a.data);
+          if (cmp !== 0) return cmp;
+          return (b.ora || '').localeCompare(a.ora || '');
+        });
+        this.listaPrenotazioni = [...this.prenotazioniOriginali];
+      }
+    }
+    catch (error) {
+      console.error('Errore durante il caricamento delle prenotazioni', error);
+    }
   }
 
   async eliminaPrenotazione(id: string) {
@@ -45,10 +62,8 @@ export class RiepilogoPrenotazioniPage implements OnInit {
           text: 'Elimina',
           cssClass: 'delete-button-confirm',
           handler: () => {
-            console.log('Tentativo eliminazione prenotazione ID:', id);
             this.prenotazioneService.eliminaPrenotazione(id).subscribe({
               next: async () => {
-                console.log('Eliminazione riuscita sul backend');
                 this.prenotazioniOriginali = [...this.prenotazioniOriginali.filter(p => p.id !== id)];
                 this.listaPrenotazioni = [...this.prenotazioniOriginali];
                 this.applicaFiltri();
@@ -78,24 +93,6 @@ export class RiepilogoPrenotazioniPage implements OnInit {
     await alert.present();
   }
 
-  async ngOnInit() {
-    try {
-      const user = this.authService.getCurrentUser();
-      if (user != null) {
-        this.prenotazioniOriginali = await firstValueFrom(this.prenotazioneService.getPrenotazioniStudente(user.id));
-        this.prenotazioniOriginali.sort((a, b) => {
-          const cmp = b.data.localeCompare(a.data);
-          if (cmp !== 0) return cmp;
-          return (b.ora || '').localeCompare(a.ora || '');
-        });
-        this.listaPrenotazioni = [...this.prenotazioniOriginali];
-      }
-    }
-    catch (error) {
-      console.error('Errore durante il caricamento delle prenotazioni', error);
-    }
-  }
-
   cerca() {
     this.applicaFiltri();
   }
@@ -106,12 +103,19 @@ export class RiepilogoPrenotazioniPage implements OnInit {
   }
 
   applicaFiltri() {
+    const adesso = new Date();
     this.listaPrenotazioni = this.prenotazioniOriginali.filter(p => {
       const matchRicerca = !this.ricerca ||
         p.docente.toLowerCase().includes(this.ricerca.toLowerCase()) ||
         p.materia.toLowerCase().includes(this.ricerca.toLowerCase());
 
-      const matchStato = this.statoSelezionato === 'tutti' || p.stato === this.statoSelezionato;
+      let matchStato = true;
+      if (this.statoSelezionato === 'future') {
+        matchStato = (p.stato === 'confermata' || p.stato === 'in_attesa') &&
+          new Date(`${p.data}T${p.ora}`) > adesso;
+      } else if (this.statoSelezionato !== 'tutti') {
+        matchStato = p.stato === this.statoSelezionato;
+      }
 
       return matchRicerca && matchStato;
     });

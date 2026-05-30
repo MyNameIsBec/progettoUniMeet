@@ -99,7 +99,7 @@
             <ion-select [(ngModel)]="filtroStato" (ionChange)="applicaFiltri()" interface="popover">
               <ion-select-option value="tutti">Tutti gli stati</ion-select-option>
               <ion-select-option value="confermata">Confermata</ion-select-option>
-              <ion-select-option value="in-attesa">In attesa</ion-select-option>
+              <ion-select-option value="in_attesa">In attesa</ion-select-option>
               <ion-select-option value="annullata">Annullata</ion-select-option>
               <ion-select-option value="completata">Completata</ion-select-option>
             </ion-select>
@@ -127,9 +127,9 @@
         } @else {
           @for (booking of filteredPrenotazioni; track booking.id) {
             <ion-card class="booking-card" [ngClass]="{
-              'waiting-card': checkStato(booking.stato, 'in_attesa') || checkStato(booking.stato, 'in-attesa'),
+              'waiting-card': checkStato(booking.stato, 'in_attesa'),
               'completed-card': checkStato(booking.stato, 'completata'),
-              'cancelled-card': checkStato(booking.stato, 'annullata') || checkStato(booking.stato, 'annullato')
+              'cancelled-card': checkStato(booking.stato, 'annullata')
             }">
               <ion-card-content>
                 <div class="booking-header">
@@ -145,18 +145,18 @@
                   </div>
 
                   <span class="booking-status" [ngClass]="{
-                    'confirmed': checkStato(booking.stato, 'confermata') || checkStato(booking.stato, 'confermato'),
-                    'waiting': checkStato(booking.stato, 'in_attesa') || checkStato(booking.stato, 'in-attesa'),
+                    'confirmed': checkStato(booking.stato, 'confermata'),
+                    'waiting': checkStato(booking.stato, 'in_attesa'),
                     'completed': checkStato(booking.stato, 'completata'),
-                    'cancelled': checkStato(booking.stato, 'annullata') || checkStato(booking.stato, 'annullato')
+                    'cancelled': checkStato(booking.stato, 'annullata')
                   }">
-                    @if (checkStato(booking.stato, 'confermata') || checkStato(booking.stato, 'confermato')) {
+                    @if (checkStato(booking.stato, 'confermata')) {
                       Confermata
-                    } @else if (checkStato(booking.stato, 'in_attesa') || checkStato(booking.stato, 'in-attesa')) {
+                    } @else if (checkStato(booking.stato, 'in_attesa')) {
                       In attesa
                     } @else if (checkStato(booking.stato, 'completata')) {
                       Completata
-                    } @else if (checkStato(booking.stato, 'annullata') || checkStato(booking.stato, 'annullato')) {
+                    } @else if (checkStato(booking.stato, 'annullata')) {
                       Annullata
                     } @else {
                       {{ booking.stato }}
@@ -202,13 +202,13 @@
                       <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
                     </ion-button>
 
-                    @if (checkStato(booking.stato, 'in_attesa') || checkStato(booking.stato, 'in-attesa')) {
+                    @if (checkStato(booking.stato, 'in_attesa')) {
                       <ion-button color="success" (click)="confermaPrenotazione(booking.id)">
                         Conferma
                       </ion-button>
                     }
 
-                    @if (!checkStato(booking.stato, 'annullata') && !checkStato(booking.stato, 'annullato') && !checkStato(booking.stato, 'completata')) {
+                    @if (!checkStato(booking.stato, 'annullata') && !checkStato(booking.stato, 'completata')) {
                       <ion-button fill="outline" color="danger" (click)="confermaAnnullaPrenotazione(booking.id)">
                         Annulla
                       </ion-button>
@@ -249,8 +249,8 @@
           <div class="agenda-list">
             @for (item of agendaDiOggi; track item.id) {
               <div class="agenda-item" [ngClass]="{
-                'confirmed': checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato'),
-                'waiting': checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa'),
+                'confirmed': checkStato(item.stato, 'confermata'),
+                'waiting': checkStato(item.stato, 'in_attesa'),
                 'completed': checkStato(item.stato, 'completata')
               }">
                 <span>{{ item.oraInizio }}</span>
@@ -258,13 +258,13 @@
                   <strong>{{ item.studente }}</strong>
                   <small>{{ item.argomento }}</small>
                   <span class="agenda-badge" [ngClass]="{
-                    'confirmed': checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato'),
-                    'waiting': checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa'),
+                    'confirmed': checkStato(item.stato, 'confermata'),
+                    'waiting': checkStato(item.stato, 'in_attesa'),
                     'completed': checkStato(item.stato, 'completata')
                   }">
-                    @if (checkStato(item.stato, 'confermata') || checkStato(item.stato, 'confermato')) {
+                    @if (checkStato(item.stato, 'confermata')) {
                       Confermata
-                    } @else if (checkStato(item.stato, 'in_attesa') || checkStato(item.stato, 'in-attesa')) {
+                    } @else if (checkStato(item.stato, 'in_attesa')) {
                       In attesa
                     } @else if (checkStato(item.stato, 'completata')) {
                       Completata

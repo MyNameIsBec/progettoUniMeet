@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonIcon, IonInput, IonSelect, IonSelectOption, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
 import { AuthService, UserSession } from '../../../core/services/auth';
+import { CorsoDiStudi } from '../../../core/models/interfacce';
 import { passwordMatchValidator } from '../../../core/validators/password.validator';
 
 @Component({
@@ -12,7 +13,7 @@ import { passwordMatchValidator } from '../../../core/validators/password.valida
   templateUrl: 'registrazione.page.html',
   styleUrls: ['registrazione.page.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonSpinner]
+  imports: [CommonModule, ReactiveFormsModule, IonContent, IonButton, IonIcon, IonInput, IonSelect, IonSelectOption, IonSpinner]
 })
 export class RegistrazionePage implements OnInit {
   registrazioneForm!: FormGroup;
@@ -20,6 +21,7 @@ export class RegistrazionePage implements OnInit {
   mostraPassword = false;
   mostraConfermaPassword = false;
   errorMessage = '';
+  corsiDiStudio: CorsoDiStudi[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -28,6 +30,10 @@ export class RegistrazionePage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.authService.getCorsiDiStudio().subscribe({
+      next: (corsi) => this.corsiDiStudio = corsi,
+      error: () => this.errorMessage = 'Errore caricamento corsi di studio'
+    });
     this.registrazioneForm = this.fb.group(
       {
         nome: ['', [Validators.required, Validators.minLength(2)]],

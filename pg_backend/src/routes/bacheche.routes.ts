@@ -1,19 +1,10 @@
 import { Router } from 'express';
 import {
-  getBachecaByCorso,
-  getBachecaByCorsoDiStudi,
-  getBachecheDocente,
-  updateBacheca,
-  getFaqByBacheca,
-  createFaq,
-  updateFaq,
-  deleteFaq,
+  getBachecaByCorso, getBachecaByCorsoDiStudi, getBachecheDocente,
+  updateBacheca, getFaqByBacheca, createFaq, updateFaq, deleteFaq,
 } from '../controllers/bacheca.controller';
 import {
-  aggiornaBachecaSchema,
-  creaFaqSchema,
-  modificaFaqSchema,
-  handleValidationErrors,
+  aggiornaBachecaSchema, creaFaqSchema, modificaFaqSchema, handleValidationErrors,
 } from '../validators/bacheca.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';

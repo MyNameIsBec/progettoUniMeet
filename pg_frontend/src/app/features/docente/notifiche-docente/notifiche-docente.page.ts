@@ -6,21 +6,7 @@ import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
 import { ErroriService } from '../../../core/services/errori';
 
-import { addIcons } from 'ionicons';
-import {
-  mailOutline,
-  mailUnreadOutline,
-  timeOutline,
-  megaphoneOutline,
-  notificationsOffOutline,
-  chevronForwardOutline,
-  mailOpenOutline,
-  trashOutline,
-  informationCircleOutline,
-  notificationsOutline,
-  checkmarkCircleOutline,
-  documentTextOutline
-} from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-notifiche-docente',
@@ -46,20 +32,6 @@ export class NotificheDocentePage implements OnInit {
     private authService: AuthService,
     private erroriService: ErroriService
   ) {
-    addIcons({
-      mailOutline,
-      mailUnreadOutline,
-      timeOutline,
-      megaphoneOutline,
-      notificationsOffOutline,
-      chevronForwardOutline,
-      mailOpenOutline,
-      trashOutline,
-      informationCircleOutline,
-      notificationsOutline,
-      checkmarkCircleOutline,
-      documentTextOutline
-    });
   }
 
   ngOnInit() {

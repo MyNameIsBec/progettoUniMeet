@@ -74,12 +74,7 @@
           <div class="form-field full-width">
             <label>Corso di studi</label>
             <ion-item lines="none">
-              <ion-select [(ngModel)]="form.corsoDiStudi" interface="popover">
-                <ion-select-option value="Informatica">Informatica</ion-select-option>
-                <ion-select-option value="Ingegneria Informatica">Ingegneria Informatica</ion-select-option>
-                <ion-select-option value="Matematica">Matematica</ion-select-option>
-                <ion-select-option value="Economia">Economia</ion-select-option>
-              </ion-select>
+              <ion-input [value]="form.corsoDiStudi" readonly="true"></ion-input>
             </ion-item>
           </div>
         </div>

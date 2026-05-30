@@ -34,6 +34,7 @@
         <ion-icon name="filter-outline" class="filter-icon"></ion-icon>
         <ion-select placeholder="Filtra" interface="popover" [value]="statoSelezionato"
           (ionChange)="onFilterStato($event)">
+          <ion-select-option value="future">Future</ion-select-option>
           <ion-select-option value="tutti">Tutti gli stati</ion-select-option>
           <ion-select-option value="confermata">Confermata</ion-select-option>
           <ion-select-option value="in_attesa">In attesa</ion-select-option>

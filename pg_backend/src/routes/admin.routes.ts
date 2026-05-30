@@ -1,21 +1,9 @@
 import { Router } from 'express';
 import {
-  getStats,
-  getAccount,
-  creaAccount,
-  modificaAccount,
-  eliminaAccount,
-  getSlotDate,
-  creaSlot,
-  modificaSlot,
-  eliminaSlot,
-  getSlotGlobali,
-  getAllPrenotazioni,
-  aggiornaStatoPrenotazione,
-  eliminaPrenotazione,
-  getGiorniBloccati,
-  bloccaGiorno,
-  sbloccaGiorno,
+  getStats, getAccount, creaAccount, modificaAccount, eliminaAccount,
+  getSlotDate, creaSlot, modificaSlot, eliminaSlot, getSlotGlobali,
+  getAllPrenotazioni, aggiornaStatoPrenotazione, eliminaPrenotazione,
+  getGiorniBloccati, bloccaGiorno, sbloccaGiorno,
 } from '../controllers/admin.controller';
 import {
   creaAccountSchema,

@@ -122,9 +122,6 @@ body.dark {
   --ion-overlay-background-color: #1e293b;
   --ion-backdrop-color: #000000;
 
-  /* Override CSS custom properties defined inside :host of each page component.
-     body.dark [selector] ha specificità più alta di :host dentro il componente
-     quindi sovrascrive le variabili locali che bloccavano i colori in dark mode. */
   app-dashboard-docente,
   app-dashboard-studente,
   app-dashboard-admin,

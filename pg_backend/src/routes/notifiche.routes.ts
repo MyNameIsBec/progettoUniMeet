@@ -1,14 +1,10 @@
 import { Router } from 'express';
 import {
-  getNotifiche,
-  createNotifica,
-  segnaComeLetta,
-  segnaTutteComeLette,
-  cancellaNotificheLette,
+  getNotifiche, createNotifica, segnaComeLetta,
+  segnaTutteComeLette, cancellaNotificheLette,
 } from '../controllers/notifiche.controller';
 import {
-  creaNotificaSchema,
-  handleValidationErrors,
+  creaNotificaSchema, handleValidationErrors,
 } from '../validators/notifiche.validators';
 import { authenticate } from '../middleware/authenticate';
 

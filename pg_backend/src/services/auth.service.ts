@@ -49,11 +49,9 @@ export async function createStudente(data: {
   const existing = await prisma.studente.findUnique({ where: { email: data.email } });
   if (existing) throw new Error('Email already in use');
 
-  let cdsId = data.corsoDiStudi;
   const cds = await prisma.corsoDiStudi.findUnique({ where: { nome: data.corsoDiStudi } });
-  if (cds) {
-    cdsId = cds.id_corso_di_studi;
-  }
+  if (!cds) throw new Error('Corso di studi non trovato');
+  const cdsId = cds.id_corso_di_studi;
 
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
   await prisma.studente.create({
