@@ -30,6 +30,14 @@ export class ProfiloStudentePage implements OnInit {
   loading = true;
   salvataggioInCorso = false;
 
+  // 2FA
+  stato2FA = false;
+  mostraInput2FA = false;
+  codice2FA = '';
+  codice2FAMostrato = '';
+  caricamento2FA = false;
+  conferma2FAInCorso = false;
+
 
   constructor(
     private authService: AuthService,
@@ -90,6 +98,11 @@ export class ProfiloStudentePage implements OnInit {
         this.loading = false;
         this.erroriService.gestoreErrori(err);
       }
+    });
+
+    this.authService.getStato2FA().subscribe({
+      next: (res) => { this.stato2FA = res.abilitato; },
+      error: () => { this.stato2FA = false; },
     });
   }
 
@@ -200,6 +213,82 @@ export class ProfiloStudentePage implements OnInit {
       this.erroriService.gestoreErrori(err);
     }
     });
+  }
+
+  abilita2FA() {
+    this.caricamento2FA = true;
+    this.authService.abilita2FA().subscribe({
+      next: (res) => {
+        this.caricamento2FA = false;
+        this.mostraInput2FA = true;
+        if (res.codiceMostrato) {
+          this.codice2FAMostrato = res.codiceMostrato;
+        }
+      },
+      error: (err) => {
+        this.caricamento2FA = false;
+        this.erroriService.gestoreErrori(err);
+        this.stato2FA = false;
+      },
+    });
+  }
+
+  confermaAbilita2FA() {
+    if (!this.codice2FA || this.codice2FA.length !== 6) return;
+    this.conferma2FAInCorso = true;
+    this.authService.confermaAbilita2FA(this.codice2FA).subscribe({
+      next: () => {
+        this.conferma2FAInCorso = false;
+        this.stato2FA = true;
+        this.mostraInput2FA = false;
+        this.codice2FA = '';
+        this.codice2FAMostrato = '';
+        this.showToast('Autenticazione a due fattori abilitata con successo!');
+      },
+      error: (err) => {
+        this.conferma2FAInCorso = false;
+        this.erroriService.gestoreErrori(err);
+      },
+    });
+  }
+
+  async disabilita2FA() {
+    const alert = await this.alertCtrl.create({
+      header: 'Disabilita 2FA',
+      message: 'Inserisci la password per confermare la disabilitazione dell\'autenticazione a due fattori.',
+      inputs: [
+        { name: 'password', type: 'password', placeholder: 'Password attuale' },
+      ],
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Disabilita',
+          handler: (data) => {
+            if (!data.password) {
+              this.showToast('Inserisci la password', 'danger');
+              return false;
+            }
+            this.authService.disabilita2FA(data.password).subscribe({
+              next: () => {
+                this.stato2FA = false;
+                this.showToast('Autenticazione a due fattori disabilitata.');
+              },
+              error: (err) => {
+                this.erroriService.gestoreErrori(err);
+              },
+            });
+            return true;
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  annullaAbilita2FA() {
+    this.mostraInput2FA = false;
+    this.codice2FA = '';
+    this.codice2FAMostrato = '';
   }
 
   async showToast(msg: string, color: 'success' | 'danger' | 'warning' = 'success') {

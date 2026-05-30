@@ -10,6 +10,11 @@ import {
   forgotPassword,
   verificaCodice,
   resetPassword,
+  verifica2FA,
+  abilita2FA,
+  confermaAbilita2FA,
+  disabilita2FA,
+  getStato2FA,
 } from '../controllers/auth.controller';
 import {
   loginSchema,
@@ -21,6 +26,10 @@ import {
   verificaCodiceSchema,
   resetPasswordSchema,
   refreshTokenSchema,
+  verifica2FASchema,
+  abilita2FASchema,
+  confermaAbilita2FASchema,
+  disabilita2FASchema,
   handleValidationErrors,
 } from '../validators/auth.validators';
 import { authenticate } from '../middleware/authenticate';
@@ -38,5 +47,11 @@ router.post('/auth/register/admin', adminRegistrationSchema, handleValidationErr
 router.post('/auth/refresh', refreshTokenSchema, handleValidationErrors, refreshToken);
 router.post('/auth/change-password', authenticate, changePasswordSchema, handleValidationErrors, changePassword);
 router.get('/auth/profile', authenticate, getProfile);
+
+router.post('/auth/verifica-2fa', verifica2FASchema, handleValidationErrors, verifica2FA);
+router.post('/auth/2fa/abilita', authenticate, abilita2FASchema, handleValidationErrors, abilita2FA);
+router.post('/auth/2fa/conferma', authenticate, confermaAbilita2FASchema, handleValidationErrors, confermaAbilita2FA);
+router.post('/auth/2fa/disabilita', authenticate, disabilita2FASchema, handleValidationErrors, disabilita2FA);
+router.get('/auth/2fa/stato', authenticate, getStato2FA);
 
 export default router;

@@ -2,16 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent} from '@ionic/angular/standalone';
+import { IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCheckbox} from '@ionic/angular/standalone';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
-import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/services/admin';
+import { AdminService, ProfiloAccount, CreaAccountRequest, CorsoListItem } from 'src/app/core/services/admin';
+import { AuthService } from 'src/app/core/services/auth';
+import { CorsoDiStudi } from 'src/app/core/models/interfacce';
+
+interface CorsiGrouped {
+  cds: CorsoDiStudi;
+  corsi: CorsoListItem[];
+}
 
 @Component({
   selector: 'app-gestione-account',
   templateUrl: './gestione-account.page.html',
   styleUrls: ['./gestione-account.page.scss'],
   standalone: true,
-  imports: [ IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, CommonModule, FormsModule, DashboardLayoutComponent]})
+  imports: [ IonLabel, IonIcon, IonButton, IonSearchbar, IonModal, IonInput, IonSelect, IonSelectOption, IonChip, IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCheckbox, CommonModule, FormsModule, DashboardLayoutComponent]})
 
   export class GestioneAccountPage implements OnInit {
   filtroRuolo = '';
@@ -23,19 +30,54 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
   accountInModifica: ProfiloAccount | null = null;
   inCaricamento = false;
   formDati: CreaAccountRequest = this.formVuoto();
+  corsiGrouped: CorsiGrouped[] = [];
+  corsiSelezionati = new Set<string>();
 
-  constructor(private admin: AdminService, private route: ActivatedRoute) {
+  constructor(private admin: AdminService, private route: ActivatedRoute, private authService: AuthService) {
   }
 
   ngOnInit() {
     this.caricaAccounts();
+    this.caricaCorsi();
     if (this.route.snapshot.queryParams['crea'] === 'true') {
       this.apriModaleCrea();
     }
   }
 
   formVuoto(): CreaAccountRequest {
-    return { ruolo: ' ', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '' };
+    return { ruolo: ' ', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '', corsi: [] };
+  }
+
+  caricaCorsi() {
+    this.admin.getCorsi().subscribe({
+      next: (corsi) => {
+        this.authService.getCorsiDiStudio().subscribe({
+          next: (cdsList) => {
+            const cdsMap = new Map(cdsList.map(c => [c.id, c]));
+            const grouped: CorsiGrouped[] = [];
+            for (const [cdsId, cds] of cdsMap) {
+              const corsiOfCds = corsi.filter(c => c.corsoDiStudiId === cdsId);
+              if (corsiOfCds.length > 0) {
+                grouped.push({ cds, corsi: corsiOfCds });
+              }
+            }
+            this.corsiGrouped = grouped;
+          },
+        });
+      },
+    });
+  }
+
+  isCorsoSelezionato(id: string): boolean {
+    return this.corsiSelezionati.has(id);
+  }
+
+  toggleCorso(id: string) {
+    if (this.corsiSelezionati.has(id)) {
+      this.corsiSelezionati.delete(id);
+    } else {
+      this.corsiSelezionati.add(id);
+    }
   }
 
   caricaAccounts(ruolo?: string) {
@@ -97,12 +139,21 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
     this.modaleTitolo = 'Crea account';
     this.accountInModifica = null;
     this.formDati = this.formVuoto();
+    this.corsiSelezionati = new Set<string>();
     this.mostraModale = true;
   }
 
   apriModaleModifica(account: ProfiloAccount) {
     this.modaleTitolo = 'Modifica account';
     this.accountInModifica = account;
+
+    this.corsiSelezionati = new Set<string>();
+    if (account.ruolo === 'docente' && account.corsi) {
+      for (const c of account.corsi) {
+        this.corsiSelezionati.add(c.id);
+      }
+    }
+
     this.formDati = {
       ruolo: account.ruolo,
       nome: account.nome,
@@ -110,7 +161,7 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
       email: account.email,
       password: '',
       matricola: account.matricola,
-      corsoDiStudi: account.corsoDiStudi,
+      corsoDiStudi: account.corsoDiStudi || '',
       ufficio: account.ufficio,
     };
     this.mostraModale = true;
@@ -131,6 +182,7 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
       if (this.formDati.matricola) dati.matricola = this.formDati.matricola;
       if (this.formDati.corsoDiStudi) dati.corsoDiStudi = this.formDati.corsoDiStudi;
       if (this.formDati.ufficio) dati.ufficio = this.formDati.ufficio;
+      if (this.corsiSelezionati.size > 0) dati.corsi = [...this.corsiSelezionati];
 
       this.admin.modificaAccount(this.accountInModifica.id, dati).subscribe({
         next: () => {
@@ -139,7 +191,9 @@ import { AdminService, ProfiloAccount, CreaAccountRequest } from 'src/app/core/s
         },
       });
     } else {
-      this.admin.creaAccount(this.formDati).subscribe({
+      const dati = { ...this.formDati };
+      if (this.corsiSelezionati.size > 0) dati.corsi = [...this.corsiSelezionati];
+      this.admin.creaAccount(dati).subscribe({
         next: () => {
           this.chiudiModale();
           this.caricaAccounts(this.filtroRuolo || undefined);

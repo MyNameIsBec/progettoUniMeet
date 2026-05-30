@@ -71,6 +71,7 @@ Tutte le rotte sono **lazy-loaded**. Le pagine autenticate usano il componente `
 | `/registrazione` | RegistrazionePage | — | Pubblico |
 | `/recupera-password` | RecuperaPasswordPage | — | Pubblico |
 | `/reset-password` | ResetPasswordPage | — | Pubblico |
+| `/verifica-2fa` | Verifica2FAPage | — | Pubblico (dopo login con 2FA) |
 | `/dashboard-studente` | DashboardStudentePage | auth + role('studente') | Studente |
 | `/elenco-docenti` | ElencoDocentiPage | auth + role('studente') | Studente |
 | `/prenota` | PrenotaPage | auth + role('studente') | Studente |
@@ -131,7 +132,8 @@ File: `src/app/core/models/interfacce.ts`
 | Pagina | Descrizione |
 |--------|-------------|
 | **HomePage** | Landing page con hero section, scroll spy, features |
-| **LoginPage** | Form di login con email/password |
+| **LoginPage** | Form di login con email/password. Se 2FA abilitato, naviga a `/verifica-2fa` |
+| **Verifica2FAPage** | Input codice 6 cifre per completare login con 2FA. Mostra `codiceMostrato` in dev mode |
 | **RegistrazionePage** | Registrazione nuovo studente |
 | **RecuperaPasswordPage** | Richiesta reset password (multi-step) |
 | **ResetPasswordPage** | Reset password con token |
@@ -145,24 +147,9 @@ File: `src/app/core/models/interfacce.ts`
 | **PrenotaPage** | Calendario, selezione docente, slot, conferma con modale |
 | **RiepilogoPrenotazioniPage** | Storico prenotazioni con filtri per stato |
 | **DettaglioPrenotazionePage** | Dettaglio con mappa Leaflet del luogo |
-| **ProfiloStudentePage** | Modifica profilo, cambio password, elimina account |
-| **BachecaStudentePage** | FAQ e link utili per corso di studi |
-| **NotificheStudentePage** | Centro notifiche con filtri (lette/non lette) |
-| **SegnalazionePage** | Form segnalazione problema + storico |
-
-### Docente (9 pagine)
-
-| Pagina | Descrizione |
-|--------|-------------|
-| **DashboardDocentePage** | Riepilogo attività, prossimi ricevimenti, statistiche personali |
-| **GestioneSlotPage** | CRUD slot disponibili con calendario e modali |
-| **PrenotazioniRicevutePage** | Elenco prenotazioni con filtri (stato/data/ricerca), conferma/annulla, agenda oggi |
-| **DettaglioPrenotazioneDocentePage** | Dettaglio prenotazione con mappa e documenti |
-| **BachecheDocentePage** | Gestione bacheche e FAQ per corso di studi |
-| **NotificheDocentePage** | Centro notifiche con filtri (lette/non lette/promemoria) |
-| **DocumentiDocentePage** | Documenti, upload e gestione allegati |
-| **StatisticheDocentePage** | Statistiche sugli argomenti di ricevimento |
-| **ProfiloDocentePage** | Modifica profilo |
+| **ProfiloStudentePage** | Modifica profilo, cambio password, toggle 2FA, elimina account |
+| ... | ... |
+| **ProfiloDocentePage** | Modifica profilo, toggle 2FA |
 
 ### Admin (6 pagine)
 
@@ -183,7 +170,7 @@ Tutti i servizi usano `providedIn: 'root'` e il pattern `BehaviorSubject` per lo
 
 | Servizio | File | Endpoint API principali |
 |----------|------|------------------------|
-| `AuthService` | `core/services/auth.ts` | POST `/api/login`, `/api/registrazione`, POST `/api/auth/change-password`, GET `/api/auth/profile`, POST `/api/auth/refresh`, `/api/recupera-password`, `/api/reset-password` |
+| `AuthService` | `core/services/auth.ts` | POST `/api/login` (con supporto 2FA), `/api/registrazione`, POST `/api/auth/change-password`, GET `/api/auth/profile`, POST `/api/auth/refresh`, `/api/recupera-password`, `/api/reset-password`, POST `/api/auth/verifica-2fa`, POST `/api/auth/2fa/abilita`, POST `/api/auth/2fa/conferma`, POST `/api/auth/2fa/disabilita`, GET `/api/auth/2fa/stato` |
 | `StudenteService` | `core/services/studente.ts` | GET/PUT/DELETE `/api/studenti/:matricola` |
 | `DocenteService` | `core/services/docente.ts` | GET `/api/docenti`, slot CRUD |
 | `PrenotazioneService` | `core/services/prenotazione.ts` | CRUD `/api/prenotazioni` |
@@ -513,3 +500,16 @@ Tutti i service (admin, segnalazione, auth, studente, docente, bacheca, notifica
 | 5 | `FAQ`: nessun filtro per docente, nessuna info bacheca | Aggiunto `id_docente` al modello, selettore docente frontend, mostra titolo/descrizione bacheca (vd. 14.5) |
 | 6 | Logout non rosso in dark mode (mobile + desktop) | Aggiunte regole `:host-context(body.dark)` nei component stylesheet (vd. 14.6) |
 | 7 | `tsconfig.json`: TS5103 ignoreDeprecations non valido | Rimossa opzione `ignoreDeprecations: "6.0"` (vd. 14.7) |
+
+### Fix applicati (sessione 30/05/2026)
+
+| # | Modifica | Dettaglio |
+|---|----------|-----------|
+| 1 | **Login con 2FA** | `login()` ora restituisce `Login2FARequired` se 2FA abilitato; la pagina login naviga a `/verifica-2fa` |
+| 2 | **Nuova pagina `/verifica-2fa`** | Input codice 6 cifre con dev banner (`codiceMostrato` in dev mode) |
+| 3 | **Toggle 2FA nei profili** | `ProfiloStudentePage` e `ProfiloDocentePage` — sezione sicurezza con toggle per abilitare/disabilitare 2FA (abilitazione con verifica codice, disabilitazione con password) |
+| 4 | **Nuovi metodi AuthService** | `verifica2FA()`, `abilita2FA()`, `confermaAbilita2FA()`, `disabilita2FA()`, `getStato2FA()` |
+
+### Fix applicati (sessione 26/05/2026)
+
+(L'associazione con la tabella precedente è stata sostituita)

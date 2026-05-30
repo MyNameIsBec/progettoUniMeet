@@ -60,3 +60,18 @@ export const resetPasswordSchema = [
 export const refreshTokenSchema = [
   body('refreshToken').isString().notEmpty(),
 ];
+
+export const verifica2FASchema = [
+  body('tempToken').isString().notEmpty().withMessage('Token richiesto'),
+  body('codice').isString().notEmpty().withMessage('Codice richiesto'),
+];
+
+export const abilita2FASchema: any[] = [];
+
+export const confermaAbilita2FASchema = [
+  body('codice').isString().notEmpty().withMessage('Codice richiesto'),
+];
+
+export const disabilita2FASchema = [
+  body('password').isString().notEmpty().withMessage('Password richiesta'),
+];

@@ -21,6 +21,16 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface Login2FARequiredResponse {
+  requires2FA: true;
+  email: string;
+  nome: string;
+  cognome: string;
+  role: Ruolo;
+  tempToken: string;
+  codiceMostrato?: string;
+}
+
 export interface ProfileResponse {
   id: string;
   nome: string;
@@ -115,7 +125,7 @@ export async function registerAdmin(data: {
   });
 }
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
+export async function login(email: string, password: string): Promise<LoginResponse | Login2FARequiredResponse> {
   let user: any = await prisma.studente.findUnique({ where: { email } });
   let ruolo: Ruolo = 'STUDENTE';
 
@@ -136,6 +146,32 @@ export async function login(email: string, password: string): Promise<LoginRespo
 
   const id = ruolo === 'STUDENTE' ? user.matricola : ruolo === 'DOCENTE' ? user.id_docente : user.id_admin;
   const cognome = ruolo === 'AMMINISTRATORE' ? '' : user.cognome;
+
+  if (user.two_factor_abilitato) {
+    const codice = await creaCodice(user.email, '2fa');
+    await sendCodiceVerifica(user.email, codice, '2fa');
+
+    const tempToken = jwt.sign(
+      { id, email: user.email, ruolo, step: '2fa' },
+      JWT_SECRET,
+      { expiresIn: '5m' },
+    );
+
+    const response: Login2FARequiredResponse = {
+      requires2FA: true,
+      email: user.email,
+      nome: user.nome,
+      cognome,
+      role: ruolo,
+      tempToken,
+    };
+
+    if (process.env.NODE_ENV !== 'production') {
+      response.codiceMostrato = codice;
+    }
+
+    return response;
+  }
 
   const { accessToken } = generateTokens({ id, email: user.email, ruolo });
 
@@ -289,4 +325,125 @@ export async function resetPassword(email: string, codice: string, nuovaPassword
   }
 
   return { messaggio: 'Password reimpostata con successo.' };
+}
+
+export async function verifica2FA(
+  tempToken: string,
+  codice: string,
+): Promise<LoginResponse> {
+  let payload: { id: string; email: string; ruolo: Ruolo; step: string };
+  try {
+    payload = jwt.verify(tempToken, JWT_SECRET) as typeof payload;
+  } catch {
+    throw new Error('Token non valido');
+  }
+
+  if (payload.step !== '2fa') throw new Error('Token non valido');
+
+  const valido = await consumaCodice(payload.email, codice, '2fa');
+  if (!valido) throw new Error('Codice non valido o scaduto');
+
+  const { accessToken } = generateTokens({
+    id: payload.id,
+    email: payload.email,
+    ruolo: payload.ruolo,
+  });
+
+  let user: any;
+  let cognome: string;
+  const { id, email, ruolo } = payload;
+
+  if (ruolo === 'STUDENTE') {
+    user = await prisma.studente.findUnique({ where: { matricola: id } });
+    cognome = user?.cognome ?? '';
+  } else if (ruolo === 'DOCENTE') {
+    user = await prisma.docente.findUnique({ where: { id_docente: id } });
+    cognome = user?.cognome ?? '';
+  } else {
+    user = await prisma.amministratore.findUnique({ where: { id_admin: id } });
+    cognome = '';
+  }
+
+  return {
+    id,
+    nome: user?.nome ?? '',
+    cognome,
+    email,
+    role: ruolo,
+    token: accessToken,
+  };
+}
+
+async function trovaUtentePerId(id: string, ruolo: Ruolo): Promise<{ email: string; password: string; two_factor_abilitato: boolean } | null> {
+  if (ruolo === 'STUDENTE') {
+    return prisma.studente.findUnique({ where: { matricola: id }, select: { email: true, password: true, two_factor_abilitato: true } });
+  }
+  if (ruolo === 'DOCENTE') {
+    return prisma.docente.findUnique({ where: { id_docente: id }, select: { email: true, password: true, two_factor_abilitato: true } });
+  }
+  return prisma.amministratore.findUnique({ where: { id_admin: id }, select: { email: true, password: true, two_factor_abilitato: true } });
+}
+
+async function aggiorna2FA(id: string, ruolo: Ruolo, abilitato: boolean): Promise<void> {
+  if (ruolo === 'STUDENTE') {
+    await prisma.studente.update({ where: { matricola: id }, data: { two_factor_abilitato: abilitato } });
+  } else if (ruolo === 'DOCENTE') {
+    await prisma.docente.update({ where: { id_docente: id }, data: { two_factor_abilitato: abilitato } });
+  } else {
+    await prisma.amministratore.update({ where: { id_admin: id }, data: { two_factor_abilitato: abilitato } });
+  }
+}
+
+export async function abilita2FA(userId: string, ruolo: Ruolo): Promise<{ messaggio: string; codiceMostrato?: string }> {
+  const user = await trovaUtentePerId(userId, ruolo);
+  if (!user) throw new Error('Utente non trovato');
+  if (user.two_factor_abilitato) throw new Error('2FA già abilitata');
+
+  const codice = await creaCodice(user.email, '2fa');
+  await sendCodiceVerifica(user.email, codice, '2fa');
+
+  const result: { messaggio: string; codiceMostrato?: string } = {
+    messaggio: 'Codice di verifica inviato alla tua email.',
+  };
+
+  if (process.env.NODE_ENV !== 'production') {
+    result.codiceMostrato = codice;
+  }
+
+  return result;
+}
+
+export async function confermaAbilita2FA(userId: string, ruolo: Ruolo, codice: string): Promise<{ messaggio: string }> {
+  const user = await trovaUtentePerId(userId, ruolo);
+  if (!user) throw new Error('Utente non trovato');
+  if (user.two_factor_abilitato) throw new Error('2FA già abilitata');
+
+  const valido = await consumaCodice(user.email, codice, '2fa');
+  if (!valido) throw new Error('Codice non valido o scaduto');
+
+  await aggiorna2FA(userId, ruolo, true);
+
+  return { messaggio: 'Autenticazione a due fattori abilitata con successo.' };
+}
+
+export async function disabilita2FA(userId: string, ruolo: Ruolo, password: string): Promise<{ messaggio: string }> {
+  if (ruolo === 'AMMINISTRATORE') throw new Error('La 2FA è obbligatoria per gli amministratori');
+
+  const user = await trovaUtentePerId(userId, ruolo);
+  if (!user) throw new Error('Utente non trovato');
+  if (!user.two_factor_abilitato) throw new Error('2FA già disabilitata');
+
+  const valid = await bcrypt.compare(password, (user as any).password);
+  if (!valid) throw new Error('Password errata');
+
+  await aggiorna2FA(userId, ruolo, false);
+
+  return { messaggio: 'Autenticazione a due fattori disabilitata con successo.' };
+}
+
+export async function getStato2FA(userId: string, ruolo: Ruolo): Promise<{ abilitato: boolean }> {
+  const user = await trovaUtentePerId(userId, ruolo);
+  if (!user) throw new Error('Utente non trovato');
+
+  return { abilitato: user.two_factor_abilitato };
 }

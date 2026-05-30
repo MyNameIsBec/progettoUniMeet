@@ -156,3 +156,18 @@
 }
 
 .reminder-field { margin-top: 24px; }
+
+.banner-dev {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #fffbeb;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    color: #92400e;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: monospace;
+}

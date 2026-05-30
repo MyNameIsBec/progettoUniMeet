@@ -11,12 +11,16 @@ const ENV_PATH = path.join(BACKEND, '.env');
 const IS_WIN = os.platform() === 'win32';
 
 // ── Flags ──
-const flags = { reset: false, noSeed: false, noStart: false };
+const flags = { reset: false, noSeed: false, noStart: false, dev: false, prod: false };
 for (const arg of process.argv.slice(2)) {
-  if (arg === '--reset')   flags.reset = true;
-  if (arg === '--no-seed')  flags.noSeed = true;
-  if (arg === '--no-start') flags.noStart = true;
+  if (arg === '--reset')    flags.reset = true;
+  if (arg === '--no-seed')   flags.noSeed = true;
+  if (arg === '--no-start')  flags.noStart = true;
+  if (arg === '--dev')       flags.dev = true;
+  if (arg === '--prod')      flags.prod = true;
 }
+
+const isDev = flags.dev && !flags.prod;
 
 // ── Utilities ──
 
@@ -231,6 +235,10 @@ async function main() {
   console.log('         UniMeet — Avvio progetto          ');
   console.log('═══════════════════════════════════════════');
   console.log('');
+  console.log('  Usa --dev  per modalità sviluppo  (hot-reload, 2FA codes visibili)');
+  console.log('  Usa --prod per modalità produzione (build + NODE_ENV=production)');
+  console.log('  Di default si avvia in modalità produzione.');
+  console.log('');
 
   // ── 0. Installa dipendenze se mancanti ──
   console.log('  Controllo dipendenze...');
@@ -312,17 +320,29 @@ async function main() {
     console.log('═══════════════════════════════════════════');
     console.log('  Setup completato.                        ');
     console.log('  Per avviare i servizi:  node start.js    ');
+    console.log('  Per modalità dev:       node start.js --dev');
     console.log('═══════════════════════════════════════════');
     console.log('');
     return;
   }
 
   // ── 2. Backend ──
-  log('BACKEND', 'Avvio backend...');
-  const backend = spawn('npm', ['run', 'dev'], {
+  const mode = isDev ? 'dev' : 'production';
+  log('BACKEND', `Avvio backend in modalità ${mode}...`);
+
+  if (!isDev) {
+    log('BACKEND', 'Compilazione TypeScript...');
+    execSync('npm run build', { cwd: BACKEND, stdio: 'inherit' });
+    log('BACKEND', 'Compilazione completata ✅');
+  }
+
+  const backendCmd = isDev ? 'dev' : 'start';
+  const backendEnv = { ...process.env, NODE_ENV: isDev ? 'development' : 'production' };
+  const backend = spawn('npm', ['run', backendCmd], {
     cwd: BACKEND,
     stdio: 'pipe',
     shell: true,
+    env: backendEnv,
   });
   backend.stdout.on('data', d => process.stdout.write(`[BACKEND] ${d}`));
   backend.stderr.on('data', d => process.stderr.write(`[BACKEND] ${d}`));
@@ -368,6 +388,7 @@ async function main() {
   console.log('  Backend       → http://localhost:5000');
   console.log('  Frontend      → http://localhost:4200');
   console.log('  Prisma Studio → http://localhost:5557');
+  console.log(`  Modalità       → ${isDev ? 'DEV 🛠️  (2FA codes visibili)' : 'PRODUZIONE 🚀'}`);
   console.log('');
   console.log('  I browser si apriranno automaticamente');
   console.log('  non appena i servizi sono pronti.');

@@ -58,8 +58,17 @@ Ogni strato ha una responsabilità ben distinta e non si mescola con gli altri.
 Nella **root del progetto** è presente `start.js` che avvia l'intera applicazione con un unico comando:
 
 ```bash
-node start.js
+node start.js              # modalità produzione (default)
+node start.js --dev        # modalità sviluppo (hot-reload, 2FA codes visibili)
+node start.js --prod       # modalità produzione
+node start.js --reset      # reset DB + seed
+node start.js --no-seed    # setup DB senza seed
+node start.js --no-start   # solo setup, senza avviare i servizi
 ```
+
+**Modalità:**
+- `--dev`: `NODE_ENV=development`, backend con `tsx watch` (hot-reload), codici 2FA visibili nell'UI
+- `--prod` / default: `NODE_ENV=production`, backend compilato (`npm run build` + `node dist/server.js`), codici 2FA nascosti
 
 Cosa fa:
 1. Avvia PostgreSQL se non in esecuzione (tenta `pg_ctl` / `brew services` / `systemctl`)
@@ -162,7 +171,7 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 | Studente | 5 | Mario Rossi, Lisa Bianchi, Luca Ferrari, Sofia Romano, Marco Esposito |
 | CorsoDiStudi | 3 | Informatica, Ingegneria, Matematica |
 | Docente | 4 | Giuseppe Verdi, Anna Neri, Maria Bianco, Paolo Russo |
-| Amministratore | 2 | Admin, Super Admin |
+| Amministratore | 2 | Admin, Super Admin (2FA abilitata per default) |
 | Corso | 5 | Programmazione Web, Basi di Dati, Ingegneria del Software, Reti di Calcolatori, Intelligenza Artificiale |
 | DocenteCorsoDiStudi | 4 | Relazioni docente ↔ corso di studi |
 | Bacheca | 3 | Una per ogni corso di studi |
@@ -193,12 +202,13 @@ npx prisma generate
 
 | File | Descrizione |
 |------|-------------|
-| `auth.service.ts` | Registrazione (studente/docente/admin), login, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
+| `auth.service.ts` | Registrazione (studente/docente/admin), login con 2FA, verifica2FA, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
 | `studenti.service.ts` | Profilo studente (GET, PUT). Restituisce `corsoDiStudi` oggetto annidato |
 | `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi. `getDettagliDocente` response include `corsi[]` e `corsiDiStudi[]` |
 | `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo) e `studenteEmail`. `.toLowerCase()` su tutti gli stati in output per coerenza frontend |
 | `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
-| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni (con eliminazione slot/prenotazioni + notifica docenti) |
+| `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
 | `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
 | `bacheca.service.ts` | ✅ CRUD bacheca (una per CorsoDiStudi), CRUD FAQ |
 | `documenti.service.ts` | *(da implementare)* Upload/download documenti |
@@ -258,6 +268,11 @@ Le routes vengono montate in `app.ts` su prefisso `/api`. Esempio per auth (`aut
 | `/api/auth/refresh` | POST | Rinnovo access token |
 | `/api/auth/change-password` | POST | Cambio password (autenticato) |
 | `/api/auth/profile` | GET | Dati profilo (autenticato) |
+| `/api/auth/verifica-2fa` | POST | Verifica codice 2FA + tempToken → JWT finale |
+| `/api/auth/2fa/abilita` | POST | Genera e invia codice 2FA per abilitazione (autenticato) |
+| `/api/auth/2fa/conferma` | POST | Consuma codice e attiva 2FA (autenticato) |
+| `/api/auth/2fa/disabilita` | POST | Disabilita 2FA con conferma password (autenticato, non per Admin) |
+| `/api/auth/2fa/stato` | GET | Restituisce `{ abilitato: boolean }` (autenticato) |
 
 Endpoint studenti (`studenti.routes.ts`):
 
@@ -402,40 +417,49 @@ File validator aggiuntivo:
 ## Flusso di una richiesta (esempio: login)
 
 ```
-  POST /api/login  (body JSON con email, password)
-       │
-       ▼
-  [validators: loginSchema] → controlla email e password
-       │
-  ┌────┴──────────┐
-  │ se invalido    │ → 400 { errors: [...] }
-  └────────────────┘
-       │ valido
-       ▼
-  [controller: login]
-       │
-       ▼
-  [service: authService.login(email, password)]
-       │
-       ▼
-  Cerca Studente → Docente → Amministratore per email
-       │
-  ┌────┴──────────────┐
-  │ non trovato        │ → 401 Invalid email or password
-  └───────────────────┘
-       │ trovato
-       ▼
-  bcrypt.compare(password, user.password)
-       │
-  ┌────┴──────────────┐
-  │ non matcha         │ → 401 Invalid email or password
-  └───────────────────┘
-       │ match
-       ▼
-  jwt.sign({ id, email, ruolo }, JWT_SECRET)
-       │
-       ▼
-  200 { id, nome, cognome, email, role, token }
+   POST /api/login  (body JSON con email, password)
+        │
+        ▼
+   [validators: loginSchema] → controlla email e password
+        │
+   ┌────┴──────────┐
+   │ se invalido    │ → 400 { errors: [...] }
+   └────────────────┘
+        │ valido
+        ▼
+   [service: authService.login(email, password)]
+        │
+        ▼
+   Cerca Studente → Docente → Amministratore per email
+        │
+   ┌────┴──────────────┐
+   │ non trovato        │ → 401 Invalid email or password
+   └───────────────────┘
+        │ trovato
+        ▼
+   bcrypt.compare(password, user.password)
+        │
+   ┌────┴──────────────┐
+   │ non matcha         │ → 401 Invalid email or password
+   └───────────────────┘
+        │ match
+        ▼
+   Controlla user.two_factor_abilitato
+        │
+   ┌────┴──────────────────────────┐
+   │ 2FA abilitata                  │ 2FA non abilitata
+   │ (o Admin con default true)     │
+   ▼                                ▼
+   creaCodice(email, '2fa')      jwt.sign()
+   sendCodiceVerifica()          │
+   jwt.sign({ step: '2fa' },     │
+     { expiresIn: '5m' })        │
+        │                        │
+        ▼                        ▼
+   { requires2FA: true,        { id, nome, cognome,
+     email, tempToken,           email, role, token }
+     nome, role,
+     codiceMostrato? }
 ```
 
 ## Flusso di una richiesta (esempio: cambio password, autenticato)
@@ -480,11 +504,16 @@ Il backend è allineato con il `AuthService` Angular esistente:
 
 | Angular chiama | Backend risponde |
 |---|---|---|
-| `POST /api/login` | `{ id, nome, cognome, email, role, token }` |
+| `POST /api/login` | `{ id, nome, cognome, email, role, token }` oppure `{ requires2FA: true, email, nome, cognome, role, tempToken, codiceMostrato? }` |
 | `POST /api/registrazione` | `{ id, nome, cognome, email, role, token }` (JWT, auto-login) |
 | `POST /api/recupera-password` | `{ messaggio: "..." }` (invia codice 6 cifre via email) |
 | `POST /api/auth/verifica-codice` | `{ valido: true }` o 401 (non consuma il codice) |
 | `POST /api/reset-password` | `{ messaggio: "Password reimpostata con successo." }` (consuma il codice) |
+| `POST /api/auth/verifica-2fa` | `{ id, nome, cognome, email, role, token }` (JWT finale dopo 2FA) |
+| `POST /api/auth/2fa/abilita` | `{ messaggio, codiceMostrato? }` |
+| `POST /api/auth/2fa/conferma` | `{ messaggio }` |
+| `POST /api/auth/2fa/disabilita` | `{ messaggio }` |
+| `GET /api/auth/2fa/stato` | `{ abilitato: boolean }` |
 
 **Convenzioni:**
 - **Porta**: backend su `5000` (Angular chiama `ip:5000`)
@@ -537,6 +566,8 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
 - **[22/05/2026] DB: aggiunto `id_corso_di_studi` a `Corso`**: nuova FK opzionale verso `CorsoDiStudi`. Migrazione `add_corso_corso_di_studi`. Seed aggiornato con associazioni corso → CorsoDiStudi e nuovo docente Elena Colombo per Matematica.
 - **[22/05/2026] Backend: `docenti.service.ts` — response unificati**: `getElencoDocenti` ora restituisce anche `corsi[]` (id+nome). `getDettagliDocente` ora include `materia` e `corsoDiStudi: string[]` per consistenza.
 - **[22/05/2026] Frontend `bacheche-docente`: selezione CorsoDiStudi**: aggiunto selettore `<ion-select>` per docenti con più CorsiDiStudi, invece di usare sempre `corsi[0]`.
+- **[30/05/2026] `bloccaGiorno()` — eliminazione slot/prenotazioni + notifica docenti**: `admin.service.ts` — `bloccaGiorno()` ora elimina in transazione atomica documenti, prenotazioni, luogo e slot per la data bloccata, e invia notifica `'giorno_bloccato'` a ogni docente con slot eliminati.
+- **[30/05/2026] Autenticazione a due fattori (2FA)**: Migrazione `add_2fa_fields` — aggiunto `two_factor_abilitato` ai modelli Studente/Docente/Amministratore. `login()` ora controlla 2FA e restituisce `requires2FA` + tempToken; `verifica2FA()` consuma il codice e restituisce JWT. Nuovi endpoint per abilitazione/disabilitazione 2FA dal profilo. Codici Mostrato in dev mode (`NODE_ENV !== 'production'`). Admin ha 2FA obbligatoria per default.
 
 ---
 

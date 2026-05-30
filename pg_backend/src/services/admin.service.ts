@@ -20,7 +20,9 @@ export interface ProfiloAccount {
   email: string;
   matricola?: string;
   corsoDiStudi?: string;
+  corsoDiStudiId?: string;
   ufficio?: string;
+  corsi?: { id: string; nome: string }[];
 }
 
 export interface SlotGriglia {
@@ -90,11 +92,21 @@ export async function getAllAccounts(ruolo?: string): Promise<ProfiloAccount[]> 
   }
 
   if (!ruolo || ruolo === 'docente') {
-    const docenti = await prisma.docente.findMany();
+    const docenti = await prisma.docente.findMany({
+      include: {
+        corsi: { select: { id_corso: true, nome_corso: true } },
+        corsi_di_studi: {
+          select: { corso_di_studi: { select: { id_corso_di_studi: true, nome: true } } },
+        },
+      },
+    });
     for (const d of docenti) {
       results.push({
         id: d.id_docente, ruolo: 'docente', nome: d.nome, cognome: d.cognome,
         email: d.email, ufficio: d.ufficio,
+        corsi: d.corsi.map(c => ({ id: c.id_corso, nome: c.nome_corso })),
+        corsoDiStudi: d.corsi_di_studi?.[0]?.corso_di_studi.nome,
+        corsoDiStudiId: d.corsi_di_studi?.[0]?.corso_di_studi.id_corso_di_studi,
       });
     }
   }
@@ -153,9 +165,39 @@ export async function createAccount(data: any): Promise<ProfiloAccount> {
         password: hashedPassword, ufficio: data.ufficio,
       },
     });
+
+    const corsiAssegnati: { id: string; nome: string }[] = [];
+    const cdsIds = new Set<string>();
+
+    if (Array.isArray(data.corsi)) {
+      for (const corsoId of data.corsi) {
+        const corso = await prisma.corso.findUnique({
+          where: { id_corso: corsoId },
+          include: { corso_di_studi: { select: { id_corso_di_studi: true } } },
+        });
+        if (corso) {
+          await prisma.corso.update({
+            where: { id_corso: corso.id_corso },
+            data: { id_docente: user.id_docente },
+          });
+          corsiAssegnati.push({ id: corso.id_corso, nome: corso.nome_corso });
+          if (corso.id_corso_di_studi) cdsIds.add(corso.id_corso_di_studi);
+        }
+      }
+    }
+
+    for (const cdsId of cdsIds) {
+      await prisma.docenteCorsoDiStudi.upsert({
+        where: { id_docente_id_corso_di_studi: { id_docente: user.id_docente, id_corso_di_studi: cdsId } },
+        update: {},
+        create: { id_docente: user.id_docente, id_corso_di_studi: cdsId },
+      });
+    }
+
     return {
       id: user.id_docente, ruolo: 'docente', nome: user.nome, cognome: user.cognome,
       email: user.email, ufficio: user.ufficio,
+      corsi: corsiAssegnati,
     };
   }
 
@@ -203,6 +245,32 @@ export async function updateAccount(id: string, data: any): Promise<ProfiloAccou
   if (found.tabella === 'docente') {
     if (data.cognome) updateData.cognome = data.cognome;
     if (data.ufficio) updateData.ufficio = data.ufficio;
+
+    if (Array.isArray(data.corsi)) {
+      await prisma.docenteCorsoDiStudi.deleteMany({ where: { id_docente: id } });
+
+      const cdsIds = new Set<string>();
+      for (const corsoId of data.corsi) {
+        const corso = await prisma.corso.findUnique({
+          where: { id_corso: corsoId },
+          include: { corso_di_studi: { select: { id_corso_di_studi: true } } },
+        });
+        if (corso) {
+          await prisma.corso.update({
+            where: { id_corso: corso.id_corso },
+            data: { id_docente: id },
+          });
+          if (corso.id_corso_di_studi) cdsIds.add(corso.id_corso_di_studi);
+        }
+      }
+
+      for (const cdsId of cdsIds) {
+        await prisma.docenteCorsoDiStudi.create({
+          data: { id_docente: id, id_corso_di_studi: cdsId },
+        });
+      }
+    }
+
     const user = await prisma.docente.update({ where: { id_docente: id }, data: updateData });
     return {
       id: user.id_docente, ruolo: 'docente', nome: user.nome, cognome: user.cognome,
@@ -285,6 +353,7 @@ export interface CreaSlotRequest {
   oraInizio: string;
   oraFine: string;
   disponibilita?: boolean;
+  inviaNotifica?: boolean;
   luogo?: { nomeAula: string; edificio: string; piano: string } | null;
 }
 
@@ -332,6 +401,42 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
       luogo: { select: { nome_aula: true, edificio: true, piano: true } },
     },
   });
+
+  if (data.inviaNotifica) {
+    const corsiDocente = await prisma.corso.findMany({
+      where: { id_docente: data.docenteId },
+      select: { id_corso_di_studi: true },
+    });
+    const cdsIds = [...new Set(corsiDocente.map(c => c.id_corso_di_studi).filter(Boolean))] as string[];
+
+    if (cdsIds.length > 0) {
+      const studenti = await prisma.studente.findMany({
+        where: { id_corso_di_studi: { in: cdsIds } },
+        select: { matricola: true },
+      });
+
+      const docente = await prisma.docente.findUnique({
+        where: { id_docente: data.docenteId },
+        select: { nome: true, cognome: true },
+      });
+
+      const docenteNome = docente ? `${docente.nome} ${docente.cognome}` : 'Docente';
+      const dataSlot = new Date(data.data).toLocaleDateString('it-IT');
+      const message = `Nuovo slot disponibile: ${docenteNome} ha aperto un ricevimento il ${dataSlot} dalle ${data.oraInizio} alle ${data.oraFine}.`;
+
+      for (const s of studenti) {
+        await prisma.notifica.create({
+          data: {
+            titolo: 'Nuovo slot ricevimento',
+            messaggio: message,
+            tipo: 'nuovo_slot',
+            destinatario_id: s.matricola,
+            destinatario_ruolo: 'studente',
+          },
+        });
+      }
+    }
+  }
 
   return {
     id: slot.id_slot,
@@ -435,14 +540,46 @@ export async function bloccaGiorno(data: string, motivo?: string): Promise<Giorn
   });
   if (existing) throw new Error('Giorno già bloccato');
 
-  const row = await prisma.giornoBloccato.create({
-    data: { data: new Date(data), motivo: motivo ?? 'Festivo' },
+  const dataDate = new Date(data);
+
+  const [result] = await prisma.$transaction(async (tx) => {
+    const slots = await tx.slotRicevimento.findMany({
+      where: { data: dataDate },
+      include: {
+        docente: { select: { id_docente: true, nome: true, cognome: true } },
+      },
+    });
+
+    for (const slot of slots) {
+      await tx.documento.deleteMany({
+        where: { prenotazione: { id_slot: slot.id_slot } },
+      });
+      await tx.prenotazione.deleteMany({ where: { id_slot: slot.id_slot } });
+      await tx.luogoRicevimento.deleteMany({ where: { id_slot: slot.id_slot } });
+      await tx.slotRicevimento.delete({ where: { id_slot: slot.id_slot } });
+
+      await tx.notifica.create({
+        data: {
+          titolo: 'Giorno bloccato',
+          messaggio: `Il giorno ${new Date(data).toLocaleDateString('it-IT')} è stato bloccato. I tuoi slot di ricevimento per questa data sono stati eliminati.`,
+          tipo: 'giorno_bloccato',
+          destinatario_id: slot.docente.id_docente,
+          destinatario_ruolo: 'docente',
+        },
+      });
+    }
+
+    const row = await tx.giornoBloccato.create({
+      data: { data: dataDate, motivo: motivo ?? 'Festivo' },
+    });
+    return [row];
   });
+
   return {
-    id: row.id_giorno,
-    data: row.data.toISOString().split('T')[0] ?? '',
-    motivo: row.motivo,
-    creatoIl: row.creato_il,
+    id: result.id_giorno,
+    data: result.data.toISOString().split('T')[0] ?? '',
+    motivo: result.motivo,
+    creatoIl: result.creato_il,
   };
 }
 

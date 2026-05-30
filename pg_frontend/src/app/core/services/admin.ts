@@ -19,7 +19,9 @@ export interface ProfiloAccount {
   email: string;
   matricola?: string;
   corsoDiStudi?: string;
+  corsoDiStudiId?: string;
   ufficio?: string;
+  corsi?: { id: string; nome: string }[];
 }
 
 export interface CreaAccountRequest {
@@ -30,6 +32,7 @@ export interface CreaAccountRequest {
   password: string;
   matricola?: string;
   corsoDiStudi?: string;
+  corsi?: string[];
   ufficio?: string;
 }
 
@@ -55,6 +58,7 @@ export interface CreaSlotRequest {
   oraInizio: string;
   oraFine: string;
   disponibilita: boolean;
+  inviaNotifica?: boolean;
   luogo: { nomeAula: string; edificio: string; piano: string };
 }
 
@@ -87,6 +91,16 @@ export interface FiltriSlot {
   docenteId?: string;
   data?: string;
   stato?: string;
+}
+
+export interface CorsoListItem {
+  id: string;
+  nomeCorso: string;
+  anno: number;
+  cfu: number;
+  idDocente: string;
+  corsoDiStudiId?: string;
+  corsoDiStudiNome?: string;
 }
 
 @Injectable({
@@ -178,5 +192,10 @@ export class AdminService {
       if (parts.length) params = `?${parts.join('&')}`;
     }
     return this.http.get<SlotGriglia[]>(`${this.api}/slot${params}`);
+  }
+
+  getCorsi(corsoDiStudiId?: string): Observable<CorsoListItem[]> {
+    const params = corsoDiStudiId ? `?corsoDiStudiId=${corsoDiStudiId}` : '';
+    return this.http.get<CorsoListItem[]>(`${this.authService.getApiUrl()}/api/corsi${params}`);
   }
 }

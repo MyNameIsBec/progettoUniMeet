@@ -59,6 +59,7 @@ export class GestioneSlotAdminPage implements OnInit {
       oraInizio: '',
       oraFine: '',
       disponibilita: true,
+      inviaNotifica: true,
       luogo: { nomeAula: '', edificio: '', piano: '' },
     };
   }
@@ -178,6 +179,7 @@ export class GestioneSlotAdminPage implements OnInit {
       oraFine: this.formDati.oraFine,
       disponibilita: this.formDati.disponibilita,
       docenteId: this.formDati.docenteId,
+      inviaNotifica: this.formDati.inviaNotifica,
     };
 
     const l = this.formDati.luogo;

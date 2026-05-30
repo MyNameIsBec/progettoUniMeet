@@ -10,6 +10,7 @@ export const creaAccountSchema = [
   body('matricola').if(body('ruolo').equals('studente')).isString().notEmpty().trim(),
   body('corsoDiStudi').if(body('ruolo').equals('studente')).isString().notEmpty().trim(),
   body('ufficio').if(body('ruolo').equals('docente')).isString().notEmpty().trim(),
+  body('corsi').if(body('ruolo').equals('docente')).isArray({ min: 1 }).withMessage('Seleziona almeno un corso'),
 ];
 
 export const modificaAccountSchema = [
@@ -20,6 +21,7 @@ export const modificaAccountSchema = [
   body('matricola').optional().isString().notEmpty().trim(),
   body('corsoDiStudi').optional().isString().notEmpty().trim(),
   body('ufficio').optional().isString().notEmpty().trim(),
+  body('corsi').optional().isArray({ min: 1 }),
 ];
 
 export const slotFiltriSchema = [

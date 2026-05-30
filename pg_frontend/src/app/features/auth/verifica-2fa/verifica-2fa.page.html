@@ -1,0 +1,66 @@
+<ion-content [fullscreen]="true" class="wrapper-autenticazione">
+  <div class="container-autenticazione">
+    <button class="btn-back" (click)="annulla()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      Torna al login
+    </button>
+
+    <div class="card-autenticazione">
+      <div class="logo-auth">
+        <div class="row-logo">
+          <ion-icon name="shield-checkmark-outline" class="icon-logo"></ion-icon>
+          <span class="name-logo">UniMeet</span>
+        </div>
+        <p class="sub-logo">Verifica in due passaggi</p>
+      </div>
+
+      <p class="intro-testo">
+        Ciao <strong>{{ nome }} {{ cognome }}</strong>, abbiamo inviato un codice di verifica a 6 cifre alla tua email <strong>{{ email }}</strong>.
+      </p>
+
+      @if (codiceMostrato) {
+        <div class="banner-dev">
+          <ion-icon name="code-slash-outline"></ion-icon>
+          <span>CODICE DI TEST: <strong>{{ codiceMostrato }}</strong></span>
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="banner-errore">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <form [formGroup]="codiceForm" (ngSubmit)="verifica()">
+        <div class="gruppo-campo">
+          <label class="label-campo">Codice di verifica</label>
+          <div class="wrap-campo" [class.has-error]="codice.invalid && codice.touched">
+            <ion-icon name="key-outline" class="icon-campo"></ion-icon>
+            <ion-input type="text" formControlName="codice" placeholder="000000"
+              class="input-campo input-codice" maxlength="6"></ion-input>
+          </div>
+          @if (codice.invalid && codice.touched) {
+            <span class="messaggio-errore-campo">
+              Inserisci un codice di 6 cifre
+            </span>
+          }
+        </div>
+
+        <ion-button expand="block" type="submit" class="btn-submit" [disabled]="inCaricamento">
+          @if (inCaricamento) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+          } @else {
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          }
+          {{ inCaricamento ? 'Verifica in corso…' : 'Verifica' }}
+        </ion-button>
+      </form>
+
+      <p class="hint-switch">
+        Non hai ricevuto il codice?
+        <button class="btn-link" (click)="annulla()">Riprova il login</button>
+      </p>
+    </div>
+  </div>
+</ion-content>

@@ -49,6 +49,7 @@
             <td class="hide-mobile dettagli-cell">
               @if (a.matricola) { <span>{{ a.matricola }}</span> }
               @if (a.corsoDiStudi) { <span> · {{ a.corsoDiStudi }}</span> }
+              @if (a.corsi && a.corsi.length > 0) { <span> · {{ a.corsi.length }} corsi</span> }
               @if (a.ufficio) { <span>{{ a.ufficio }}</span> }
             </td>
             <td class="actions-col">
@@ -125,6 +126,20 @@
             <div class="field-group">
               <label>Ufficio</label>
               <ion-input [(ngModel)]="formDati.ufficio" placeholder="Edificio, stanza"></ion-input>
+            </div>
+            <div class="field-group corsi-group">
+              <label>Corsi</label>
+              @for (group of corsiGrouped; track group.cds.id) {
+              <div class="cds-group">
+                <div class="cds-header">{{ group.cds.nome }}</div>
+                @for (c of group.corsi; track c.id) {
+                <label class="corso-checkbox">
+                  <ion-checkbox [checked]="isCorsoSelezionato(c.id)" (ionChange)="toggleCorso(c.id)"></ion-checkbox>
+                  <span>{{ c.nomeCorso }} ({{ c.anno }}, {{ c.cfu }} CFU)</span>
+                </label>
+                }
+              </div>
+              }
             </div>
             }
           </div>

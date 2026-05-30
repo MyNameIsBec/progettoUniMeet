@@ -4,7 +4,8 @@ import * as corsiService from '../services/corsi.service';
 export async function getCorsi(req: Request, res: Response) {
   try {
     const docenteId = req.query.docenteId as string | undefined;
-    const corsi = await corsiService.getCorsi(docenteId);
+    const corsoDiStudiId = req.query.corsoDiStudiId as string | undefined;
+    const corsi = await corsiService.getCorsi(docenteId, corsoDiStudiId);
     return res.status(200).json(corsi);
   } catch {
     return res.status(500).json({ error: 'Internal server error' });

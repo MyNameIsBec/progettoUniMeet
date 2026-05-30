@@ -16,15 +16,16 @@ model CorsoDiStudi {
 }
 
 model Studente {
-  matricola        String         @id
-  nome             String
-  cognome          String
-  email            String         @unique
-  password         String
-  id_corso_di_studi String
-  corso_di_studi   CorsoDiStudi   @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
-  prenotazioni     Prenotazione[]
-  segnalazioni     Segnalazione[]
+  matricola             String         @id
+  nome                  String
+  cognome               String
+  email                 String         @unique
+  password              String
+  two_factor_abilitato  Boolean        @default(false)
+  id_corso_di_studi     String
+  corso_di_studi        CorsoDiStudi   @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+  prenotazioni          Prenotazione[]
+  segnalazioni          Segnalazione[]
 }
 
 model Segnalazione {
@@ -41,17 +42,18 @@ model Segnalazione {
 }
 
 model Docente {
-  id_docente       String                @id @default(uuid())
-  nome             String
-  cognome          String
-  email            String                @unique
-  password         String
-  ufficio          String
-  corsi            Corso[]
-  slot_ricevimento SlotRicevimento[]
-  corsi_di_studi   DocenteCorsoDiStudi[]
-  segnalazioni     Segnalazione[]
-  faqs             FAQ[]
+  id_docente            String                @id @default(uuid())
+  nome                  String
+  cognome               String
+  email                 String                @unique
+  password              String
+  two_factor_abilitato  Boolean               @default(false)
+  ufficio               String
+  corsi                 Corso[]
+  slot_ricevimento      SlotRicevimento[]
+  corsi_di_studi        DocenteCorsoDiStudi[]
+  segnalazioni          Segnalazione[]
+  faqs                  FAQ[]
 }
 
 model DocenteCorsoDiStudi {
@@ -64,10 +66,11 @@ model DocenteCorsoDiStudi {
 }
 
 model Amministratore {
-  id_admin String @id @default(uuid())
-  nome     String
-  email    String @unique
-  password String
+  id_admin              String   @id @default(uuid())
+  nome                  String
+  email                 String   @unique
+  password              String
+  two_factor_abilitato  Boolean  @default(true)
 }
 
 model Corso {

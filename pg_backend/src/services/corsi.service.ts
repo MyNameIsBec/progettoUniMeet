@@ -12,6 +12,8 @@ export interface CorsoResponse {
     cognome: string;
     email: string;
   } | undefined;
+  corsoDiStudiId?: string;
+  corsoDiStudiNome?: string;
 }
 
 function mapCorso(corso: any): CorsoResponse {
@@ -29,17 +31,21 @@ function mapCorso(corso: any): CorsoResponse {
           email: corso.docente.email,
         }
       : undefined,
+    corsoDiStudiId: corso.id_corso_di_studi ?? undefined,
+    corsoDiStudiNome: corso.corso_di_studi?.nome,
   };
 }
 
-export async function getCorsi(docenteId?: string): Promise<CorsoResponse[]> {
+export async function getCorsi(docenteId?: string, corsoDiStudiId?: string): Promise<CorsoResponse[]> {
   const where: any = {};
   if (docenteId) where.id_docente = docenteId;
+  if (corsoDiStudiId) where.id_corso_di_studi = corsoDiStudiId;
 
   const corsi = await prisma.corso.findMany({
     where,
     include: {
       docente: { select: { id_docente: true, nome: true, cognome: true, email: true } },
+      corso_di_studi: { select: { nome: true } },
     },
     orderBy: { nome_corso: 'asc' },
   });

@@ -19,6 +19,12 @@ pg_backend/.env
 /.angular-cli.json
 /.ng/
 
+# Uploaded files
+pg_backend/uploads/
+
+# Misc
+lazygit
+
 # TypeScript cache
 *.tsbuildinfo
 

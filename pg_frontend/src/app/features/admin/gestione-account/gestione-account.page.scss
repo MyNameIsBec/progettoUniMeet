@@ -222,6 +222,46 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
+.corsi-group {
+  max-width: 100%;
+}
+
+.cds-group {
+  margin-bottom: 12px;
+}
+
+.cds-group:last-child {
+  margin-bottom: 0;
+}
+
+.cds-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.corso-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.corso-checkbox:hover {
+  background: #f1f5f9;
+}
+
+.corso-checkbox ion-checkbox {
+  --size: 20px;
+  --checkbox-background-checked: #2563eb;
+  --border-color-checked: #2563eb;
+}
+
 .field-group label {
   display: block;
   font-size: 12px;
@@ -329,6 +369,14 @@ ion-modal ion-header ion-toolbar ion-buttons ion-button {
     background: #1e293b;
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: none;
+}
+
+:host-context(body.dark) .corso-checkbox:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:host-context(body.dark) .cds-header {
+    color: #60a5fa;
 }
 
 :host-context(body.dark) .field-group ion-input,

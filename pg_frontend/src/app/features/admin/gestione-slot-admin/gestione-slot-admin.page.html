@@ -131,8 +131,15 @@
               </div>
             </div>
             <div class="field-group">
+              <label>Disponibilità</label>
               <ion-toggle [(ngModel)]="formDati.disponibilita">
                 {{ formDati.disponibilita ? 'Libero' : 'Occupato' }}
+              </ion-toggle>
+            </div>
+            <div class="field-group">
+              <label>Notifica studenti</label>
+              <ion-toggle [(ngModel)]="formDati.inviaNotifica">
+                {{ formDati.inviaNotifica ? 'Invia notifica' : 'Non inviare' }}
               </ion-toggle>
             </div>
             <div class="luogo-section">
