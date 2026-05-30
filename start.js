@@ -150,8 +150,13 @@ async function startDocker() {
 function installDeps(dir, label) {
   const nm = path.join(dir, 'node_modules');
   if (fs.existsSync(nm)) {
-    log('INSTALL', `${label}: dipendenze già presenti`);
-    return;
+    try {
+      execSync('npm ls --depth=0', { cwd: dir, stdio: 'pipe' });
+      log('INSTALL', `${label}: dipendenze già presenti`);
+      return;
+    } catch {
+      log('INSTALL', `${label}: dipendenze mancanti, reinstallo...`);
+    }
   }
   log('INSTALL', `${label}: npm install in corso...`);
   execSync('npm install', { cwd: dir, stdio: 'inherit' });
