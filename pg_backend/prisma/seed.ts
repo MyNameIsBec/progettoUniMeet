@@ -5,6 +5,7 @@ import pkg from 'pg';
 import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
+import zlib from 'zlib';
 
 const { Pool } = pkg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -12,41 +13,167 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 const SALT_ROUNDS = 10;
 
-async function main() {
-  console.log('🌱 Seeding database...\n');
+// ─── Date helpers ───────────────────────────────────────────────────────────
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const d = (offset: number) => {
+  const dt = new Date(today);
+  dt.setDate(dt.getDate() + offset);
+  return dt;
+};
 
-  // Pulizia preliminare per rendere il seed riproducibile
+// ─── Minimal valid file generators ──────────────────────────────────────────
+function crc32(buf: Buffer): number {
+  let crc = 0xffffffff;
+  for (let i = 0; i < buf.length; i++) {
+    crc ^= buf[i];
+    for (let j = 0; j < 8; j++) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function createPdf(content: string): Buffer {
+  const esc = (s: string) => s.replace(/[()\\]/g, '\\$&');
+  const stream = `BT /F1 11 Tf 50 750 Td(${esc(content)}) Tj ET\n`;
+  const parts: Buffer[] = [];
+  const push = (s: string) => parts.push(Buffer.from(s, 'ascii'));
+  push('%PDF-1.4\n');
+  const objs = [
+    '1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n',
+    '2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n',
+    '3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n',
+    `4 0 obj<</Length ${stream.length}>>stream\n${stream}endstream\nendobj\n`,
+    '5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n',
+  ];
+  const offsets: number[] = [0];
+  let pos = parts[0]!.length;
+  for (const o of objs) {
+    offsets.push(pos);
+    const buf = Buffer.from(o, 'ascii');
+    parts.push(buf);
+    pos += buf.length;
+  }
+  const xrefRows = offsets.map((o, i) =>
+    `${String(o).padStart(10, '0')} ${i === 0 ? '65535 f' : '00000 n'} \n`,
+  );
+  push(`xref\n0 ${offsets.length}\n`);
+  for (const r of xrefRows) push(r);
+  push(`trailer<</Size ${offsets.length}/Root 1 0 R>>\nstartxref\n${pos}\n%%EOF\n`);
+  return Buffer.concat(parts);
+}
+
+function createZip(filename: string, text: string): Buffer {
+  const nameBuf = Buffer.from(filename, 'utf8');
+  const dataBuf = Buffer.from(text, 'utf8');
+  const compBuf = zlib.deflateRawSync(dataBuf);
+  const csum = crc32(dataBuf);
+  const local = Buffer.alloc(30 + nameBuf.length);
+  local.writeUInt32LE(0x04034b50, 0);
+  local.writeUInt16LE(20, 4);
+  local.writeUInt16LE(0, 6);
+  local.writeUInt16LE(8, 8);
+  local.writeUInt16LE(0, 10);
+  local.writeUInt16LE(0, 12);
+  local.writeUInt32LE(csum, 14);
+  local.writeUInt32LE(compBuf.length, 18);
+  local.writeUInt32LE(dataBuf.length, 22);
+  local.writeUInt16LE(nameBuf.length, 26);
+  local.writeUInt16LE(0, 28);
+  nameBuf.copy(local, 30);
+  const cd = Buffer.alloc(46 + nameBuf.length);
+  cd.writeUInt32LE(0x02014b50, 0);
+  cd.writeUInt16LE(20, 4);
+  cd.writeUInt16LE(20, 6);
+  cd.writeUInt16LE(0, 8);
+  cd.writeUInt16LE(8, 10);
+  cd.writeUInt16LE(0, 12);
+  cd.writeUInt16LE(0, 14);
+  cd.writeUInt32LE(csum, 16);
+  cd.writeUInt32LE(compBuf.length, 20);
+  cd.writeUInt32LE(dataBuf.length, 24);
+  cd.writeUInt16LE(nameBuf.length, 28);
+  cd.writeUInt16LE(0, 30);
+  cd.writeUInt16LE(0, 32);
+  cd.writeUInt16LE(0, 34);
+  cd.writeUInt16LE(0, 36);
+  cd.writeUInt32LE(0, 38);
+  cd.writeUInt32LE(0, 42);
+  nameBuf.copy(cd, 46);
+  const localEnd = 30 + nameBuf.length + compBuf.length;
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(0, 4);
+  eocd.writeUInt16LE(0, 6);
+  eocd.writeUInt16LE(1, 8);
+  eocd.writeUInt16LE(1, 10);
+  eocd.writeUInt32LE(cd.length, 12);
+  eocd.writeUInt32LE(localEnd, 16);
+  eocd.writeUInt16LE(0, 20);
+  return Buffer.concat([local, compBuf, cd, eocd]);
+}
+
+function createPng(): Buffer {
+  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  const ihdr = Buffer.alloc(25);
+  ihdr.writeUInt32BE(13, 0);
+  ihdr.writeUInt32BE(0x49484452, 4);
+  ihdr.writeUInt32BE(1, 8);
+  ihdr.writeUInt32BE(1, 12);
+  ihdr.writeUInt8(8, 16);
+  ihdr.writeUInt8(2, 17);
+  ihdr.writeUInt8(0, 18);
+  ihdr.writeUInt8(0, 19);
+  ihdr.writeUInt8(0, 20);
+  const ihdrCrc = crc32(ihdr.subarray(4, 21));
+  ihdr.writeUInt32BE(ihdrCrc, 21);
+  const raw = Buffer.from([0, 255, 0, 0]);
+  const comp = zlib.deflateSync(raw);
+  const idat = Buffer.alloc(12 + comp.length);
+  idat.writeUInt32BE(comp.length, 0);
+  idat.writeUInt32BE(0x49444154, 4);
+  comp.copy(idat, 8);
+  const idatCrc = crc32(idat.subarray(4, 8 + comp.length));
+  idat.writeUInt32BE(idatCrc, 8 + comp.length);
+  const iend = Buffer.from([0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82]);
+  return Buffer.concat([sig, ihdr, idat, iend]);
+}
+
+async function main() {
+  console.log('\n🌱 Seeding database...\n');
+
+  // ─── PULIZIA ──────────────────────────────────────────────────────────────
   console.log('🧹 Clearing existing database data...');
-  await prisma.codiceVerifica.deleteMany({});
-  await prisma.giornoBloccato.deleteMany({});
-  await prisma.notifica.deleteMany({});
-  await prisma.documento.deleteMany({});
-  await prisma.prenotazione.deleteMany({});
-  await prisma.luogoRicevimento.deleteMany({});
-  await prisma.slotRicevimento.deleteMany({});
-  await prisma.segnalazione.deleteMany({});
-  await prisma.fAQ.deleteMany({});
-  await prisma.bacheca.deleteMany({});
-  await prisma.corso.deleteMany({});
-  await prisma.docenteCorsoDiStudi.deleteMany({});
-  await prisma.amministratore.deleteMany({});
-  await prisma.studente.deleteMany({});
-  await prisma.docente.deleteMany({});
-  await prisma.corsoDiStudi.deleteMany({});
+  await prisma.codiceVerifica.deleteMany();
+  await prisma.giornoBloccato.deleteMany();
+  await prisma.notifica.deleteMany();
+  await prisma.documento.deleteMany();
+  await prisma.prenotazione.deleteMany();
+  await prisma.luogoRicevimento.deleteMany();
+  await prisma.slotRicevimento.deleteMany();
+  await prisma.segnalazione.deleteMany();
+  await prisma.fAQ.deleteMany();
+  await prisma.bacheca.deleteMany();
+  await prisma.corso.deleteMany();
+  await prisma.docenteCorsoDiStudi.deleteMany();
+  await prisma.amministratore.deleteMany();
+  await prisma.studente.deleteMany();
+  await prisma.docente.deleteMany();
+  await prisma.corsoDiStudi.deleteMany();
   console.log('✨ Database cleared.\n');
 
   const PW = await bcrypt.hash('Password123', SALT_ROUNDS);
 
-  // ──────────────────────────── CORSO DI STUDI ────────────────────────────
+  // ─── CORSO DI STUDI ───────────────────────────────────────────────────────
   console.log('── CorsoDiStudi ──');
-  const corsiDiStudi: Record<string, any> = {};
-  const cdsList = [
+  const cds: Record<string, any> = {};
+  for (const c of [
     { id: 'cds-1', nome: 'Informatica' },
     { id: 'cds-2', nome: 'Ingegneria Informatica' },
     { id: 'cds-3', nome: 'Matematica' },
-  ];
-  for (const c of cdsList) {
-    corsiDiStudi[c.id] = await prisma.corsoDiStudi.upsert({
+  ]) {
+    cds[c.id] = await prisma.corsoDiStudi.upsert({
       where: { id_corso_di_studi: c.id },
       update: {},
       create: { id_corso_di_studi: c.id, nome: c.nome },
@@ -54,48 +181,66 @@ async function main() {
     console.log(`  ${c.nome}`);
   }
 
-  // ──────────────────────────── STUDENTE ────────────────────────────
+  // ─── STUDENTE ─────────────────────────────────────────────────────────────
   console.log('\n── Studente ──');
-  const studenti = [
-    { matricola: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unimeet.it', corsoDiStudi: 'cds-2' },
-    { matricola: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unimeet.it', corsoDiStudi: 'cds-1' },
-    { matricola: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unimeet.it', corsoDiStudi: 'cds-3' },
+  const studentData = [
+    { mat: 'MAT001', nome: 'Mario', cognome: 'Rossi', email: 'mario.rossi@studenti.unimeet.it', cds: 'cds-1',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
+    { mat: 'MAT002', nome: 'Lisa', cognome: 'Bianchi', email: 'lisa.bianchi@studenti.unimeet.it', cds: 'cds-1',
+      notificheApp: false, notificheEmail: true, reminderOre: 48, tema: 'chiaro', lingua: 'it' },
+    { mat: 'MAT003', nome: 'Luca', cognome: 'Ferrari', email: 'luca.ferrari@studenti.unimeet.it', cds: 'cds-2',
+      notificheApp: true, notificheEmail: false, reminderOre: 12, tema: 'scuro', lingua: 'en' },
+    { mat: 'MAT004', nome: 'Sofia', cognome: 'Romano', email: 'sofia.romano@studenti.unimeet.it', cds: 'cds-1',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
+    { mat: 'MAT005', nome: 'Marco', cognome: 'Esposito', email: 'marco.esposito@studenti.unimeet.it', cds: 'cds-3',
+      notificheApp: false, notificheEmail: false, reminderOre: 72, tema: 'chiaro', lingua: 'it' },
+    { mat: 'MAT006', nome: 'Giulia', cognome: 'Conti', email: 'giulia.conti@studenti.unimeet.it', cds: 'cds-2',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
   ];
-  const studentiCreati: Record<string, any> = {};
-  for (const s of studenti) {
-    studentiCreati[s.matricola] = await prisma.studente.upsert({
+  const studenti: Record<string, any> = {};
+  for (const s of studentData) {
+    studenti[s.mat] = await prisma.studente.upsert({
       where: { email: s.email },
       update: {},
       create: {
-        matricola: s.matricola, nome: s.nome, cognome: s.cognome, email: s.email, password: PW,
-        id_corso_di_studi: corsiDiStudi[s.corsoDiStudi]!.id_corso_di_studi,
+        matricola: s.mat, nome: s.nome, cognome: s.cognome, email: s.email, password: PW,
+        id_corso_di_studi: cds[s.cds]!.id_corso_di_studi,
+        notifiche_app: s.notificheApp, notifiche_email: s.notificheEmail,
+        reminder_ore: s.reminderOre, tema: s.tema, lingua: s.lingua,
       },
     });
-    console.log(`  ${s.matricola} — ${s.nome} ${s.cognome}`);
+    console.log(`  ${s.mat} — ${s.nome} ${s.cognome} (${s.email})`);
   }
 
-  // ──────────────────────────── DOCENTE ────────────────────────────
+  // ─── DOCENTE ──────────────────────────────────────────────────────────────
   console.log('\n── Docente ──');
-  const docenti = [
-    { nome: 'Giuseppe', cognome: 'Verdi', email: 'giuseppe.verdi@unimeet.it', ufficio: 'Edificio D, Stanza 12' },
-    { nome: 'Anna', cognome: 'Neri', email: 'anna.neri@unimeet.it', ufficio: 'Edificio A, Stanza 5' },
-    { nome: 'Maria', cognome: 'Bianco', email: 'maria.bianco@unimeet.it', ufficio: 'Edificio B, Stanza 8' },
-    { nome: 'Paolo', cognome: 'Russo', email: 'paolo.russo@unimeet.it', ufficio: 'Edificio C, Stanza 3' },
-    { nome: 'Elena', cognome: 'Colombo', email: 'elena.colombo@unimeet.it', ufficio: 'Edificio E, Stanza 10' },
+  const docenteData = [
+    { nome: 'Giuseppe', cognome: 'Verdi', email: 'giuseppe.verdi@unimeet.it', ufficio: 'Edificio D, Stanza 12',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
+    { nome: 'Anna', cognome: 'Neri', email: 'anna.neri@unimeet.it', ufficio: 'Edificio A, Stanza 5',
+      notificheApp: true, notificheEmail: false, reminderOre: 12, tema: 'chiaro', lingua: 'it' },
+    { nome: 'Maria', cognome: 'Bianco', email: 'maria.bianco@unimeet.it', ufficio: 'Edificio B, Stanza 8',
+      notificheApp: false, notificheEmail: true, reminderOre: 48, tema: 'scuro', lingua: 'en' },
+    { nome: 'Paolo', cognome: 'Russo', email: 'paolo.russo@unimeet.it', ufficio: 'Edificio C, Stanza 3',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
+    { nome: 'Elena', cognome: 'Colombo', email: 'elena.colombo@unimeet.it', ufficio: 'Edificio E, Stanza 10',
+      notificheApp: true, notificheEmail: true, reminderOre: 24, tema: 'system', lingua: 'it' },
   ];
-  const docentiCreati: Record<string, any> = {};
-  for (const d of docenti) {
-    docentiCreati[d.email] = await prisma.docente.upsert({
+  const docenti: Record<string, any> = {};
+  for (const d of docenteData) {
+    docenti[d.email] = await prisma.docente.upsert({
       where: { email: d.email },
       update: {},
-      create: { nome: d.nome, cognome: d.cognome, email: d.email, password: PW, ufficio: d.ufficio },
+      create: {
+        nome: d.nome, cognome: d.cognome, email: d.email, password: PW, ufficio: d.ufficio,
+        notifiche_app: d.notificheApp, notifiche_email: d.notificheEmail,
+        reminder_ore: d.reminderOre, tema: d.tema, lingua: d.lingua,
+      },
     });
     console.log(`  ${d.nome} ${d.cognome} — ${d.ufficio}`);
   }
 
-  // ──────────────────────────── DOCENTE CORSO DI STUDI ────────────────────────────
+  // ─── DOCENTE CORSO DI STUDI ───────────────────────────────────────────────
   console.log('\n── DocenteCorsoDiStudi ──');
   const associazioni = [
     { docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
@@ -109,294 +254,362 @@ async function main() {
   for (const a of associazioni) {
     await prisma.docenteCorsoDiStudi.create({
       data: {
-        id_docente: docentiCreati[a.docente]!.id_docente,
-        id_corso_di_studi: corsiDiStudi[a.corsoDiStudi]!.id_corso_di_studi,
+        id_docente: docenti[a.docente]!.id_docente,
+        id_corso_di_studi: cds[a.corsoDiStudi]!.id_corso_di_studi,
       },
     });
     console.log(`  ${a.docente} → ${a.corsoDiStudi}`);
   }
 
-  // ──────────────────────────── AMMINISTRATORE ────────────────────────────
+  // ─── AMMINISTRATORE ───────────────────────────────────────────────────────
   console.log('\n── Amministratore ──');
-  const adminData = [
+  const adminUsers = [
     { nome: 'Admin', email: 'admin@unimeet.it' },
     { nome: 'Super Admin', email: 'superadmin@unimeet.it' },
   ];
-  for (const a of adminData) {
-    await prisma.amministratore.upsert({
+  const adminCreati: any[] = [];
+  for (const a of adminUsers) {
+    const created = await prisma.amministratore.upsert({
       where: { email: a.email },
       update: {},
       create: { ...a, password: PW },
     });
+    adminCreati.push(created);
     console.log(`  ${a.nome} (${a.email})`);
   }
 
-  // ──────────────────────────── CORSO ────────────────────────────
+  // ─── CORSO ────────────────────────────────────────────────────────────────
   console.log('\n── Corso ──');
-  const corsi = [
-    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unimeet.it', corsoDiStudi: 'cds-1' },
-    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unimeet.it', corsoDiStudi: 'cds-2' },
-    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unimeet.it', corsoDiStudi: 'cds-2' },
-    { id: 'corso-6', nome: 'Analisi Matematica', anno: 2025, cfu: 12, docente: 'elena.colombo@unimeet.it', corsoDiStudi: 'cds-3' },
-    { id: 'corso-7', nome: 'Geometria', anno: 2025, cfu: 9, docente: 'elena.colombo@unimeet.it', corsoDiStudi: 'cds-3' },
+  const corsoData = [
+    { id: 'corso-1', nome: 'Programmazione Web', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', cdsId: 'cds-1' },
+    { id: 'corso-2', nome: 'Basi di Dati', anno: 2025, cfu: 9, docente: 'giuseppe.verdi@unimeet.it', cdsId: 'cds-1' },
+    { id: 'corso-3', nome: 'Ingegneria del Software', anno: 2025, cfu: 6, docente: 'anna.neri@unimeet.it', cdsId: 'cds-1' },
+    { id: 'corso-4', nome: 'Reti di Calcolatori', anno: 2025, cfu: 6, docente: 'maria.bianco@unimeet.it', cdsId: 'cds-2' },
+    { id: 'corso-5', nome: 'Intelligenza Artificiale', anno: 2026, cfu: 9, docente: 'paolo.russo@unimeet.it', cdsId: 'cds-2' },
+    { id: 'corso-6', nome: 'Analisi Matematica', anno: 2025, cfu: 12, docente: 'elena.colombo@unimeet.it', cdsId: 'cds-3' },
+    { id: 'corso-7', nome: 'Geometria', anno: 2025, cfu: 9, docente: 'elena.colombo@unimeet.it', cdsId: 'cds-3' },
+    { id: 'corso-8', nome: 'Sistemi Operativi', anno: 2026, cfu: 6, docente: 'paolo.russo@unimeet.it', cdsId: 'cds-2' },
   ];
-  const corsiCreati: Record<string, any> = {};
-  for (const c of corsi) {
-    const doc = docentiCreati[c.docente]!;
-    corsiCreati[c.id] = await prisma.corso.upsert({
+  const corsi: Record<string, any> = {};
+  for (const c of corsoData) {
+    corsi[c.id] = await prisma.corso.upsert({
       where: { id_corso: c.id },
       update: {},
       create: {
         id_corso: c.id, nome_corso: c.nome, anno: c.anno, cfu: c.cfu,
-        id_docente: doc.id_docente,
-        id_corso_di_studi: corsiDiStudi[c.corsoDiStudi]!.id_corso_di_studi,
+        id_docente: docenti[c.docente]!.id_docente,
+        id_corso_di_studi: cds[c.cdsId]!.id_corso_di_studi,
       },
     });
-    console.log(`  ${c.nome} — ${c.cfu} CFU (${c.docente}) → ${c.corsoDiStudi}`);
+    console.log(`  ${c.nome} — ${c.cfu} CFU (${c.docente})`);
   }
 
-  // ──────────────────────────── BACHECA ────────────────────────────
+  // ─── BACHECA ──────────────────────────────────────────────────────────────
   console.log('\n── Bacheca ──');
-  const bachecheData = [
-    { corsoId: 'corso-1', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Programmazione Web', descrizione: 'Avvisi e materiale per il corso di Programmazione Web' },
-    { corsoId: 'corso-2', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Basi di Dati', descrizione: 'Avvisi e materiale per il corso di Basi di Dati' },
-    { corsoId: 'corso-3', corsoDiStudi: 'cds-1', titolo: 'Bacheca - Ingegneria del Software', descrizione: 'Avvisi e materiale per il corso di Ingegneria del Software' },
-    { corsoId: 'corso-4', corsoDiStudi: 'cds-2', titolo: 'Bacheca - Reti di Calcolatori', descrizione: 'Avvisi e materiale per il corso di Reti di Calcolatori' },
-    { corsoId: 'corso-5', corsoDiStudi: 'cds-2', titolo: 'Bacheca - Intelligenza Artificiale', descrizione: 'Avvisi e materiale per il corso di Intelligenza Artificiale' },
-    { corsoId: 'corso-6', corsoDiStudi: 'cds-3', titolo: 'Bacheca - Analisi Matematica', descrizione: 'Annunci e risorse per il corso di Analisi Matematica' },
-    { corsoId: 'corso-7', corsoDiStudi: 'cds-3', titolo: 'Bacheca - Geometria', descrizione: 'Annunci e risorse per il corso di Geometria' },
+  const bachecaData = [
+    { corsoId: 'corso-1', cdsId: 'cds-1', titolo: 'Bacheca - Programmazione Web', descrizione: 'Avvisi e materiale per il corso di Programmazione Web' },
+    { corsoId: 'corso-2', cdsId: 'cds-1', titolo: 'Bacheca - Basi di Dati', descrizione: 'Avvisi e materiale per il corso di Basi di Dati' },
+    { corsoId: 'corso-3', cdsId: 'cds-1', titolo: 'Bacheca - Ingegneria del Software', descrizione: 'Avvisi e materiale per il corso di Ingegneria del Software' },
+    { corsoId: 'corso-4', cdsId: 'cds-2', titolo: 'Bacheca - Reti di Calcolatori', descrizione: 'Avvisi e materiale per il corso di Reti di Calcolatori' },
+    { corsoId: 'corso-5', cdsId: 'cds-2', titolo: 'Bacheca - Intelligenza Artificiale', descrizione: 'Avvisi e materiale per il corso di Intelligenza Artificiale' },
+    { corsoId: 'corso-6', cdsId: 'cds-3', titolo: 'Bacheca - Analisi Matematica', descrizione: 'Annunci e risorse per il corso di Analisi Matematica' },
+    { corsoId: 'corso-7', cdsId: 'cds-3', titolo: 'Bacheca - Geometria', descrizione: 'Annunci e risorse per il corso di Geometria' },
   ];
-  const bachecheCreati: Record<string, any> = {};
-  for (const b of bachecheData) {
-    bachecheCreati[b.corsoId] = await prisma.bacheca.create({
+  const bacheche: Record<string, any> = {};
+  for (const b of bachecaData) {
+    bacheche[b.corsoId] = await prisma.bacheca.create({
       data: {
         titolo: b.titolo, descrizione: b.descrizione,
-        id_corso_di_studi: corsiDiStudi[b.corsoDiStudi]!.id_corso_di_studi,
-        id_corso: corsiCreati[b.corsoId]!.id_corso,
+        id_corso_di_studi: cds[b.cdsId]!.id_corso_di_studi,
+        id_corso: corsi[b.corsoId]!.id_corso,
       },
     });
-    console.log(`  ${b.titolo} → ${b.corsoId}`);
+    console.log(`  ${b.titolo}`);
   }
 
-  // ──────────────────────────── FAQ ────────────────────────────
+  // ─── FAQ ──────────────────────────────────────────────────────────────────
   console.log('\n── FAQ ──');
   const faqList = [
-    // Programmazione Web (corso-1)
     { domanda: "Come si svolge l'esame di Programmazione Web?", risposta: 'Prova pratica al computer e discussione orale.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
     { domanda: 'Quali sono i libri di testo consigliati?', risposta: 'Dispense del corso e JavaScript: The Good Parts.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
     { domanda: 'Ci sono appelli straordinari?', risposta: 'Sì, a marzo e novembre. Verificare il calendario.', corso: 'corso-1', docente: 'giuseppe.verdi@unimeet.it' },
-    // Basi di Dati (corso-2)
     { domanda: 'SQL o NoSQL?', risposta: 'Entrambi. Il corso copre PostgreSQL e MongoDB.', corso: 'corso-2', docente: 'giuseppe.verdi@unimeet.it' },
-    // Ingegneria del Software (corso-3)
-    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione. Durante il corso vengono fornite le guide per l\'uso.', corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
-    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: 'Il progetto prevede lo sviluppo di un\'applicazione web in gruppo, seguendo la metodologia Scrum.', corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
-    // Reti di Calcolatori (corso-4)
-    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Il corso copre protocolli di rete, TCP/IP, routing, sicurezza di rete e architetture client-server.', corso: 'corso-4', docente: 'maria.bianco@unimeet.it' },
+    { domanda: 'Quali strumenti si usano per il versionamento?', risposta: 'Utilizziamo Git e GitHub per il controllo versione.', corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
+    { domanda: 'Come si svolge il progetto di Ingegneria del Software?', risposta: "Sviluppo di un'applicazione web in gruppo con metodologia Scrum.", corso: 'corso-3', docente: 'anna.neri@unimeet.it' },
+    { domanda: 'Che argomenti copre Reti di Calcolatori?', risposta: 'Protocolli di rete, TCP/IP, routing, sicurezza e architetture client-server.', corso: 'corso-4', docente: 'maria.bianco@unimeet.it' },
     { domanda: "Come si ottiene l'esonero?", risposta: "Con una media del 27+ negli esami del primo semestre.", corso: 'corso-4', docente: 'maria.bianco@unimeet.it' },
-    // Intelligenza Artificiale (corso-5)
     { domanda: 'Che linguaggio si usa per i progetti?', risposta: 'Python con TensorFlow e PyTorch.', corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
-    { domanda: 'Come prenotare un ricevimento?', risposta: 'Accedi all\'area riservata e seleziona uno slot disponibile nel calendario del docente.', corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
-    // Analisi Matematica (corso-6)
+    { domanda: 'Come prenotare un ricevimento?', risposta: "Accedi all'area riservata e seleziona uno slot disponibile nel calendario del docente.", corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
     { domanda: 'Quando si tengono le esercitazioni?', risposta: 'Le esercitazioni di Analisi si tengono il martedì e giovedì mattina.', corso: 'corso-6', docente: 'elena.colombo@unimeet.it' },
-    // Geometria (corso-7)
-    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: 'È richiesta la conoscenza di base dell\'algebra lineare e della geometria analitica.', corso: 'corso-7', docente: 'elena.colombo@unimeet.it' },
+    { domanda: "Quali sono i prerequisiti per l'esame di Geometria?", risposta: "Conoscenza di base dell'algebra lineare e della geometria analitica.", corso: 'corso-7', docente: 'elena.colombo@unimeet.it' },
+    { domanda: 'Quali sono gli orari di ricevimento?', risposta: 'Il ricevimento si tiene il mercoledì dalle 15:00 alle 17:00.', corso: 'corso-5', docente: 'paolo.russo@unimeet.it' },
   ];
   for (const f of faqList) {
-    const faq = await prisma.fAQ.create({
+    await prisma.fAQ.create({
       data: {
-        domanda: f.domanda,
-        risposta: f.risposta,
-        id_bacheca: bachecheCreati[f.corso]!.id_bacheca,
-        id_docente: docentiCreati[f.docente]!.id_docente,
+        domanda: f.domanda, risposta: f.risposta,
+        id_bacheca: bacheche[f.corso]!.id_bacheca,
+        id_docente: docenti[f.docente]!.id_docente,
       },
     });
-    console.log(`  Q: ${faq.domanda}`);
+    console.log(`  Q: ${f.domanda.slice(0, 50)}...`);
   }
 
-  // ──────────────────────────── SLOT RICEVIMENTO ────────────────────────────
+  // ─── SLOT RICEVIMENTO ─────────────────────────────────────────────────────
   console.log('\n── SlotRicevimento ──');
-  const slotData = [
-    { data: '2026-05-15', inizio: '10:00', fine: '11:00', disp: true, docente: 'giuseppe.verdi@unimeet.it' },
-    { data: '2026-05-15', inizio: '11:00', fine: '12:00', disp: true, docente: 'giuseppe.verdi@unimeet.it' },
-    { data: '2026-05-18', inizio: '14:00', fine: '15:30', disp: true, docente: 'anna.neri@unimeet.it' },
-    { data: '2026-05-20', inizio: '09:00', fine: '10:00', disp: false, docente: 'maria.bianco@unimeet.it' },
-    { data: '2026-05-22', inizio: '15:00', fine: '16:00', disp: true, docente: 'paolo.russo@unimeet.it' },
-    { data: '2026-05-22', inizio: '16:00', fine: '17:00', disp: true, docente: 'paolo.russo@unimeet.it' },
+  const slotDefs = [
+    { data: d(-13), inizio: '10:00', fine: '11:00', disp: true,  docente: 'giuseppe.verdi@unimeet.it' },
+    { data: d(-13), inizio: '11:00', fine: '12:00', disp: true,  docente: 'giuseppe.verdi@unimeet.it' },
+    { data: d(3),   inizio: '10:00', fine: '11:00', disp: true,  docente: 'giuseppe.verdi@unimeet.it' },
+    { data: d(3),   inizio: '11:00', fine: '12:00', disp: true,  docente: 'giuseppe.verdi@unimeet.it' },
+    { data: d(10),  inizio: '14:00', fine: '15:00', disp: true,  docente: 'giuseppe.verdi@unimeet.it' },
+    { data: d(-11), inizio: '14:00', fine: '15:30', disp: true,  docente: 'anna.neri@unimeet.it' },
+    { data: d(5),   inizio: '14:00', fine: '15:00', disp: true,  docente: 'anna.neri@unimeet.it' },
+    { data: d(12),  inizio: '14:00', fine: '15:00', disp: true,  docente: 'anna.neri@unimeet.it' },
+    { data: d(-10), inizio: '09:00', fine: '10:00', disp: false, docente: 'maria.bianco@unimeet.it' },
+    { data: d(4),   inizio: '09:00', fine: '10:00', disp: true,  docente: 'maria.bianco@unimeet.it' },
+    { data: d(11),  inizio: '09:00', fine: '10:00', disp: true,  docente: 'maria.bianco@unimeet.it' },
+    { data: d(-5),  inizio: '15:00', fine: '16:00', disp: true,  docente: 'paolo.russo@unimeet.it' },
+    { data: d(2),   inizio: '15:00', fine: '16:00', disp: true,  docente: 'paolo.russo@unimeet.it' },
+    { data: d(9),   inizio: '15:00', fine: '16:00', disp: true,  docente: 'paolo.russo@unimeet.it' },
+    { data: d(-4),  inizio: '11:00', fine: '12:00', disp: true,  docente: 'elena.colombo@unimeet.it' },
+    { data: d(10),  inizio: '11:00', fine: '12:00', disp: true,  docente: 'elena.colombo@unimeet.it' },
+    { data: d(17),  inizio: '11:00', fine: '12:00', disp: true,  docente: 'elena.colombo@unimeet.it' },
+    { data: d(-2),  inizio: '16:00', fine: '17:00', disp: true,  docente: 'paolo.russo@unimeet.it' },
   ];
-  const slotsCreati: any[] = [];
-  for (const s of slotData) {
-    const doc = docentiCreati[s.docente]!;
+  const slots: any[] = [];
+  for (const s of slotDefs) {
+    const slotDate = new Date(s.data);
+    slotDate.setHours(0, 0, 0, 0);
     const slot = await prisma.slotRicevimento.create({
       data: {
-        data: new Date(s.data),
-        ora_inizio: new Date(`${s.data}T${s.inizio}`),
-        ora_fine: new Date(`${s.data}T${s.fine}`),
+        data: slotDate,
+        ora_inizio: new Date(`${s.data.toISOString().slice(0, 10)}T${s.inizio}`),
+        ora_fine: new Date(`${s.data.toISOString().slice(0, 10)}T${s.fine}`),
         disponibilita: s.disp,
-        id_docente: doc.id_docente,
+        id_docente: docenti[s.docente]!.id_docente,
       },
     });
-    slotsCreati.push(slot);
-    console.log(`  ${s.data} ${s.inizio}-${s.fine} — ${s.docente} (${s.disp ? 'libero' : 'occupato'})`);
+    slots.push(slot);
+    console.log(`  ${slotDate.toISOString().slice(0, 10)} ${s.inizio}-${s.fine} — ${s.docente}`);
   }
 
-  // ──────────────────────────── LUOGO RICEVIMENTO ────────────────────────────
+  // ─── LUOGO RICEVIMENTO ────────────────────────────────────────────────────
   console.log('\n── LuogoRicevimento ──');
-  const luoghi = [
-    { aula: 'Aula 5', edificio: 'Edificio 8 — Viale delle Scienze', piano: 'Primo piano', lat: 38.1089, lon: 13.3489, slot: slotsCreati[0]! },
-    { aula: 'Studio 12', edificio: 'Edificio 6 — Viale delle Scienze', piano: 'Secondo piano', lat: 38.1080, lon: 13.3475, slot: slotsCreati[2]! },
-    { aula: 'Lab 3', edificio: 'Edificio 19 — Viale delle Scienze', piano: 'Piano terra', lat: 38.1097, lon: 13.3500, slot: slotsCreati[4]! },
+  const luoghiUnipa = [
+    { aula: 'Aula 5', edificio: 'Edificio 8 — Viale delle Scienze', piano: 'Primo piano', lat: 38.1089, lon: 13.3489 },
+    { aula: 'Studio 12', edificio: 'Edificio 6 — Viale delle Scienze', piano: 'Secondo piano', lat: 38.1080, lon: 13.3475 },
+    { aula: 'Lab 3', edificio: 'Edificio 19 — Viale delle Scienze', piano: 'Piano terra', lat: 38.1097, lon: 13.3500 },
+    { aula: 'Aula Magna', edificio: 'Edificio 12 — Viale delle Scienze', piano: 'Piano terra', lat: 38.1092, lon: 13.3495 },
+    { aula: 'Studio Docenti', edificio: 'Edificio 3 — Viale delle Scienze', piano: 'Primo piano', lat: 38.1075, lon: 13.3468 },
+    { aula: 'Aula 7', edificio: 'Edificio 8 — Viale delle Scienze', piano: 'Secondo piano', lat: 38.1089, lon: 13.3485 },
   ];
-  for (const l of luoghi) {
+  for (let i = 0; i < slots.length; i++) {
+    const l = luoghiUnipa[i % luoghiUnipa.length]!;
     await prisma.luogoRicevimento.create({
-      data: { nome_aula: l.aula, edificio: l.edificio, piano: l.piano, latitudine: l.lat, longitudine: l.lon, id_slot: l.slot.id_slot },
+      data: {
+        nome_aula: l.aula, edificio: l.edificio, piano: l.piano,
+        latitudine: l.lat, longitudine: l.lon,
+        id_slot: slots[i]!.id_slot,
+      },
     });
-    console.log(`  ${l.aula} — ${l.edificio}, ${l.piano}`);
+    console.log(`  Slot ${i + 1}: ${l.aula} — ${l.edificio}`);
   }
 
-  // ──────────────────────────── PRENOTAZIONE ────────────────────────────
+  // ─── PRENOTAZIONE ─────────────────────────────────────────────────────────
   console.log('\n── Prenotazione ──');
-  const prenotazioni = [
-    { argomento: 'Discussione progetto esame', stato: 'CONFERMATA', studente: 'MAT001', slot: slotsCreati[0]! },
-    { argomento: 'Chiarimenti su esercizi SQL', stato: 'IN_ATTESA', studente: 'MAT002', slot: slotsCreati[1]! },
-    { argomento: 'Orientamento tesi triennale', stato: 'CONFERMATA', studente: 'MAT003', slot: slotsCreati[2]! },
-    { argomento: 'Richiesta lettera di referenza', stato: 'RIFIUTATA', studente: 'MAT004', slot: slotsCreati[3]! },
-    { argomento: 'Consigli su percorso studi', stato: 'IN_ATTESA', studente: 'MAT005', slot: slotsCreati[4]! },
+  const prenotazioneDefs = [
+    { argomento: 'Discussione progetto esame', descrizione: 'Presentazione della relazione finale di Programmazione Web.', stato: 'COMPLETATA',  studente: 'MAT001', slotIdx: 0 },
+    { argomento: 'Chiarimenti su progetto', descrizione: 'Dubbi sulla consegna del progetto di Basi di Dati.', stato: 'COMPLETATA',  studente: 'MAT004', slotIdx: 1 },
+    { argomento: 'Ricevimento confermato', descrizione: 'Discussione sulle tecnologie web moderne.', stato: 'CONFERMATA',  studente: 'MAT001', slotIdx: 2 },
+    { argomento: 'Richiesta informazioni esame', descrizione: 'Chiarimenti sulle modalità di esame di Programmazione Web.', stato: 'IN_ATTESA',  studente: 'MAT002', slotIdx: 3 },
+    { argomento: 'Orientamento tesi', descrizione: 'Discussione sulle possibili tematiche per la tesi triennale.', stato: 'COMPLETATA',  studente: 'MAT003', slotIdx: 5 },
+    { argomento: 'Richiesta lettera referenza', descrizione: 'Richiesta di una lettera di referenza per un master.', stato: 'RIFIUTATA',  studente: 'MAT004', slotIdx: 6 },
+    { argomento: 'Recupero esercitazioni', descrizione: 'Richiesta di chiarimenti sugli esercizi di Reti.', stato: 'COMPLETATA',  studente: 'MAT002', slotIdx: 8 },
+    { argomento: 'Prenotazione esonero', descrizione: 'Richiesta di prenotazione per l\'esonero di Intelligenza Artificiale.', stato: 'IN_ATTESA',  studente: 'MAT003', slotIdx: 9 },
+    { argomento: 'Consigli carriera', descrizione: 'Richiesta di consigli sul percorso di studi.', stato: 'COMPLETATA',  studente: 'MAT005', slotIdx: 11 },
+    { argomento: 'Annullamento per impegni', descrizione: 'Purtroppo non posso più partecipare al ricevimento.', stato: 'ANNULLATA',  studente: 'MAT003', slotIdx: 12 },
+    { argomento: 'Chiarimenti esame Analisi', descrizione: 'Dubbi sugli argomenti dell\'esame di Analisi Matematica.', stato: 'COMPLETATA',  studente: 'MAT005', slotIdx: 14 },
+    { argomento: 'Ricevimento Geometria', descrizione: 'Conferma del ricevimento per chiarimenti su Geometria.', stato: 'CONFERMATA',  studente: 'MAT005', slotIdx: 15 },
+    { argomento: 'Richiesta tutoraggio', descrizione: 'Richiesta di supporto aggiuntivo per Intelligenza Artificiale.', stato: 'RIFIUTATA',  studente: 'MAT002', slotIdx: 13 },
   ];
-  const prenotazioniCreati: any[] = [];
-  for (const p of prenotazioni) {
+  const prenotazioni: any[] = [];
+  for (const p of prenotazioneDefs) {
     const pren = await prisma.prenotazione.create({
       data: {
         argomento: p.argomento,
+        descrizione: p.descrizione,
         stato_prenotazione: p.stato,
+        data_prenotazione: slots[p.slotIdx]!.data,
         matricola_studente: p.studente,
-        id_slot: p.slot.id_slot,
+        id_slot: slots[p.slotIdx]!.id_slot,
       },
     });
-    prenotazioniCreati.push(pren);
+    prenotazioni.push(pren);
     console.log(`  ${p.argomento} — ${p.studente} [${p.stato}]`);
   }
 
-  // ──────────────────────────── DOCUMENTO ────────────────────────────
+  // ─── DOCUMENTO ────────────────────────────────────────────────────────────
   console.log('\n── Documento ──');
-  const documenti = [
-    { file: 'relazione_progetto.pdf', tipo: 'application/pdf', dim: 2048000, percorso: '/uploads/relazione_progetto.pdf', prenotazione: prenotazioniCreati[0]! },
-    { file: 'esercizi_sql.zip', tipo: 'application/zip', dim: 512000, percorso: '/uploads/esercizi_sql.zip', prenotazione: prenotazioniCreati[3]! },
-    { file: 'lettera_motivazionale.docx', tipo: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', dim: 128000, percorso: '/uploads/lettera_motivazionale.docx', prenotazione: prenotazioniCreati[2]! },
+  const docDefs = [
+    { file: 'relazione_progetto.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 0, content: 'Relazione progetto — Programmazione Web — Mario Rossi' },
+    { file: 'esercizi_sql.zip',       tipo: 'application/zip', dim: 0, prenIdx: 6, content: 'Esercizi SQL svolti — Lisa Bianchi' },
+    { file: 'certificato_esonero.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 4, content: 'Certificato esonero — Ingegneria del Software — Luca Ferrari' },
+    { file: 'screenshot_errore.png',  tipo: 'image/png',       dim: 0, prenIdx: 3, content: 'Screenshot errore applicazione' },
+    { file: 'lettera_motivazionale.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 9, content: 'Lettera motivazionale — Luca Ferrari' },
+    { file: 'programma_esame.pdf',    tipo: 'application/pdf', dim: 0, prenIdx: 11, content: 'Programma esame Geometria — Marco Esposito' },
   ];
-  for (const d of documenti) {
+  const fileBuffers: { filename: string; buffer: Buffer }[] = [];
+  for (const d of docDefs) {
+    let buffer: Buffer;
+    switch (d.tipo) {
+      case 'application/pdf':
+        buffer = createPdf(d.content);
+        break;
+      case 'application/zip':
+        buffer = createZip(d.file, d.content);
+        break;
+      case 'image/png':
+        buffer = createPng();
+        break;
+      default:
+        buffer = Buffer.from(d.content, 'utf8');
+    }
+    fileBuffers.push({ filename: d.file, buffer });
     await prisma.documento.create({
       data: {
         nome_file: d.file,
         tipo_file: d.tipo,
-        dimensione: d.dim,
-        percorso_file: d.percorso,
-        id_prenotazione: d.prenotazione.id_prenotazione,
+        dimensione: buffer.length,
+        percorso_file: `/uploads/${d.file}`,
+        id_prenotazione: prenotazioni[d.prenIdx]!.id_prenotazione,
       },
     });
-    console.log(`  ${d.file} (${(d.dim / 1024).toFixed(0)} KB)`);
+    console.log(`  ${d.file} (${(buffer.length / 1024).toFixed(0)} KB)`);
   }
 
-  // ──────────────────────────── FILE FISICI SEED ────────────────────────────
-  console.log('\n── File fisici seed ──');
+  // ─── FILE FISICI ──────────────────────────────────────────────────────────
+  console.log('\n── File fisici ──');
   const uploadsDir = path.join(__dirname, '../uploads');
-  for (const d of documenti) {
-    const nomeFile = d.percorso.replace('/uploads/', '');
-    const filePath = path.join(uploadsDir, nomeFile);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-    fs.writeFileSync(filePath, `Placeholder: ${d.file} (${d.tipo})`);
-    console.log(`  Creato file: ${nomeFile}`);
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  for (const f of fileBuffers) {
+    const filePath = path.join(uploadsDir, f.filename);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    fs.writeFileSync(filePath, f.buffer);
+    console.log(`  Scritto: ${f.filename} (${f.buffer.length} bytes)`);
   }
 
-  // ──────────────────────────── SEGNALAZIONE ────────────────────────────
+  // ─── SEGNALAZIONE ─────────────────────────────────────────────────────────
   console.log('\n── Segnalazione ──');
-  const segnalazioni = [
-    { oggetto: 'Errore nel caricamento documento', descrizione: 'Quando provo a caricare un PDF per la prenotazione del 15/05, ricevo un errore 500.', stato: 'APERTA', studente: 'MAT001' },
-    { oggetto: 'Slot non visibili nel calendario', descrizione: 'Non riesco a vedere gli slot del Prof. Verdi per la prossima settimana.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
-    { oggetto: 'Notifica di conferma non ricevuta', descrizione: 'La prenotazione del 18/05 è stata confermata ma non ho ricevuto la notifica.', stato: 'APERTA', studente: 'MAT003' },
-    { oggetto: 'Problema accesso area personale', descrizione: 'Dopo il login vengo reindirizzato alla home invece che alla dashboard.', stato: 'CHIUSA', studente: 'MAT004' },
-    { oggetto: 'Richiesta chiarimenti esonero', descrizione: 'Vorrei maggiori informazioni sulle modalità di esonero per Basi di Dati.', stato: 'CHIUSA', studente: 'MAT005' },
-    { oggetto: "Errore modifica profilo", descrizione: "Quando provo ad aggiornare il mio corso di studi, il sistema non salva le modifiche.", stato: 'APERTA', studente: 'MAT001' },
-    { oggetto: 'Doppia prenotazione involontaria', descrizione: 'Ho prenotato due volte lo stesso slot per errore. Come posso cancellarne una?', stato: 'IN_LAVORAZIONE', studente: 'MAT003' },
-    { oggetto: 'Documento allegato non visualizzato', descrizione: 'Il file caricato per la prenotazione del 22/05 non viene mostrato nella schermata di dettaglio.', stato: 'IN_LAVORAZIONE', studente: 'MAT002' },
+  const segnalazioneDefs: any[] = [
+    { oggetto: 'Errore nel caricamento documento', descrizione: 'Quando provo a caricare un PDF per la prenotazione, ricevo un errore 500.', stato: 'APERTA', studente: 'MAT001', docente: null },
+    { oggetto: 'Slot non visibili nel calendario', descrizione: 'Non riesco a vedere gli slot del Prof. Verdi per la prossima settimana.', stato: 'IN_LAVORAZIONE', studente: 'MAT002', docente: null },
+    { oggetto: 'Notifica di conferma non ricevuta', descrizione: 'La prenotazione del 18/05 è stata confermata ma non ho ricevuto notifica.', stato: 'APERTA', studente: 'MAT003', docente: null },
+    { oggetto: 'Problema accesso area personale', descrizione: 'Dopo il login vengo reindirizzato alla home invece che alla dashboard.', stato: 'CHIUSA', studente: 'MAT004', docente: null },
+    { oggetto: 'Richiesta chiarimenti esonero', descrizione: 'Vorrei informazioni sulle modalità di esonero per Basi di Dati.', stato: 'CHIUSA', studente: 'MAT005', docente: null },
+    { oggetto: 'Errore modifica profilo', descrizione: 'Quando aggiorno il corso di studi, il sistema non salva le modifiche.', stato: 'APERTA', studente: 'MAT001', docente: null },
+    { oggetto: 'Doppia prenotazione involontaria', descrizione: 'Ho prenotato due volte lo stesso slot per errore. Come posso cancellarne una?', stato: 'IN_LAVORAZIONE', studente: 'MAT003', docente: null },
+    { oggetto: 'Documento allegato non visualizzato', descrizione: 'Il file caricato per la prenotazione del 22/05 non viene mostrato.', stato: 'IN_LAVORAZIONE', studente: 'MAT002', docente: null },
+    { oggetto: 'Studente non si presenta ai ricevimenti', descrizione: 'Lo studente Mario Rossi ha saltato due ricevimenti consecutivi senza preavviso.', stato: 'APERTA', studente: null, docente: 'giuseppe.verdi@unimeet.it' },
+    { oggetto: 'Bug nella gestione slot', descrizione: 'Quando modifico uno slot, a volte la disponibilità si resetta automaticamente.', stato: 'IN_LAVORAZIONE', studente: null, docente: 'anna.neri@unimeet.it' },
+    { oggetto: 'Problema export PDF agenda', descrizione: 'L\'export in PDF delle prenotazioni non include i dettagli del luogo.', stato: 'APERTA', studente: null, docente: 'maria.bianco@unimeet.it' },
   ];
-  for (const s of segnalazioni) {
-    await prisma.segnalazione.create({
-      data: {
-        oggetto: s.oggetto,
-        descrizione: s.descrizione,
-        stato: s.stato,
-        matricola_studente: s.studente,
-      },
-    });
-    console.log(`  [${s.stato}] ${s.oggetto} — ${s.studente}`);
+  for (const s of segnalazioneDefs) {
+    const data: any = { oggetto: s.oggetto, descrizione: s.descrizione, stato: s.stato };
+    if (s.studente) data.matricola_studente = s.studente;
+    if (s.docente) data.id_docente = docenti[s.docente]!.id_docente;
+    await prisma.segnalazione.create({ data });
+    console.log(`  [${s.stato}] ${s.oggetto.slice(0, 50)}...`);
   }
 
-  // ──────────────────────────── GIORNI BLOCCATI ────────────────────────────
+  // ─── GIORNI BLOCCATI ─────────────────────────────────────────────────────
   console.log('\n── GiornoBloccato ──');
   const giorniBloccati = [
-    { data: '2026-04-25', motivo: 'Festa della Liberazione' },
-    { data: '2026-05-01', motivo: 'Festa del Lavoro' },
-    { data: '2026-06-02', motivo: 'Festa della Repubblica' },
+    { data: d(-36), motivo: 'Festa della Liberazione' },
+    { data: d(-30), motivo: 'Festa del Lavoro' },
+    { data: d(2),   motivo: 'Festa della Repubblica' },
+    { data: d(15),  motivo: 'Chiusura straordinaria per manutenzione' },
   ];
   for (const g of giorniBloccati) {
+    const gDate = new Date(g.data);
+    gDate.setHours(0, 0, 0, 0);
     await prisma.giornoBloccato.upsert({
-      where: { data: new Date(g.data) },
+      where: { data: gDate },
       update: {},
-      create: { data: new Date(g.data), motivo: g.motivo },
+      create: { data: gDate, motivo: g.motivo },
     });
-    console.log(`  ${g.data} — ${g.motivo}`);
+    console.log(`  ${g.data.toISOString().slice(0, 10)} — ${g.motivo}`);
   }
 
-  // ──────────────────────────── NOTIFICA ────────────────────────────
+  // ─── NOTIFICA ─────────────────────────────────────────────────────────────
   console.log('\n── Notifica ──');
-
-  const notificheStudente = [
-    { titolo: 'Conferma Ricevimento', msg: 'Il ricevimento del 15/05/2026 con il Prof. Verdi è stato confermato.', tipo: 'CONFERMA' },
-    { titolo: 'Nuovo Materiale', msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO' },
-    { titolo: 'Ricevimento Rifiutato', msg: 'La richiesta di ricevimento per il 18/05/2026 è stata rifiutata.', tipo: 'RIFIUTO' },
-    { titolo: 'Appelli Estivi', msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE' },
-    { titolo: 'Slot Annullato', msg: 'Il ricevimento del 22/05/2026 è stato annullato.', tipo: 'CANCELLAZIONE' },
+  interface NotificaDef {
+    titolo: string;
+    msg: string;
+    tipo: string;
+    dest: string | null;
+    ruolo: string;
+    letta: boolean;
+    emailDocente?: string;
+    adminIdx?: number;
+  }
+  const notificaDefs: NotificaDef[] = [
+    { titolo: 'Ricevimento Confermato', msg: 'Il ricevimento con il Prof. Verdi è stato confermato.', tipo: 'CONFERMA', dest: 'MAT001', ruolo: 'STUDENTE', letta: true },
+    { titolo: 'Nuovo Materiale', msg: 'Nuovo materiale didattico disponibile per Programmazione Web.', tipo: 'AVVISO_CORSO', dest: 'MAT001', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Slot Annullato', msg: 'Il ricevimento è stato annullato.', tipo: 'CANCELLAZIONE', dest: 'MAT001', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento domani con il Prof. Verdi alle 10:00.', tipo: 'PROMEMORIA', dest: 'MAT001', ruolo: 'STUDENTE', letta: true },
+    { titolo: 'Appelli Estivi', msg: 'Le date degli appelli estivi sono state pubblicate.', tipo: 'AVVISO_GENERALE', dest: 'MAT001', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Prenotazione Inviata', msg: 'La tua richiesta di ricevimento è stata inviata con successo.', tipo: 'NUOVA_PRENOTAZIONE', dest: 'MAT002', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Ricevimento Rifiutato', msg: 'La richiesta di ricevimento è stata rifiutata dal docente.', tipo: 'RIFIUTO', dest: 'MAT002', ruolo: 'STUDENTE', letta: true },
+    { titolo: 'Aggiornamento Segnalazione', msg: 'La tua segnalazione è passata a "In Lavorazione".', tipo: 'SEGNALAZIONE', dest: 'MAT002', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Ricevimento Confermato', msg: 'Il ricevimento con la Prof.ssa Neri è confermato.', tipo: 'CONFERMA', dest: 'MAT003', ruolo: 'STUDENTE', letta: true },
+    { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento con il Prof. Russo tra 2 ore.', tipo: 'PROMEMORIA', dest: 'MAT003', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Modifica Ricevimento', msg: 'L\'orario del ricevimento è stato modificato dal docente.', tipo: 'MODIFICA', dest: 'MAT003', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Ricevimento Confermato', msg: 'Il ricevimento con la Prof.ssa Colombo è stato confermato.', tipo: 'CONFERMA', dest: 'MAT005', ruolo: 'STUDENTE', letta: false },
+    { titolo: 'Nuova Prenotazione', msg: 'Lo studente Mario Rossi ha prenotato un ricevimento.', tipo: 'NUOVA_PRENOTAZIONE', dest: null, ruolo: 'DOCENTE', letta: false, emailDocente: 'giuseppe.verdi@unimeet.it' },
+    { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento con uno studente domani alle 10:00.', tipo: 'PROMEMORIA', dest: null, ruolo: 'DOCENTE', letta: true, emailDocente: 'giuseppe.verdi@unimeet.it' },
+    { titolo: 'Prenotazione Annullata', msg: 'Uno studente ha annullato la prenotazione.', tipo: 'CANCELLAZIONE', dest: null, ruolo: 'DOCENTE', letta: false, emailDocente: 'giuseppe.verdi@unimeet.it' },
+    { titolo: 'Nuova Segnalazione', msg: 'È stata aperta una segnalazione che ti riguarda.', tipo: 'SEGNALAZIONE', dest: null, ruolo: 'DOCENTE', letta: false, emailDocente: 'anna.neri@unimeet.it' },
+    { titolo: 'Ricevimento Rifiutato', msg: 'Hai rifiutato la richiesta di ricevimento di Sofia Romano.', tipo: 'CONFERMA', dest: null, ruolo: 'DOCENTE', letta: true, emailDocente: 'anna.neri@unimeet.it' },
+    { titolo: 'Nuova Prenotazione', msg: 'Lo studente Marco Esposito ha prenotato un ricevimento.', tipo: 'NUOVA_PRENOTAZIONE', dest: null, ruolo: 'DOCENTE', letta: false, emailDocente: 'elena.colombo@unimeet.it' },
+    { titolo: 'Nuova Segnalazione', msg: 'È stata aperta una nuova segnalazione da uno studente.', tipo: 'SEGNALAZIONE', dest: null, ruolo: 'AMMINISTRATORE', letta: false, adminIdx: 0 },
+    { titolo: 'Report Settimanale', msg: 'Il report settimanale delle prenotazioni è disponibile.', tipo: 'SISTEMA', dest: null, ruolo: 'AMMINISTRATORE', letta: true, adminIdx: 0 },
+    { titolo: 'Report Mensile', msg: 'Il report mensile delle statistiche è pronto per la revisione.', tipo: 'SISTEMA', dest: null, ruolo: 'AMMINISTRATORE', letta: false, adminIdx: 1 },
   ];
-  for (const n of notificheStudente) {
+  for (const n of notificaDefs) {
+    let destId: string;
+    switch (n.ruolo) {
+      case 'STUDENTE':
+        destId = n.dest!;
+        break;
+      case 'DOCENTE':
+        destId = docenti[n.emailDocente!]!.id_docente;
+        break;
+      case 'AMMINISTRATORE':
+        destId = adminCreati[n.adminIdx!]!.id_admin;
+        break;
+      default:
+        continue;
+    }
     await prisma.notifica.create({
-      data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: 'MAT001', destinatario_ruolo: 'STUDENTE' },
+      data: {
+        titolo: n.titolo, messaggio: n.msg, tipo: n.tipo,
+        destinatario_id: destId, destinatario_ruolo: n.ruolo,
+        letta: n.letta,
+      },
     });
-    console.log(`  [STUDENTE] ${n.titolo}`);
-  }
-
-  const docente = await prisma.docente.findFirst();
-  if (docente) {
-    const notificheDocente = [
-      { titolo: 'Nuova Prenotazione', msg: 'Lo studente Mario Rossi ha prenotato un ricevimento per il 15/05/2026.', tipo: 'NUOVA_PRENOTAZIONE' },
-      { titolo: 'Promemoria Ricevimento', msg: 'Hai un ricevimento con uno studente domani alle 10:00.', tipo: 'PROMEMORIA' },
-    ];
-    for (const n of notificheDocente) {
-      await prisma.notifica.create({
-        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: docente.id_docente, destinatario_ruolo: 'DOCENTE' },
-      });
-      console.log(`  [DOCENTE] ${n.titolo}`);
-    }
-  }
-
-  const admin = await prisma.amministratore.findFirst();
-  if (admin) {
-    const notificheAdmin = [
-      { titolo: 'Nuova Segnalazione', msg: 'È stata aperta una nuova segnalazione da uno studente.', tipo: 'SEGNALAZIONE' },
-      { titolo: 'Report Settimanale', msg: 'Il report settimanale delle prenotazioni è disponibile.', tipo: 'SISTEMA' },
-    ];
-    for (const n of notificheAdmin) {
-      await prisma.notifica.create({
-        data: { titolo: n.titolo, messaggio: n.msg, tipo: n.tipo, destinatario_id: admin.id_admin, destinatario_ruolo: 'AMMINISTRATORE' },
-      });
-      console.log(`  [AMMINISTRATORE] ${n.titolo}`);
-    }
+    console.log(`  [${n.ruolo}] ${n.titolo} — ${n.letta ? 'letta' : 'non letta'}`);
   }
 
   console.log('\n✅ Seed completato con successo!');
+  console.log(`   - ${studentData.length} studenti (MAT006 senza prenotazioni)`);
+  console.log(`   - ${docenteData.length} docenti (tutti con slot)`);
+  console.log(`   - ${slotDefs.length} slot (passati e futuri)`);
+  console.log(`   - ${prenotazioneDefs.length} prenotazioni (tutti gli stati)`);
+  console.log(`   - ${docDefs.length} documenti (file reali minimi)`);
+  console.log(`   - ${segnalazioneDefs.length} segnalazioni (studente + docente)`);
+  console.log(`   - ${notificaDefs.length} notifiche (mix utenti/ruoli/stati)`);
+  console.log(`   - ${giorniBloccati.length} giorni bloccati`);
 }
 
 main()
