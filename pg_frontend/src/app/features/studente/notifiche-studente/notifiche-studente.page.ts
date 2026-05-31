@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
@@ -29,7 +30,8 @@ export class NotificheStudentePage implements OnInit {
 
   constructor(
     private notificaService: NotificaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private alertCtrl: AlertController,
   ) {
   }
 
@@ -80,12 +82,30 @@ export class NotificheStudentePage implements OnInit {
     }
   }
 
+  async dettagliNotifica(n: Notifica) {
+    if (!n.letta) {
+      this.notificaService.segnaComeLetta(n.id).subscribe(() => {
+        n.letta = true;
+        this.aggiornaStatistiche();
+        this.notificaService.fetchNonLette(this.matricola);
+      });
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: n.titolo,
+      message: n.messaggio + '\n\nData: ' + new Date(n.dataInvio).toLocaleString('it-IT') + '\nTipo: ' + n.tipo,
+      buttons: ['Chiudi'],
+    });
+    await alert.present();
+  }
+
   segnaComeLetta(notifica: Notifica) {
     if (notifica.letta) return;
 
     this.notificaService.segnaComeLetta(notifica.id).subscribe(() => {
       notifica.letta = true;
       this.aggiornaStatistiche();
+      this.notificaService.fetchNonLette(this.matricola);
     });
   }
 
@@ -93,6 +113,7 @@ export class NotificheStudentePage implements OnInit {
     this.notificaService.segnaTutteComeLette(this.matricola).subscribe(() => {
       this.notifiche.forEach(n => n.letta = true);
       this.aggiornaStatistiche();
+      this.notificaService.fetchNonLette(this.matricola);
     });
   }
 

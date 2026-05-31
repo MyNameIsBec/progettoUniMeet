@@ -30,11 +30,14 @@ export class TopbarComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isDarkMode = document.body.classList.contains('dark');
+    this.notificheSub = this.notificaService.nonLette$.subscribe(n => this.nonLette = n);
     this.userSub = this.auth.currentUser$.subscribe(user => {
       if (user) {
         this.nomeAccount = `${user.nome} ${user.cognome}`;
         this.ruoloAccount = user.role;
-        this.caricaNonLette(user.id);
+        if (this.ruoloAccount !== 'amministratore') {
+          this.notificaService.fetchNonLette(user.id);
+        }
       }
     });
   }
@@ -42,15 +45,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.userSub?.unsubscribe();
     this.notificheSub?.unsubscribe();
-  }
-
-  private caricaNonLette(userId: string) {
-    if (this.ruoloAccount === 'amministratore') return;
-    this.notificheSub = this.notificaService.getNotifiche(userId).subscribe({
-      next: (notifiche) => {
-        this.nonLette = notifiche.filter(n => !n.letta).length;
-      },
-    });
   }
 
   toggleMenu() {

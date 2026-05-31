@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle } from '@ionic/angular/standalone';
+import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { NotificaService, Notifica } from '../../../core/services/notifica';
 import { AuthService } from '../../../core/services/auth';
@@ -13,7 +14,7 @@ import { ErroriService } from '../../../core/services/errori';
   templateUrl: './notifiche-docente.page.html',
   styleUrls: ['./notifiche-docente.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, DashboardLayoutComponent]
+  imports: [CommonModule, IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, DashboardLayoutComponent]
 })
 
 export class NotificheDocentePage implements OnInit {
@@ -30,7 +31,8 @@ export class NotificheDocentePage implements OnInit {
   constructor(
     private notificaService: NotificaService,
     private authService: AuthService,
-    private erroriService: ErroriService
+    private erroriService: ErroriService,
+    private alertCtrl: AlertController,
   ) {
   }
 
@@ -80,11 +82,29 @@ export class NotificheDocentePage implements OnInit {
     }
   }
 
+  async dettagliNotifica(n: Notifica) {
+    if (!n.letta) {
+      this.notificaService.segnaComeLetta(n.id).subscribe(() => {
+        n.letta = true;
+        this.aggiornaStatistiche();
+        if (this.docenteId) this.notificaService.fetchNonLette(this.docenteId);
+      });
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: n.titolo,
+      message: n.messaggio + '\n\nData: ' + new Date(n.dataInvio).toLocaleString('it-IT') + '\nTipo: ' + n.tipo,
+      buttons: ['Chiudi'],
+    });
+    await alert.present();
+  }
+
   segnaComeLetta(notifica: Notifica) {
     if (notifica.letta) return;
     this.notificaService.segnaComeLetta(notifica.id).subscribe(() => {
       notifica.letta = true;
       this.aggiornaStatistiche();
+      if (this.docenteId) this.notificaService.fetchNonLette(this.docenteId);
     });
   }
 
@@ -93,6 +113,7 @@ export class NotificheDocentePage implements OnInit {
     this.notificaService.segnaTutteComeLette(this.docenteId).subscribe(() => {
       this.notifiche.forEach(n => n.letta = true);
       this.aggiornaStatistiche();
+      this.notificaService.fetchNonLette(this.docenteId);
     });
   }
 
