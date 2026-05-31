@@ -264,6 +264,20 @@
   border: 3px solid #ffffff;
 }
 
+:host-context(body.dark) .notification-badge {
+  border-color: #0f172a;
+}
+
+:host-context(body.dark) .btn-notifiche {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .toggle-tema {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
   .profilo-mini {
   display: flex;
   align-items: center;

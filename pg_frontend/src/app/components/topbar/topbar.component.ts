@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { IonIcon } from '@ionic/angular/standalone';
 import { VoceMenuNavigazione } from '../../core/models/interfacce';
 import { AuthService } from '../../core/services/auth';
+import { NotificaService } from '../../core/services/notifica';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,10 +21,12 @@ export class TopbarComponent implements OnInit, OnDestroy {
   ruoloAccount: string = ' ';
   menuAperto = false;
   isDarkMode = false;
+  nonLette = 0;
 
   private userSub: Subscription | null = null;
+  private notificheSub: Subscription | null = null;
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router, private notificaService: NotificaService) { }
 
   ngOnInit() {
     this.isDarkMode = document.body.classList.contains('dark');
@@ -31,14 +34,23 @@ export class TopbarComponent implements OnInit, OnDestroy {
       if (user) {
         this.nomeAccount = `${user.nome} ${user.cognome}`;
         this.ruoloAccount = user.role;
+        this.caricaNonLette(user.id);
       }
     });
   }
 
   ngOnDestroy() {
-    if (this.userSub) {
-      this.userSub.unsubscribe();
-    }
+    this.userSub?.unsubscribe();
+    this.notificheSub?.unsubscribe();
+  }
+
+  private caricaNonLette(userId: string) {
+    if (this.ruoloAccount === 'amministratore') return;
+    this.notificheSub = this.notificaService.getNotifiche(userId).subscribe({
+      next: (notifiche) => {
+        this.nonLette = notifiche.filter(n => !n.letta).length;
+      },
+    });
   }
 
   toggleMenu() {

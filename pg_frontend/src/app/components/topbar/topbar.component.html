@@ -51,6 +51,9 @@
     @if (!ruoloAdmin) {
     <button class="btn-notifiche" [routerLink]="getNotificheRoute()">
       <ion-icon name="notifications-outline"></ion-icon>
+      @if (nonLette > 0) {
+      <span class="notification-badge">{{ nonLette }}</span>
+      }
     </button>
     }
 
