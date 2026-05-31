@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonChip, IonLabel} from '@ionic/angular/standalone';
-import { AlertController, IonicSafeString } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
@@ -93,37 +93,29 @@ import { AuthService } from 'src/app/core/services/auth';
   }
 
   async dettagli(s: any) {
-    const allegatoHtml = s.allegato
-      ? `<div style="margin-bottom:8px"><strong>Allegato:</strong> <a href="${this.getAllegatoUrl(s.allegato)}" target="_blank" style="color:#2563eb;text-decoration:underline;">Visualizza allegato</a></div>`
-      : '<div style="margin-bottom:8px"><strong>Allegato:</strong> Nessuno</div>';
-
-    const utenteInfo = s.studente
-      ? `
-        <div style="margin-bottom:8px"><strong>Studente:</strong> ${s.studente.nome} ${s.studente.cognome}</div>
-        <div style="margin-bottom:8px"><strong>Matricola:</strong> ${s.matricola_studente}</div>
-        <div style="margin-bottom:8px"><strong>Email:</strong> ${s.studente.email}</div>
-      `
+    const nomeUtente = s.studente
+      ? s.studente.nome + ' ' + s.studente.cognome + ' (Matr. ' + s.matricola_studente + ')'
       : s.docente
-        ? `
-          <div style="margin-bottom:8px"><strong>Docente:</strong> ${s.docente.nome} ${s.docente.cognome}</div>
-          <div style="margin-bottom:8px"><strong>ID Docente:</strong> ${s.id_docente}</div>
-          <div style="margin-bottom:8px"><strong>Email:</strong> ${s.docente.email}</div>
-        `
-        : `
-          <div style="margin-bottom:8px"><strong>Utente:</strong> -</div>
-        `;
+        ? s.docente.nome + ' ' + s.docente.cognome + ' (Docente)'
+        : '-';
+
+    const emailUtente = s.studente?.email || s.docente?.email || '-';
+
+    let msg = '';
+    msg += 'DESCRIZIONE\n' + (s.descrizione || '') + '\n\n';
+    msg += 'UTENTE\n' + nomeUtente + '\n' + emailUtente + '\n\n';
+    msg += 'DATA INVIO\n' + new Date(s.data_invio).toLocaleString('it-IT') + '\n\n';
+    msg += 'STATO\n' + this.statoLabel(s.stato) + '\n\n';
+    msg += 'ALLEGATO\n' + (s.allegato ? this.getAllegatoUrl(s.allegato) : 'Nessuno');
+
+    if (s.note_admin) {
+      msg += '\n\nNOTA ADMIN\n' + s.note_admin;
+    }
 
     const alert = await this.alertController.create({
       header: 'Dettagli segnalazione',
       subHeader: s.oggetto,
-      message: new IonicSafeString(`
-        <div style="margin-bottom:12px"><strong>Descrizione:</strong><br>${s.descrizione}</div>
-        ${utenteInfo}
-        <div style="margin-bottom:8px"><strong>Data invio:</strong> ${new Date(s.data_invio).toLocaleString('it-IT')}</div>
-        ${allegatoHtml}
-        <div style="margin-bottom:8px"><strong>Stato:</strong> ${this.statoLabel(s.stato)}</div>
-        ${s.note_admin ? `<div style="margin-top:12px;padding:12px;background:#f0fdf4;border-radius:8px;border-left:4px solid #16a34a;"><strong style="color:#16a34a;">Note admin:</strong><br>${s.note_admin}</div>` : ''}
-      `),
+      message: msg,
       buttons: ['Chiudi'],
     });
     await alert.present();
