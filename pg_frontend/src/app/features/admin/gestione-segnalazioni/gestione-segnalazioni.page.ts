@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonIcon, IonChip, IonLabel} from '@ionic/angular/standalone';
-import { AlertController, IonicSafeString, ActionSheetController } from '@ionic/angular';
+import { AlertController, IonicSafeString } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
@@ -23,7 +23,6 @@ import { AuthService } from 'src/app/core/services/auth';
     private segnalazioneService: SegnalazioneService,
     private authService: AuthService,
     private alertController: AlertController,
-    private actionSheetController: ActionSheetController,
   ) {}
 
   ngOnInit() {
@@ -47,39 +46,41 @@ import { AuthService } from 'src/app/core/services/auth';
   }
 
   async cambiaStato(segnalazione: any) {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Nuovo stato',
-      subHeader: segnalazione.oggetto,
-      buttons: [
-        { text: 'Aperta', icon: 'alert-circle-outline', handler: () => this.chiediNote(segnalazione, 'APERTA') },
-        { text: 'In lavorazione', icon: 'time-outline', handler: () => this.chiediNote(segnalazione, 'IN_LAVORAZIONE') },
-        { text: 'Chiusa', icon: 'checkmark-circle-outline', handler: () => this.chiediNote(segnalazione, 'CHIUSA') },
-        { text: 'Annulla', icon: 'close-outline', role: 'cancel' },
-      ],
-    });
-    await actionSheet.present();
-  }
-
-  private async chiediNote(segnalazione: any, nuovoStato: string) {
     const alert = await this.alertController.create({
-      header: 'Note per il destinatario',
-      subHeader: `Nuovo stato: ${this.statoLabel(nuovoStato)}`,
-      message: 'Inserisci note opzionali da comunicare al destinatario.',
+      header: 'Cambia stato',
+      subHeader: segnalazione.oggetto,
       inputs: [
-        { name: 'noteAdmin', type: 'textarea', placeholder: 'Scrivi le note...' },
+        { name: 'noteAdmin', type: 'textarea', placeholder: 'Note opzionali per il destinatario...' },
       ],
       buttons: [
-        { text: 'Salta', handler: () => {
-          this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, nuovoStato).subscribe({
-            next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
-          });
-        }},
-        { text: 'Conferma', handler: (data) => {
-          const noteAdmin = data?.noteAdmin?.trim() || undefined;
-          this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, nuovoStato, noteAdmin).subscribe({
-            next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
-          });
-        }},
+        {
+          text: 'Aperta',
+          handler: (data) => {
+            const noteAdmin = data?.noteAdmin?.trim() || undefined;
+            this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, 'APERTA', noteAdmin).subscribe({
+              next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+            });
+          },
+        },
+        {
+          text: 'In lavorazione',
+          handler: (data) => {
+            const noteAdmin = data?.noteAdmin?.trim() || undefined;
+            this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, 'IN_LAVORAZIONE', noteAdmin).subscribe({
+              next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+            });
+          },
+        },
+        {
+          text: 'Chiusa',
+          handler: (data) => {
+            const noteAdmin = data?.noteAdmin?.trim() || undefined;
+            this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, 'CHIUSA', noteAdmin).subscribe({
+              next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+            });
+          },
+        },
+        { text: 'Annulla', role: 'cancel' },
       ],
     });
     await alert.present();
