@@ -1,6 +1,12 @@
 import { prisma } from '../prisma/client';
 import { formatTime } from '../utils/time';
 
+async function notifica(destinatarioId: string, destinatarioRuolo: string, titolo: string, messaggio: string, tipo: string) {
+  await prisma.notifica.create({
+    data: { titolo, messaggio, tipo, destinatario_id: destinatarioId, destinatario_ruolo: destinatarioRuolo },
+  });
+}
+
 function getCorsoDiStudiIds(d: any): string[] {
   return d.corsi_di_studi?.map((cds: any) => cds.corso_di_studi.nome) ?? [];
 }
@@ -167,8 +173,8 @@ export async function creaSlot(idDocente: string, data: {
   }
 
   // Verifica durata: massimo 1 ora
-  const startStr = `${data.data}T${data.oraInizio}`;
-  const endStr = `${data.data}T${data.oraFine}`;
+  const startStr = `${data.data}T${data.oraInizio}:00.000Z`;
+  const endStr = `${data.data}T${data.oraFine}:00.000Z`;
   const start = new Date(startStr);
   const end = new Date(endStr);
   const diffMs = end.getTime() - start.getTime();
@@ -201,6 +207,13 @@ export async function creaSlot(idDocente: string, data: {
 
   const createdSlot = slot as any;
 
+  notifica(
+    idDocente, 'DOCENTE',
+    'Slot creato con successo',
+    `Slot di ricevimento creato per il ${data.data} dalle ${data.oraInizio} alle ${data.oraFine}.`,
+    'slot_creato'
+  );
+
   return {
     id: createdSlot.id_slot,
     docenteId: createdSlot.id_docente,
@@ -225,8 +238,8 @@ export async function modificaSlot(idDocente: string, idSlot: string, data: any)
   const baseDate = data.data ? data.data : row.data.toISOString().split('T')[0];
 
   if (data.data) updateData.data = new Date(data.data);
-  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}`);
-  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}`);
+  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}:00.000Z`);
+  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}:00.000Z`);
   if (data.disponibilita !== undefined) updateData.disponibilita = data.disponibilita;
 
   await prisma.slotRicevimento.update({
@@ -259,11 +272,13 @@ export async function modificaSlot(idDocente: string, idSlot: string, data: any)
   return { messaggio: 'Slot aggiornato con successo.' };
 }
 
-export async function eliminaSlot(idDocente: string, idSlot: string) {
+export async function eliminaSlot(idDocente: string, idSlot: string, motivazione?: string) {
   const slot = await prisma.slotRicevimento.findFirst({
     where: { id_slot: idSlot, id_docente: idDocente },
   });
   if (!slot) throw new Error('Slot not found');
+
+  const dataSlot = slot.data.toISOString().split('T')[0];
 
   await prisma.documento.deleteMany({
     where: { prenotazione: { id_slot: idSlot } },
@@ -271,6 +286,40 @@ export async function eliminaSlot(idDocente: string, idSlot: string) {
   await prisma.luogoRicevimento.deleteMany({ where: { id_slot: idSlot } });
   await prisma.prenotazione.deleteMany({ where: { id_slot: idSlot } });
   await prisma.slotRicevimento.delete({ where: { id_slot: idSlot } });
+
+  const msg = motivazione
+    ? `Slot del ${dataSlot} eliminato. Motivo: ${motivazione}`
+    : `Slot del ${dataSlot} eliminato.`;
+  notifica(idDocente, 'DOCENTE', 'Slot eliminato', msg, 'slot_eliminato');
+}
+
+export async function aggiornaProfilo(idDocente: string, data: {
+  nome?: string;
+  cognome?: string;
+  email?: string;
+  ufficio?: string;
+  notificheApp?: boolean;
+  notificheEmail?: boolean;
+  reminderOre?: number;
+  tema?: string;
+  lingua?: string;
+}) {
+  const existing = await prisma.docente.findUnique({ where: { id_docente: idDocente } });
+  if (!existing) throw new Error('Docente not found');
+
+  const updateData: any = {};
+  if (data.nome !== undefined) updateData.nome = data.nome;
+  if (data.cognome !== undefined) updateData.cognome = data.cognome;
+  if (data.email !== undefined) updateData.email = data.email;
+  if (data.ufficio !== undefined) updateData.ufficio = data.ufficio;
+  if (data.notificheApp !== undefined) updateData.notifiche_app = data.notificheApp;
+  if (data.notificheEmail !== undefined) updateData.notifiche_email = data.notificheEmail;
+  if (data.reminderOre !== undefined) updateData.reminder_ore = data.reminderOre;
+  if (data.tema !== undefined) updateData.tema = data.tema;
+  if (data.lingua !== undefined) updateData.lingua = data.lingua;
+
+  await prisma.docente.update({ where: { id_docente: idDocente }, data: updateData });
+  return { messaggio: 'Profilo aggiornato con successo.' };
 }
 
 export async function getStatistiche(idDocente: string) {

@@ -1,5 +1,18 @@
 import { prisma } from '../prisma/client';
 
+async function notificaTuttiAdmin(titolo: string, messaggio: string, tipo: string) {
+  const admin = await prisma.amministratore.findMany({ select: { id_admin: true } });
+  for (const a of admin) {
+    await prisma.notifica.create({
+      data: {
+        titolo, messaggio, tipo,
+        destinatario_id: a.id_admin,
+        destinatario_ruolo: 'AMMINISTRATORE',
+      },
+    });
+  }
+}
+
 export interface SegnalazioneConStudente {
   id_segnalazione: string;
   oggetto: string;
@@ -9,6 +22,7 @@ export interface SegnalazioneConStudente {
   matricola_studente: string | null;
   id_docente: string | null;
   allegato: string | null;
+  note_admin: string | null;
   studente: {
     nome: string;
     cognome: string;
@@ -41,6 +55,12 @@ export async function createSegnalazione(data: {
     },
   });
 
+  notificaTuttiAdmin(
+    'Nuova segnalazione studente',
+    `Nuova segnalazione da ${studente.nome} ${studente.cognome}: ${data.oggetto}`,
+    'nuova_segnalazione'
+  );
+
   return {
     id_segnalazione: segnalazione.id_segnalazione,
     oggetto: segnalazione.oggetto,
@@ -49,6 +69,7 @@ export async function createSegnalazione(data: {
     stato: segnalazione.stato,
     matricola_studente: segnalazione.matricola_studente,
     allegato: segnalazione.allegato,
+    note_admin: segnalazione.note_admin,
   };
 }
 
@@ -66,6 +87,7 @@ export async function getSegnalazioniByStudente(matricola: string) {
     stato: s.stato,
     matricola_studente: s.matricola_studente,
     allegato: s.allegato,
+    note_admin: s.note_admin,
   }));
 }
 
@@ -91,12 +113,13 @@ export async function getAllSegnalazioni(stato?: string): Promise<SegnalazioneCo
     matricola_studente: s.matricola_studente,
     id_docente: s.id_docente,
     allegato: s.allegato,
+    note_admin: s.note_admin,
     studente: s.studente,
     docente: s.docente,
   }));
 }
 
-export async function aggiornaStatoSegnalazione(id: string, stato: string) {
+export async function aggiornaStatoSegnalazione(id: string, stato: string, noteAdmin?: string) {
   const statiValidi = ['APERTA', 'IN_LAVORAZIONE', 'CHIUSA'];
   if (!statiValidi.includes(stato)) throw new Error('Stato non valido');
 
@@ -105,14 +128,43 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
   });
   if (!segnalazione) throw new Error('Segnalazione not found');
 
+  const data: any = { stato };
+  if (noteAdmin !== undefined) data.note_admin = noteAdmin;
+
   const updated = await prisma.segnalazione.update({
     where: { id_segnalazione: id },
-    data: { stato },
+    data,
     include: {
       studente: { select: { nome: true, cognome: true, email: true } },
       docente: { select: { nome: true, cognome: true, email: true } },
     },
   });
+
+  let msgSuffix = '';
+  if (noteAdmin) msgSuffix = ` Note: ${noteAdmin}`;
+
+  if (updated.matricola_studente) {
+    await prisma.notifica.create({
+      data: {
+        titolo: 'Stato segnalazione aggiornato',
+        messaggio: `La tua segnalazione "${updated.oggetto}" è ora ${stato}.${msgSuffix}`,
+        tipo: 'stato_segnalazione',
+        destinatario_id: updated.matricola_studente,
+        destinatario_ruolo: 'STUDENTE',
+      },
+    });
+  }
+  if (updated.id_docente) {
+    await prisma.notifica.create({
+      data: {
+        titolo: 'Stato segnalazione aggiornato',
+        messaggio: `La tua segnalazione "${updated.oggetto}" è ora ${stato}.${msgSuffix}`,
+        tipo: 'stato_segnalazione',
+        destinatario_id: updated.id_docente,
+        destinatario_ruolo: 'DOCENTE',
+      },
+    });
+  }
 
   return {
     id_segnalazione: updated.id_segnalazione,
@@ -123,6 +175,7 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string) {
     matricola_studente: updated.matricola_studente,
     id_docente: updated.id_docente,
     allegato: updated.allegato,
+    note_admin: updated.note_admin,
     studente: updated.studente,
     docente: updated.docente,
   };
@@ -158,6 +211,12 @@ export async function createSegnalazioneDocente(data: {
     },
   });
 
+  notificaTuttiAdmin(
+    'Nuova segnalazione docente',
+    `Nuova segnalazione dal docente ${docente.nome} ${docente.cognome}: ${data.oggetto}`,
+    'nuova_segnalazione'
+  );
+
   return {
     id_segnalazione: segnalazione.id_segnalazione,
     oggetto: segnalazione.oggetto,
@@ -166,6 +225,7 @@ export async function createSegnalazioneDocente(data: {
     stato: segnalazione.stato,
     id_docente: segnalazione.id_docente,
     allegato: segnalazione.allegato,
+    note_admin: segnalazione.note_admin,
   };
 }
 
@@ -183,5 +243,6 @@ export async function getSegnalazioniByDocente(idDocente: string) {
     stato: s.stato,
     id_docente: s.id_docente,
     allegato: s.allegato,
+    note_admin: s.note_admin,
   }));
 }

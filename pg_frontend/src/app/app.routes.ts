@@ -25,10 +25,6 @@ export const routes: Routes = [
     path: 'reset-password',
     loadComponent: () => import('./features/auth/reset-password/reset-password.page').then(m => m.ResetPasswordPage)
   },
-  {
-    path: 'verifica-2fa',
-    loadComponent: () => import('./features/auth/verifica-2fa/verifica-2fa.page').then(m => m.Verifica2FAPage)
-  },
 
   // --- STUDENTE ---
   {

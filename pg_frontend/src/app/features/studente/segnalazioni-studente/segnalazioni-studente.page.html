@@ -172,6 +172,15 @@
                 <span class="report-id">#{{ s.id_segnalazione.substring(0,8).toUpperCase() }}</span>
                 <strong>{{ s.oggetto }}</strong>
                 <p>{{ s.descrizione }}</p>
+                @if (s.note_admin) {
+                <div class="note-admin">
+                  <ion-icon name="chatbox-ellipses-outline"></ion-icon>
+                  <div>
+                    <strong>Nota admin:</strong>
+                    <p>{{ s.note_admin }}</p>
+                  </div>
+                </div>
+                }
               </div>
 
               <div class="report-meta">

@@ -69,16 +69,9 @@
               <td class="hide-mobile data-cell">{{ s.data_invio | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="actions-col">
                 <div class="action-group">
-                  <ion-select
-                    [value]="s.stato"
-                    (ionChange)="cambiaStato(s, $event.detail.value)"
-                    interface="popover"
-                    class="status-select"
-                  >
-                    <ion-select-option value="APERTA">Aperta</ion-select-option>
-                    <ion-select-option value="IN_LAVORAZIONE">In lavorazione</ion-select-option>
-                    <ion-select-option value="CHIUSA">Chiusa</ion-select-option>
-                  </ion-select>
+                  <button class="btn-icon" title="Cambia stato" (click)="cambiaStato(s)">
+                    <ion-icon name="swap-horizontal-outline"></ion-icon>
+                  </button>
                   <button class="btn-icon" title="Dettagli" (click)="dettagli(s)">
                     <ion-icon name="information-circle-outline"></ion-icon>
                   </button>

@@ -12,6 +12,7 @@ export interface Segnalazione {
   matricola_studente?: string | null;
   id_docente?: string | null;
   allegato?: string | null;
+  note_admin?: string | null;
   studente?: { nome: string; cognome: string; email: string } | null;
   docente?: {nome: string; cognome: string; email: string } | null;
 }
@@ -44,8 +45,10 @@ export class SegnalazioneService {
     return this.http.get<Segnalazione[]>(`${this.api}/admin/all${params}`);
   }
 
-  aggiornaStato(id: string, stato: string): Observable<Segnalazione> {
-    return this.http.patch<Segnalazione>(`${this.api}/${id}/stato`, { stato });
+  aggiornaStato(id: string, stato: string, noteAdmin?: string): Observable<Segnalazione> {
+    const body: any = { stato };
+    if (noteAdmin) body.noteAdmin = noteAdmin;
+    return this.http.patch<Segnalazione>(`${this.api}/${id}/stato`, body);
   }
 
   eliminaSegnalazione(id: string): Observable<void> {

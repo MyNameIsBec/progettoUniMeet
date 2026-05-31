@@ -17,13 +17,17 @@ pg_backend/
 │   ├── routes/                # Endpoint HTTP
 │   ├── middleware/
 │   │   ├── authenticate.ts    # Middleware JWT (protegge le rotte)
-│   │   └── authorize.ts       # Middleware ruoli (controlla il ruolo dal JWT)
+│   │   ├── authorize.ts       # Middleware ruoli (controlla il ruolo dal JWT)
+│   │   └── upload.ts          # Multer per upload file
+│   ├── utils/
+│   │   └── time.ts            # Helper formattazione orari
 │   ├── app.ts                 # Configurazione Express
 │   └── server.ts              # Entry point del server
 ├── prisma.config.ts           # Configurazione Prisma (datasource URL)
 ├── setup-db.sh                # Script automatizzato setup DB (Unix)
 ├── setup-db.js                # Script automatizzato setup DB (cross-platform)
 ├── dist/                      # JS compilato (generato da tsc, ignorato)
+├── uploads/                   # File caricati (placeholder)
 ├── README.md                  # Istruzioni setup DB locale
 ├── DOCUMENTAZIONE.md
 └── package.json
@@ -59,7 +63,7 @@ Nella **root del progetto** è presente `start.js` che avvia l'intera applicazio
 
 ```bash
 node start.js              # modalità produzione (default)
-node start.js --dev        # modalità sviluppo (hot-reload, 2FA codes visibili)
+node start.js --dev        # modalità sviluppo (hot-reload)
 node start.js --prod       # modalità produzione
 node start.js --reset      # reset DB + seed
 node start.js --no-seed    # setup DB senza seed
@@ -67,16 +71,19 @@ node start.js --no-start   # solo setup, senza avviare i servizi
 ```
 
 **Modalità:**
-- `--dev`: `NODE_ENV=development`, backend con `tsx watch` (hot-reload), codici 2FA visibili nell'UI
-- `--prod` / default: `NODE_ENV=production`, backend compilato (`npm run build` + `node dist/server.js`), codici 2FA nascosti
+- `--dev`: `NODE_ENV=development`, backend con `tsx watch` (hot-reload)
+- `--prod` / default: `NODE_ENV=production`, backend compilato (`npm run build` + `node dist/server.js`)
 
 Cosa fa:
-1. Avvia PostgreSQL se non in esecuzione (tenta `pg_ctl` / `brew services` / `systemctl`)
-2. Applica migrazioni Prisma (`prisma migrate deploy`)
-3. Genera il client Prisma (`prisma generate`)
-4. Avvia il backend (`pg_backend/`) su porta 5000
-5. Avvia il frontend (`pg_frontend/`) su porta 8100
-6. Apre automaticamente il browser su `http://localhost:8100` e Prisma Studio su `http://localhost:5557`
+1. Installa automaticamente le dipendenze (backend + frontend)
+2. Avvia PostgreSQL se non in esecuzione (tenta `pg_ctl` / `brew services` / `systemctl`)
+3. Applica migrazioni Prisma (`prisma migrate deploy`)
+4. Genera il client Prisma (`prisma generate`)
+5. Popola con dati di test se il DB è vuoto
+6. Avvia il backend (`pg_backend/`) su porta 5000
+7. Avvia il frontend (`pg_frontend/`) su porta 4200
+8. Apre automaticamente il browser su `http://localhost:4200` e Prisma Studio su `http://localhost:5557`
+9. Arresta tutto con `Ctrl+C`
 
 Dipende dal modulo `pg` installato nella root `package.json` (usato per test di connessione DB).
 
@@ -170,12 +177,12 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 |---------|-------|-----------|
 | Studente | 5 | Mario Rossi, Lisa Bianchi, Luca Ferrari, Sofia Romano, Marco Esposito |
 | CorsoDiStudi | 3 | Informatica, Ingegneria, Matematica |
-| Docente | 4 | Giuseppe Verdi, Anna Neri, Maria Bianco, Paolo Russo |
-| Amministratore | 2 | Admin, Super Admin (2FA abilitata per default) |
-| Corso | 5 | Programmazione Web, Basi di Dati, Ingegneria del Software, Reti di Calcolatori, Intelligenza Artificiale |
+| Docente | 5 | Giuseppe Verdi, Anna Neri, Maria Bianco, Paolo Russo, Elena Colombo |
+| Amministratore | 2 | Admin, Super Admin |
+| Corso | 7 | Programmazione Web, Basi di Dati, Ingegneria del Software, Reti di Calcolatori, Intelligenza Artificiale, Sistemi Operativi, Analisi Matematica |
 | DocenteCorsoDiStudi | 4 | Relazioni docente ↔ corso di studi |
 | Bacheca | 3 | Una per ogni corso di studi |
-| FAQ | 6 | Domande/Risposte distribuite tra le bacheche |
+| FAQ | 12 | Domande/Risposte distribuite tra le bacheche, assegnate a docenti specifici |
 | SlotRicevimento | 6 | Distribuiti tra i vari docenti in date diverse |
 | LuogoRicevimento | 3 | Aula 5, Studio 12, Lab 3 |
 | Prenotazione | 5 | Stati: CONFERMATA, IN_ATTESA, RIFIUTATA |
@@ -184,7 +191,7 @@ Lo script Node.js include funzionalità aggiuntive rispetto alla versione bash:
 
 Esecuzione: `npm run seed`
 
-> **⚠️ Password di tutti gli utenti di test: `password123`**
+> **⚠️ Password di tutti gli utenti di test: `Password123`**
 
 ### Prisma Client
 
@@ -202,20 +209,19 @@ npx prisma generate
 
 | File | Descrizione |
 |------|-------------|
-| `auth.service.ts` | Registrazione (studente/docente/admin), login con 2FA, verifica2FA, profilo, refresh token, cambio/reset password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
-| `studenti.service.ts` | Profilo studente (GET, PUT). Restituisce `corsoDiStudi` oggetto annidato |
-| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, statistiche. Filtro per nome CorsoDiStudi. `getDettagliDocente` response include `corsi[]` e `corsiDiStudi[]` |
-| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA). Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo) e `studenteEmail`. `.toLowerCase()` su tutti gli stati in output per coerenza frontend |
-| `segnalazioni.service.ts` | CRUD segnalazioni, cambio stato, filtri admin |
-| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), blocca giorni (con eliminazione slot/prenotazioni + notifica docenti) |
-| `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
-| `corsi.service.ts` | ✅ CRUD corsi, associazione corso ↔ docente |
-| `bacheca.service.ts` | ✅ CRUD bacheca (una per CorsoDiStudi), CRUD FAQ |
-| `documenti.service.ts` | *(da implementare)* Upload/download documenti |
-| `notifiche.service.ts` | ✅ CRUD notifiche multi-ruolo (studente, docente, admin) |
-| `email.service.ts` | ✅ Invio email con nodemailer (logga in console se SMTP non configurato) |
-| `codice-verifica.service.ts` | ✅ Generazione, verifica e consumo codici 6 cifre (riusabile per 2FA) |
-| `cleanup.service.ts` | *(da implementare)* Pulizia automatica dati vecchi (prenotazioni, slot, codici verifica, notifiche) con node-cron |
+| `auth.service.ts` | Registrazione (studente/docente/admin), login, reset password, refresh token, cambio password, JWT. Supporta CorsoDiStudi (ricerca per id/nome) |
+| `studenti.service.ts` | Profilo studente (GET, PUT, DELETE), cambio password. Restituisce `corsoDiStudi` oggetto annidato |
+| `docenti.service.ts` | Elenco/dettagli docenti, CRUD slot ricevimento, aggiornamento profilo, statistiche. Filtro per nome CorsoDiStudi. `getDettagliDocente` response include `corsi[]` e `corsiDiStudi[]` |
+| `prenotazioni.service.ts` | CRUD prenotazioni, gestione stato (IN_ATTESA → CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA), upload documenti. Helper `fmtLuogo()` e `mapLuogoRicevimento()` per response. `getPrenotazioneById` include `studente` (nome completo). `.toUpperCase()` su tutti gli stati in output |
+| `corsi.service.ts` | CRUD corsi, associazione corso ↔ docente |
+| `corsi-di-studio.service.ts` | Elenco corsi di studio |
+| `bacheca.service.ts` | CRUD bacheca (una per Corso), CRUD FAQ. Supporto rotte per corso, corso-di-studi e docente autenticato |
+| `segnalazioni.service.ts` | CRUD segnalazioni (studente e docente), cambio stato, filtri admin, upload allegato |
+| `admin.service.ts` | Statistiche dashboard, gestione utenti (CRUD con supporto CorsoDiStudi), slot globali (CRUD + filtri + date disponibili), gestione prenotazioni, blocca giorni (con eliminazione slot/prenotazioni + notifica docenti) |
+| `notifiche.service.ts` | CRUD notifiche multi-ruolo (studente, docente, admin), segna come lette |
+| `email.service.ts` | Invio email con nodemailer (logga in console se SMTP non configurato) |
+| `codice-verifica.service.ts` | Generazione, verifica e consumo codici 6 cifre per reset password |
+| `reminder.service.ts` | Promemoria automatici via cron job (notifica email X ore prima del ricevimento) |
 
 ---
 
@@ -244,56 +250,59 @@ export async function createCorso(req: Request, res: Response) {
 
 **Definiscono gli endpoint HTTP.** Usano `Router` di Express, applicano i validators come middleware e collegano al controller corrispondente.
 
-Esempio:
-```ts
-router.post('/', authenticate, validators, controller.create);
-router.get('/', authenticate, controller.findAll);
-router.get('/:id', authenticate, controller.findById);
-router.put('/:id', authenticate, validators, controller.update);
-router.delete('/:id', authenticate, controller.delete);
-```
+Le routes vengono montate in `app.ts` su prefisso `/api`:
 
-Le routes vengono montate in `app.ts` su prefisso `/api`. Esempio per auth (`auth.routes.ts`):
+| Route file | Prefisso |
+|------------|----------|
+| `auth.routes.ts` | `/api` |
+| `admin.routes.ts` | `/api` |
+| `studenti.routes.ts` | `/api` |
+| `docenti.routes.ts` | `/api` |
+| `prenotazioni.routes.ts` | `/api` |
+| `notifiche.routes.ts` | `/api` |
+| `segnalazioni.routes.ts` | `/api` |
+| `corsi.routes.ts` | `/api` |
+| `bacheche.routes.ts` | `/api` |
+| `corsi-di-studio.routes.ts` | `/api` |
 
-| Endpoint | Metodo | Descrizione |
-|----------|--------|-------------|
-| `/api/login` | POST | Login unificato (Studente/Docente/Admin) |
-| `/api/registrazione` | POST | Registrazione studente |
-| `/api/recupera-password` | POST | Richiedi reset password (invia codice 6 cifre via email) |
-| `/api/auth/verifica-codice` | POST | Verifica codice senza consumarlo (riusabile per 2FA) |
-| `/api/reset-password` | POST | Conferma reset con email + codice + nuova password |
-| `/api/auth/register/studente` | POST | Registrazione studente (alternativo) |
-| `/api/auth/register/docente` | POST | Registrazione docente |
-| `/api/auth/register/admin` | POST | Registrazione amministratore |
-| `/api/auth/refresh` | POST | Rinnovo access token |
-| `/api/auth/change-password` | POST | Cambio password (autenticato) |
-| `/api/auth/profile` | GET | Dati profilo (autenticato) |
-| `/api/auth/verifica-2fa` | POST | Verifica codice 2FA + tempToken → JWT finale |
-| `/api/auth/2fa/abilita` | POST | Genera e invia codice 2FA per abilitazione (autenticato) |
-| `/api/auth/2fa/conferma` | POST | Consuma codice e attiva 2FA (autenticato) |
-| `/api/auth/2fa/disabilita` | POST | Disabilita 2FA con conferma password (autenticato, non per Admin) |
-| `/api/auth/2fa/stato` | GET | Restituisce `{ abilitato: boolean }` (autenticato) |
+### Auth (`auth.routes.ts`)
 
-Endpoint studenti (`studenti.routes.ts`):
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/login` | POST | — | Login unificato (Studente/Docente/Admin) |
+| `/api/registrazione` | POST | — | Registrazione studente |
+| `/api/recupera-password` | POST | — | Richiedi reset password (invia codice 6 cifre via email) |
+| `/api/auth/verifica-codice` | POST | — | Verifica codice senza consumarlo |
+| `/api/reset-password` | POST | — | Conferma reset con email + codice + nuova password |
+| `/api/auth/register/docente` | POST | — | Registrazione docente |
+| `/api/auth/register/admin` | POST | — | Registrazione amministratore |
+| `/api/auth/refresh` | POST | — | Rinnovo access token |
+| `/api/auth/change-password` | POST | JWT | Cambio password (autenticato) |
+| `/api/auth/profile` | GET | JWT | Dati profilo (autenticato) |
+
+### Studenti (`studenti.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
 | `/api/studenti/:matricola` | GET | JWT | Profilo studente |
 | `/api/studenti/:matricola` | PUT | JWT | Aggiorna profilo studente |
+| `/api/studenti/:matricola/cambia-password` | POST | JWT | Cambio password studente |
+| `/api/studenti/:matricola` | DELETE | JWT | Elimina account studente |
 
-Endpoint docenti (`docenti.routes.ts`):
+### Docenti (`docenti.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/docenti` | GET | - | Elenco docenti (pubblico) |
-| `/api/docenti/:id` | GET | - | Dettagli docente (pubblico) |
+| `/api/docenti` | GET | — | Elenco docenti (pubblico) |
+| `/api/docenti/:id` | GET | — | Dettagli docente (pubblico) |
 | `/api/docenti/:idDocente/slots` | GET | JWT | Slot del docente (filtro `?mese=YYYY-MM`) |
-| `/api/docenti/:idDocente/slots` | POST | JWT | Crea slot |
-| `/api/docenti/:idDocente/slots/:idSlot` | PUT | JWT | Modifica slot |
-| `/api/docenti/:idDocente/slots/:idSlot` | DELETE | JWT | Elimina slot |
-| `/api/docenti/:idDocente/statistiche` | GET | JWT | Statistiche argomenti |
+| `/api/docenti/:idDocente/slots` | POST | JWT (docente stesso) | Crea slot |
+| `/api/docenti/:idDocente/slots/:idSlot` | PUT | JWT (docente stesso) | Modifica slot |
+| `/api/docenti/:idDocente/slots/:idSlot` | DELETE | JWT (docente stesso) | Elimina slot |
+| `/api/docenti/:idDocente/profilo` | PUT | JWT (docente stesso) | Aggiorna profilo docente |
+| `/api/docenti/:idDocente/statistiche` | GET | JWT (docente stesso) | Statistiche argomenti |
 
-Endpoint prenotazioni (`prenotazioni.routes.ts`):
+### Prenotazioni (`prenotazioni.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
@@ -304,71 +313,79 @@ Endpoint prenotazioni (`prenotazioni.routes.ts`):
 | `/api/prenotazioni/studente/:matricolaStudente` | GET | JWT | Prenotazioni dello studente |
 | `/api/prenotazioni/docente/:idDocente` | GET | JWT | Prenotazioni del docente |
 | `/api/prenotazioni/:id/stato` | PUT | JWT | Aggiorna stato (IN_ATTESA/CONFERMATA/COMPLETATA/ANNULLATA/RIFIUTATA) |
+| `/api/prenotazioni/:id/documenti` | POST | JWT | Upload documenti su prenotazione |
 
-### ✅ Fase 3 completata — Corsi
-
-Endpoint corsi (`corsi.routes.ts`):
+### Corsi (`corsi.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/corsi` | GET | - | Elenco corsi (filtro `?docenteId=`) |
-| `/api/corsi/:id` | GET | - | Dettagli corso con docente |
+| `/api/corsi` | GET | — | Elenco corsi (filtro `?docenteId=`) |
+| `/api/corsi/:id` | GET | — | Dettagli corso con docente |
 | `/api/corsi` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea corso |
 | `/api/corsi/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica corso |
 | `/api/corsi/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina corso |
 
-### ✅ Fase 4 completata — Bacheca e FAQ
-
-Endpoint bacheca (`bacheche.routes.ts`):
+### Bacheche e FAQ (`bacheche.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/bacheche/corso-di-studi/:idCorsoDiStudi` | GET | - | Bacheca di un corso di studi (con FAQ) |
-| `/api/bacheche/corso-di-studi/:idCorsoDiStudi` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
-| `/api/bacheche/corso-di-studi/:idCorsoDiStudi/faq` | GET | - | FAQ della bacheca |
-| `/api/bacheche/corso-di-studi/:idCorsoDiStudi/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
+| `/api/bacheche/corso/:idCorso` | GET | — | Bacheca di un corso (con FAQ) |
+| `/api/bacheche/corso/:idCorso` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Aggiorna bacheca |
+| `/api/bacheche/corso/:idCorso/faq` | GET | — | FAQ della bacheca |
+| `/api/bacheche/corso/:idCorso/faq` | POST | JWT (DOCENTE, AMMINISTRATORE) | Crea FAQ |
+| `/api/bacheche/docente/me` | GET | JWT (DOCENTE) | Bacheche del docente loggato |
+| `/api/bacheche/corso-di-studi/:idCorsoDiStudi` | GET | — | Bacheche per corso di studi |
 | `/api/faq/:id` | PUT | JWT (DOCENTE, AMMINISTRATORE) | Modifica FAQ |
 | `/api/faq/:id` | DELETE | JWT (DOCENTE, AMMINISTRATORE) | Elimina FAQ |
 
-### ✅ Fase 7 completata — Notifiche
-
-Endpoint notifiche (`notifiche.routes.ts`):
+### Notifiche (`notifiche.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
 | `/api/notifiche/:destinatarioId` | GET | JWT | Elenco notifiche per destinatario (filtro `?ruolo=`) |
-| `/api/notifiche` | POST | JWT | Crea notifica |
+| `/api/notifiche` | POST | JWT (AMMINISTRATORE) | Crea notifica |
 | `/api/notifiche/:id/letta` | PATCH | JWT | Segna come letta |
 | `/api/notifiche/:destinatarioId/letta-tutte` | POST | JWT | Segna tutte come lette |
 | `/api/notifiche/:destinatarioId/lette` | DELETE | JWT | Cancella notifiche lette |
 
-Endpoint admin (`admin.routes.ts`):
-
-| Endpoint | Metodo | Descrizione |
-|----------|--------|-------------|
-| `/api/admin/stats` | GET | Statistiche dashboard. `prenotazioniOggi` conta prenotazioni il cui slot cade oggi (non per data creazione). `slotAttivi` conta tutti gli slot (non solo quelli liberi). |
-| `/api/admin/utenti` | GET | Lista utenti unificata (filtro `?ruolo=`) |
-| `/api/admin/utenti` | POST | Creazione utente |
-| `/api/admin/utenti/:id` | PUT | Modifica utente |
-| `/api/admin/utenti/:id` | DELETE | Eliminazione utente |
-| `/api/admin/slot-date` | GET | Date disponibili degli slot (raggruppate per data con conteggio) |
-| `/api/admin/slot` | GET | Lista slot globali (filtri `?docenteId=&data=&stato=`) |
-| `/api/admin/slot` | POST | Crea slot (body: `{ docenteId, data, oraInizio, oraFine, disponibilita?, luogo? }`) |
-| `/api/admin/slot/:idSlot` | PUT | Modifica slot (stessi campi del create, tutti opzionali) |
-| `/api/admin/slot/:idSlot` | DELETE | Elimina slot (cancella in cascata luogo e prenotazioni associate) |
-| `/api/admin/giorni-bloccati` | GET | Lista giorni bloccati |
-| `/api/admin/giorni-bloccati` | POST | Blocca un giorno (body: `{ data, motivo? }`) |
-| `/api/admin/giorni-bloccati/:id` | DELETE | Sblocca un giorno |
-
-Endpoint segnalazioni (`segnalazioni.routes.ts`):
+### Admin (`admin.routes.ts`)
 
 | Endpoint | Metodo | Auth | Descrizione |
 |----------|--------|------|-------------|
-| `/api/segnalazioni` | POST | JWT | Crea segnalazione (body: `{ oggetto, descrizione, matricola_studente }`) |
+| `/api/admin/stats` | GET | Admin | Statistiche dashboard |
+| `/api/admin/utenti` | GET | Admin | Lista utenti unificata (filtro `?ruolo=`) |
+| `/api/admin/utenti` | POST | Admin | Creazione utente |
+| `/api/admin/utenti/:id` | PUT | Admin | Modifica utente |
+| `/api/admin/utenti/:id` | DELETE | Admin | Eliminazione utente |
+| `/api/admin/slot-date` | GET | Admin | Date disponibili degli slot |
+| `/api/admin/slot` | GET | Admin | Lista slot globali (filtri `?docenteId=&data=&stato=`) |
+| `/api/admin/slot` | POST | Admin | Crea slot |
+| `/api/admin/slot/:idSlot` | PUT | Admin | Modifica slot |
+| `/api/admin/slot/:idSlot` | DELETE | Admin | Elimina slot (cancella in cascata luogo e prenotazioni) |
+| `/api/admin/prenotazioni` | GET | Admin | Lista tutte le prenotazioni |
+| `/api/admin/prenotazioni/:id/stato` | PUT | Admin | Aggiorna stato prenotazione |
+| `/api/admin/prenotazioni/:id` | DELETE | Admin | Elimina prenotazione |
+| `/api/admin/giorni-bloccati` | GET | — | Lista giorni bloccati |
+| `/api/admin/giorni-bloccati` | POST | Admin | Blocca un giorno (body: `{ data, motivo? }`) |
+| `/api/admin/giorni-bloccati/:id` | DELETE | Admin | Sblocca un giorno |
+
+### Segnalazioni (`segnalazioni.routes.ts`)
+
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/segnalazioni` | POST | JWT | Crea segnalazione studente (multipart per allegato) |
 | `/api/segnalazioni/studente/:matricola` | GET | JWT | Segnalazioni di uno studente |
 | `/api/segnalazioni/admin/all` | GET | Admin | Tutte le segnalazioni con dati studente (filtro `?stato=`) |
 | `/api/segnalazioni/:id/stato` | PATCH | Admin | Aggiorna stato (`APERTA` / `IN_LAVORAZIONE` / `CHIUSA`) |
 | `/api/segnalazioni/:id` | DELETE | Admin | Elimina segnalazione |
+| `/api/segnalazioni/docente` | POST | JWT | Crea segnalazione docente (multipart per allegato) |
+| `/api/segnalazioni/docente/:idDocente` | GET | JWT | Segnalazioni di un docente |
+
+### Corsi di Studio (`corsi-di-studio.routes.ts`)
+
+| Endpoint | Metodo | Auth | Descrizione |
+|----------|--------|------|-------------|
+| `/api/corsi-di-studio` | GET | — | Elenco corsi di studio |
 
 ---
 
@@ -388,29 +405,29 @@ export const studenteRegistrationSchema = [
   body('password').isString().isLength({ min: 8 }),
   body('corsoDiStudi').isString().notEmpty().trim(),
 ];
-
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-};
 ```
-
-File validator aggiuntivo:
 
 | File | Descrizione |
 |------|-------------|
-| `auth.validators.ts` | Login, registrazione (studente/docente/admin), cambio/reset password, refresh token. `corsoDiStudiId` opzionale per registrazione studente |
-| `admin.validators.ts` | Creazione/modifica utenti admin, filtri slot globali. `corsoDiStudiId` per creazione studente |
-| `studenti.validators.ts` | Aggiornamento profilo studente |
+| `auth.validators.ts` | Login, registrazione (studente/docente/admin), cambio/reset password, refresh token |
+| `admin.validators.ts` | Creazione/modifica utenti admin, slot globali, giorni bloccati |
+| `studenti.validators.ts` | Aggiornamento profilo, cambio password studente |
 | `docenti.validators.ts` | Creazione/modifica slot, filtri mese |
 | `prenotazioni.validators.ts` | Creazione prenotazione, aggiornamento stato |
-| `segnalazioni.validators.ts` | Creazione segnalazione, aggiornamento stato |
-| `corsi.validators.ts` | ✅ Creazione/modifica corsi |
-| `bacheca.validators.ts` | ✅ Aggiornamento bacheca, creazione/modifica FAQ |
-| `notifiche.validators.ts` | ✅ Creazione notifiche multi-ruolo |
-| `documenti.validators.ts` | *(da implementare)* Upload documenti |
+| `segnalazioni.validators.ts` | Creazione segnalazione (studente/docente), aggiornamento stato |
+| `corsi.validators.ts` | Creazione/modifica corsi |
+| `bacheca.validators.ts` | Aggiornamento bacheca, creazione/modifica FAQ |
+| `notifiche.validators.ts` | Creazione notifiche |
+
+---
+
+## middleware/
+
+| File | Descrizione |
+|------|-------------|
+| `authenticate.ts` | Verifica JWT da header `Authorization: Bearer <token>`. Aggiunge `req.user = { id, email, ruolo }` |
+| `authorize.ts` | Controlla che `req.user.ruolo` corrisponda a uno dei ruoli consentiti. `authorizeDocente` controlla che `req.user.id === req.params.idDocente` |
+| `upload.ts` | Configura multer per upload file. Salva in `uploads/` con nome timestamp-nomeoriginale. Limite 10 MB. Filtro: immagini, PDF, documenti Office |
 
 ---
 
@@ -444,25 +461,10 @@ File validator aggiuntivo:
    └───────────────────┘
         │ match
         ▼
-   Controlla user.two_factor_abilitato
-        │
-   ┌────┴──────────────────────────┐
-   │ 2FA abilitata                  │ 2FA non abilitata
-   │ (o Admin con default true)     │
-   ▼                                ▼
-   creaCodice(email, '2fa')      jwt.sign()
-   sendCodiceVerifica()          │
-   jwt.sign({ step: '2fa' },     │
-     { expiresIn: '5m' })        │
-        │                        │
-        ▼                        ▼
-   { requires2FA: true,        { id, nome, cognome,
-     email, tempToken,           email, role, token }
-     nome, role,
-     codiceMostrato? }
+   jwt.sign() → { id, nome, cognome, email, role, token }
 ```
 
-## Flusso di una richiesta (esempio: cambio password, autenticato)
+## Flusso (esempio: cambio password, autenticato)
 
 ```
   POST /api/auth/change-password (Authorization: Bearer <token>)
@@ -498,80 +500,7 @@ File validator aggiuntivo:
 
 ---
 
-## Allineamento con frontend Angular
-
-Il backend è allineato con il `AuthService` Angular esistente:
-
-| Angular chiama | Backend risponde |
-|---|---|---|
-| `POST /api/login` | `{ id, nome, cognome, email, role, token }` oppure `{ requires2FA: true, email, nome, cognome, role, tempToken, codiceMostrato? }` |
-| `POST /api/registrazione` | `{ id, nome, cognome, email, role, token }` (JWT, auto-login) |
-| `POST /api/recupera-password` | `{ messaggio: "..." }` (invia codice 6 cifre via email) |
-| `POST /api/auth/verifica-codice` | `{ valido: true }` o 401 (non consuma il codice) |
-| `POST /api/reset-password` | `{ messaggio: "Password reimpostata con successo." }` (consuma il codice) |
-| `POST /api/auth/verifica-2fa` | `{ id, nome, cognome, email, role, token }` (JWT finale dopo 2FA) |
-| `POST /api/auth/2fa/abilita` | `{ messaggio, codiceMostrato? }` |
-| `POST /api/auth/2fa/conferma` | `{ messaggio }` |
-| `POST /api/auth/2fa/disabilita` | `{ messaggio }` |
-| `GET /api/auth/2fa/stato` | `{ abilitato: boolean }` |
-
-**Convenzioni:**
-- **Porta**: backend su `5000` (Angular chiama `ip:5000`)
-- **camelCase**: i body usano camelCase (`corsoDiStudi`, `nuovaPassword`) — il service mappa a snake_case per Prisma
-- **Amministratore**: non ha `cognome` nello schema; login e profilo restituiscono `cognome: ''`
-- **Role case**: il backend usa ruoli in **MAIUSCOLO** (`STUDENTE`, `DOCENTE`, `AMMINISTRATORE`); il frontend li normalizza in **lowercase** (`studente`, `docente`, `amministratore`) all'arrivo della risposta in `AuthService.login()` e `loadSessionFromStorage()`
-- **CorsoDiStudi**: entità autonoma (non enum) per permettere gestione admin. `Docente` può insegnare in più CorsoDiStudi (tabella join `DocenteCorsoDiStudi`). `Studente` ha FK `id_corso_di_studi`. `Bacheca` appartiene a `CorsoDiStudi` anziché a `Corso`.
-- **materia docente**: non è più un campo diretto su `Docente`. Si deriva da `docente.corsi[0]?.nome_corso` nel response.
-- **luogo**: nei response delle prenotazioni, `luogo` è una stringa formattata "Aula 5, Edificio D (Primo piano)". L'oggetto completo è disponibile in `luogoRicevimento`.
-
----
-
-## TODO — 11 fasi di implementazione
-
-| Fase | Cosa implementare | Stato |
-|------|-------------------|-------|
-| 1 | Setup DB, script `setup-db.sh`/`setup-db.js`, migrazioni, seed dati | ✅ |
-| 2 | Auth: login JWT, middleware, profile, refresh, cambio/reset password, register admin | ✅ |
-| 3 | CRUD Corsi, associazione corso ↔ docente | ✅ |
-| 4 | CRUD Bacheca e FAQ | ✅ |
-| 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
-| 6 | CRUD Prenotazione, gestione stato | ✅ |
-| 7 | CRUD Notifiche (multi-ruolo: studente, docente, admin) | ✅ |
-| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali (CRUD completo + filtri) | ✅ |
-| 9 | CRUD Documenti (upload/download per prenotazioni) | ✅ |
-| 10 | CRUD Segnalazioni: backend (routes, controller, service, validators) + frontend admin (pagina gestione) | ✅ |
-| 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin gestione-calendario | ✅ |
-
-### Dettaglio API ancora da implementare
-
-#### ~~Fase 9 — Documenti~~ ✅ Completata
-
-Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti.service.ts`):
-- `POST /api/documenti/upload` — carica file (multipart, autenticato)
-- `GET /api/documenti/:id` — scarica file (autenticato)
-- `GET /api/prenotazioni/:id/documenti` — documenti di una prenotazione (autenticato)
-- `DELETE /api/documenti/:id` — elimina documento (autenticato)
-
-### Task aggiuntivi
-
-- [x] Amministratore: CRUD slot (creare, modificare, eliminare slot dalla dashboard)
-- [x] Amministratore: gestione segnalazioni (tabella, filtri, cambio stato)
-- [x] Amministratore: gestire prenotazioni (cambio stato, elimina, dettagli)
-- [x] Amministratore: bloccare giorni dal calendario (es. festivi)
-- [ ] Eliminare la possibilità di cambiare ruoli agli utenti (inutile)
-
-### Bug fix applicati
-
-- **[14/05/2026] piano edificio non numerico**: `docenti.service.ts` — rimosso `parseInt()` su `s.luogo.piano` che causava `NaN` per valori non numerici come "Primo piano" o "Piano terra". Il campo è ora gestito come stringa, allineato con l'interfaccia frontend (commit `07057b4`).
-- **[22/05/2026] DB: aggiunto `id_corso_di_studi` a `Corso`**: nuova FK opzionale verso `CorsoDiStudi`. Migrazione `add_corso_corso_di_studi`. Seed aggiornato con associazioni corso → CorsoDiStudi e nuovo docente Elena Colombo per Matematica.
-- **[22/05/2026] Backend: `docenti.service.ts` — response unificati**: `getElencoDocenti` ora restituisce anche `corsi[]` (id+nome). `getDettagliDocente` ora include `materia` e `corsoDiStudi: string[]` per consistenza.
-- **[22/05/2026] Frontend `bacheche-docente`: selezione CorsoDiStudi**: aggiunto selettore `<ion-select>` per docenti con più CorsiDiStudi, invece di usare sempre `corsi[0]`.
-- **[30/05/2026] `bloccaGiorno()` — eliminazione slot/prenotazioni + notifica docenti**: `admin.service.ts` — `bloccaGiorno()` ora elimina in transazione atomica documenti, prenotazioni, luogo e slot per la data bloccata, e invia notifica `'giorno_bloccato'` a ogni docente con slot eliminati.
-- **[30/05/2026] Autenticazione a due fattori (2FA)**: Migrazione `add_2fa_fields` — aggiunto `two_factor_abilitato` ai modelli Studente/Docente/Amministratore. `login()` ora controlla 2FA e restituisce `requires2FA` + tempToken; `verifica2FA()` consuma il codice e restituisce JWT. Nuovi endpoint per abilitazione/disabilitazione 2FA dal profilo. Codici Mostrato in dev mode (`NODE_ENV !== 'production'`). Admin ha 2FA obbligatoria per default.
-
----
-
-## Flusso di una richiesta (recupero password con codice di verifica)
+## Flusso (recupero password con codice di verifica)
 
 ```
   POST /api/recupera-password  (body: { email })
@@ -604,7 +533,7 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
        │   ├── Non matcha → 401 Codice non valido o scaduto
        │   └── Matcha → { valido: true }
        │
-       ※ NON consuma il codice (riusabile per futura autenticazione 2FA)
+       ※ NON consuma il codice (riusabile)
        │
        ▼
   200 { valido: true }
@@ -627,66 +556,65 @@ Endpoint documenti (`documenti.routes.ts`, `documenti.controller.ts`, `documenti
   200 { messaggio: "Password reimpostata con successo." }
 ```
 
-### Vantaggi del sistema a codice rispetto al JWT link
+---
 
-| Aspetto | JWT link (precedente) | Codice 6 cifre (attuale) |
-|---------|----------------------|-------------------------|
-| Consegna | Link via email (può essere bloccato) | Codice via email, visibile subito |
-| UX mobile | Scomodo (aprire link su telefono) | Comodo (copia/incolla codice) |
-| Riutilizzabilità | Solo reset password | Stesso sistema per futura 2FA |
-| Scadenza | JWT 15 min (non revocabile) | DB 15 min (revocabile, invalidabile) |
-| Sicurezza | Crittografato (JWT firmato) | Hash bcrypt + scadenza DB |
+## Allineamento con frontend Angular
+
+| Angular chiama | Backend risponde |
+|---|---|
+| `POST /api/login` | `{ id, nome, cognome, email, role, token }` |
+| `POST /api/registrazione` | `{ id, nome, cognome, email, role, token }` (JWT, auto-login) |
+| `POST /api/recupera-password` | `{ messaggio: "..." }` (invia codice 6 cifre via email) |
+| `POST /api/auth/verifica-codice` | `{ valido: true }` o 401 (non consuma il codice) |
+| `POST /api/reset-password` | `{ messaggio: "Password reimpostata con successo." }` (consuma il codice) |
+| `POST /api/auth/change-password` | `{ messaggio: "Password cambiata con successo." }` |
+| `GET /api/auth/profile` | `{ id, nome, cognome, email, role, ... }` |
+| `POST /api/auth/refresh` | `{ accessToken, refreshToken }` |
+| `GET /api/corsi-di-studio` | `[{ id_corso_di_studi, nome }]` |
+
+**Convenzioni:**
+- **Porta**: backend su `5000` (Angular chiama `ip:5000`)
+- **camelCase**: i body usano camelCase (`corsoDiStudi`, `nuovaPassword`) — il service mappa a snake_case per Prisma
+- **Amministratore**: non ha `cognome` nello schema; login e profilo restituiscono `cognome: ''`
+- **Role case**: il backend usa ruoli in **MAIUSCOLO** (`STUDENTE`, `DOCENTE`, `AMMINISTRATORE`); il frontend li normalizza in **lowercase** (`studente`, `docente`, `amministratore`) all'arrivo della risposta
+- **CorsoDiStudi**: entità autonoma (non enum) per permettere gestione admin. `Docente` può insegnare in più CorsoDiStudi (tabella join `DocenteCorsoDiStudi`). `Studente` ha FK `id_corso_di_studi`. `Bacheca` appartiene a `CorsoDiStudi` anziché a `Corso`.
+- **materia docente**: non è più un campo diretto su `Docente`. Si deriva da `docente.corsi[0]?.nome_corso` nel response.
+- **luogo**: nei response delle prenotazioni, `luogo` è una stringa formattata "Aula 5, Edificio D (Primo piano)". L'oggetto completo è disponibile in `luogoRicevimento`.
 
 ---
 
-> **Nota:** La pianificazione dettagliata della Fase 11 (Blocca giorni) è stata rimossa in quanto già implementata. Vedi sezione API admin per gli endpoint `/api/admin/giorni-bloccati`.
+## TODO — Implementazione completata
 
----
+| Fase | Cosa implementata | Stato |
+|------|-------------------|-------|
+| 1 | Setup DB, script `setup-db.sh`/`setup-db.js`, migrazioni, seed dati | ✅ |
+| 2 | Auth: login JWT, middleware, profile, refresh, cambio/reset password, register admin | ✅ |
+| 3 | CRUD Corsi, associazione corso ↔ docente | ✅ |
+| 4 | CRUD Bacheca e FAQ | ✅ |
+| 5 | CRUD SlotRicevimento e LuogoRicevimento | ✅ |
+| 6 | CRUD Prenotazione, gestione stato | ✅ |
+| 7 | CRUD Notifiche (multi-ruolo: studente, docente, admin) | ✅ |
+| 8 | Amministratore: dashboard, statistiche, gestione utenti, slot globali, gestione prenotazioni | ✅ |
+| 9 | Documenti: upload/download per prenotazioni | ✅ |
+| 10 | Segnalazioni: backend completo + frontend admin | ✅ |
+| 11 | Blocca giorni: modello GiornoBloccato, API backend, pagina admin | ✅ |
 
-## Bug Hunt — Piano di fix (22/05/2026)
+### Task aggiuntivi
 
-### Fase 1 — Endpoint mancanti (critico)
+- [x] Amministratore: CRUD slot (creare, modificare, eliminare slot dalla dashboard)
+- [x] Amministratore: gestione segnalazioni (tabella, filtri, cambio stato)
+- [x] Amministratore: gestire prenotazioni (cambio stato, elimina, dettagli)
+- [x] Amministratore: bloccare giorni dal calendario (es. festivi)
+- [x] Docente: aggiornamento profilo, segnalazioni
+- [x] Corsi di studio: endpoint pubblico `/api/corsi-di-studio`
 
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 1.1 | Aggiungere `POST /api/studenti/:matricola/cambia-password` (collegare ad `authService.changePassword`) | `studenti.routes.ts`, `studenti.controller.ts` | piccola |
-| 1.2 | Aggiungere `DELETE /api/studenti/:matricola` (elimina account studente) | `studenti.routes.ts`, `studenti.controller.ts`, `studenti.service.ts` | piccola |
-| 1.3 | Aggiungere `POST /api/segnalazioni/docente` e `GET /api/segnalazioni/docente/:id` | `segnalazioni.routes.ts`, controller, service | media |
-| 1.4 | Allineare field name: frontend manda `corsoDiStudi`, backend aspetta `corsoDiStudiId` | `studenti.validators.ts` o frontend | piccola |
+### Bug fix applicati
 
-### Fase 2 — Race condition e consistenza dati (critico)
-
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 2.1 | Avvolgere creazione prenotazione + update slot in `prisma.$transaction()` | `prenotazioni.service.ts:69-87` | piccola |
-| 2.2 | Aggiungere cancellazione documenti prima di eliminare slot (admin e docente) | `admin.service.ts:384-386`, `docenti.service.ts:255-261` | piccola |
-| 2.3 | Limitare `upload.any()` → `upload.array('files', 5)` e spostare upload dopo la validazione | `prenotazioni.routes.ts:21` | piccola |
-
-### Fase 3 — Autorizzazione mancante (alto)
-
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 3.1 | Aggiungere `authorize('AMMINISTRATORE')` a `GET /admin/giorni-bloccati` | `admin.routes.ts:47` | piccola |
-| 3.2 | Verificare che `req.user.id === req.params.idDocente` negli slot docente | `docenti.controller.ts` + `docenti.routes.ts` | media |
-| 3.3 | Aggiungere autorizzazione alle statistiche docente (solo docente stesso o admin) | `docenti.routes.ts:27` | piccola |
-
-### Fase 4 — Timezone e validazione (medio)
-
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 4.1 | Sostituire `toISOString()` con formattazione locale per campi `@db.Time(6)` | `docenti.service.ts:128`, `admin.service.ts:315`, `prenotazioni.service.ts:96` | media |
-| 4.2 | Centralizzare `handleValidationErrors` in `middleware/validation.ts` | Tutti i validators/ | piccola |
-| 4.3 | Validare `JWT_SECRET` all'avvio del server | `server.ts` | piccola |
-| 4.4 | Aggiungere graceful shutdown (`SIGTERM`/`SIGINT` → `prisma.$disconnect()`) | `server.ts` | piccola |
-| 4.5 | Validare formato data (`YYYY-MM-DD`) e ora (`HH:mm`) nei validators | `docenti.validators.ts`, `admin.validators.ts` | piccola |
-| 4.6 | Allineare case degli stati (lowercase output vs uppercase validatori) | `prenotazioni.service.ts` + `prenotazioni.validators.ts` | piccola |
-
-### Fase 5 — Pulizia codice (basso)
-
-| # | Task | File | Stima |
-|---|------|------|-------|
-| 5.1 | Rimuovere endpoint duplicato `POST /api/auth/register/studente` (esiste già `/api/registrazione`) | `auth.routes.ts:36` | piccola |
-| 5.2 | Rimuovere `handleValidationErrors` duplicato dai validators di auth (già nella route) | `auth.validators.ts:49-60` | piccola |
+- **[14/05/2026] piano edificio non numerico**: `docenti.service.ts` — rimosso `parseInt()` su `s.luogo.piano` che causava `NaN` per valori non numerici come "Primo piano" o "Piano terra". Il campo è ora gestito come stringa, allineato con l'interfaccia frontend.
+- **[22/05/2026] DB: aggiunto `id_corso_di_studi` a `Corso`**: nuova FK opzionale verso `CorsoDiStudi`. Migrazione `add_corso_corso_di_studi`. Seed aggiornato con associazioni corso → CorsoDiStudi e nuovo docente Elena Colombo per Matematica.
+- **[22/05/2026] Backend: `docenti.service.ts` — response unificati**: `getElencoDocenti` ora restituisce anche `corsi[]` (id+nome). `getDettagliDocente` ora include `materia` e `corsoDiStudi: string[]` per consistenza.
+- **[26/05/2026] FAQ: aggiunto `id_docente`**: nuovo campo opzionale sul modello FAQ per associare una FAQ a un docente specifico. Frontend aggiornato con selettore per filtrare FAQ per docente.
+- **[30/05/2026] `bloccaGiorno()` — eliminazione slot/prenotazioni + notifica docenti**: `admin.service.ts` — `bloccaGiorno()` ora elimina in transazione atomica documenti, prenotazioni, luogo e slot per la data bloccata, e invia notifica `'giorno_bloccato'` a ogni docente con slot eliminati.
 
 ---
 
@@ -705,22 +633,20 @@ Job schedulato con `node-cron` in `server.ts` alle 3:00 ogni notte.
 
 Hard delete (nessuna archiviazione).
 
-### 2. Registrazione docente — selezione corso di studi e corso
+### 2. Autenticazione a due fattori (2FA)
+
+Il login supporta già controllo 2FA lato service, ma endpoint e frontend non sono ancora implementati:
+- Nuovi campi `two_factor_abilitato` su Studente/Docente/Amministratore (migrazione DB)
+- Endpoint: `/api/auth/verifica-2fa`, `/api/auth/2fa/abilita`, `/api/auth/2fa/conferma`, `/api/auth/2fa/disabilita`, `/api/auth/2fa/stato`
+- Frontend: pagina `/verifica-2fa` e toggle 2FA nei profili
+
+### 3. Registrazione docente — selezione corso di studi e corso
 
 Quando un docente crea/aggiorna il suo profilo, deve poter selezionare:
+- **Corso di studi** (`GET /api/corsi-di-studio`)
+- **Corso insegnato** (`GET /api/corsi`, filtrato per corso di studi)
 
-- **Corso di studi** (`<ion-select>` da `GET /api/corsi-di-studio`) — come già fa lo studente in registrazione.
-- **Corso insegnato** (`<ion-select>` da `GET /api/corsi`, filtrato per corso di studi selezionato) — dropdown che elenca i corsi presenti nel DB.
+### 4. Spostamento toggle tema
 
-**Backend** (`auth.service.ts`, `docenti.service.ts`): aggiornare la registrazione docente (`POST /api/auth/register/docente`) e modifica profilo per accettare `corsoDiStudi` e `corso`, salvando le relazioni nelle tabelle `DocenteCorsoDiStudi` e `Corso` (FK `id_docente`).
-
-**Frontend:**
-- `registrazione pagina admin` — aggiungere i due dropdown nel form di creazione docente.
-- `profilo-docente.page.html` — aggiungere i due dropdown (modificabili).
-
-### 3. Spostamento toggle tema
-
-- **Rimuovere** il pulsante `<button class="toggle-tema">` da `topbar.component.html` e la logica associata (TS, SCSS).
-- **Aggiungere** un `ion-toggle` "Tema scuro" nelle pagine `profilo-studente.page.html` e `profilo-docente.page.html`, solo per ruolo studente e docente (non admin).
-
----
+- **Rimuovere** il pulsante `<button class="toggle-tema">` da `topbar.component.html`
+- **Aggiungere** un `ion-toggle` "Tema scuro" nelle pagine profilo studente e docente

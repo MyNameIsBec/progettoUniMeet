@@ -21,9 +21,13 @@ model Studente {
   cognome               String
   email                 String         @unique
   password              String
-  two_factor_abilitato  Boolean        @default(false)
   id_corso_di_studi     String
   corso_di_studi        CorsoDiStudi   @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
+  notifiche_app         Boolean        @default(true)
+  notifiche_email       Boolean        @default(true)
+  reminder_ore          Int            @default(24)
+  tema                  String         @default("system")
+  lingua                String         @default("it")
   prenotazioni          Prenotazione[]
   segnalazioni          Segnalazione[]
 }
@@ -39,6 +43,7 @@ model Segnalazione {
   id_docente         String?
   docente            Docente?  @relation(fields: [id_docente], references: [id_docente])
   allegato           String?
+  note_admin         String?
 }
 
 model Docente {
@@ -47,8 +52,12 @@ model Docente {
   cognome               String
   email                 String                @unique
   password              String
-  two_factor_abilitato  Boolean               @default(false)
   ufficio               String
+  notifiche_app         Boolean               @default(true)
+  notifiche_email       Boolean               @default(true)
+  reminder_ore          Int                   @default(24)
+  tema                  String                @default("system")
+  lingua                String                @default("it")
   corsi                 Corso[]
   slot_ricevimento      SlotRicevimento[]
   corsi_di_studi        DocenteCorsoDiStudi[]
@@ -70,7 +79,6 @@ model Amministratore {
   nome                  String
   email                 String   @unique
   password              String
-  two_factor_abilitato  Boolean  @default(true)
 }
 
 model Corso {

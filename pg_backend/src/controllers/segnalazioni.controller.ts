@@ -40,8 +40,8 @@ export async function getAllSegnalazioni(req: Request, res: Response) {
 export async function aggiornaStatoSegnalazione(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
-    const { stato } = req.body;
-    const result = await segnalazioniService.aggiornaStatoSegnalazione(id, stato);
+    const { stato, noteAdmin } = req.body;
+    const result = await segnalazioniService.aggiornaStatoSegnalazione(id, stato, noteAdmin);
     return res.status(200).json(result);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Segnalazione not found') {

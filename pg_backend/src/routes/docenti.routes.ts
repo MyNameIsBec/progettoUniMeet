@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   getElencoDocenti, getDettagliDocente, getSlots, creaSlot,
-  modificaSlot, eliminaSlot, getStatistiche,
+  modificaSlot, eliminaSlot, aggiornaProfilo, getStatistiche,
 } from '../controllers/docenti.controller';
 import {
   creaSlotSchema, modificaSlotSchema, slotFiltriSchema, handleValidationErrors,
@@ -17,6 +17,7 @@ router.get('/docenti/:idDocente/slots', authenticate, slotFiltriSchema, handleVa
 router.post('/docenti/:idDocente/slots', authenticate, authorizeDocente, creaSlotSchema, handleValidationErrors, creaSlot);
 router.put('/docenti/:idDocente/slots/:idSlot', authenticate, authorizeDocente, modificaSlotSchema, handleValidationErrors, modificaSlot);
 router.delete('/docenti/:idDocente/slots/:idSlot', authenticate, authorizeDocente, eliminaSlot);
+router.put('/docenti/:idDocente/profilo', authenticate, authorizeDocente, aggiornaProfilo);
 router.get('/docenti/:idDocente/statistiche', authenticate, authorizeDocente, getStatistiche);
 
 export default router;

@@ -23,20 +23,15 @@ export class ProfiloStudentePage implements OnInit {
     cognome: '',
     email: '',
     corsoDiStudi: '',
-    notifiche_app: true,
-    notifiche_email: true,
-    reminder_ore: 24
+    notificheApp: true,
+    notificheEmail: true,
+    reminderOre: 24,
+    tema: 'system',
+    lingua: 'it',
   };
   loading = true;
   salvataggioInCorso = false;
 
-  // 2FA
-  stato2FA = false;
-  mostraInput2FA = false;
-  codice2FA = '';
-  codice2FAMostrato = '';
-  caricamento2FA = false;
-  conferma2FAInCorso = false;
 
 
   constructor(
@@ -87,9 +82,11 @@ export class ProfiloStudentePage implements OnInit {
           cognome: data.cognome,
           email: data.email,
           corsoDiStudi: data.corsoDiStudi || data.corso_di_studi,
-          notifiche_app: notifiche_app,
-          notifiche_email: data.notifiche_email !== undefined ? data.notifiche_email : true,
-          reminder_ore: reminder_ore
+          notificheApp: data.notificheApp ?? notifiche_app,
+          notificheEmail: data.notificheEmail ?? true,
+          reminderOre: data.reminderOre ?? reminder_ore,
+          tema: data.tema ?? 'system',
+          lingua: data.lingua ?? 'it',
         };
         this.loading = false;
       },
@@ -100,10 +97,6 @@ export class ProfiloStudentePage implements OnInit {
       }
     });
 
-    this.authService.getStato2FA().subscribe({
-      next: (res) => { this.stato2FA = res.abilitato; },
-      error: () => { this.stato2FA = false; },
-    });
   }
 
   salvaModifiche() {
@@ -116,8 +109,8 @@ export class ProfiloStudentePage implements OnInit {
         const user = this.authService.getCurrentUser();
         if (user) {
           localStorage.setItem(`pref_${user.id}`, JSON.stringify({
-            notifiche_app: this.form.notifiche_app,
-            reminder_ore: this.form.reminder_ore
+            notifiche_app: this.form.notificheApp,
+            reminder_ore: this.form.reminderOre
           }));
         }
 
@@ -215,81 +208,6 @@ export class ProfiloStudentePage implements OnInit {
     });
   }
 
-  abilita2FA() {
-    this.caricamento2FA = true;
-    this.authService.abilita2FA().subscribe({
-      next: (res) => {
-        this.caricamento2FA = false;
-        this.mostraInput2FA = true;
-        if (res.codiceMostrato) {
-          this.codice2FAMostrato = res.codiceMostrato;
-        }
-      },
-      error: (err) => {
-        this.caricamento2FA = false;
-        this.erroriService.gestoreErrori(err);
-        this.stato2FA = false;
-      },
-    });
-  }
-
-  confermaAbilita2FA() {
-    if (!this.codice2FA || this.codice2FA.length !== 6) return;
-    this.conferma2FAInCorso = true;
-    this.authService.confermaAbilita2FA(this.codice2FA).subscribe({
-      next: () => {
-        this.conferma2FAInCorso = false;
-        this.stato2FA = true;
-        this.mostraInput2FA = false;
-        this.codice2FA = '';
-        this.codice2FAMostrato = '';
-        this.showToast('Autenticazione a due fattori abilitata con successo!');
-      },
-      error: (err) => {
-        this.conferma2FAInCorso = false;
-        this.erroriService.gestoreErrori(err);
-      },
-    });
-  }
-
-  async disabilita2FA() {
-    const alert = await this.alertCtrl.create({
-      header: 'Disabilita 2FA',
-      message: 'Inserisci la password per confermare la disabilitazione dell\'autenticazione a due fattori.',
-      inputs: [
-        { name: 'password', type: 'password', placeholder: 'Password attuale' },
-      ],
-      buttons: [
-        { text: 'Annulla', role: 'cancel' },
-        {
-          text: 'Disabilita',
-          handler: (data) => {
-            if (!data.password) {
-              this.showToast('Inserisci la password', 'danger');
-              return false;
-            }
-            this.authService.disabilita2FA(data.password).subscribe({
-              next: () => {
-                this.stato2FA = false;
-                this.showToast('Autenticazione a due fattori disabilitata.');
-              },
-              error: (err) => {
-                this.erroriService.gestoreErrori(err);
-              },
-            });
-            return true;
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  annullaAbilita2FA() {
-    this.mostraInput2FA = false;
-    this.codice2FA = '';
-    this.codice2FAMostrato = '';
-  }
 
   async showToast(msg: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const alert = await this.alertCtrl.create({
@@ -323,9 +241,11 @@ export class ProfiloStudentePage implements OnInit {
         cognome: this.studente.cognome,
         email: this.studente.email,
         corsoDiStudi: this.studente.corsoDiStudi || this.studente.corso_di_studi,
-        notifiche_app: notifiche_app,
-        notifiche_email: this.studente.notifiche_email !== undefined ? this.studente.notifiche_email : true,
-        reminder_ore: reminder_ore
+        notificheApp: notifiche_app,
+        notificheEmail: this.studente.notificheEmail ?? true,
+        reminderOre: reminder_ore,
+        tema: this.studente.tema ?? 'system',
+        lingua: this.studente.lingua ?? 'it',
       };
     }
   }

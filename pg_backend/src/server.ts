@@ -3,6 +3,7 @@ import app from './app';
 import path from 'path';
 import fs from 'fs';
 import { prisma } from './prisma/client';
+import { avviaReminderJob } from './services/reminder.service';
 
 if (!process.env.JWT_SECRET) {
   console.error('JWT_SECRET environment variable is required');
@@ -48,6 +49,8 @@ const PORT = process.env.PORT ?? 5000;
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
   const swaggerDocument = require(outputFile);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+  avviaReminderJob();
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

@@ -1,6 +1,12 @@
 import { prisma } from '../prisma/client';
 import { formatTime } from '../utils/time';
 
+async function notifica(destinatarioId: string, destinatarioRuolo: string, titolo: string, messaggio: string, tipo: string) {
+  await prisma.notifica.create({
+    data: { titolo, messaggio, tipo, destinatario_id: destinatarioId, destinatario_ruolo: destinatarioRuolo },
+  });
+}
+
 function fmtLuogo(luogo: { nome_aula: string; edificio: string; piano: string } | null): string {
   if (!luogo) return '';
   return `${luogo.nome_aula}, ${luogo.edificio} (${luogo.piano})`;
@@ -87,7 +93,17 @@ export async function createPrenotazione(
 
       return prenotazione;
     });
-    
+
+    const docenteId = p.slot.docente.id_docente;
+    const docenteNome = `${p.slot.docente.nome} ${p.slot.docente.cognome}`;
+    const dataSlot = p.slot.data.toISOString().split('T')[0];
+    notifica(
+      docenteId, 'DOCENTE',
+      'Nuova prenotazione',
+      `Lo studente ${p.studente.nome} ${p.studente.cognome} ha prenotato un ricevimento il ${dataSlot} alle ${formatTime(p.slot.ora_inizio)}. Argomento: ${p.argomento}`,
+      'nuova_prenotazione'
+    );
+
     return {
       id: p.id_prenotazione,
       studenteId: p.matricola_studente,
@@ -115,7 +131,17 @@ export async function createPrenotazione(
 }
 
 export async function annullaPrenotazione(id: string) {
-  const prenotazione = await prisma.prenotazione.findUnique({ where: { id_prenotazione: id } });
+  const prenotazione = await prisma.prenotazione.findUnique({
+    where: { id_prenotazione: id },
+    include: {
+      slot: {
+        include: {
+          docente: { select: { id_docente: true, nome: true, cognome: true } },
+        },
+      },
+      studente: { select: { nome: true, cognome: true } },
+    },
+  });
   if (!prenotazione) throw new Error('Prenotazione not found');
 
   await prisma.prenotazione.update({
@@ -123,11 +149,18 @@ export async function annullaPrenotazione(id: string) {
     data: { stato_prenotazione: 'ANNULLATA' },
   });
 
-  // Ripristiniamo la disponibilità dello slot
   await prisma.slotRicevimento.update({
     where: { id_slot: prenotazione.id_slot },
     data: { disponibilita: true }
   });
+
+  const dataSlot = prenotazione.slot.data.toISOString().split('T')[0];
+  notifica(
+    prenotazione.slot.docente.id_docente, 'DOCENTE',
+    'Prenotazione annullata',
+    `Lo studente ${prenotazione.studente.nome} ${prenotazione.studente.cognome} ha annullato la prenotazione del ${dataSlot} alle ${formatTime(prenotazione.slot.ora_inizio)}.`,
+    'prenotazione_annullata'
+  );
 }
 
 export async function eliminaPrenotazione(id: string) {
@@ -216,6 +249,17 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
       },
     },
   });
+
+  const statoSup = stato.toUpperCase();
+  if (statoSup === 'CONFERMATA' || statoSup === 'RIFIUTATA') {
+    const dataSlot = updated.slot.data.toISOString().split('T')[0];
+    notifica(
+      updated.matricola_studente, 'STUDENTE',
+      `Prenotazione ${statoSup === 'CONFERMATA' ? 'confermata' : 'rifiutata'}`,
+      `La tua prenotazione del ${dataSlot} alle ${formatTime(updated.slot.ora_inizio)} con il Prof. ${updated.slot.docente.nome} ${updated.slot.docente.cognome} è stata ${statoSup === 'CONFERMATA' ? 'CONFERMATA' : 'RIFIUTATA'}.`,
+      'stato_prenotazione'
+    );
+  }
 
   return {
     id: updated.id_prenotazione,

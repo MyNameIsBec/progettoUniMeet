@@ -47,5 +47,7 @@ export class DocenteService {
     return this.http.get<any>(`${this.api}/${idDocente}/statistiche`);
   }
 
-
+  aggiornaProfilo(idDocente: string, dati: any): Observable<{ messaggio: string }> {
+    return this.http.put<{ messaggio: string }>(`${this.api}/${idDocente}/profilo`, dati);
+  }
 }

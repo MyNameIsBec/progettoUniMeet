@@ -15,6 +15,7 @@ export const creaSegnalazioneDocenteSchema = [
 
 export const aggiornaStatoSchema = [
   body('stato').isIn(['APERTA', 'IN_LAVORAZIONE', 'CHIUSA']).withMessage('Stato non valido'),
+  body('noteAdmin').optional({ values: 'null' }).isString().trim().withMessage('Note non valide'),
 ];
 
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {

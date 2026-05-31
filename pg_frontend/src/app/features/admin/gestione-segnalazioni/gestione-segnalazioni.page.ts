@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel} from '@ionic/angular/standalone';
-import { AlertController, IonicSafeString } from '@ionic/angular';
+import { IonIcon, IonChip, IonLabel} from '@ionic/angular/standalone';
+import { AlertController, IonicSafeString, ActionSheetController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
 import { SegnalazioneService, Segnalazione } from 'src/app/core/services/segnalazione';
 import { AuthService } from 'src/app/core/services/auth';
@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/core/services/auth';
   templateUrl: './gestione-segnalazioni.page.html',
   styleUrls: ['./gestione-segnalazioni.page.scss'],
   standalone: true,
-  imports: [ IonIcon, IonSelect, IonSelectOption, IonChip, IonLabel, CommonModule, FormsModule, DashboardLayoutComponent]})
+  imports: [ IonIcon, IonChip, IonLabel, CommonModule, FormsModule, DashboardLayoutComponent]})
 
   export class GestioneSegnalazioniPage implements OnInit {
   segnalazioni: Segnalazione[] = [];
@@ -23,6 +23,7 @@ import { AuthService } from 'src/app/core/services/auth';
     private segnalazioneService: SegnalazioneService,
     private authService: AuthService,
     private alertController: AlertController,
+    private actionSheetController: ActionSheetController,
   ) {}
 
   ngOnInit() {
@@ -45,10 +46,43 @@ import { AuthService } from 'src/app/core/services/auth';
     this.caricaSegnalazioni(stato || undefined);
   }
 
-  cambiaStato(segnalazione: any, nuovoStato: string) {
-    this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, nuovoStato).subscribe({
-      next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+  async cambiaStato(segnalazione: any) {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Nuovo stato',
+      subHeader: segnalazione.oggetto,
+      buttons: [
+        { text: 'Aperta', handler: () => this.chiediNote(segnalazione, 'APERTA') },
+        { text: 'In lavorazione', handler: () => this.chiediNote(segnalazione, 'IN_LAVORAZIONE') },
+        { text: 'Chiusa', handler: () => this.chiediNote(segnalazione, 'CHIUSA') },
+        { text: 'Annulla', role: 'cancel' },
+      ],
     });
+    await actionSheet.present();
+  }
+
+  private async chiediNote(segnalazione: any, nuovoStato: string) {
+    const alert = await this.alertController.create({
+      header: 'Note per il destinatario',
+      subHeader: `Nuovo stato: ${this.statoLabel(nuovoStato)}`,
+      message: 'Inserisci note opzionali da comunicare al destinatario.',
+      inputs: [
+        { name: 'noteAdmin', type: 'textarea', placeholder: 'Scrivi le note...' },
+      ],
+      buttons: [
+        { text: 'Salta', handler: () => {
+          this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, nuovoStato).subscribe({
+            next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+          });
+        }},
+        { text: 'Conferma', handler: (data) => {
+          const noteAdmin = data?.noteAdmin?.trim() || undefined;
+          this.segnalazioneService.aggiornaStato(segnalazione.id_segnalazione, nuovoStato, noteAdmin).subscribe({
+            next: () => this.caricaSegnalazioni(this.filtroStato || undefined),
+          });
+        }},
+      ],
+    });
+    await alert.present();
   }
 
   getAllegatoUrl(percorso: string | null | undefined): string {
@@ -86,7 +120,8 @@ import { AuthService } from 'src/app/core/services/auth';
         ${utenteInfo}
         <div style="margin-bottom:8px"><strong>Data invio:</strong> ${new Date(s.data_invio).toLocaleString('it-IT')}</div>
         ${allegatoHtml}
-        <div><strong>Stato:</strong> ${this.statoLabel(s.stato)}</div>
+        <div style="margin-bottom:8px"><strong>Stato:</strong> ${this.statoLabel(s.stato)}</div>
+        ${s.note_admin ? `<div style="margin-top:12px;padding:12px;background:#f0fdf4;border-radius:8px;border-left:4px solid #16a34a;"><strong style="color:#16a34a;">Note admin:</strong><br>${s.note_admin}</div>` : ''}
       `),
       buttons: ['Chiudi'],
     });

@@ -13,16 +13,6 @@ export interface UserSession {
   token: string;
 }
 
-export interface Login2FARequired {
-  requires2FA: true;
-  email: string;
-  nome: string;
-  cognome: string;
-  role: UserRole;
-  tempToken: string;
-  codiceMostrato?: string;
-}
-
 export interface RegistrazioneStudente {
   nome: string;
   cognome: string;
@@ -49,14 +39,12 @@ export class AuthService {
     return this.apiUrl;
   }
 
-  login(email: string, password: string, rememberMe: boolean = false): Observable<UserSession | Login2FARequired> {
-    return this.http.post<UserSession | Login2FARequired>(`${this.apiUrl}/api/login`, { email, password }).pipe(
+  login(email: string, password: string, rememberMe: boolean = false): Observable<UserSession> {
+    return this.http.post<UserSession>(`${this.apiUrl}/api/login`, { email, password }).pipe(
       tap(session => {
-        if ('token' in session) {
-          session.role = session.role.toLowerCase() as UserRole;
-          this.currentUserSubject.next(session);
-          this.saveSessionToStorage(session, rememberMe);
-        }
+        session.role = session.role.toLowerCase() as UserRole;
+        this.currentUserSubject.next(session);
+        this.saveSessionToStorage(session, rememberMe);
       })
     );
   }
@@ -139,38 +127,6 @@ export class AuthService {
 
   getToken(): string | null {
     return this.currentUserSubject.value?.token ?? null;
-  }
-
-  verifica2FA(tempToken: string, codice: string): Observable<UserSession> {
-    return this.http.post<UserSession>(`${this.apiUrl}/api/auth/verifica-2fa`, { tempToken, codice }).pipe(
-      tap(session => {
-        session.role = session.role.toLowerCase() as UserRole;
-        this.currentUserSubject.next(session);
-        this.saveSessionToStorage(session);
-      })
-    );
-  }
-
-  abilita2FA(): Observable<{ messaggio: string; codiceMostrato?: string }> {
-    return this.http.post<{ messaggio: string; codiceMostrato?: string }>(
-      `${this.apiUrl}/api/auth/2fa/abilita`, {}
-    );
-  }
-
-  confermaAbilita2FA(codice: string): Observable<{ messaggio: string }> {
-    return this.http.post<{ messaggio: string }>(
-      `${this.apiUrl}/api/auth/2fa/conferma`, { codice }
-    );
-  }
-
-  disabilita2FA(password: string): Observable<{ messaggio: string }> {
-    return this.http.post<{ messaggio: string }>(
-      `${this.apiUrl}/api/auth/2fa/disabilita`, { password }
-    );
-  }
-
-  getStato2FA(): Observable<{ abilitato: boolean }> {
-    return this.http.get<{ abilitato: boolean }>(`${this.apiUrl}/api/auth/2fa/stato`);
   }
 
   private saveSessionToStorage(session: UserSession, persist?: boolean): void {

@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IonContent, IonButton, IonIcon, IonInput, IonCheckbox, IonSpinner } from '@ionic/angular/standalone';
-import { AuthService, Login2FARequired } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-login',
@@ -68,19 +68,6 @@ export class LoginPage implements OnInit {
         } else {
           localStorage.removeItem('unimeet_remembered_email');
           localStorage.removeItem('unimeet_remembered_checkbox');
-        }
-        if ('requires2FA' in res) {
-          this.router.navigate(['/verifica-2fa'], {
-            state: {
-              tempToken: res.tempToken,
-              email: res.email,
-              nome: res.nome,
-              cognome: res.cognome,
-              role: res.role,
-              codiceMostrato: (res as Login2FARequired).codiceMostrato,
-            },
-          });
-          return;
         }
         const role = this.authService.getCurrentUser()?.role;
         const target = this.urlDiRitorno !== '/dashboard' 

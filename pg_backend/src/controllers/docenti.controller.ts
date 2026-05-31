@@ -77,6 +77,19 @@ export async function eliminaSlot(req: Request, res: Response) {
   }
 }
 
+export async function aggiornaProfilo(req: Request, res: Response) {
+  try {
+    const idDocente = req.params.idDocente as string;
+    const result = await docentiService.aggiornaProfilo(idDocente, req.body);
+    return res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Docente not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 export async function getStatistiche(req: Request, res: Response) {
   try {
     const idDocente = req.params.idDocente as string;

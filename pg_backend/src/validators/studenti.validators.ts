@@ -5,6 +5,11 @@ export const aggiornaStudenteSchema = [
   body('nome').optional().isString().notEmpty().trim(),
   body('cognome').optional().isString().notEmpty().trim(),
   body('email').optional().isEmail().normalizeEmail(),
+  body('notificheApp').optional().isBoolean(),
+  body('notificheEmail').optional().isBoolean(),
+  body('reminderOre').optional().isInt({ min: 1, max: 168 }),
+  body('tema').optional().isString().isIn(['light', 'dark', 'system']),
+  body('lingua').optional().isString().isIn(['it', 'en']),
 ];
 
 export const cambiaPasswordStudenteSchema = [

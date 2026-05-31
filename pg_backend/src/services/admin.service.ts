@@ -363,8 +363,8 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
   });
   if (giornoBloccato) throw new Error('Giorno bloccato');
 
-  const startStr = `${data.data}T${data.oraInizio}`;
-  const endStr = `${data.data}T${data.oraFine}`;
+  const startStr = `${data.data}T${data.oraInizio}:00.000Z`;
+  const endStr = `${data.data}T${data.oraFine}:00.000Z`;
   const start = new Date(startStr);
   const end = new Date(endStr);
 
@@ -402,6 +402,16 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
     },
   });
 
+  await prisma.notifica.create({
+    data: {
+      titolo: 'Slot creato',
+      messaggio: `Slot di ricevimento creato per il ${data.data} dalle ${data.oraInizio} alle ${data.oraFine}.`,
+      tipo: 'slot_creato',
+      destinatario_id: data.docenteId,
+      destinatario_ruolo: 'DOCENTE',
+    },
+  });
+
   if (data.inviaNotifica) {
     const corsiDocente = await prisma.corso.findMany({
       where: { id_docente: data.docenteId },
@@ -412,7 +422,7 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
     if (cdsIds.length > 0) {
       const studenti = await prisma.studente.findMany({
         where: { id_corso_di_studi: { in: cdsIds } },
-        select: { matricola: true },
+        select: { matricola: true, notifiche_app: true },
       });
 
       const docente = await prisma.docente.findUnique({
@@ -425,6 +435,7 @@ export async function creaSlot(data: CreaSlotRequest): Promise<SlotGriglia> {
       const message = `Nuovo slot disponibile: ${docenteNome} ha aperto un ricevimento il ${dataSlot} dalle ${data.oraInizio} alle ${data.oraFine}.`;
 
       for (const s of studenti) {
+        if (!s.notifiche_app) continue;
         await prisma.notifica.create({
           data: {
             titolo: 'Nuovo slot ricevimento',
@@ -466,8 +477,8 @@ export async function modificaSlot(idSlot: string, data: any): Promise<void> {
   const baseDate = data.data ? data.data : row.data.toISOString().split('T')[0];
 
   if (data.data) updateData.data = new Date(data.data);
-  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}`);
-  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}`);
+  if (data.oraInizio) updateData.ora_inizio = new Date(`${baseDate}T${data.oraInizio}:00.000Z`);
+  if (data.oraFine) updateData.ora_fine = new Date(`${baseDate}T${data.oraFine}:00.000Z`);
   if (data.disponibilita !== undefined) updateData.disponibilita = data.disponibilita;
   if (data.docenteId) updateData.id_docente = data.docenteId;
 
@@ -504,8 +515,11 @@ export async function modificaSlot(idSlot: string, data: any): Promise<void> {
 export async function eliminaSlot(idSlot: string): Promise<void> {
   const slot = await prisma.slotRicevimento.findUnique({
     where: { id_slot: idSlot },
+    include: { docente: { select: { id_docente: true, notifiche_app: true } } },
   });
   if (!slot) throw new Error('Slot not found');
+
+  const dataSlot = slot.data.toISOString().split('T')[0];
 
   await prisma.documento.deleteMany({
     where: { prenotazione: { id_slot: idSlot } },
@@ -513,6 +527,18 @@ export async function eliminaSlot(idSlot: string): Promise<void> {
   await prisma.luogoRicevimento.deleteMany({ where: { id_slot: idSlot } });
   await prisma.prenotazione.deleteMany({ where: { id_slot: idSlot } });
   await prisma.slotRicevimento.delete({ where: { id_slot: idSlot } });
+
+  if (slot.docente.notifiche_app) {
+    await prisma.notifica.create({
+      data: {
+        titolo: 'Slot eliminato (admin)',
+        messaggio: `Lo slot del ${dataSlot} è stato eliminato da un amministratore.`,
+        tipo: 'slot_eliminato',
+        destinatario_id: slot.docente.id_docente,
+        destinatario_ruolo: 'DOCENTE',
+      },
+    });
+  }
 }
 
 export interface GiornoBloccato {
@@ -541,12 +567,15 @@ export async function bloccaGiorno(data: string, motivo?: string): Promise<Giorn
   if (existing) throw new Error('Giorno già bloccato');
 
   const dataDate = new Date(data);
+  const tra3Settimane = new Date();
+  tra3Settimane.setDate(tra3Settimane.getDate() + 21);
+  const entro3Settimane = dataDate <= tra3Settimane;
 
   const [result] = await prisma.$transaction(async (tx) => {
     const slots = await tx.slotRicevimento.findMany({
       where: { data: dataDate },
       include: {
-        docente: { select: { id_docente: true, nome: true, cognome: true } },
+        docente: { select: { id_docente: true, nome: true, cognome: true, notifiche_app: true } },
       },
     });
 
@@ -558,15 +587,17 @@ export async function bloccaGiorno(data: string, motivo?: string): Promise<Giorn
       await tx.luogoRicevimento.deleteMany({ where: { id_slot: slot.id_slot } });
       await tx.slotRicevimento.delete({ where: { id_slot: slot.id_slot } });
 
-      await tx.notifica.create({
-        data: {
-          titolo: 'Giorno bloccato',
-          messaggio: `Il giorno ${new Date(data).toLocaleDateString('it-IT')} è stato bloccato. I tuoi slot di ricevimento per questa data sono stati eliminati.`,
-          tipo: 'giorno_bloccato',
-          destinatario_id: slot.docente.id_docente,
-          destinatario_ruolo: 'docente',
-        },
-      });
+      if (entro3Settimane && slot.docente.notifiche_app) {
+        await tx.notifica.create({
+          data: {
+            titolo: 'Giorno bloccato',
+            messaggio: `Il giorno ${new Date(data).toLocaleDateString('it-IT')} è stato bloccato. I tuoi slot di ricevimento per questa data sono stati eliminati.`,
+            tipo: 'giorno_bloccato',
+            destinatario_id: slot.docente.id_docente,
+            destinatario_ruolo: 'docente',
+          },
+        });
+      }
     }
 
     const row = await tx.giornoBloccato.create({

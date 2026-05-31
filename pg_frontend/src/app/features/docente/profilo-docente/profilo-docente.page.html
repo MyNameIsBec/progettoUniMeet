@@ -82,7 +82,7 @@
               <strong>Notifiche via app</strong>
               <span>Avvisi nella sezione notifiche di UniMeet.</span>
             </div>
-            <ion-toggle [(ngModel)]="form.notifiche_app"></ion-toggle>
+            <ion-toggle [(ngModel)]="form.notificheApp"></ion-toggle>
           </div>
           <div class="toggle-row">
             <div>
@@ -95,7 +95,7 @@
         <div class="form-field reminder-field">
           <label>Tempo promemoria ricevimento</label>
           <ion-item lines="none">
-            <ion-select [(ngModel)]="form.reminder_ore" interface="popover">
+            <ion-select [(ngModel)]="form.reminderOre" interface="popover">
               <ion-select-option [value]="1">1 ora prima</ion-select-option>
               <ion-select-option [value]="3">3 ore prima</ion-select-option>
               <ion-select-option [value]="24">24 ore prima</ion-select-option>
@@ -128,45 +128,6 @@
               Cambia
             </ion-button>
           </div>
-          <div class="security-item">
-            <div>
-              <span>Autenticazione a due fattori</span>
-              <strong>{{ stato2FA ? 'Attiva' : 'Disattiva' }}</strong>
-            </div>
-            @if (!mostraInput2FA) {
-              <ion-toggle
-                [ngModel]="stato2FA"
-                (ionChange)="stato2FA ? disabilita2FA() : abilita2FA()"
-                [disabled]="caricamento2FA"
-              ></ion-toggle>
-            }
-          </div>
-          @if (mostraInput2FA) {
-            <div class="form-field" style="margin-top:12px">
-              <label>Codice di verifica</label>
-              @if (codice2FAMostrato) {
-                <div class="banner-dev">
-                  <span>CODICE DI TEST: <strong>{{ codice2FAMostrato }}</strong></span>
-                </div>
-              }
-              <div style="display:flex;gap:8px;align-items:center">
-                <ion-input
-                  type="text"
-                  [ngModel]="codice2FA"
-                  (ngModelChange)="codice2FA = $event"
-                  placeholder="000000"
-                  maxlength="6"
-                  style="font-family:monospace;font-size:20px;letter-spacing:6px;flex:1;--padding-start:12px;--padding-end:12px"
-                ></ion-input>
-                <ion-button size="small" (click)="confermaAbilita2FA()" [disabled]="conferma2FAInCorso || codice2FA.length !== 6">
-                  Verifica
-                </ion-button>
-                <ion-button size="small" fill="outline" (click)="annullaAbilita2FA()">
-                  Annulla
-                </ion-button>
-              </div>
-            </div>
-          }
         </div>
       </ion-card-content>
     </ion-card>

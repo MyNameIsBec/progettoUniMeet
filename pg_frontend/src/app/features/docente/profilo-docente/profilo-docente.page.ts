@@ -6,14 +6,18 @@ import { firstValueFrom } from 'rxjs';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonInput, IonItem, IonToggle, IonSelect, IonSelectOption, ToastController, AlertController } from '@ionic/angular/standalone'; 
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component'; 
 import { AuthService } from '../../../core/services/auth';
+import { DocenteService } from '../../../core/services/docente';
 
 interface ProfiloForm {
   nome: string;
   cognome: string;
   email: string;
   ufficio: string;
-  notifiche_app: boolean;
-  reminder_ore: number;
+  notificheApp: boolean;
+  notificheEmail: boolean;
+  reminderOre: number;
+  tema: string;
+  lingua: string;
 }
 
 @Component({
@@ -34,20 +38,17 @@ export class ProfiloDocentePage implements OnInit {
     cognome: '',
     email: '',
     ufficio: '',
-    notifiche_app: true,
-    reminder_ore: 24
+    notificheApp: true,
+    notificheEmail: true,
+    reminderOre: 24,
+    tema: 'system',
+    lingua: 'it',
   };
 
-  // 2FA
-  stato2FA = false;
-  mostraInput2FA = false;
-  codice2FA = '';
-  codice2FAMostrato = '';
-  caricamento2FA = false;
-  conferma2FAInCorso = false;
 
   constructor(
     private authService: AuthService,
+    private docenteService: DocenteService,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private router: Router
@@ -72,32 +73,17 @@ export class ProfiloDocentePage implements OnInit {
 
     try {
       const data = await firstValueFrom(this.authService.getProfile());
-      const user = this.authService.getCurrentUser();
-
-      let notifiche_app = true;
-      let reminder_ore = 24;
-
-      if (user) {
-        const saved = localStorage.getItem(`pref_${user.id}`);
-
-        if (saved) {
-          try {
-            const parsed = JSON.parse(saved);
-            notifiche_app = parsed?.notifiche_app ?? true;
-            reminder_ore = parsed?.reminder_ore ?? 24;
-          } catch {
-            console.log('Preferenze locali corrotte');
-          }
-        }
-      }
 
       this.form = {
         nome: data.nome,
         cognome: data.cognome,
         email: data.email,
         ufficio: data.ufficio ?? '',
-        notifiche_app,
-        reminder_ore
+        notificheApp: data.notificheApp ?? true,
+        notificheEmail: data.notificheEmail ?? true,
+        reminderOre: data.reminderOre ?? 24,
+        tema: data.tema ?? 'system',
+        lingua: data.lingua ?? 'it',
       };
 
       this.docente = data;
@@ -108,27 +94,19 @@ export class ProfiloDocentePage implements OnInit {
       this.loading = false;
     }
 
-    this.authService.getStato2FA().subscribe({
-      next: (res) => { this.stato2FA = res.abilitato; },
-      error: () => { this.stato2FA = false; },
-    });
   }
 
   async salvaModifiche() {
     try {
-        this.authService.updateUser({
-          nome: this.form.nome,
-          cognome: this.form.cognome
-        })
-
       const user = this.authService.getCurrentUser();
-      if (user) {
-        localStorage.setItem(`pref_${user.id}`, JSON.stringify({
-            notifiche_app: this.form.notifiche_app,
-            reminder_ore: this.form.reminder_ore
-          })
-        );
-      }
+      if (!user) return;
+
+      await firstValueFrom(this.docenteService.aggiornaProfilo(user.id, this.form));
+
+      this.authService.updateUser({
+        nome: this.form.nome,
+        cognome: this.form.cognome
+      });
 
       await this.showToast('Profilo aggiornato con successo!');
     } catch (err) {
@@ -198,81 +176,6 @@ export class ProfiloDocentePage implements OnInit {
     await toast.present();
   }
 
-  abilita2FA() {
-    this.caricamento2FA = true;
-    this.authService.abilita2FA().subscribe({
-      next: (res) => {
-        this.caricamento2FA = false;
-        this.mostraInput2FA = true;
-        if (res.codiceMostrato) {
-          this.codice2FAMostrato = res.codiceMostrato;
-        }
-      },
-      error: (err: any) => {
-        this.caricamento2FA = false;
-        this.showToast(err.error?.error || 'Errore', 'danger');
-        this.stato2FA = false;
-      },
-    });
-  }
-
-  confermaAbilita2FA() {
-    if (!this.codice2FA || this.codice2FA.length !== 6) return;
-    this.conferma2FAInCorso = true;
-    this.authService.confermaAbilita2FA(this.codice2FA).subscribe({
-      next: () => {
-        this.conferma2FAInCorso = false;
-        this.stato2FA = true;
-        this.mostraInput2FA = false;
-        this.codice2FA = '';
-        this.codice2FAMostrato = '';
-        this.showToast('Autenticazione a due fattori abilitata con successo!');
-      },
-      error: (err: any) => {
-        this.conferma2FAInCorso = false;
-        this.showToast(err.error?.error || 'Errore', 'danger');
-      },
-    });
-  }
-
-  async disabilita2FA() {
-    const alert = await this.alertCtrl.create({
-      header: 'Disabilita 2FA',
-      message: 'Inserisci la password per confermare la disabilitazione dell\'autenticazione a due fattori.',
-      inputs: [
-        { name: 'password', type: 'password', placeholder: 'Password attuale' },
-      ],
-      buttons: [
-        { text: 'Annulla', role: 'cancel' },
-        {
-          text: 'Disabilita',
-          handler: (data) => {
-            if (!data.password) {
-              this.showToast('Inserisci la password', 'danger');
-              return false;
-            }
-            this.authService.disabilita2FA(data.password).subscribe({
-              next: () => {
-                this.stato2FA = false;
-                this.showToast('Autenticazione a due fattori disabilitata.');
-              },
-              error: (err: any) => {
-                this.showToast(err.error?.error || 'Errore', 'danger');
-              },
-            });
-            return true;
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  annullaAbilita2FA() {
-    this.mostraInput2FA = false;
-    this.codice2FA = '';
-    this.codice2FAMostrato = '';
-  }
 
   logout() {
     this.authService.logout();
