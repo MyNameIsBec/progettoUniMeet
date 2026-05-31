@@ -51,10 +51,10 @@ import { AuthService } from 'src/app/core/services/auth';
       header: 'Nuovo stato',
       subHeader: segnalazione.oggetto,
       buttons: [
-        { text: 'Aperta', handler: () => this.chiediNote(segnalazione, 'APERTA') },
-        { text: 'In lavorazione', handler: () => this.chiediNote(segnalazione, 'IN_LAVORAZIONE') },
-        { text: 'Chiusa', handler: () => this.chiediNote(segnalazione, 'CHIUSA') },
-        { text: 'Annulla', role: 'cancel' },
+        { text: 'Aperta', icon: 'alert-circle-outline', handler: () => this.chiediNote(segnalazione, 'APERTA') },
+        { text: 'In lavorazione', icon: 'time-outline', handler: () => this.chiediNote(segnalazione, 'IN_LAVORAZIONE') },
+        { text: 'Chiusa', icon: 'checkmark-circle-outline', handler: () => this.chiediNote(segnalazione, 'CHIUSA') },
+        { text: 'Annulla', icon: 'close-outline', role: 'cancel' },
       ],
     });
     await actionSheet.present();

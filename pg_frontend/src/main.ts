@@ -97,6 +97,7 @@ import {
   saveOutline,
   sunnyOutline,
   timeOutline,
+  swapHorizontalOutline,
   trashBinOutline,
   trashOutline
 } from 'ionicons/icons';
@@ -186,6 +187,7 @@ addIcons({
   saveOutline,
   sunnyOutline,
   timeOutline,
+  swapHorizontalOutline,
   trashBinOutline,
   trashOutline
 });
