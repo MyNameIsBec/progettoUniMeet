@@ -94,22 +94,27 @@ import { AuthService } from 'src/app/core/services/auth';
 
   async dettagli(s: any) {
     const nomeUtente = s.studente
-      ? s.studente.nome + ' ' + s.studente.cognome + ' (Matr. ' + s.matricola_studente + ')'
+      ? s.studente.nome + ' ' + s.studente.cognome + '  (Matr. ' + s.matricola_studente + ')'
       : s.docente
-        ? s.docente.nome + ' ' + s.docente.cognome + ' (Docente)'
+        ? s.docente.nome + ' ' + s.docente.cognome + '  (Docente)'
         : '-';
 
     const emailUtente = s.studente?.email || s.docente?.email || '-';
+    const sep = '─────────────────────';
 
     let msg = '';
-    msg += 'DESCRIZIONE\n' + (s.descrizione || '') + '\n\n';
-    msg += 'UTENTE\n' + nomeUtente + '\n' + emailUtente + '\n\n';
-    msg += 'DATA INVIO\n' + new Date(s.data_invio).toLocaleString('it-IT') + '\n\n';
-    msg += 'STATO\n' + this.statoLabel(s.stato) + '\n\n';
-    msg += 'ALLEGATO\n' + (s.allegato ? this.getAllegatoUrl(s.allegato) : 'Nessuno');
+    msg += 'Descrizione:\n' + (s.descrizione || '') + '\n\n';
+    msg += sep + '\n';
+    msg += 'Utente:      ' + nomeUtente + '\n';
+    msg += 'Email:       ' + emailUtente + '\n';
+    msg += sep + '\n';
+    msg += 'Data invio:  ' + new Date(s.data_invio).toLocaleString('it-IT') + '\n';
+    msg += 'Stato:       ' + this.statoLabel(s.stato) + '\n';
+    msg += 'Allegato:    ' + (s.allegato ? this.getAllegatoUrl(s.allegato) : 'Nessuno');
 
     if (s.note_admin) {
-      msg += '\n\nNOTA ADMIN\n' + s.note_admin;
+      msg += '\n' + sep + '\n';
+      msg += 'Nota admin:\n' + s.note_admin;
     }
 
     const alert = await this.alertController.create({
