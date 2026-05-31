@@ -93,27 +93,10 @@ import { AuthService } from 'src/app/core/services/auth';
   }
 
   async dettagli(s: any) {
-    const utente = s.studente
-      ? s.studente.nome + ' ' + s.studente.cognome + ' (Matr. ' + s.matricola_studente + ')'
-      : s.docente
-        ? s.docente.nome + ' ' + s.docente.cognome + ' (Docente)'
-        : '-';
-
-    let msg = 'Descrizione:\n' + (s.descrizione || '') + '\n\n';
-    msg += 'Utente: ' + utente + '\n';
-    msg += 'Email: ' + (s.studente?.email || s.docente?.email || '-') + '\n';
-    msg += 'Data invio: ' + new Date(s.data_invio).toLocaleString('it-IT') + '\n';
-    msg += 'Stato: ' + this.statoLabel(s.stato) + '\n';
-    msg += 'Allegato: ' + (s.allegato ? this.getAllegatoUrl(s.allegato) : 'Nessuno');
-
-    if (s.note_admin) {
-      msg += '\nNota admin: ' + s.note_admin;
-    }
-
     const alert = await this.alertController.create({
       header: 'Dettagli segnalazione',
       subHeader: s.oggetto,
-      message: msg,
+      message: s.descrizione || '',
       buttons: ['Chiudi'],
     });
     await alert.present();
