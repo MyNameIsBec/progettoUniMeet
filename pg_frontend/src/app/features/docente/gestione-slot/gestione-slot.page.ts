@@ -162,10 +162,11 @@ export class GestioneSlotPage implements OnInit, AfterViewInit {
   }
 
   applicaFiltri() {
-    const adesso = new Date();
+    const oggi = new Date();
+    oggi.setHours(0, 0, 0, 0);
     this.filteredSlots = this.slots.filter(s => {
-      const dataOraSlot = new Date(`${s.data}T${s.oraFine || '00:00'}`);
-      if (dataOraSlot < adesso) return false;
+      const dataSlot = new Date(s.data + 'T00:00:00');
+      if (dataSlot < oggi) return false;
       if (this.filtroStato === 'disponibile' && !s.disponibilita) return false;
       if (this.filtroStato === 'parziale' && (s.disponibilita || s.prenotazioniCount === 0)) return false;
       if (this.filtroStato === 'pieno' && (s.disponibilita || s.prenotazioniCount === 0)) return false;

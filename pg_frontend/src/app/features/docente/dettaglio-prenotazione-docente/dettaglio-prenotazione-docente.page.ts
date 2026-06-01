@@ -62,7 +62,14 @@ import { Prenotazione } from '../../../core/models/interfacce';
 
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
-    L.marker([this.prenotazione.luogoRicevimento.latitudine, this.prenotazione.luogoRicevimento.longitudine]).addTo(this.map)
+    const markerIcon = L.divIcon({
+      className: 'custom-marker-icon',
+      html: '<div style="background:#2563eb;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+    });
+
+    L.marker([this.prenotazione.luogoRicevimento.latitudine, this.prenotazione.luogoRicevimento.longitudine], { icon: markerIcon }).addTo(this.map)
       .bindPopup(`
         <div style="padding:5px;min-width:150px;">
           <strong style="color:#2563eb;">${this.prenotazione.luogoRicevimento.aula || 'Luogo'}</strong><br>
@@ -119,7 +126,8 @@ import { Prenotazione } from '../../../core/models/interfacce';
   async confermaPrenotazione() {
     if (!this.prenotazione) return;
     try {
-      this.prenotazione = await firstValueFrom(this.prenotazioneService.aggiornaStatoPrenotazione(this.prenotazione.id, 'confermata'));
+      const resp = await firstValueFrom(this.prenotazioneService.aggiornaStatoPrenotazione(this.prenotazione.id, 'confermata'));
+      if (resp?.stato) this.prenotazione.stato = resp.stato;
     } catch (err) {
       console.error('Errore conferma prenotazione', err);
     }
@@ -128,7 +136,8 @@ import { Prenotazione } from '../../../core/models/interfacce';
   async annullaPrenotazione() {
     if (!this.prenotazione) return;
     try {
-      this.prenotazione = await firstValueFrom(this.prenotazioneService.aggiornaStatoPrenotazione(this.prenotazione.id, 'annullata'));
+      const resp = await firstValueFrom(this.prenotazioneService.aggiornaStatoPrenotazione(this.prenotazione.id, 'annullata'));
+      if (resp?.stato) this.prenotazione.stato = resp.stato;
     } catch (err) {
       console.error('Errore annullamento prenotazione', err);
     }

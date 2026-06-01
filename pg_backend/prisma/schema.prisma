@@ -190,6 +190,4 @@ model CodiceVerifica {
   scadenza  DateTime
   usato     Boolean  @default(false)
   creato_il DateTime @default(now())
-
-  @@index([email, tipo])
 }

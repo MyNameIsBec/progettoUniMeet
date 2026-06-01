@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import { schedule } from 'node-cron';
 import { prisma } from '../prisma/client';
 
 async function notifica(destinatarioId: string, destinatarioRuolo: string, titolo: string, messaggio: string, tipo: string) {
@@ -115,7 +115,7 @@ function formatOra(d: Date): string {
 }
 
 export function avviaReminderJob() {
-  cron.schedule('* * * * *', () => {
+  schedule('* * * * *', () => {
     processaReminder().catch((err) => {
       console.error('Errore reminder job:', err);
     });
