@@ -650,3 +650,424 @@ Quando un docente crea/aggiorna il suo profilo, deve poter selezionare:
 
 - **Rimuovere** il pulsante `<button class="toggle-tema">` da `topbar.component.html`
 - **Aggiungere** un `ion-toggle` "Tema scuro" nelle pagine profilo studente e docente
+
+---
+
+## Mappatura Funzionalità → File Completa
+
+Ogni funzionalità elenca: route frontend, pagina Angular, servizi frontend usati, endpoint backend, controller, service backend e modelli DB coinvolti.
+
+### 1. Landing & Autenticazione
+
+#### 1.1 Home
+| Ruolo | Percorso |
+|-------|----------|
+| Frontend | `pg_frontend/src/app/features/home/home.page.ts` |
+| Template | `home.page.html` |
+| Stili | `home.page.scss` |
+| Route | `/home` (pubblica) |
+
+#### 1.2 Login
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/auth/login/login.page.ts` |
+| Frontend service | `core/services/auth.ts` → `login()` |
+| Backend route | `POST /api/login` |
+| Backend controller | `controllers/auth.controller.ts` → `login` |
+| Backend service | `services/auth.service.ts` → `login()` |
+| Modelli DB | Studente, Docente, Amministratore |
+
+#### 1.3 Registrazione Studente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/auth/registrazione/registrazione.page.ts` |
+| Frontend service | `core/services/auth.ts` → `registraStudente()`, `getCorsiDiStudio()` |
+| Backend route | `POST /api/registrazione` |
+| Backend controller | `controllers/auth.controller.ts` → `registerStudente` |
+| Backend service | `services/auth.service.ts` → `registerStudente()` |
+| Backend validators | `validators/auth.validators.ts` → `studenteRegistrationSchema` |
+| Modelli DB | Studente, CorsoDiStudi |
+
+#### 1.4 Recupero Password
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/auth/recupera-password/recupera-password.page.ts` |
+| Frontend service | `core/services/auth.ts` → `richiediResetPassword()`, `verificaCodice()`, `confermaResetPassword()` |
+| Backend routes | `POST /api/recupera-password`, `POST /api/auth/verifica-codice`, `POST /api/reset-password` |
+| Backend controller | `controllers/auth.controller.ts` → `forgotPassword`, `verificaCodice`, `resetPassword` |
+| Backend service | `services/auth.service.ts`, `services/codice-verifica.service.ts`, `services/email.service.ts` |
+| Modelli DB | CodiceVerifica, Studente, Docente, Amministratore |
+
+#### 1.5 Reset Password
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/auth/reset-password/reset-password.page.ts` |
+| Frontend service | `core/services/auth.ts` → `confermaResetPassword()` |
+| Backend route | `POST /api/reset-password` |
+| Modelli DB | CodiceVerifica |
+
+### 2. Funzionalità Studente
+
+#### 2.1 Dashboard Studente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/dashboard-studente/dashboard-studente.page.ts` |
+| Template | `dashboard-studente.page.html` |
+| Stili | `dashboard-studente.page.scss` |
+| Route | `/dashboard-studente` (auth + role: studente) |
+| Frontend services | `PrenotazioneService`, `AuthService`, `BachecaService`, `StudenteService` |
+| Backend APIs | `GET /api/studenti/:matricola`, `GET /api/prenotazioni/studente/:matricola`, `GET /api/corsi`, `GET /api/bacheche/corso-di-studi/:id` |
+| Modelli DB | Studente, Prenotazione, Corso, Bacheca, FAQ |
+
+#### 2.2 Elenco Docenti
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/elenco-docenti/elenco-docenti.page.ts` |
+| Route | `/elenco-docenti` |
+| Frontend services | `AuthService`, `StudenteService`, `DocenteService` |
+| Backend APIs | `GET /api/docenti`, `GET /api/corsi-di-studio` |
+| Modelli DB | Docente, CorsoDiStudi |
+
+#### 2.3 Prenota Ricevimento
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/prenota/prenota.page.ts` |
+| Route | `/prenota` |
+| Frontend services | `DocenteService`, `PrenotazioneService`, `AuthService`, `StudenteService`, `AdminService` |
+| Backend APIs | `GET /api/docenti/:idDocente/slots`, `GET /api/admin/giorni-bloccati`, `POST /api/prenotazioni` |
+| Backend route | `routes/prenotazioni.routes.ts` → `POST /api/prenotazioni` |
+| Backend upload | `middleware/upload.ts` (multer, max 10MB, filtri MIME) |
+| Modelli DB | SlotRicevimento, Prenotazione, Documento, GiornoBloccato |
+
+#### 2.4 Riepilogo Prenotazioni
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/riepilogo-prenotazioni/riepilogo-prenotazioni.page.ts` |
+| Route | `/riepilogo-prenotazioni` |
+| Frontend services | `AuthService`, `PrenotazioneService`, `StudenteService` |
+| Backend APIs | `GET /api/prenotazioni/studente/:matricola`, `DELETE /api/prenotazioni/:id/fisico` |
+| Modelli DB | Prenotazione |
+
+#### 2.5 Dettaglio Prenotazione (con mappa Leaflet)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/dettaglio-prenotazione/dettaglio-prenotazione.page.ts` |
+| Route | `/dettaglio-prenotazione/:id` |
+| Frontend services | `PrenotazioneService`, `AuthService` |
+| Backend API | `GET /api/prenotazioni/:id` |
+| Modelli DB | Prenotazione, LuogoRicevimento, Documento |
+
+#### 2.6 Profilo Studente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/profilo-studente/profilo-studente.page.ts` |
+| Route | `/profilo-studente` |
+| Frontend services | `AuthService`, `StudenteService`, `ErroriService` |
+| Backend routes | `routes/studenti.routes.ts` |
+| Backend APIs | `GET /api/studenti/:matricola`, `PUT /api/studenti/:matricola`, `POST /api/auth/change-password`, `DELETE /api/studenti/:matricola` |
+| Modelli DB | Studente |
+
+#### 2.7 Bacheca / FAQ
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/bacheca-studente/bacheca-studente.page.ts` |
+| Route | `/bacheca-studente` |
+| Frontend services | `BachecaService`, `AuthService`, `StudenteService` |
+| Backend APIs | `GET /api/bacheche/corso-di-studi/:idCorsoDiStudi`, `GET /api/corsi-di-studio` |
+| Backend files | `routes/bacheche.routes.ts`, `controllers/bacheca.controller.ts`, `services/bacheca.service.ts` |
+| Modelli DB | Bacheca, FAQ, CorsoDiStudi, Corso |
+
+#### 2.8 Notifiche Studente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/notifiche-studente/notifiche-studente.page.ts` |
+| Template | `notifiche-studente.page.html` |
+| Route | `/notifiche-studente` |
+| Frontend services | `NotificaService`, `AuthService` |
+| Backend routes | `routes/notifiche.routes.ts` |
+| Backend APIs | `GET /api/notifiche/:id`, `PATCH /api/notifiche/:id/letta`, `POST /api/.../letta-tutte`, `DELETE /api/.../lette` |
+| Backend files | `controllers/notifiche.controller.ts`, `services/notifiche.service.ts` |
+| Modelli DB | Notifica |
+
+#### 2.9 Segnalazioni Studente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/studente/segnalazioni-studente/segnalazioni-studente.page.ts` |
+| Route | `/segnalazioni-studente` |
+| Frontend services | `SegnalazioneService`, `AuthService`, `ErroriService` |
+| Backend routes | `routes/segnalazioni.routes.ts` |
+| Backend files | `controllers/segnalazioni.controller.ts`, `services/segnalazioni.service.ts` |
+| Modelli DB | Segnalazione |
+
+### 3. Funzionalità Docente
+
+#### 3.1 Dashboard Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/dashboard-docente/dashboard-docente.page.ts` |
+| Route | `/dashboard-docente` |
+| Frontend services | `AuthService`, `PrenotazioneService`, `DocenteService` |
+| Backend APIs | `GET /api/prenotazioni/docente/:id`, `GET /api/docenti/:idDocente/statistiche` |
+| Modelli DB | Prenotazione, SlotRicevimento |
+
+#### 3.2 Gestione Slot (con mappa Leaflet)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/gestione-slot/gestione-slot.page.ts` |
+| Route | `/gestione-slot` |
+| Frontend services | `AuthService`, `DocenteService` |
+| Backend routes | `routes/docenti.routes.ts` |
+| Backend APIs | `GET/POST/PUT/DELETE /api/docenti/:idDocente/slots` |
+| Backend files | `controllers/docenti.controller.ts`, `services/docenti.service.ts` |
+| Validators | `validators/docenti.validators.ts` |
+| Modelli DB | SlotRicevimento, LuogoRicevimento |
+
+#### 3.3 Gestione Prenotazioni Ricevute
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/prenotazioni-ricevute/prenotazioni-ricevute.page.ts` |
+| Route | `/prenotazioni-ricevute` |
+| PDF utility | `pdf-generator.ts` (export agenda giornaliera) |
+| Frontend services | `AuthService`, `PrenotazioneService` |
+| Backend APIs | `GET /api/prenotazioni/docente/:idDocente`, `PUT /api/prenotazioni/:id/stato` |
+| Modelli DB | Prenotazione |
+
+#### 3.4 Dettaglio Prenotazione Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/dettaglio-prenotazione-docente/dettaglio-prenotazione-docente.page.ts` |
+| Route | `/dettaglio-prenotazione-docente/:id` |
+| Frontend services | `PrenotazioneService`, `AuthService` |
+| Backend API | `GET /api/prenotazioni/:id`, `POST /api/prenotazioni/:id/documenti` |
+| Backend upload | `middleware/upload.ts` |
+| Modelli DB | Prenotazione, Documento |
+
+#### 3.5 Bacheche e FAQ (Docente)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/bacheche-docente/bacheche-docente.page.ts` |
+| Route | `/bacheche-docente` |
+| Frontend services | `BachecaService` |
+| Backend APIs | `GET /api/bacheche/docente/me`, `POST /api/bacheche/corso/:idCorso/faq`, `PUT/DELETE /api/faq/:id` |
+| Backend files | `routes/bacheche.routes.ts`, `controllers/bacheca.controller.ts`, `services/bacheca.service.ts` |
+| Modello DB | Bacheca, FAQ |
+
+#### 3.6 Statistiche Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/statistiche-docente/statistiche-docente.page.ts` |
+| Route | `/statistiche-docente` |
+| Frontend services | `AuthService`, `PrenotazioneService`, `DocenteService` |
+| Backend API | `GET /api/docenti/:idDocente/statistiche` |
+| Modello DB | Prenotazione |
+
+#### 3.7 Documenti (Docente)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/documenti-docente/documenti-docente.page.ts` |
+| Route | `/documenti-docente` |
+| Frontend services | `AuthService`, `PrenotazioneService` |
+| Backend APIs | `GET /api/prenotazioni/docente/:idDocente` |
+| Modello DB | Documento, Prenotazione |
+
+#### 3.8 Profilo Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/profilo-docente/profilo-docente.page.ts` |
+| Route | `/profilo-docente` |
+| Frontend services | `AuthService`, `DocenteService` |
+| Backend route | `PUT /api/docenti/:idDocente/profilo` |
+| Backend files | `routes/docenti.routes.ts`, `controllers/docenti.controller.ts`, `services/docenti.service.ts` |
+| Validators | `validators/docenti.validators.ts` → `aggiornaProfiloSchema` |
+| Modello DB | Docente |
+
+#### 3.9 Notifiche Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/notifiche-docente/notifiche-docente.page.ts` |
+| Route | `/notifiche-docente` |
+| Frontend services | `NotificaService`, `AuthService`, `ErroriService` |
+| Backend routes | `routes/notifiche.routes.ts` |
+| Backend files | `controllers/notifiche.controller.ts`, `services/notifiche.service.ts` |
+| Modello DB | Notifica |
+
+#### 3.10 Segnalazioni Docente
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/docente/segnalazioni-docente/segnalazioni-docente.page.ts` |
+| Route | `/segnalazioni-docente` |
+| Frontend services | `SegnalazioneService`, `AuthService` |
+| Backend routes | `routes/segnalazioni.routes.ts` → `POST /api/segnalazioni/docente`, `GET /api/segnalazioni/docente/:idDocente` |
+| Modello DB | Segnalazione |
+
+### 4. Funzionalità Admin
+
+#### 4.1 Dashboard Admin
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/dashboard-admin/dashboard-admin.page.ts` |
+| Route | `/dashboard-admin` |
+| Frontend service | `AdminService` |
+| Backend API | `GET /api/admin/stats` |
+| Backend files | `routes/admin.routes.ts`, `controllers/admin.controller.ts`, `services/admin.service.ts` |
+| Modelli DB | Studente, Docente, Prenotazione, SlotRicevimento |
+
+#### 4.2 Gestione Account
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/gestione-account/gestione-account.page.ts` |
+| Route | `/gestione-account` |
+| Frontend services | `AdminService`, `AuthService` |
+| Backend APIs | `GET/POST/PUT/DELETE /api/admin/utenti` |
+| Backend validators | `validators/admin.validators.ts` |
+| Modelli DB | Studente, Docente, Amministratore, CorsoDiStudi |
+
+#### 4.3 Gestione Slot (Admin)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/gestione-slot-admin/gestione-slot-admin.page.ts` |
+| Route | `/gestione-slot-admin` |
+| Frontend service | `AdminService` |
+| Backend APIs | `GET/POST/PUT/DELETE /api/admin/slot`, `GET /api/admin/slot-date` |
+| Modelli DB | SlotRicevimento, LuogoRicevimento |
+
+#### 4.4 Gestione Segnalazioni
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/gestione-segnalazioni/gestione-segnalazioni.page.ts` |
+| Route | `/gestione-segnalazioni` |
+| Frontend service | `SegnalazioneService` |
+| Backend APIs | `GET /api/segnalazioni/admin/all`, `PATCH /api/segnalazioni/:id/stato`, `DELETE /api/segnalazioni/:id` |
+| Modello DB | Segnalazione |
+
+#### 4.5 Gestione Prenotazioni (Admin)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/gestione-prenotazioni-admin/gestione-prenotazioni-admin.page.ts` |
+| Route | `/gestione-prenotazioni-admin` |
+| Frontend service | `AdminService` |
+| Backend APIs | `GET /api/admin/prenotazioni`, `PUT /api/admin/prenotazioni/:id/stato`, `DELETE /api/admin/prenotazioni/:id` |
+| Modello DB | Prenotazione |
+
+#### 4.6 Gestione Calendario (Giorni Bloccati)
+| Ruolo | File |
+|-------|------|
+| Frontend page | `pg_frontend/src/app/features/admin/gestione-calendario/gestione-calendario.page.ts` |
+| Route | `/gestione-calendario` |
+| Frontend service | `AdminService` |
+| Backend APIs | `GET/POST /api/admin/giorni-bloccati`, `DELETE /api/admin/giorni-bloccati/:id` |
+| Modello DB | GiornoBloccato |
+
+### 5. Infrastruttura Condivisa
+
+#### 5.1 Sistema Notifiche
+| Componente | File |
+|------------|------|
+| Backend route | `routes/notifiche.routes.ts` |
+| Backend controller | `controllers/notifiche.controller.ts` |
+| Backend service | `services/notifiche.service.ts` |
+| Frontend service | `core/services/notifica.ts` (con BehaviorSubject `nonLette$`) |
+| Frontend badge | `components/topbar/topbar.component.ts` (sottoscrizione a `nonLette$`) |
+| Pagine frontend | `notifiche-studente.page.ts`, `notifiche-docente.page.ts` |
+| Modello DB | Notifica |
+
+#### 5.2 Upload File
+| Componente | File |
+|------------|------|
+| Middleware | `middleware/upload.ts` (multer, MIME filter, 10MB limit) |
+| Static serve | `app.ts` (`/uploads` mount) |
+| Route prenotazioni | `routes/prenotazioni.routes.ts` |
+| Route segnalazioni | `routes/segnalazioni.routes.ts` |
+| Modello DB | Documento |
+
+#### 5.3 Reminder Automatici
+| Componente | File |
+|------------|------|
+| Servizio | `services/reminder.service.ts` (cron job, X ore prima) |
+| Avvio | `server.ts` |
+| Modelli DB | Prenotazione, Notifica, Docente, Studente |
+
+#### 5.4 Auth & Sicurezza
+| Componente | File |
+|------------|------|
+| JWT middleware | `middleware/authenticate.ts` |
+| Role middleware | `middleware/authorize.ts` |
+| Auth service | `services/auth.service.ts` |
+| Auth controller | `controllers/auth.controller.ts` |
+| Auth routes | `routes/auth.routes.ts` |
+
+#### 5.5 Componenti UI Condivisi
+| Componente | File |
+|------------|------|
+| Dashboard layout | `components/dashboard-layout/dashboard-layout.component.ts` |
+| Sidebar | `components/sidebar/sidebar.component.ts` |
+| Topbar | `components/topbar/topbar.component.ts` |
+| Routing | `app.routes.ts` (27 rotte) |
+| Auth guard | `core/guards/auth-guard.ts` |
+| Auth interceptor | `core/interceptors/auth-interceptor.ts` |
+| Modelli condivisi | `core/models/interfacce.ts` |
+
+#### 5.6 Modelli Database (Prisma)
+| File | Contenuto |
+|------|-----------|
+| `prisma/schema.prisma` | 15 modelli: CorsoDiStudi, Studente, Docente, DocenteCorsoDiStudi, Amministratore, Corso, Bacheca, FAQ, SlotRicevimento, LuogoRicevimento, Prenotazione, Documento, Notifica, GiornoBloccato, CodiceVerifica |
+| `prisma/seed.ts` | Dati di test dinamici (date relative a oggi) |
+
+---
+
+## Bug Fix Applicati
+
+| Data | Fix | File |
+|------|-----|------|
+| 31/05/2026 | **Slot non liberato su rifiuto/annullamento prenotazione** — `aggiornaStatoPrenotazione()` ora imposta `disponibilita = true` quando lo stato diventa `RIFIUTATA` o `ANNULLATA` | `services/prenotazioni.service.ts` |
+| 31/05/2026 | **Slot non liberato su eliminazione fisica** — `eliminaPrenotazione()` ora riapre lo slot prima di cancellare la prenotazione | `services/prenotazioni.service.ts` |
+| 31/05/2026 | **File type validation** — multer ora filtra MIME types, blocca `.exe`, `.sh`, `.html`, ecc. | `middleware/upload.ts` |
+| 31/05/2026 | **CORS ristretto** — solo `localhost:4200` e `localhost:8100` | `app.ts` |
+| 31/05/2026 | **Admin auth su giorni-bloccati** — `GET /admin/giorni-bloccati` ora richiede ruolo AMMINISTRATORE | `routes/admin.routes.ts` |
+| 31/05/2026 | **Validazione profilo docente** — aggiunto schema validazione `aggiornaProfiloSchema` su `PUT /docenti/:id/profilo` | `validators/docenti.validators.ts`, `routes/docenti.routes.ts` |
+| 31/05/2026 | **JWT_REFRESH_SECRET separato** — aggiunta variabile d'ambiente dedicata (non più fallback a JWT_SECRET) | `.env` |
+| 31/05/2026 | **Gestione errori multer** — global error handler restituisce JSON anziché HTML | `app.ts` |
+
+---
+
+## Vulnerabilità Note (Da Risolvere)
+
+Le vulnerabilità qui elencate sono state identificate durante una security audit ma **non ancora corrette**.
+
+### 🔴 Critiche
+
+| # | Vulnerabilità | File | Descrizione |
+|---|--------------|------|-------------|
+| V1 | **IDOR prenotazioni** — qualsiasi utente autenticato può leggere/modificare/cancellare qualsiasi prenotazione | `routes/prenotazioni.routes.ts:16-22` | `GET /:id`, `DELETE /:id`, `PUT /:id/stato`, `POST /:id/documenti` — nessun controllo che la prenotazione appartenga all'utente |
+| V2 | **IDOR profilo studente** — qualsiasi utente può leggere/modificare profili altrui | `routes/studenti.routes.ts:8-9` | `GET/PUT /studenti/:matricola` non verifica `req.user.id === matricola` |
+| V4 | **IDOR notifiche** — qualsiasi utente legge notifiche di chiunque | `routes/notifiche.routes.ts:14-18` | `GET /notifiche/:destinatarioId`, `PATCH /:id/letta`, `POST /:id/letta-tutte`, `DELETE /:id/lette` |
+| V5 | **IDOR segnalazioni** — qualsiasi utente legge segnalazioni altrui | `routes/segnalazioni.routes.ts:26-30,64-68` | `GET /segnalazioni/studente/:matricola`, `GET /segnalazioni/docente/:idDocente` |
+| V6 | **Booking impersonation** — uno studente può prenotare per un altro | `routes/prenotazioni.routes.ts:15` | `POST /prenotazioni` accetta `matricolaStudente` dal body senza verificarlo col token |
+
+### 🟡 Alte
+
+| # | Vulnerabilità | File | Descrizione |
+|---|--------------|------|-------------|
+| V10 | **Rate limiting assente** — nessuna protezione su login/registrazione/verifica-codice | tutti i route | Brute force password e codice reset possibili |
+| V11 | **Stored XSS** — input utente non sanitizzato prima del DB | `bacheca.service.ts`, `segnalazioni.service.ts`, `prenotazioni.service.ts` | Domanda FAQ, descrizione segnalazione, argomento prenotazione |
+| V12 | **Upload HTML/SVG** — nonostante il MIME filter, file rinominati potrebbero eluderlo | `middleware/upload.ts` | File `.html` rinominati come `.pdf`? Da verificare comportamento client |
+| V14 | **Email enumeration** — registrazione risponde "Email già in uso" | `controllers/auth.controller.ts:21-50` | Attaccante enumera email valide |
+
+### 🟢 Medie
+
+| # | Vulnerabilità | File | Descrizione |
+|---|--------------|------|-------------|
+| V15 | **CORS** — lista origini da estendere in produzione | `app.ts` | Aggiungere dominio di produzione |
+| V16 | **Bcrypt rounds** — 10 rounds, best practice 12-14 | `services/auth.service.ts:7` | Aumentare salt rounds |
+| V17 | **Password reset code 6 cifre** — senza rate limiting è bruteforcabile | `services/codice-verifica.service.ts:6` | Aggiungere rate limiting o aumentare complessità |
+| V18 | **Password minima 8 char** — nessun requisito di complessità | `validators/auth.validators.ts` | Aggiungere maiuscola, numero, carattere speciale |
+| V19 | **No HTTPS** — traffico in chiaro | `server.ts:36` | Configurare TLS in produzione |
+| V20 | **No audit log** — nessuna traccia di operazioni sensibili | — | Aggiungere logging per login falliti, cancellazioni, azioni admin |
+
+### 🟢 Basse
+
+| # | Vulnerabilità | File | Descrizione |
+|---|--------------|------|-------------|
+| V21 | **No refresh token rotation** — token rubato usabile 7 giorni | `services/auth.service.ts:209-217` | Implementare rotazione |
+| V22 | **Errori specifici** — "Studente not found", "Slot not found" leak esistenza | vari controllers | Uniformare a messaggi generici |
+| V23 | **Informazioni sensibili in getPrenotazioneById** — email studente esposta | `services/prenotazioni.service.ts:317` | Rimuovere email dal response se non necessaria |

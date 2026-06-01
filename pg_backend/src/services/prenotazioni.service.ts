@@ -172,6 +172,11 @@ export async function eliminaPrenotazione(id: string) {
     where: { id_prenotazione: id }
   });
 
+  await prisma.slotRicevimento.update({
+    where: { id_slot: prenotazione.id_slot },
+    data: { disponibilita: true },
+  });
+
   await prisma.prenotazione.delete({
     where: { id_prenotazione: id }
   });
@@ -259,6 +264,13 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
       `La tua prenotazione del ${dataSlot} alle ${formatTime(updated.slot.ora_inizio)} con il Prof. ${updated.slot.docente.nome} ${updated.slot.docente.cognome} è stata ${statoSup === 'CONFERMATA' ? 'CONFERMATA' : 'RIFIUTATA'}.`,
       'stato_prenotazione'
     );
+  }
+
+  if (statoSup === 'RIFIUTATA' || statoSup === 'ANNULLATA') {
+    await prisma.slotRicevimento.update({
+      where: { id_slot: prenotazione.id_slot },
+      data: { disponibilita: true },
+    });
   }
 
   return {

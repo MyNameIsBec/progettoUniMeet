@@ -4,7 +4,7 @@ import {
   modificaSlot, eliminaSlot, aggiornaProfilo, getStatistiche,
 } from '../controllers/docenti.controller';
 import {
-  creaSlotSchema, modificaSlotSchema, slotFiltriSchema, handleValidationErrors,
+  creaSlotSchema, modificaSlotSchema, slotFiltriSchema, aggiornaProfiloSchema, handleValidationErrors,
 } from '../validators/docenti.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorizeDocente } from '../middleware/authorize';
@@ -17,7 +17,7 @@ router.get('/docenti/:idDocente/slots', authenticate, slotFiltriSchema, handleVa
 router.post('/docenti/:idDocente/slots', authenticate, authorizeDocente, creaSlotSchema, handleValidationErrors, creaSlot);
 router.put('/docenti/:idDocente/slots/:idSlot', authenticate, authorizeDocente, modificaSlotSchema, handleValidationErrors, modificaSlot);
 router.delete('/docenti/:idDocente/slots/:idSlot', authenticate, authorizeDocente, eliminaSlot);
-router.put('/docenti/:idDocente/profilo', authenticate, authorizeDocente, aggiornaProfilo);
+router.put('/docenti/:idDocente/profilo', authenticate, authorizeDocente, aggiornaProfiloSchema, handleValidationErrors, aggiornaProfilo);
 router.get('/docenti/:idDocente/statistiche', authenticate, authorizeDocente, getStatistiche);
 
 export default router;

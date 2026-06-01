@@ -22,6 +22,18 @@ export const modificaSlotSchema = [
   body('luogo.piano').if(body('luogo').exists()).isString().notEmpty(),
 ];
 
+export const aggiornaProfiloSchema = [
+  body('nome').optional().isString().notEmpty().trim(),
+  body('cognome').optional().isString().notEmpty().trim(),
+  body('email').optional().isEmail().normalizeEmail(),
+  body('ufficio').optional().isString().notEmpty().trim(),
+  body('notificheApp').optional().isBoolean(),
+  body('notificheEmail').optional().isBoolean(),
+  body('reminderOre').optional().isInt({ min: 0 }),
+  body('tema').optional().isString().isIn(['chiaro', 'scuro', 'system']),
+  body('lingua').optional().isString().isIn(['it', 'en']),
+];
+
 export const slotFiltriSchema = [
   query('mese').optional().isString().notEmpty(),
 ];
