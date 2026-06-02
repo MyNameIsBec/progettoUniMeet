@@ -298,12 +298,6 @@ async function main() {
   log('DB', 'PostgreSQL connesso. ✅');
   console.log('');
 
-  // ── 1.1 Applica migrazioni Prisma ──
-  log('MIGRATE', 'Applicazione migrazioni Prisma...');
-  execSync('npx prisma migrate deploy', { cwd: BACKEND, stdio: 'inherit' });
-  log('MIGRATE', 'Migrazioni applicate ✅');
-  console.log('');
-
   // ── 1.5 Setup database / reset / seed ──
   const pgClient = await connectPg(config);
 
@@ -313,6 +307,9 @@ async function main() {
     await pgClient.query(`CREATE DATABASE "${config.dbName}"`);
     log('RESET', 'Database ricreato ✅');
     await pgClient.end();
+    log('MIGRATE', 'Applicazione migrazioni Prisma...');
+    execSync('npx prisma migrate deploy', { cwd: BACKEND, stdio: 'inherit' });
+    log('MIGRATE', 'Migrazioni applicate ✅');
     if (!flags.noSeed) await runSeed();
   } else {
     const exists = await dbExists(pgClient, config.dbName);
@@ -322,6 +319,9 @@ async function main() {
       log('SETUP', 'Database non trovato, creo...');
       await createDb(config);
       log('SETUP', 'Database creato ✅');
+      log('MIGRATE', 'Applicazione migrazioni Prisma...');
+      execSync('npx prisma migrate deploy', { cwd: BACKEND, stdio: 'inherit' });
+      log('MIGRATE', 'Migrazioni applicate ✅');
     }
 
     if (!flags.noSeed) {
