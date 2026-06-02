@@ -180,6 +180,13 @@ export async function aggiornaStatoSegnalazione(id: string, stato: string, noteA
     docente: updated.docente,
   };
 }
+export async function getSegnalazioneById(id: string) {
+  const segnalazione = await prisma.segnalazione.findUnique({
+    where: { id_segnalazione: id },
+  });
+  return segnalazione;
+}
+
 export async function eliminaSegnalazione(id: string) {
   const segnalazione = await prisma.segnalazione.findUnique({
     where: { id_segnalazione: id },

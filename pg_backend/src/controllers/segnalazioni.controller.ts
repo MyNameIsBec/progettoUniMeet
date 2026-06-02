@@ -56,6 +56,25 @@ export async function aggiornaStatoSegnalazione(req: Request, res: Response) {
 export async function eliminaSegnalazione(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
+    const user = req.user!;
+
+    const segnalazione = await segnalazioniService.getSegnalazioneById(id);
+    if (!segnalazione) {
+      return res.status(404).json({ error: 'Segnalazione not found' });
+    }
+
+    const isAdmin = user.ruolo === 'AMMINISTRATORE';
+    const isProprietarioStudente = user.ruolo === 'STUDENTE' && segnalazione.matricola_studente === user.id;
+    const isProprietarioDocente = user.ruolo === 'DOCENTE' && segnalazione.id_docente === user.id;
+
+    if (!isAdmin && !isProprietarioStudente && !isProprietarioDocente) {
+      return res.status(403).json({ error: 'Non autorizzato' });
+    }
+
+    if (!isAdmin && segnalazione.stato !== 'CHIUSA') {
+      return res.status(403).json({ error: 'Puoi eliminare solo segnalazioni chiuse' });
+    }
+
     await segnalazioniService.eliminaSegnalazione(id);
     return res.status(204).send();
   } catch (err: unknown) {

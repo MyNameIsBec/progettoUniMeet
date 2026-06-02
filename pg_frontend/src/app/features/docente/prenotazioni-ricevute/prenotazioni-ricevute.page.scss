@@ -332,6 +332,8 @@ ion-button {
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .detail-item {

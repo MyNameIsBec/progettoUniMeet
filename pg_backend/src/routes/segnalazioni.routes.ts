@@ -48,7 +48,6 @@ router.patch(
 router.delete(
   '/segnalazioni/:id',
   authenticate,
-  authorize('AMMINISTRATORE'),
   eliminaSegnalazione
 );
 

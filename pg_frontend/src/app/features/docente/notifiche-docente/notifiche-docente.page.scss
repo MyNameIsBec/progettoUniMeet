@@ -429,7 +429,18 @@
     }
 
     .right-column {
-        display: none;
+        grid-template-columns: 1fr;
+    }
+
+    .management-card ion-card-content {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .management-row {
+        flex: 1;
+        min-width: 200px;
     }
 }
 
@@ -446,5 +457,18 @@
     .notification-item .notification-icon {
         width: 44px;
         height: 44px;
+    }
+
+    .summary-card div strong {
+        font-size: 1.8rem;
+    }
+
+    .summary-icon {
+        width: 44px;
+        height: 44px;
+
+        ion-icon {
+            font-size: 22px;
+        }
     }
 }
