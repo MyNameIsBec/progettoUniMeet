@@ -135,13 +135,15 @@ async function startDocker() {
   }
 
   const containers = execSync('docker ps -a --format "{{.Names}}"', { encoding: 'utf-8', timeout: 5000 });
-  if (containers.includes('pg_prenotazioni')) {
-    log('DB', 'Avvio container Docker pg_prenotazioni...');
-    execSync('docker start pg_prenotazioni', { stdio: 'pipe', timeout: 15000 });
-    return true;
+  for (const name of ['pg_prenotazioni', 'unimeet-db']) {
+    if (containers.includes(name)) {
+      log('DB', `Avvio container Docker ${name}...`);
+      execSync(`docker start ${name}`, { stdio: 'pipe', timeout: 15000 });
+      return true;
+    }
   }
 
-  log('DB', 'Nessun container pg_prenotazioni trovato.');
+  log('DB', 'Nessun container PostgreSQL Docker trovato.');
   return false;
 }
 
@@ -213,10 +215,18 @@ function parseDbUrl(urlStr) {
   };
 }
 
-async function runSetupDb() {
-  log('SETUP', 'Eseguo setup-db.js...');
-  execSync('node setup-db.js', { cwd: BACKEND, stdio: 'inherit' });
-  log('SETUP', 'Database pronto ✅');
+async function createDb(config) {
+  const { Client } = require('pg');
+  const client = new Client({
+    user: config.user,
+    password: config.password,
+    host: config.host,
+    port: config.port,
+    database: 'postgres',
+  });
+  await client.connect();
+  await client.query(`CREATE DATABASE "${config.dbName.replace(/"/g, '""')}"`);
+  await client.end();
 }
 
 async function runSeed() {
@@ -241,6 +251,12 @@ async function main() {
   installDeps(ROOT, 'Root');
   installDeps(BACKEND, 'Backend');
   installDeps(FRONTEND, 'Frontend');
+  console.log('');
+
+  // ── 0.5 Genera client Prisma ──
+  log('PRISMA', 'Generazione client Prisma...');
+  execSync('npx prisma generate', { cwd: BACKEND, stdio: 'inherit' });
+  log('PRISMA', 'Client Prisma generato ✅');
   console.log('');
 
   const env = loadEnv();
@@ -282,6 +298,12 @@ async function main() {
   log('DB', 'PostgreSQL connesso. ✅');
   console.log('');
 
+  // ── 1.1 Applica migrazioni Prisma ──
+  log('MIGRATE', 'Applicazione migrazioni Prisma...');
+  execSync('npx prisma migrate deploy', { cwd: BACKEND, stdio: 'inherit' });
+  log('MIGRATE', 'Migrazioni applicate ✅');
+  console.log('');
+
   // ── 1.5 Setup database / reset / seed ──
   const pgClient = await connectPg(config);
 
@@ -291,15 +313,15 @@ async function main() {
     await pgClient.query(`CREATE DATABASE "${config.dbName}"`);
     log('RESET', 'Database ricreato ✅');
     await pgClient.end();
-    await runSetupDb();
     if (!flags.noSeed) await runSeed();
   } else {
     const exists = await dbExists(pgClient, config.dbName);
     await pgClient.end();
 
     if (!exists) {
-      log('SETUP', 'Database non trovato, eseguo setup...');
-      await runSetupDb();
+      log('SETUP', 'Database non trovato, creo...');
+      await createDb(config);
+      log('SETUP', 'Database creato ✅');
     }
 
     if (!flags.noSeed) {
