@@ -183,20 +183,3 @@ SMTP_USER=la-tua-email@gmail.com
 SMTP_PASS=la-tua-app-password
 EMAIL_FROM=la-tua-email@gmail.com
 ```
-
-**Gmail:**
-1. Attiva la **verifica in due passaggi** su [myaccount.google.com/security](https://myaccount.google.com/security)
-2. Genera una **App Password** su [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-3. Inserisci l'App Password in `SMTP_PASS`
-
-Se SMTP non è configurato, il server scrive il codice in console (utile in sviluppo).
-
----
-
-## Documentazione
-
-| Documento | Descrizione |
-|-----------|-------------|
-| `pg_backend/DOCUMENTAZIONE.md` | Architettura backend, API, servizi, validators |
-| `pg_frontend/DOCUMENTAZIONE.md` | Architettura frontend, routing, pagine, servizi |
-| `DOCUMENTAZIONE_TECNICA.txt` | Documentazione tecnica completa del progetto |
