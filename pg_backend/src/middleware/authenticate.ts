@@ -21,7 +21,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     return res.status(401).json({ error: 'Token required' });
   }
 
-  const token = header.slice(7);
+  const token = header.slice(7); //toglie Bearer
   try {
     const payload = jwt.verify(token, JWT_SECRET) as {
       id: string;
