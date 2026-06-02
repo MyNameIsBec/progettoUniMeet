@@ -238,6 +238,7 @@ async function main() {
 
   // ── 0. Installa dipendenze se mancanti ──
   console.log('  Controllo dipendenze...');
+  installDeps(ROOT, 'Root');
   installDeps(BACKEND, 'Backend');
   installDeps(FRONTEND, 'Frontend');
   console.log('');

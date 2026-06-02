@@ -25,6 +25,15 @@ pg_backend/uploads/
 # Misc
 lazygit
 
+# Documentazione tecnica
+DOCUMENTAZIONE_TECNICA.txt
+pg_backend/DOCUMENTAZIONE.md
+pg_frontend/DOCUMENTAZIONE.md
+
+# Setup scripts
+pg_backend/setup-db.js
+pg_backend/setup-db.sh
+
 # TypeScript cache
 *.tsbuildinfo
 
