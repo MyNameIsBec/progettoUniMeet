@@ -5,7 +5,6 @@
 [![Node](https://img.shields.io/badge/Node-18+-339933?logo=nodedotjs)](https://nodejs.org)
 [![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://prisma.io)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-4169E1?logo=postgresql)](https://postgresql.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 Applicazione web per la gestione di prenotazioni di ricevimento tra studenti e docenti universitari.
 
