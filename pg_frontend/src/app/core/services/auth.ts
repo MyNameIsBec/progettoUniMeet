@@ -102,10 +102,10 @@ export class AuthService {
     return this.http.get<any>(`${this.apiUrl}/api/auth/profile`);
   }
 
-  changePassword(vecchiaPassword: string, newPassword: string): Observable<{ messaggio: string }> {
+  changePassword(oldPassword: string, newPassword: string): Observable<{ messaggio: string }> {
     return this.http.post<{ messaggio: string }>(
       `${this.apiUrl}/api/auth/change-password`,
-      { vecchiaPassword, newPassword }
+      { oldPassword, newPassword }
     );
   }
 

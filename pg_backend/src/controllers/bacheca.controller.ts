@@ -98,8 +98,9 @@ export async function updateFaq(req: Request, res: Response) {
 
     if (req.user!.ruolo === 'DOCENTE') {
       const faqInfo = await bachecaService.getFaqById(id);
-      if (faqInfo.idDocente !== req.user!.id) {
-        return res.status(403).json({ error: 'Access denied: non sei il docente di questa FAQ' });
+      const autorizzato = await bachecaService.verificaDocenteCorso(req.user!.id, faqInfo.idCorso);
+      if (!autorizzato) {
+        return res.status(403).json({ error: 'Access denied: non sei il docente del corso di questa FAQ' });
       }
     }
 
@@ -119,8 +120,9 @@ export async function deleteFaq(req: Request, res: Response) {
 
     if (req.user!.ruolo === 'DOCENTE') {
       const faqInfo = await bachecaService.getFaqById(id);
-      if (faqInfo.idDocente !== req.user!.id) {
-        return res.status(403).json({ error: 'Access denied: non sei il docente di questa FAQ' });
+      const autorizzato = await bachecaService.verificaDocenteCorso(req.user!.id, faqInfo.idCorso);
+      if (!autorizzato) {
+        return res.status(403).json({ error: 'Access denied: non sei il docente del corso di questa FAQ' });
       }
     }
 

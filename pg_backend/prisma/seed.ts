@@ -3,9 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pkg from 'pg';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
-import zlib from 'zlib';
+
 
 const { Pool } = pkg;
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -22,17 +20,7 @@ const d = (offset: number) => {
   return dt;
 };
 
-// ─── Minimal valid file generators ──────────────────────────────────────────
-function crc32(buf: Buffer): number {
-  let crc = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) {
-    crc ^= buf[i];
-    for (let j = 0; j < 8; j++) {
-      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
-    }
-  }
-  return (crc ^ 0xffffffff) >>> 0;
-}
+
 
 function createPdf(content: string): Buffer {
   const esc = (s: string) => s.replace(/[()\\]/g, '\\$&');
@@ -163,7 +151,7 @@ async function main() {
   await prisma.corsoDiStudi.deleteMany();
   console.log('✨ Database cleared.\n');
 
-  const PW = await bcrypt.hash('Password123', SALT_ROUNDS);
+  const PW = await bcrypt.hash('Password123!', SALT_ROUNDS);
 
   // ─── CORSO DI STUDI ───────────────────────────────────────────────────────
   console.log('── CorsoDiStudi ──');
@@ -450,54 +438,8 @@ async function main() {
   }
 
   // ─── DOCUMENTO ────────────────────────────────────────────────────────────
-  console.log('\n── Documento ──');
-  const docDefs = [
-    { file: 'relazione_progetto.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 0, content: 'Relazione progetto — Programmazione Web — Mario Rossi' },
-    { file: 'esercizi_sql.zip',       tipo: 'application/zip', dim: 0, prenIdx: 6, content: 'Esercizi SQL svolti — Lisa Bianchi' },
-    { file: 'certificato_esonero.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 4, content: 'Certificato esonero — Ingegneria del Software — Luca Ferrari' },
-    { file: 'screenshot_errore.png',  tipo: 'image/png',       dim: 0, prenIdx: 3, content: 'Screenshot errore applicazione' },
-    { file: 'lettera_motivazionale.pdf', tipo: 'application/pdf', dim: 0, prenIdx: 9, content: 'Lettera motivazionale — Luca Ferrari' },
-    { file: 'programma_esame.pdf',    tipo: 'application/pdf', dim: 0, prenIdx: 11, content: 'Programma esame Geometria — Marco Esposito' },
-  ];
-  const fileBuffers: { filename: string; buffer: Buffer }[] = [];
-  for (const d of docDefs) {
-    let buffer: Buffer;
-    switch (d.tipo) {
-      case 'application/pdf':
-        buffer = createPdf(d.content);
-        break;
-      case 'application/zip':
-        buffer = createZip(d.file, d.content);
-        break;
-      case 'image/png':
-        buffer = createPng();
-        break;
-      default:
-        buffer = Buffer.from(d.content, 'utf8');
-    }
-    fileBuffers.push({ filename: d.file, buffer });
-    await prisma.documento.create({
-      data: {
-        nome_file: d.file,
-        tipo_file: d.tipo,
-        dimensione: buffer.length,
-        percorso_file: `/uploads/${d.file}`,
-        id_prenotazione: prenotazioni[d.prenIdx]!.id_prenotazione,
-      },
-    });
-    console.log(`  ${d.file} (${(buffer.length / 1024).toFixed(0)} KB)`);
-  }
-
-  // ─── FILE FISICI ──────────────────────────────────────────────────────────
-  console.log('\n── File fisici ──');
-  const uploadsDir = path.join(__dirname, '../uploads');
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  for (const f of fileBuffers) {
-    const filePath = path.join(uploadsDir, f.filename);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    fs.writeFileSync(filePath, f.buffer);
-    console.log(`  Scritto: ${f.filename} (${f.buffer.length} bytes)`);
-  }
+  // I documenti vengono caricati dagli utenti, nessun documento preimpostato
+  console.log('\n── Documento ── (nessun documento preimpostato)');
 
   // ─── SEGNALAZIONE ─────────────────────────────────────────────────────────
   console.log('\n── Segnalazione ──');
@@ -606,7 +548,7 @@ async function main() {
   console.log(`   - ${docenteData.length} docenti (tutti con slot)`);
   console.log(`   - ${slotDefs.length} slot (passati e futuri)`);
   console.log(`   - ${prenotazioneDefs.length} prenotazioni (tutti gli stati)`);
-  console.log(`   - ${docDefs.length} documenti (file reali minimi)`);
+  console.log(`   - 0 documenti preimpostati`);
   console.log(`   - ${segnalazioneDefs.length} segnalazioni (studente + docente)`);
   console.log(`   - ${notificaDefs.length} notifiche (mix utenti/ruoli/stati)`);
   console.log(`   - ${giorniBloccati.length} giorni bloccati`);

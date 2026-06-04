@@ -148,14 +148,17 @@ export class GestioneSlotPage implements OnInit, AfterViewInit {
   }
 
   calcolaStatistiche() {
-    this.slotAttiviCount = this.slots.length;
-    this.disponibiliCount = this.slots.filter(s => s.disponibilita).length;
-    this.pieniCount = this.slots.filter(s => !s.disponibilita && s.prenotazioniCount > 0).length;
-    this.annullatiCount = this.slots.filter(s => !s.disponibilita && s.prenotazioniCount === 0).length;
+    const oggi = new Date();
+    oggi.setHours(0, 0, 0, 0);
+    const slotsFuturi = this.slots.filter(s => new Date(s.data + 'T00:00:00') >= oggi);
+    this.slotAttiviCount = slotsFuturi.length;
+    this.disponibiliCount = slotsFuturi.filter(s => s.disponibilita).length;
+    this.pieniCount = slotsFuturi.filter(s => !s.disponibilita && s.prenotazioniCount > 0).length;
+    this.annullatiCount = slotsFuturi.filter(s => !s.disponibilita && s.prenotazioniCount === 0).length;
 
-    if (this.slots.length > 0) {
-      const prenotati = this.slots.filter(s => s.prenotazioniCount > 0).length;
-      this.mediaRiempimento = Math.round((prenotati / this.slots.length) * 100);
+    if (slotsFuturi.length > 0) {
+      const prenotati = slotsFuturi.filter(s => s.prenotazioniCount > 0).length;
+      this.mediaRiempimento = Math.round((prenotati / slotsFuturi.length) * 100);
     } else {
       this.mediaRiempimento = 0;
     }

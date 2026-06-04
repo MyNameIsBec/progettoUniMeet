@@ -14,7 +14,7 @@ export const aggiornaStudenteSchema = [
 
 export const cambiaPasswordStudenteSchema = [
   body('vecchiaPw').isString().notEmpty(),
-  body('nuovaPw').isString().isLength({ min: 8 }),
+  body('nuovaPw').isString().isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/),
 ];
 
 export const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {

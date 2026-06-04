@@ -206,7 +206,7 @@ export async function deleteFaq(id: string): Promise<void> {
   await prisma.fAQ.delete({ where: { id_faq: id } });
 }
 
-export async function getFaqById(id: string): Promise<{ idBacheca: string; idDocente?: string | null }> {
+export async function getFaqById(id: string): Promise<{ idBacheca: string; idDocente?: string | null; idCorso: string }> {
   const faq = await prisma.fAQ.findUnique({
     where: { id_faq: id },
     select: {
@@ -216,5 +216,5 @@ export async function getFaqById(id: string): Promise<{ idBacheca: string; idDoc
     },
   });
   if (!faq) throw new Error('FAQ not found');
-  return { idBacheca: faq.bacheca.id_corso, idDocente: faq.id_docente };
+  return { idBacheca: faq.bacheca.id_corso, idDocente: faq.id_docente, idCorso: faq.bacheca.id_corso };
 }
