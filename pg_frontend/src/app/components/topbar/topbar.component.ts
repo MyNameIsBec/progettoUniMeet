@@ -81,6 +81,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
 
   vaiAlProfilo() {
+    if (this.ruoloAccount === 'amministratore') return;
     this.router.navigate([this.getProfileRoute()]);
   }
 

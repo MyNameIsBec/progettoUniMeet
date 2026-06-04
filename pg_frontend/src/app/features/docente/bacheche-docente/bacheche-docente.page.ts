@@ -108,7 +108,7 @@ export class BachecheDocentePage implements OnInit {
           handler: async (data) => {
             if (!data.domanda || !data.risposta) return false;
             try {
-              await firstValueFrom(this.bachecaService.aggiornaFaq('', { ...faq, domanda: data.domanda, risposta: data.risposta, }));
+              await firstValueFrom(this.bachecaService.aggiornaFaq(faq.id, { ...faq, domanda: data.domanda, risposta: data.risposta, }));
               const aggiornata = await firstValueFrom(this.bachecaService.getBachecaByCorso(this.corsoSelezionatoId));
               this.selezionaBacheca(aggiornata);
             } catch (err) {

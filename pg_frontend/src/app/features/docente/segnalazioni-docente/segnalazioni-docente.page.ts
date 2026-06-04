@@ -20,7 +20,6 @@ export class SegnalazioniDocentePage implements OnInit {
   selectedFile: File | null = null;
   invioInCorso: boolean = false;
   docenteId: string = '';
-  user: any = null;
   form = {
     oggetto: '',
     descrizione: ''
@@ -112,12 +111,11 @@ export class SegnalazioniDocentePage implements OnInit {
   }
 
   inviaSegnalazione() {
-    this.docenteId = '';
-    if (this.form.oggetto != '' && this.form.descrizione != '') {
-      this.docenteId = this.user.id;
-    } else {
+    const user = this.authService.getCurrentUser();
+    if (user == null || this.form.oggetto == '' || this.form.descrizione == '') {
       return;
     }
+    this.docenteId = user.id;
 
     this.invioInCorso = true;
     this.segnalazioneService.inviaSegnalazioneDocente(

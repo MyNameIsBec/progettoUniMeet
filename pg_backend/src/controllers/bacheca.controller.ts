@@ -82,7 +82,7 @@ export async function createFaq(req: Request, res: Response) {
       }
     }
 
-    const faq = await bachecaService.createFaq(idCorso, req.body);
+    const faq = await bachecaService.createFaq(idCorso, { ...req.body, idDocente: req.user!.id });
     return res.status(201).json(faq);
   } catch (err: unknown) {
     if (err instanceof Error && err.message === 'Bacheca not found') {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonIcon, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton } from '@ionic/angular/standalone';
@@ -16,7 +16,7 @@ import { DashboardLayoutComponent } from '../../../components/dashboard-layout/d
   styleUrls: ['./elenco-docenti.page.scss'],
   standalone: true,
   imports: [ CommonModule,RouterLink,IonIcon,IonCard,IonCardContent,IonCardHeader,IonCardTitle,IonButton,FormsModule,DashboardLayoutComponent]})
-export class ElencoDocentiPage {
+export class ElencoDocentiPage implements OnInit {
   public listaDocenti: Docente[] = [];
   public docentiOriginali: Docente[] = []; 
   public ricerca: string = '';

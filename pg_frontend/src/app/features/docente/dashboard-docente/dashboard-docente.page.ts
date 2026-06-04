@@ -82,7 +82,7 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
       }).slice(0, 3);
 
       const tuttiSlots = await firstValueFrom(this.docenteService.getSlots(idDocente));
-      this.slotDisponibiliCount = tuttiSlots.filter(s => s.disponibilita).length;
+      this.slotDisponibiliCount = tuttiSlots.filter(s => s.disponibilita && new Date(s.data) >= new Date(oggiStr)).length;
 
       const totalSlots = tuttiSlots.length;
       const occupatiSlots = tuttiSlots.filter(s => !s.disponibilita).length;
