@@ -5,7 +5,6 @@
     color: var(--text-dark);
 }
 
-/* CARD BASE */
 .summary-card,
 .form-card,
 .slots-list-card,
@@ -44,13 +43,92 @@
     }
 }
 
+ion-modal.slot-modal {
+    --width: 800px !important;
+    --height: 96% !important;
+    --max-height: 96% !important;
+    --border-radius: 28px !important;
+    --background: var(--ion-background-color);
+
+    &::part(content) {
+        border-radius: 28px !important;
+        padding: 0 !important;
+    }
+}
+
+.modal-root-native {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.modal-toolbar-premium-native {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .header-title {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        text-align: center;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .header-confirm-btn {
+        --background: white;
+        --color: #2563eb;
+        --border-radius: 12px;
+        font-weight: 800;
+        margin: 0;
+        height: 40px;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+    }
+
+    .header-close-btn {
+        --color: white;
+        margin: 0;
+        font-size: 2rem;
+    }
+}
+
+.modal-scroll-area {
+    flex: 1;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
+}
+
+.modal-slot-content {
+    padding: 24px;
+}
+
 ion-button {
     --border-radius: 12px;
     text-transform: none;
     font-weight: 900;
 }
 
-/* SUMMARY */
 .slot-summary-grid {
     margin: 0 34px 32px;
     display: grid;
@@ -131,7 +209,6 @@ ion-button {
     }
 }
 
-/* LAYOUT GRIDS */
 .slot-layout {
     margin: 0 34px 48px;
     display: grid;
@@ -146,7 +223,6 @@ ion-button {
     gap: 32px;
 }
 
-/* FORM CARD */
 .slot-form-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -209,7 +285,6 @@ ion-button {
     text-align: center;
 }
 
-/* FILTERS */
 .filters-row {
     margin-bottom: 24px;
     display: flex;
@@ -281,17 +356,19 @@ ion-button {
     }
 }
 
-/* SLOT LIST & ITEMS */
 .slot-list {
     display: grid;
     gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
 }
 
 .slot-item {
-    display: grid;
-    grid-template-columns: 80px minmax(0, 1fr) 120px auto 86px;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 20px;
+    gap: 16px 20px;
     padding: 20px;
     border: 1px solid #e2e8f0;
     border-radius: 20px;
@@ -353,12 +430,17 @@ ion-button {
 }
 
 .slot-main-info {
+    flex: 1 1 200px;
+    min-width: 0;
     h3 {
         margin: 0 0 8px;
         color: var(--text-dark);
         font-size: 1.2rem;
         font-weight: 900;
         letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
@@ -460,7 +542,6 @@ ion-button {
     }
 }
 
-/* SIDEBAR COMPONENTS */
 .guide-step {
     display: grid;
     grid-template-columns: 34px 1fr;
@@ -594,7 +675,6 @@ ion-button {
     }
 }
 
-/* RESPONSIVE TABLET */
 @media (max-width: 1200px) {
     .slot-summary-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -608,23 +688,11 @@ ion-button {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .slot-item {
-        grid-template-columns: 80px minmax(0, 1fr);
-    }
-
-    .slot-capacity,
-    .slot-status,
-    .slot-actions {
-        grid-column: 2;
-        justify-self: start;
-    }
-
     .slot-capacity {
         width: 220px;
     }
 }
 
-/* MOBILE */
 @media (max-width: 700px) {
     .slot-summary-grid,
     .slot-layout {
@@ -676,10 +744,15 @@ ion-button {
     }
 
     .slot-item {
-        grid-template-columns: 1fr;
-        justify-items: center;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
         padding: 24px 18px;
+    }
+
+    .slot-main-info {
+        flex: none;
+        width: 100%;
     }
 
     .slot-date-box {
@@ -688,13 +761,6 @@ ion-button {
 
     .slot-meta {
         justify-content: center;
-    }
-
-    .slot-capacity,
-    .slot-status,
-    .slot-actions {
-        grid-column: auto;
-        justify-self: center;
     }
 
     .slot-capacity {
@@ -720,7 +786,80 @@ ion-button {
     }
 }
 
-/* DARK MODE OVERRIDES */
+:host-context(body.dark) .summary-card,
+:host-context(body.dark) .form-card,
+:host-context(body.dark) .slots-list-card,
+:host-context(body.dark) .side-card {
+    --background: #0f172a;
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .summary-card ion-card-title,
+:host-context(body.dark) .slots-list-card ion-card-title,
+:host-context(body.dark) .side-card ion-card-title {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .slot-item {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+:host-context(body.dark) .slot-item:hover {
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+}
+
+:host-context(body.dark) .slot-date-box strong {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .slot-main-info h3 {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .slot-capacity span {
+    color: #e2e8f0;
+}
+
+:host-context(body.dark) .slot-meta span {
+    color: #94a3b8;
+}
+
+:host-context(body.dark) .search-field {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .search-field input {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .search-field input::placeholder {
+    color: #64748b;
+}
+
+:host-context(body.dark) .search-field:focus-within {
+    background: #1e293b;
+    border-color: #3b82f6;
+}
+
+:host-context(body.dark) .select-field {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(body.dark) .select-field ion-select {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .fill-card h3 {
+    color: #f1f5f9;
+}
+
+:host-context(body.dark) .warning-card h3 {
+    color: #fbbf24;
+}
 
 :host-context(body.dark) .summary-icon.blue {
     background: linear-gradient(135deg, #1d4ed8, #1e40af);
@@ -806,15 +945,59 @@ ion-button {
     color: #94a3b8;
 }
 
-:host-context(body.dark) .custom-field ion-item {
+:host-context(body.dark) ::ng-deep .slot-modal .modal-root-native {
+    background: #0f172a;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .modal-toolbar-premium-native {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .modal-scroll-area {
+    background: #020617;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .custom-field label {
+    color: #94a3b8;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .custom-field ion-item {
     --background: rgba(255, 255, 255, 0.05);
     --border-color: rgba(255, 255, 255, 0.15);
+    --color: #f1f5f9;
     border-color: rgba(255, 255, 255, 0.15);
 }
 
-:host-context(body.dark) .custom-field ion-item:focus-within {
+:host-context(body.dark) ::ng-deep .slot-modal .custom-field ion-item:focus-within {
     background: rgba(255, 255, 255, 0.08);
     box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.15);
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .custom-field ion-item ion-input,
+:host-context(body.dark) ::ng-deep .slot-modal .custom-field ion-item ion-select {
+    --color: #f1f5f9;
+    --placeholder-color: #64748b;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .modal-slot-content {
+    background: #020617;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .slot-map {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .coords-hint {
+    color: #94a3b8;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .modal-toolbar-premium-native .header-confirm-btn {
+    --background: #2563eb;
+    --color: #ffffff;
+}
+
+:host-context(body.dark) ::ng-deep .slot-modal .modal-toolbar-premium-native .header-close-btn {
+    --color: #ffffff;
 }
 
 :host-context(body.dark) .search-field:focus-within {
