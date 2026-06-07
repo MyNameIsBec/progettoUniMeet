@@ -1,168 +1,1 @@
-<ion-content [fullscreen]="true" class="auth-content">
-  <div class="auth-wrapper">
-    <button class="back-btn" (click)="goTo('/')">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-      Torna alla home
-    </button>
-
-    <div class="auth-card register-card">
-      <div class="auth-logo">
-        <div class="logo-row">
-          <ion-icon name="calendar-outline" class="logo-icon"></ion-icon>
-          <span class="logo-name">UniMeet</span>
-        </div>
-        <p class="logo-sub">Crea il tuo account</p>
-      </div>
-      @if (errorMessage) {
-        <div class="error-banner">
-          <ion-icon name="alert-circle-outline"></ion-icon>
-          <span>{{ errorMessage }}</span>
-        </div>
-      }
-
-      <form [formGroup]="registrazioneForm" (ngSubmit)="effettuaRegistrazione()">
-        <div class="fields-row">
-          <div class="field-group">
-            <label class="field-label">Nome</label>
-            <div class="field-wrap" [class.has-error]="nome.invalid && nome.touched">
-              <ion-icon name="person-outline" class="field-icon"></ion-icon>
-              <ion-input formControlName="nome" placeholder="Mario" class="field-input"></ion-input>
-            </div>
-            @if (nome.invalid && nome.touched) {
-              <span class="field-error-msg">
-                @if (nome.errors?.['required']) { Campo obbligatorio }
-                @if (nome.errors?.['minlength']) { Minimo 2 caratteri }
-              </span>
-            }
-          </div>
-
-          <div class="field-group">
-            <label class="field-label">Cognome</label>
-            <div class="field-wrap" [class.has-error]="cognome.invalid && cognome.touched">
-              <ion-icon name="person-outline" class="field-icon"></ion-icon>
-              <ion-input formControlName="cognome" placeholder="Rossi" class="field-input"></ion-input>
-            </div>
-            @if (cognome.invalid && cognome.touched) {
-              <span class="field-error-msg">
-                @if (cognome.errors?.['required']) { Campo obbligatorio }
-                @if (cognome.errors?.['minlength']) { Minimo 2 caratteri }
-              </span>
-            }
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Email universitaria</label>
-          <div class="field-wrap" [class.has-error]="email.invalid && email.touched">
-            <ion-icon name="mail-outline" class="field-icon"></ion-icon>
-            <ion-input type="email" formControlName="email" placeholder="nome.cognome@univ.it"
-              class="field-input"></ion-input>
-          </div>
-          @if (email.invalid && email.touched) {
-            <span class="field-error-msg">
-              @if (email.errors?.['required']) { L'email è obbligatoria }
-              @if (email.errors?.['email']) { Formato email non valido }
-            </span>
-          }
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Matricola</label>
-          <div class="field-wrap" [class.has-error]="matricola.invalid && matricola.touched">
-            <ion-icon name="card-outline" class="field-icon"></ion-icon>
-            <ion-input formControlName="matricola" placeholder="Es. 0758735" class="field-input"
-              inputmode="numeric"></ion-input>
-          </div>
-          @if (matricola.invalid && matricola.touched) {
-            <span class="field-error-msg">
-              @if (matricola.errors?.['required']) { La matricola è obbligatoria }
-              @if (matricola.errors?.['pattern']) { Inserisci un numero valido (6–10 cifre) }
-            </span>
-          }
-        </div>
-        <div class="field-group">
-          <label class="field-label">Corso di Studi</label>
-          <div class="field-wrap" [class.has-error]="corsoDiStudi.invalid && corsoDiStudi.touched">
-            <ion-icon name="school-outline" class="field-icon"></ion-icon>
-            <ion-select formControlName="corsoDiStudi" interface="popover" placeholder="Seleziona corso di studi" class="field-input">
-              @for (cds of corsiDiStudio; track cds.id) {
-              <ion-select-option [value]="cds.nome">{{ cds.nome }}</ion-select-option>
-              }
-            </ion-select>
-          </div>
-          @if (corsoDiStudi.invalid && corsoDiStudi.touched) {
-          <span class="field-error-msg">
-            @if (corsoDiStudi.errors?.['required']) { Il corso di studi è obbligatorio }
-          </span>
-          }
-        </div>
-        <div class="field-group">
-          <label class="field-label">Password</label>
-          <div class="field-wrap" [class.has-error]="password.invalid && password.touched">
-            <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
-            <ion-input [type]="mostraPassword ? 'text' : 'password'" formControlName="password"
-              placeholder="Minimo 8 caratteri" class="field-input"></ion-input>
-            <button type="button" class="eye-btn" (click)="mostraPassword = !mostraPassword">
-              <ion-icon [name]="mostraPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-            </button>
-          </div>
-          @if (password.value) {
-            <div class="strength-bar">
-              <div class="strength-segments">
-                @for (i of [1,2,3,4]; track i) {
-                  <span class="strength-seg"
-                    [style.background]="forzaPassword >= i ? coloreForzaPassword : '#e2e8f0'"></span>
-                }
-              </div>
-              <span class="strength-label" [style.color]="coloreForzaPassword">
-                {{ etichettaForzaPassword }}
-              </span>
-            </div>
-          }
-
-          @if (password.invalid && password.touched) {
-            <span class="field-error-msg">
-              @if (password.errors?.['required']) { La password è obbligatoria }
-              @if (password.errors?.['minlength']) { Minimo 8 caratteri }
-              @if (password.errors?.['pattern']) { Richiede almeno una maiuscola, una minuscola e un numero }
-            </span>
-          }
-        </div>
-        <div class="field-group">
-          <label class="field-label">Conferma Password</label>
-          <div class="field-wrap" [class.has-error]="
-              (confirmPassword.invalid && confirmPassword.touched) ||
-              (registrazioneForm.errors?.['passwordMismatch'] && confirmPassword.touched)
-            ">
-            <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>
-            <ion-input [type]="mostraConfermaPassword ? 'text' : 'password'" formControlName="confirmPassword"
-              placeholder="Ripeti la password" class="field-input"></ion-input>
-            <button type="button" class="eye-btn" (click)="mostraConfermaPassword = !mostraConfermaPassword">
-              <ion-icon [name]="mostraConfermaPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-            </button>
-          </div>
-          @if (registrazioneForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
-            <span class="field-error-msg">
-              Le password non coincidono
-            </span>
-          }
-        </div>
-
-        <ion-button expand="block" type="submit" class="submit-btn" [disabled]="inCaricamento">
-          @if (inCaricamento) {
-            <ion-spinner name="crescent" slot="start"></ion-spinner>
-          } @else {
-            <ion-icon name="person-add-outline" slot="start"></ion-icon>
-          }
-          {{ inCaricamento ? 'Registrazione in corso…' : 'Registrati' }}
-        </ion-button>
-
-      </form>
-
-      <p class="switch-hint">
-        Hai già un account?
-        <button class="link-btn bold" (click)="goTo('/login')">Accedi</button>
-      </p>
-
-    </div>
-  </div>
-</ion-content>
+<ion-content [fullscreen]="true" class="auth-content">  <div class="auth-wrapper">    <button class="back-btn" (click)="goTo('/')">      <ion-icon name="arrow-back-outline"></ion-icon>      Torna alla home    </button>    <div class="auth-card register-card">      <div class="auth-logo">        <div class="logo-row">          <ion-icon name="calendar-outline" class="logo-icon"></ion-icon>          <span class="logo-name">UniMeet</span>        </div>        <p class="logo-sub">Crea il tuo account</p>      </div>      @if (errorMessage) {        <div class="error-banner">          <ion-icon name="alert-circle-outline"></ion-icon>          <span>{{ errorMessage }}</span>        </div>      }      <form [formGroup]="registrazioneForm" (ngSubmit)="effettuaRegistrazione()">        <div class="fields-row">          <div class="field-group">            <label class="field-label">Nome</label>            <div class="field-wrap" [class.has-error]="nome.invalid && nome.touched">              <ion-icon name="person-outline" class="field-icon"></ion-icon>              <ion-input formControlName="nome" placeholder="Mario" class="field-input"></ion-input>            </div>            @if (nome.invalid && nome.touched) {              <span class="field-error-msg">                @if (nome.errors?.['required']) { Campo obbligatorio }                @if (nome.errors?.['minlength']) { Minimo 2 caratteri }              </span>            }          </div>          <div class="field-group">            <label class="field-label">Cognome</label>            <div class="field-wrap" [class.has-error]="cognome.invalid && cognome.touched">              <ion-icon name="person-outline" class="field-icon"></ion-icon>              <ion-input formControlName="cognome" placeholder="Rossi" class="field-input"></ion-input>            </div>            @if (cognome.invalid && cognome.touched) {              <span class="field-error-msg">                @if (cognome.errors?.['required']) { Campo obbligatorio }                @if (cognome.errors?.['minlength']) { Minimo 2 caratteri }              </span>            }          </div>        </div>        <div class="field-group">          <label class="field-label">Email universitaria</label>          <div class="field-wrap" [class.has-error]="email.invalid && email.touched">            <ion-icon name="mail-outline" class="field-icon"></ion-icon>            <ion-input type="email" formControlName="email" placeholder="nome.cognome@univ.it"              class="field-input"></ion-input>          </div>          @if (email.invalid && email.touched) {            <span class="field-error-msg">              @if (email.errors?.['required']) { L'email è obbligatoria }              @if (email.errors?.['email']) { Formato email non valido }            </span>          }        </div>        <div class="field-group">          <label class="field-label">Matricola</label>          <div class="field-wrap" [class.has-error]="matricola.invalid && matricola.touched">            <ion-icon name="id-card-outline" class="field-icon"></ion-icon>            <ion-input formControlName="matricola" placeholder="Es. 0758735" class="field-input"              inputmode="numeric"></ion-input>          </div>          @if (matricola.invalid && matricola.touched) {            <span class="field-error-msg">              @if (matricola.errors?.['required']) { La matricola è obbligatoria }              @if (matricola.errors?.['pattern']) { Inserisci un numero valido (6–10 cifre) }            </span>          }        </div>        <div class="field-group">          <label class="field-label">Corso di Studi</label>          <div class="field-wrap" [class.has-error]="corsoDiStudi.invalid && corsoDiStudi.touched">            <ion-icon name="school-outline" class="field-icon"></ion-icon>            <ion-select formControlName="corsoDiStudi" interface="popover" placeholder="Seleziona corso di studi" class="field-input">              @for (cds of corsiDiStudio; track cds.id) {              <ion-select-option [value]="cds.nome">{{ cds.nome }}</ion-select-option>              }            </ion-select>          </div>          @if (corsoDiStudi.invalid && corsoDiStudi.touched) {          <span class="field-error-msg">            @if (corsoDiStudi.errors?.['required']) { Il corso di studi è obbligatorio }          </span>          }        </div>        <div class="field-group">          <label class="field-label">Password</label>          <div class="field-wrap" [class.has-error]="password.invalid && password.touched">            <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>            <ion-input [type]="mostraPassword ? 'text' : 'password'" formControlName="password"              placeholder="Minimo 8 caratteri" class="field-input"></ion-input>            <button type="button" class="eye-btn" (click)="mostraPassword = !mostraPassword">              <ion-icon [name]="mostraPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>            </button>          </div>          @if (password.value) {            <div class="strength-bar">              <div class="strength-segments">                @for (i of [1,2,3,4]; track i) {                  <span class="strength-seg"                    [style.background]="forzaPassword >= i ? coloreForzaPassword : '#e2e8f0'"></span>                }              </div>              <span class="strength-label" [style.color]="coloreForzaPassword">                {{ etichettaForzaPassword }}              </span>            </div>          }          @if (password.invalid && password.touched) {            <span class="field-error-msg">              @if (password.errors?.['required']) { La password è obbligatoria }              @if (password.errors?.['minlength']) { Minimo 8 caratteri }              @if (password.errors?.['pattern']) { Richiede almeno una maiuscola, una minuscola, un numero e un carattere speciale }            </span>          }        </div>        <div class="field-group">          <label class="field-label">Conferma Password</label>          <div class="field-wrap" [class.has-error]="              (confirmPassword.invalid && confirmPassword.touched) ||              (registrazioneForm.errors?.['passwordMismatch'] && confirmPassword.touched)            ">            <ion-icon name="lock-closed-outline" class="field-icon"></ion-icon>            <ion-input [type]="mostraConfermaPassword ? 'text' : 'password'" formControlName="confirmPassword"              placeholder="Ripeti la password" class="field-input"></ion-input>            <button type="button" class="eye-btn" (click)="mostraConfermaPassword = !mostraConfermaPassword">              <ion-icon [name]="mostraConfermaPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>            </button>          </div>          @if (registrazioneForm.errors?.['passwordMismatch'] && confirmPassword.touched) {            <span class="field-error-msg">              Le password non coincidono            </span>          }        </div>        <ion-button expand="block" type="submit" class="submit-btn" [disabled]="inCaricamento">          @if (inCaricamento) {            <ion-spinner name="crescent" slot="start"></ion-spinner>          } @else {            <ion-icon name="person-add-outline" slot="start"></ion-icon>          }          {{ inCaricamento ? 'Registrazione in corso…' : 'Registrati' }}        </ion-button>      </form>      <p class="switch-hint">        Hai già un account?        <button class="link-btn bold" (click)="goTo('/login')">Accedi</button>      </p>    </div>  </div></ion-content>

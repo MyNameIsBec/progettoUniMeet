@@ -1,174 +1,3 @@
-<app-dashboard-layout>
-  <!-- PAGE HEADER -->
-  <section class="premium-hero">
-    <div class="hero-text-content">
-      @if (bachecaCorrente) {
-      <span class="eyebrow">{{ bachecaCorrente.nomeCorsoDiStudi }}</span>
-      <h1>{{ bachecaCorrente.titolo }}</h1>
-      <p>{{ bachecaCorrente.descrizione }}</p>
-      <small class="hero-update">Ultimo aggiornamento: {{ bachecaCorrente.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</small>
-      } @else {
-      <span class="eyebrow">Informazioni</span>
-      <h1>FAQ e Bacheca</h1>
-      <p>Qui trovi le risposte alle domande più comuni, le comunicazioni del tuo corso e i collegamenti utili ai servizi
-        universitari.</p>
-      }
-    </div>
+<app-dashboard-layout>  <section class="premium-hero">    <div class="hero-text-content">      @if (bachecaCorrente) {      <span class="eyebrow">{{ bachecaCorrente.nomeCorsoDiStudi }}</span>      <h1>{{ bachecaCorrente.titolo }}</h1>      <p>{{ bachecaCorrente.descrizione }}</p>      <small class="hero-update">Ultimo aggiornamento: {{ bachecaCorrente.dataUltimoAggiornamento | date:'dd/MM/yyyy' }}</small>      } @else {      <span class="eyebrow">Informazioni</span>      <h1>FAQ e Bacheca</h1>      <p>Qui trovi le risposte alle domande più comuni, le comunicazioni del tuo corso e i collegamenti utili ai servizi        universitari.</p>      }    </div>    <div class="hero-status-card">      <div class="hero-status-icon">        <ion-icon name="information-circle-outline"></ion-icon>      </div>      <div class="status-details">        <span>Centro Risorse</span>        <strong>FAQ e Documenti</strong>        <small>Informazioni utili UniPa</small>      </div>    </div>  </section>  @if (bacheche.length > 1) {  <section class="cds-selector-section">    <ion-item lines="none" class="cds-selector-item">      <ion-select [value]="corsoSelezionatoId" (ionChange)="onCorsoChange($event)" interface="popover" label="Corso">        @for (b of bacheche; track b.idCorso) {        <ion-select-option [value]="b.idCorso">{{ b.nomeCorso }}</ion-select-option>        }      </ion-select>    </ion-item>  </section>  }  <section class="bacheca-simple-grid">    <ion-card class="faq-main-card">      <ion-card-header>        <ion-card-title>          <ion-icon name="help-circle-outline"></ion-icon>          @if (bachecaCorrente) {          {{ bachecaCorrente.nomeCorso }}          } @else {          Bacheca del tuo Corso          }        </ion-card-title>      </ion-card-header>      <ion-card-content>        @if (docentiDisponibili.length > 1) {        <ion-segment [value]="docenteSelezionato" (ionChange)="onDocenteChange($event)" class="docente-filter">          <ion-segment-button value="tutti">            <ion-label>Tutti</ion-label>          </ion-segment-button>          @for (doc of docentiDisponibili; track doc.id) {          <ion-segment-button [value]="doc.id">            <ion-label>{{ doc.nome }}</ion-label>          </ion-segment-button>          }        </ion-segment>        }        <div class="faq-list">          @if (listaFaqFiltrate.length === 0) {          <div class="no-faq">            <ion-icon name="information-circle-outline"></ion-icon>            <p>Non ci sono comunicazioni o FAQ per questo corso.</p>          </div>          }          @for (faq of listaFaqFiltrate; track faq.id) {          <details [open]="faq.aperta" class="faq-details">            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">              <span>{{ faq.domanda }}</span>              <ion-icon name="chevron-forward-outline"></ion-icon>            </summary>            <div class="faq-content">              <p>{{ faq.risposta }}</p>              @if (faq.nomeDocente) {              <small class="faq-docente">{{ faq.nomeDocente }}</small>              }            </div>          </details>          }        </div>      </ion-card-content>    </ion-card>    <ion-card class="support-card">      <ion-card-header>        <ion-card-title>          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>          Domande durante la prenotazione        </ion-card-title>      </ion-card-header>      <ion-card-content>        <p>          Durante il processo di prenotazione potrai indicare eventuali domande          o dubbi da sottoporre al docente.        </p>        <p>          Potrai specificare l'argomento del ricevimento, descrivere brevemente          il problema e allegare documenti utili.        </p>        <div class="support-highlight">          <ion-icon name="information-circle-outline"></ion-icon>          <span>            Le domande inserite saranno visibili al docente nel riepilogo            della prenotazione.          </span>        </div>        <ion-button routerLink="/prenota" expand="block">          <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>          Vai alle prenotazioni        </ion-button>      </ion-card-content>    </ion-card>  </section>
 
-    <div class="hero-status-card">
-      <div class="hero-status-icon">
-        <ion-icon name="information-circle-outline"></ion-icon>
-      </div>
-      <div class="status-details">
-        <span>Centro Risorse</span>
-        <strong>FAQ e Documenti</strong>
-        <small>Informazioni utili UniPa</small>
-      </div>
-    </div>
-  </section>
-
-  @if (bacheche.length > 1) {
-  <section class="cds-selector-section">
-    <ion-item lines="none" class="cds-selector-item">
-      <ion-select [value]="corsoSelezionatoId" (ionChange)="onCorsoChange($event)" interface="popover" label="Corso">
-        @for (b of bacheche; track b.idCorso) {
-        <ion-select-option [value]="b.idCorso">{{ b.nomeCorso }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-  </section>
-  }
-
-  <section class="bacheca-simple-grid">
-
-    <ion-card class="faq-main-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="help-circle-outline"></ion-icon>
-          @if (bachecaCorrente) {
-          {{ bachecaCorrente.nomeCorso }}
-          } @else {
-          Bacheca del tuo Corso
-          }
-        </ion-card-title>
-      </ion-card-header>
-
-      <ion-card-content>
-
-        @if (docentiDisponibili.length > 1) {
-        <ion-segment [value]="docenteSelezionato" (ionChange)="onDocenteChange($event)" class="docente-filter">
-          <ion-segment-button value="tutti">
-            <ion-label>Tutti</ion-label>
-          </ion-segment-button>
-          @for (doc of docentiDisponibili; track doc.id) {
-          <ion-segment-button [value]="doc.id">
-            <ion-label>{{ doc.nome }}</ion-label>
-          </ion-segment-button>
-          }
-        </ion-segment>
-        }
-
-        <div class="faq-list">
-
-          @if (listaFaqFiltrate.length === 0) {
-          <div class="no-faq">
-            <ion-icon name="information-circle-outline"></ion-icon>
-            <p>Non ci sono comunicazioni o FAQ per questo corso.</p>
-          </div>
-          }
-
-          @for (faq of listaFaqFiltrate; track faq.id) {
-          <details [open]="faq.aperta" class="faq-details">
-            <summary (click)="invertiStatoFaq(faq); $event.preventDefault()">
-              <span>{{ faq.domanda }}</span>
-              <ion-icon name="chevron-forward-outline"></ion-icon>
-            </summary>
-            <div class="faq-content">
-              <p>{{ faq.risposta }}</p>
-              @if (faq.nomeDocente) {
-              <small class="faq-docente">{{ faq.nomeDocente }}</small>
-              }
-            </div>
-          </details>
-          }
-
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="support-card">
-
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-          Domande durante la prenotazione
-        </ion-card-title>
-      </ion-card-header>
-
-      <ion-card-content>
-
-        <p>
-          Durante il processo di prenotazione potrai indicare eventuali domande
-          o dubbi da sottoporre al docente.
-        </p>
-
-        <p>
-          Potrai specificare l'argomento del ricevimento, descrivere brevemente
-          il problema e allegare documenti utili.
-        </p>
-
-        <div class="support-highlight">
-          <ion-icon name="information-circle-outline"></ion-icon>
-          <span>
-            Le domande inserite saranno visibili al docente nel riepilogo
-            della prenotazione.
-          </span>
-        </div>
-
-        <ion-button routerLink="/prenota" expand="block">
-          <ion-icon name="calendar-clear-outline" slot="start"></ion-icon>
-          Vai alle prenotazioni
-        </ion-button>
-
-      </ion-card-content>
-
-    </ion-card>
-
-  </section>
-
-  <section class="useful-links-section">
-
-    <ion-card class="useful-links-card">
-
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="link-outline"></ion-icon>
-          Link utili UniPa
-        </ion-card-title>
-      </ion-card-header>
-
-      <ion-card-content>
-
-        <div class="useful-links-grid">
-
-          @for (link of collegamentiUtili; track link.titolo) {
-          <a class="useful-link" [href]="link.url" target="_blank" rel="noopener noreferrer">
-            <div class="useful-link-icon" [ngClass]="link.colore">
-              <ion-icon [name]="link.icona"></ion-icon>
-            </div>
-
-            <div>
-              <h3>{{ link.titolo }}</h3>
-              <p>{{ link.descrizione }}</p>
-            </div>
-
-            <ion-icon name="open-outline" class="open-icon"></ion-icon>
-          </a>
-          }
-
-        </div>
-
-      </ion-card-content>
-    </ion-card>
-  </section>
-</app-dashboard-layout>
+<section class="useful-links-section">    <ion-card class="useful-links-card">      <ion-card-header>        <ion-card-title>          <ion-icon name="link-outline"></ion-icon>          Link utili UniPa        </ion-card-title>      </ion-card-header>      <ion-card-content>        <div class="useful-links-grid">          @for (link of collegamentiUtili; track link.titolo) {          <a class="useful-link" [href]="link.url" target="_blank" rel="noopener noreferrer">            <div class="useful-link-icon" [ngClass]="link.colore">              <ion-icon [name]="link.icona"></ion-icon>            </div>            <div>              <h3>{{ link.titolo }}</h3>              <p>{{ link.descrizione }}</p>            </div>            <ion-icon name="open-outline" class="open-icon"></ion-icon>          </a>          }        </div>      </ion-card-content>    </ion-card>  </section></app-dashboard-layout>
