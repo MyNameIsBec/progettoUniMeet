@@ -13,5 +13,5 @@ export const roleGuard: (requiredRole: UserRole) => CanActivateFn =
     const authService = inject(AuthService);
     const router = inject(Router);
 
-    return authService.hasRole(requiredRole) ? true : router.createUrlTree(['/login']); //  accesso negato
+    return authService.hasRole(requiredRole) ? true : router.createUrlTree(authService.isLoggedIn() ? ['/'] : ['/login']);
   };

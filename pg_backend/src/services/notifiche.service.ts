@@ -56,6 +56,12 @@ export async function createNotifica(data: {
   return mapNotifica(notifica);
 }
 
+export async function getNotificaById(id: string): Promise<NotificaResponse> {
+  const notifica = await prisma.notifica.findUnique({ where: { id_notifica: id } });
+  if (!notifica) throw new Error('Notifica not found');
+  return mapNotifica(notifica);
+}
+
 export async function segnaComeLetta(id: string): Promise<void> {
   const notifica = await prisma.notifica.findUnique({ where: { id_notifica: id } });
   if (!notifica) throw new Error('Notifica not found');

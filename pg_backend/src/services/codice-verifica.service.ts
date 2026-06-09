@@ -7,14 +7,18 @@ export function generaCodice(): string {
 }
 
 export async function creaCodice(email: string, tipo: string = 'reset_password'): Promise<string> {
-  await invalidaPrecedenti(email, tipo);
-
   const codice = generaCodice();
   const hash = await bcrypt.hash(codice, 6);
   const scadenza = new Date(Date.now() + 15 * 60 * 1000);
 
-  await prisma.codiceVerifica.create({
-    data: { email, codice: hash, tipo, scadenza },
+  await prisma.$transaction(async (tx) => {
+    await tx.codiceVerifica.updateMany({
+      where: { email, tipo, usato: false },
+      data: { usato: true },
+    });
+    await tx.codiceVerifica.create({
+      data: { email, codice: hash, tipo, scadenza },
+    });
   });
 
   return codice;
@@ -70,11 +74,4 @@ export async function consumaCodice(
   }
 
   return false;
-}
-
-async function invalidaPrecedenti(email: string, tipo: string): Promise<void> {
-  await prisma.codiceVerifica.updateMany({
-    where: { email, tipo, usato: false },
-    data: { usato: true },
-  });
 }

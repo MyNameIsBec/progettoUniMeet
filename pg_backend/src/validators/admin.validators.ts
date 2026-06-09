@@ -5,7 +5,7 @@ export const creaAccountSchema = [
   body('ruolo').isIn(['studente', 'docente', 'amministratore']).withMessage('Ruolo non valido'),
   body('nome').isString().notEmpty().trim(),
   body('email').isEmail().normalizeEmail(),
-  body('password').isString().isLength({ min: 8 }),
+  body('password').isString().isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/).withMessage('La password deve essere di almeno 8 caratteri, con maiuscola, minuscola, numero e carattere speciale'),
   body('cognome').if(body('ruolo').isIn(['studente', 'docente'])).isString().notEmpty().trim(),
   body('matricola').if(body('ruolo').equals('studente')).isString().notEmpty().trim(),
   body('corsoDiStudi').if(body('ruolo').equals('studente')).isString().notEmpty().trim(),
@@ -16,7 +16,7 @@ export const creaAccountSchema = [
 export const modificaAccountSchema = [
   body('nome').optional().isString().notEmpty().trim(),
   body('email').optional().isEmail().normalizeEmail(),
-  body('password').optional().isString().isLength({ min: 8 }),
+  body('password').optional().isString().isLength({ min: 8 }).matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/).withMessage('La password deve essere di almeno 8 caratteri, con maiuscola, minuscola, numero e carattere speciale'),
   body('cognome').optional().isString().notEmpty().trim(),
   body('matricola').optional().isString().notEmpty().trim(),
   body('corsoDiStudi').optional().isString().notEmpty().trim(),

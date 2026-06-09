@@ -2,7 +2,6 @@ import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
 export const creaPrenotazioneSchema = [
-  body('matricolaStudente').isString().notEmpty(),
   body('idSlot').isString().notEmpty(),
   body('argomento').isString().notEmpty().trim(),
 ];

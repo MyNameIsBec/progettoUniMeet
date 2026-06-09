@@ -19,6 +19,7 @@ export interface LoginResponse {
   email: string;
   role: Ruolo;
   token: string;
+  refreshToken: string;
 }
 
 export interface ProfileResponse {
@@ -51,8 +52,11 @@ export async function createStudente(data: {
   password: string;
   corsoDiStudi: string;
 }): Promise<LoginResponse> {
-  const existing = await prisma.studente.findUnique({ where: { email: data.email } });
-  if (existing) throw new Error('Email already in use');
+  const existingEmail = await prisma.studente.findUnique({ where: { email: data.email } });
+  if (existingEmail) throw new Error('Email already in use');
+
+  const existingMatricola = await prisma.studente.findUnique({ where: { matricola: data.matricola } });
+  if (existingMatricola) throw new Error('Matricola già in uso');
 
   const cds = await prisma.corsoDiStudi.findUnique({ where: { nome: data.corsoDiStudi } });
   if (!cds) throw new Error('Corso di studi non trovato');
@@ -70,7 +74,7 @@ export async function createStudente(data: {
     },
   });
 
-  const { accessToken } = generateTokens({ id: data.matricola, email: data.email, ruolo: 'STUDENTE' });
+  const { accessToken, refreshToken } = generateTokens({ id: data.matricola, email: data.email, ruolo: 'STUDENTE' });
 
   return {
     id: data.matricola,
@@ -79,6 +83,7 @@ export async function createStudente(data: {
     email: data.email,
     role: 'STUDENTE',
     token: accessToken,
+    refreshToken,
   };
 }
 
@@ -93,7 +98,7 @@ export async function createDocente(data: {
   if (existing) throw new Error('Email already in use');
 
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
-  return prisma.docente.create({
+  return await prisma.docente.create({
     data: { ...data, password: hashedPassword },
     select: {
       id_docente: true,
@@ -114,7 +119,7 @@ export async function registerAdmin(data: {
   if (existing) throw new Error('Email already in use');
 
   const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
-  return prisma.amministratore.create({
+  return await prisma.amministratore.create({
     data: { ...data, password: hashedPassword },
     select: { id_admin: true, nome: true, email: true },
   });
@@ -142,7 +147,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
   const id = ruolo === 'STUDENTE' ? user.matricola : ruolo === 'DOCENTE' ? user.id_docente : user.id_admin;
   const cognome = ruolo === 'AMMINISTRATORE' ? '' : user.cognome;
 
-  const { accessToken } = generateTokens({ id, email: user.email, ruolo });
+  const { accessToken, refreshToken } = generateTokens({ id, email: user.email, ruolo });
 
   return {
     id,
@@ -151,6 +156,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
     email: user.email,
     role: ruolo,
     token: accessToken,
+    refreshToken,
   };
 }
 

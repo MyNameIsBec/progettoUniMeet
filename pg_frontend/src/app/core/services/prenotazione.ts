@@ -36,6 +36,10 @@ export class PrenotazioneService {
     return this.http.get<Prenotazione[]>(`${this.api}/docente/${idDocente}`);
   }
 
+  getGiorniBloccati(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/giorni-bloccati`);
+  }
+
   aggiornaStatoPrenotazione(id: string, stato: string): Observable<Prenotazione> {
     const statoUpper = stato.toUpperCase();
     return this.http.put<Prenotazione>(`${this.api}/${id}/stato`, { stato: statoUpper });

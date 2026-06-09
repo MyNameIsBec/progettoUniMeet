@@ -5,6 +5,9 @@ import * as authService from '../services/auth.service';
 export async function getProfilo(req: Request, res: Response) {
   try {
     const matricola = req.params.matricola as string;
+    if (req.user!.id !== matricola && req.user!.ruolo !== 'AMMINISTRATORE') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const profilo = await studentiService.getProfilo(matricola);
     return res.status(200).json(profilo);
   } catch (err: unknown) {
@@ -18,6 +21,9 @@ export async function getProfilo(req: Request, res: Response) {
 export async function aggiornaProfilo(req: Request, res: Response) {
   try {
     const matricola = req.params.matricola as string;
+    if (req.user!.id !== matricola && req.user!.ruolo !== 'AMMINISTRATORE') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const result = await studentiService.aggiornaProfilo(matricola, req.body);
     return res.status(200).json(result);
   } catch (err: unknown) {

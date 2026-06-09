@@ -30,7 +30,7 @@ export class ProfiloDocentePage implements OnInit {
     this.isCambioPasswordAperto = !this.isCambioPasswordAperto;
     this.formPassword = { vecchiaPw: '', nuovaPw: '', confermaPw: '' };
   }
-  private async handleCambioPassword() {
+  async handleCambioPassword() {
     const data = this.formPassword;
     if (!data.vecchiaPw || !data.nuovaPw || !data.confermaPw) {
       await this.showToast('Compila tutti i campi');

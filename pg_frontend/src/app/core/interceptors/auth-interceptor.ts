@@ -41,7 +41,7 @@ export const intercettoreAutenticazione: HttpInterceptorFn = (richiesta, next) =
     catchError((errore: HttpErrorResponse) => {
       if (errore.status === 401) {
         console.error('Sessione scaduta o non autorizzato. Redirect al login...');
-        localStorage.clear();
+        servizioAuth.logout();
         router.navigate(['/login']);
       }
       return throwError(() => errore);

@@ -13,6 +13,11 @@ export interface Studente {
   matricola: string;
   corsoDiStudi: string;
   corsoDiStudiId?: string;
+  notificheApp?: boolean;
+  notificheEmail?: boolean;
+  reminderOre?: number;
+  tema?: string;
+  lingua?: string;
 }
 
 export interface Docente {
@@ -89,9 +94,11 @@ export interface Prenotazione {
   materia: string;
   data: string;
   ora: string;
+  oraInizio?: string;
+  oraFine?: string;
   argomento?: string;
   descrizione?: string;
-  stato: 'in_attesa' | 'confermata' | 'completata' | 'annullata';
+  stato: 'in_attesa' | 'confermata' | 'completata' | 'annullata' | 'rifiutata';
   documenti?: Documento[];
   luogoRicevimento?: LuogoRicevimento;
   studente?: string;

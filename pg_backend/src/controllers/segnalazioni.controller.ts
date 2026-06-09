@@ -3,6 +3,9 @@ import * as segnalazioniService from '../services/segnalazioni.service';
 
 export async function createSegnalazione(req: Request, res: Response) {
   try {
+    if (req.user!.ruolo === 'STUDENTE') {
+      req.body.matricola_studente = req.user!.id;
+    }
     const allegatoPath = req.file ? `/uploads/${req.file.filename}` : undefined;
     const segnalazione = await segnalazioniService.createSegnalazione({
       ...req.body,
@@ -20,9 +23,13 @@ export async function createSegnalazione(req: Request, res: Response) {
 export async function getSegnalazioniByStudente(req: Request, res: Response) {
   try {
     const matricola = req.params.matricola as string;
+    if (req.user!.id !== matricola && req.user!.ruolo !== 'AMMINISTRATORE') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const segnalazioni = await segnalazioniService.getSegnalazioniByStudente(matricola);
     return res.status(200).json(segnalazioni);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -32,7 +39,8 @@ export async function getAllSegnalazioni(req: Request, res: Response) {
     const stato = req.query.stato as string | undefined;
     const segnalazioni = await segnalazioniService.getAllSegnalazioni(stato);
     return res.status(200).json(segnalazioni);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -87,6 +95,9 @@ export async function eliminaSegnalazione(req: Request, res: Response) {
 
 export async function createSegnalazioneDocente(req: Request, res: Response) {
   try {
+    if (req.user!.ruolo === 'DOCENTE') {
+      req.body.id_docente = req.user!.id;
+    }
     const allegatoPath = req.file ? `/uploads/${req.file.filename}` : undefined;
     const segnalazione = await segnalazioniService.createSegnalazioneDocente({
       ...req.body,
@@ -104,9 +115,13 @@ export async function createSegnalazioneDocente(req: Request, res: Response) {
 export async function getSegnalazioniByDocente(req: Request, res: Response) {
   try {
     const idDocente = req.params.idDocente as string;
+    if (req.user!.id !== idDocente && req.user!.ruolo !== 'AMMINISTRATORE') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
     const segnalazioni = await segnalazioniService.getSegnalazioniByDocente(idDocente);
     return res.status(200).json(segnalazioni);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }

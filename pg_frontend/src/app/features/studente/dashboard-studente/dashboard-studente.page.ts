@@ -90,15 +90,14 @@ export class DashboardStudentePage implements OnInit, OnDestroy {
         const dataOra = new Date(`${p.data}T${p.ora}`);
         return dataOra > adesso;
       }).sort((a, b) => {
-        const cmp = b.data.localeCompare(a.data);
+        const cmp = a.data.localeCompare(b.data);
         if (cmp !== 0) return cmp;
-        return (b.ora || '').localeCompare(a.ora || '');
+        return (a.ora || '').localeCompare(b.ora || '');
       });
 
-      this.totaleConfermate = future.length;
+      this.totaleConfermate = future.filter(p => p.stato === 'confermata').length;
       this.listaPrenotazioni = future.slice(0, 3);
-      this.prossimoRicevimento = future.filter(p => p.stato === 'confermata').length > 0
-        ? future.filter(p => p.stato === 'confermata')[0] : null;
+      this.prossimoRicevimento = future.find(p => p.stato === 'confermata') ?? null;
 
     } catch (err) {
       console.error('Errore caricamento dati dashboard', err);

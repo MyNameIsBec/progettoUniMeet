@@ -70,11 +70,13 @@ export async function getBachecaByCorso(idCorso: string): Promise<BachecaRespons
     });
     if (!corso) throw new Error('Corso not found');
 
+    if (!corso.id_corso_di_studi) throw new Error('Il corso non ha un corso di studi associato');
+
     const created = await prisma.bacheca.create({
       data: {
         titolo: `Bacheca - ${corso.nome_corso}`,
         descrizione: '',
-        id_corso_di_studi: corso.id_corso_di_studi!,
+        id_corso_di_studi: corso.id_corso_di_studi,
         id_corso: idCorso,
       },
       include: bachecaInclude,

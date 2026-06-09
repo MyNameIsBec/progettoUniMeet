@@ -17,6 +17,7 @@ const router = Router();
 router.post(
   '/segnalazioni',
   authenticate,
+  authorize('STUDENTE'),
   upload.single('allegato'),
   creaSegnalazioneSchema,
   handleValidationErrors,
@@ -54,6 +55,7 @@ router.delete(
 router.post(
   '/segnalazioni/docente',
   authenticate,
+  authorize('DOCENTE'),
   upload.single('allegato'),
   creaSegnalazioneDocenteSchema,
   handleValidationErrors,

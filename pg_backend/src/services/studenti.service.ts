@@ -54,7 +54,12 @@ export async function aggiornaProfilo(matricola: string, data: {
 export async function eliminaAccount(matricola: string) {
   const existing = await prisma.studente.findUnique({ where: { matricola } });
   if (!existing) throw new Error('Studente not found');
-  await prisma.prenotazione.deleteMany({ where: { matricola_studente: matricola } });
-  await prisma.studente.delete({ where: { matricola } });
+  await prisma.$transaction(async (tx) => {
+    await tx.documento.deleteMany({ where: { prenotazione: { matricola_studente: matricola } } });
+    await tx.prenotazione.deleteMany({ where: { matricola_studente: matricola } });
+    await tx.segnalazione.deleteMany({ where: { matricola_studente: matricola } });
+    await tx.notifica.deleteMany({ where: { destinatario_id: matricola } });
+    await tx.studente.delete({ where: { matricola } });
+  });
   return { messaggio: 'Account eliminato con successo.' };
 }

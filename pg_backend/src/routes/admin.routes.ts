@@ -16,6 +16,7 @@ import {
 } from '../validators/admin.validators';
 import { authenticate } from '../middleware/authenticate';
 import { authorize } from '../middleware/authorize';
+import { aggiornaStatoSchema } from '../validators/prenotazioni.validators';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.put('/admin/slot/:idSlot', ...authz, modificaSlotSchema, handleValidation
 router.delete('/admin/slot/:idSlot', ...authz, eliminaSlot);
 router.get('/admin/slot', ...authz, slotFiltriSchema, handleValidationErrors, getSlotGlobali);
 router.get('/admin/prenotazioni', ...authz, getAllPrenotazioni);
-router.put('/admin/prenotazioni/:id/stato', ...authz, aggiornaStatoPrenotazione);
+router.put('/admin/prenotazioni/:id/stato', ...authz, aggiornaStatoSchema, handleValidationErrors, aggiornaStatoPrenotazione);
 router.delete('/admin/prenotazioni/:id', ...authz, eliminaPrenotazione);
 router.get('/admin/giorni-bloccati', ...authz, getGiorniBloccati);
 router.post('/admin/giorni-bloccati', ...authz, bloccaGiornoSchema, handleValidationErrors, bloccaGiorno);

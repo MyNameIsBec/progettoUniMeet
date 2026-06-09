@@ -9,7 +9,7 @@ async function notifica(destinatarioId: string, destinatarioRuolo: string, titol
 
 async function reminderGiaInviato(destinatarioId: string, tipo: string): Promise<boolean> {
   const oggi = new Date();
-  oggi.setHours(0, 0, 0, 0);
+  oggi.setUTCHours(0, 0, 0, 0);
   const existing = await prisma.notifica.findFirst({
     where: {
       destinatario_id: destinatarioId,
@@ -23,12 +23,13 @@ async function reminderGiaInviato(destinatarioId: string, tipo: string): Promise
 async function processaReminder() {
   const ora = new Date();
 
-  const oggi = new Date(ora.getFullYear(), ora.getMonth(), ora.getDate());
+  const oggi = new Date(Date.UTC(ora.getUTCFullYear(), ora.getUTCMonth(), ora.getUTCDate()));
   const domani = new Date(oggi);
-  domani.setDate(domani.getDate() + 1);
+  domani.setUTCDate(domani.getUTCDate() + 1);
 
-  const tra1ora = new Date(ora.getTime() + 60 * 60 * 1000);
-  const tra1ora5min = new Date(ora.getTime() + 65 * 60 * 1000);
+  const oraMs = ora.getUTCHours() * 3600000 + ora.getUTCMinutes() * 60000 + ora.getUTCSeconds() * 1000;
+  const tra1oraMs = oraMs + 3600000;
+  const tra1ora5minMs = oraMs + 3900000;
 
   const prenotazioniDomani = await prisma.prenotazione.findMany({
     where: {
@@ -84,8 +85,8 @@ async function processaReminder() {
   });
 
   for (const p of prenotazioniOggi) {
-    const oraInizio = new Date(p.slot.ora_inizio);
-    if (oraInizio >= tra1ora && oraInizio <= tra1ora5min) {
+    const slotMs = p.slot.ora_inizio.getUTCHours() * 3600000 + p.slot.ora_inizio.getUTCMinutes() * 60000;
+    if (slotMs >= tra1oraMs && slotMs <= tra1ora5minMs) {
       if (p.studente.notifiche_app) {
         if (!(await reminderGiaInviato(p.studente.matricola, 'reminder_1h'))) {
           await notifica(
@@ -111,7 +112,9 @@ async function processaReminder() {
 }
 
 function formatOra(d: Date): string {
-  return d.toTimeString().slice(0, 5);
+  const h = String(d.getUTCHours()).padStart(2, '0');
+  const m = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
 }
 
 export function avviaReminderJob() {

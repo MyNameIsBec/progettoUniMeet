@@ -7,7 +7,8 @@ export async function getCorsi(req: Request, res: Response) {
     const corsoDiStudiId = req.query.corsoDiStudiId as string | undefined;
     const corsi = await corsiService.getCorsi(docenteId, corsoDiStudiId);
     return res.status(200).json(corsi);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -27,9 +28,13 @@ export async function getCorsoById(req: Request, res: Response) {
 
 export async function createCorso(req: Request, res: Response) {
   try {
+    if (req.user!.ruolo === 'DOCENTE') {
+      req.body.idDocente = req.user!.id;
+    }
     const corso = await corsiService.createCorso(req.body);
     return res.status(201).json(corso);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -37,6 +42,13 @@ export async function createCorso(req: Request, res: Response) {
 export async function updateCorso(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
+    if (req.user!.ruolo === 'DOCENTE') {
+      const esistente = await corsiService.getCorsoById(id);
+      if (esistente.idDocente !== req.user!.id) {
+        return res.status(403).json({ error: 'Access denied: non sei il docente di questo corso' });
+      }
+      req.body.idDocente = req.user!.id;
+    }
     const corso = await corsiService.updateCorso(id, req.body);
     return res.status(200).json(corso);
   } catch (err: unknown) {
@@ -50,6 +62,12 @@ export async function updateCorso(req: Request, res: Response) {
 export async function deleteCorso(req: Request, res: Response) {
   try {
     const id = req.params.id as string;
+    if (req.user!.ruolo === 'DOCENTE') {
+      const esistente = await corsiService.getCorsoById(id);
+      if (esistente.idDocente !== req.user!.id) {
+        return res.status(403).json({ error: 'Access denied: non sei il docente di questo corso' });
+      }
+    }
     await corsiService.deleteCorso(id);
     return res.status(204).send();
   } catch (err: unknown) {

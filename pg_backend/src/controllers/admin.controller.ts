@@ -1,4 +1,79 @@
-import { Request, Response } from 'express';import * as adminService from '../services/admin.service';import * as prenotazioniService from '../services/prenotazioni.service';export async function getStats(_req: Request, res: Response) {  try {    const stats = await adminService.getStats();    return res.status(200).json(stats);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}export async function getAccount(req: Request, res: Response) {  try {    const ruolo = req.query.ruolo as string | undefined;    const accounts = await adminService.getAllAccounts(ruolo);    return res.status(200).json(accounts);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}export async function creaAccount(req: Request, res: Response) {  try {    const account = await adminService.createAccount(req.body);    return res.status(201).json(account);  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Email already in use') {      return res.status(409).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function modificaAccount(req: Request, res: Response) {  try {    const id = req.params.id as string;    const account = await adminService.updateAccount(id, req.body);    return res.status(200).json(account);  } catch (err: unknown) {    if (err instanceof Error && err.message === 'User not found') {      return res.status(404).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function eliminaAccount(req: Request, res: Response) {  try {    const id = req.params.id as string;    const adminId = req.user?.id;    await adminService.deleteAccount(id, adminId);    return res.status(204).send();  } catch (err: unknown) {    if (err instanceof Error && err.message === 'User not found') {      return res.status(404).json({ error: err.message });    }    if (err instanceof Error && err.message === 'Cannot delete your own account') {      return res.status(403).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function creaSlot(req: Request, res: Response) {  try {    const slot = await adminService.creaSlot(req.body);    return res.status(201).json(slot);  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Giorno bloccato') {      return res.status(409).json({ error: err.message });    }    if (err instanceof Error && err.message === 'Slot già esistente in questa fascia oraria') {      return res.status(409).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function modificaSlot(req: Request, res: Response) {
+import { Request, Response } from 'express';
+import * as adminService from '../services/admin.service';
+import * as prenotazioniService from '../services/prenotazioni.service';
+export async function getStats(_req: Request, res: Response) {
+  try {
+    const stats = await adminService.getStats();
+    return res.status(200).json(stats);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function getAccount(req: Request, res: Response) {
+  try {
+    const ruolo = req.query.ruolo as string | undefined;
+    const accounts = await adminService.getAllAccounts(ruolo);
+    return res.status(200).json(accounts);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function creaAccount(req: Request, res: Response) {
+  try {
+    const account = await adminService.createAccount(req.body);
+    return res.status(201).json(account);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Email already in use') {
+      return res.status(409).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function modificaAccount(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const account = await adminService.updateAccount(id, req.body);
+    return res.status(200).json(account);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'User not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function eliminaAccount(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const adminId = req.user?.id;
+    await adminService.deleteAccount(id, adminId);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'User not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err instanceof Error && err.message === 'Cannot delete your own account') {
+      return res.status(403).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function creaSlot(req: Request, res: Response) {
+  try {
+    const slot = await adminService.creaSlot(req.body);
+    return res.status(201).json(slot);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Giorno bloccato') {
+      return res.status(409).json({ error: err.message });
+    }
+    if (err instanceof Error && err.message === 'Slot già esistente in questa fascia oraria') {
+      return res.status(409).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function modificaSlot(req: Request, res: Response) {
   try {
     const idSlot = req.params.idSlot as string;
     await adminService.modificaSlot(idSlot, req.body);
@@ -12,7 +87,8 @@ import { Request, Response } from 'express';import * as adminService from '../s
     }
     return res.status(500).json({ error: 'Internal server error' });
   }
-}export async function eliminaSlot(req: Request, res: Response) {
+}
+export async function eliminaSlot(req: Request, res: Response) {
   try {
     const idSlot = req.params.idSlot as string;
     await adminService.eliminaSlot(idSlot);
@@ -26,4 +102,103 @@ import { Request, Response } from 'express';import * as adminService from '../s
     }
     return res.status(500).json({ error: 'Internal server error' });
   }
-}export async function getSlotDate(_req: Request, res: Response) {  try {    const date = await adminService.getSlotDate();    return res.status(200).json(date);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}export async function getGiorniBloccati(_req: Request, res: Response) {  try {    const giorni = await adminService.getGiorniBloccati();    return res.status(200).json(giorni);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}export async function bloccaGiorno(req: Request, res: Response) {  try {    const { data, motivo } = req.body;    const giorno = await adminService.bloccaGiorno(data, motivo);    return res.status(201).json(giorno);  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Giorno già bloccato') {      return res.status(409).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function sbloccaGiorno(req: Request, res: Response) {  try {    const id = req.params.id as string;    await adminService.sbloccaGiorno(id);    return res.status(204).send();  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Giorno non trovato') {      return res.status(404).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function getAllPrenotazioni(req: Request, res: Response) {  try {    const filtri: { stato?: string; docenteId?: string; data?: string } = {};    const stato = req.query.stato as string | undefined;    const docenteId = req.query.docenteId as string | undefined;    const data = req.query.data as string | undefined;    if (stato) filtri.stato = stato;    if (docenteId) filtri.docenteId = docenteId;    if (data) filtri.data = data;    const prenotazioni = await adminService.getAllPrenotazioni(filtri);    return res.status(200).json(prenotazioni);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}export async function aggiornaStatoPrenotazione(req: Request, res: Response) {  try {    const id = req.params.id as string;    const { stato } = req.body;    const result = await prenotazioniService.aggiornaStatoPrenotazione(id, stato);    return res.status(200).json(result);  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Prenotazione not found') {      return res.status(404).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function eliminaPrenotazione(req: Request, res: Response) {  try {    const id = req.params.id as string;    await prenotazioniService.eliminaPrenotazione(id);    return res.status(204).send();  } catch (err: unknown) {    if (err instanceof Error && err.message === 'Prenotazione not found') {      return res.status(404).json({ error: err.message });    }    return res.status(500).json({ error: 'Internal server error' });  }}export async function getSlotGlobali(req: Request, res: Response) {  try {    const filtri: { docenteId?: string; data?: string; stato?: string } = {};    const docenteId = req.query.docenteId as string | undefined;    const data = req.query.data as string | undefined;    const stato = req.query.stato as string | undefined;    if (docenteId) filtri.docenteId = docenteId;    if (data) filtri.data = data;    if (stato) filtri.stato = stato;    const slot = await adminService.getSlotGlobali(filtri);    return res.status(200).json(slot);  } catch {    return res.status(500).json({ error: 'Internal server error' });  }}
+}
+export async function getSlotDate(_req: Request, res: Response) {
+  try {
+    const date = await adminService.getSlotDate();
+    return res.status(200).json(date);
+    } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function getGiorniBloccati(_req: Request, res: Response) {
+  try {
+    const giorni = await adminService.getGiorniBloccati();
+    return res.status(200).json(giorni);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function bloccaGiorno(req: Request, res: Response) {
+  try {
+    const { data, motivo } = req.body;
+    const giorno = await adminService.bloccaGiorno(data, motivo);
+    return res.status(201).json(giorno);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Giorno già bloccato') {
+      return res.status(409).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function sbloccaGiorno(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    await adminService.sbloccaGiorno(id);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Giorno non trovato') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function getAllPrenotazioni(req: Request, res: Response) {
+  try {
+    const filtri: { stato?: string; docenteId?: string; data?: string } = {};
+    const stato = req.query.stato as string | undefined;
+    const docenteId = req.query.docenteId as string | undefined;
+    const data = req.query.data as string | undefined;
+    if (stato) filtri.stato = stato;
+    if (docenteId) filtri.docenteId = docenteId;
+    if (data) filtri.data = data;
+    const prenotazioni = await adminService.getAllPrenotazioni(filtri);
+    return res.status(200).json(prenotazioni);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function aggiornaStatoPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    const { stato } = req.body;
+    const result = await prenotazioniService.aggiornaStatoPrenotazione(id, stato);
+    return res.status(200).json(result);
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function eliminaPrenotazione(req: Request, res: Response) {
+  try {
+    const id = req.params.id as string;
+    await prenotazioniService.eliminaPrenotazione(id);
+    return res.status(204).send();
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Prenotazione not found') {
+      return res.status(404).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+export async function getSlotGlobali(req: Request, res: Response) {
+  try {
+    const filtri: { docenteId?: string; data?: string; stato?: string } = {};
+    const docenteId = req.query.docenteId as string | undefined;
+    const data = req.query.data as string | undefined;
+    const stato = req.query.stato as string | undefined;
+    if (docenteId) filtri.docenteId = docenteId;
+    if (data) filtri.data = data;
+    if (stato) filtri.stato = stato;
+    const slot = await adminService.getSlotGlobali(filtri);
+    return res.status(200).json(slot);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}

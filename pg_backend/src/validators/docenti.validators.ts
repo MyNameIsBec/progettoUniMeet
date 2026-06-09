@@ -4,7 +4,11 @@ import { Request, Response, NextFunction } from 'express';
 export const creaSlotSchema = [
   body('data').isString().notEmpty().matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Data obbligatoria (YYYY-MM-DD)'),
   body('oraInizio').isString().notEmpty().matches(/^\d{2}:\d{2}$/).withMessage('Ora inizio obbligatoria (HH:mm)'),
-  body('oraFine').isString().notEmpty().matches(/^\d{2}:\d{2}$/).withMessage('Ora fine obbligatoria (HH:mm)'),
+  body('oraFine').isString().notEmpty().matches(/^\d{2}:\d{2}$/).withMessage('Ora fine obbligatoria (HH:mm)')
+    .custom((value, { req }) => {
+      if (value <= req.body.oraInizio) throw new Error('oraFine deve essere dopo oraInizio');
+      return true;
+    }),
   body('luogo').optional().isObject(),
   body('luogo.nomeAula').if(body('luogo').exists()).isString().notEmpty(),
   body('luogo.edificio').if(body('luogo').exists()).isString().notEmpty(),
@@ -30,7 +34,7 @@ export const aggiornaProfiloSchema = [
   body('notificheApp').optional().isBoolean(),
   body('notificheEmail').optional().isBoolean(),
   body('reminderOre').optional().isInt({ min: 0 }),
-  body('tema').optional().isString().isIn(['chiaro', 'scuro', 'system']),
+  body('tema').optional().isString().isIn(['light', 'dark', 'system']),
   body('lingua').optional().isString().isIn(['it', 'en']),
 ];
 

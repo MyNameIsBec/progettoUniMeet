@@ -49,6 +49,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     console.log(`[EMAIL] Inviata a ${to} — oggetto: ${subject}`);
   } catch (err) {
     console.error(`[EMAIL] ERRORE invio a ${to}:`, err instanceof Error ? err.message : err);
+    throw err;
   }
 }
 

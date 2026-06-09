@@ -24,6 +24,7 @@ import {
   handleValidationErrors,
 } from '../validators/auth.validators';
 import { authenticate } from '../middleware/authenticate';
+import { authorize } from '../middleware/authorize';
 
 const router = Router();
 
@@ -33,8 +34,8 @@ router.post('/recupera-password', forgotPasswordSchema, handleValidationErrors, 
 router.post('/auth/verifica-codice', verificaCodiceSchema, handleValidationErrors, verificaCodice);
 router.post('/reset-password', resetPasswordSchema, handleValidationErrors, resetPassword);
 
-router.post('/auth/register/docente', docenteRegistrationSchema, handleValidationErrors, registerDocente);
-router.post('/auth/register/admin', adminRegistrationSchema, handleValidationErrors, registerAdmin);
+router.post('/auth/register/docente', authenticate, authorize('AMMINISTRATORE'), docenteRegistrationSchema, handleValidationErrors, registerDocente);
+router.post('/auth/register/admin', authenticate, authorize('AMMINISTRATORE'), adminRegistrationSchema, handleValidationErrors, registerAdmin);
 router.post('/auth/refresh', refreshTokenSchema, handleValidationErrors, refreshToken);
 router.post('/auth/change-password', authenticate, changePasswordSchema, handleValidationErrors, changePassword);
 router.get('/auth/profile', authenticate, getProfile);

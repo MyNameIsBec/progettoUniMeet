@@ -39,9 +39,9 @@ model Segnalazione {
   data_invio         DateTime  @default(now())
   stato              String    @default("APERTA")
   matricola_studente String?
-  studente           Studente? @relation(fields: [matricola_studente], references: [matricola])
+  studente           Studente? @relation(fields: [matricola_studente], references: [matricola], onDelete: Cascade)
   id_docente         String?
-  docente            Docente?  @relation(fields: [id_docente], references: [id_docente])
+  docente            Docente?  @relation(fields: [id_docente], references: [id_docente], onDelete: Cascade)
   allegato           String?
   note_admin         String?
 }
@@ -87,7 +87,7 @@ model Corso {
   anno              Int
   cfu               Int
   id_docente        String
-  docente           Docente      @relation(fields: [id_docente], references: [id_docente])
+  docente           Docente      @relation(fields: [id_docente], references: [id_docente], onDelete: Cascade)
   id_corso_di_studi String?
   corso_di_studi    CorsoDiStudi? @relation(fields: [id_corso_di_studi], references: [id_corso_di_studi])
   bacheca           Bacheca?
@@ -112,7 +112,7 @@ model FAQ {
   data_pubblicazione DateTime @default(now())
   ultima_modifica    DateTime @updatedAt
   id_bacheca         String
-  bacheca            Bacheca  @relation(fields: [id_bacheca], references: [id_bacheca])
+  bacheca            Bacheca  @relation(fields: [id_bacheca], references: [id_bacheca], onDelete: Cascade)
   id_docente         String?
   docente            Docente? @relation(fields: [id_docente], references: [id_docente])
 }
@@ -126,7 +126,7 @@ model SlotRicevimento {
   id_docente    String
   luogo         LuogoRicevimento?
   prenotazioni  Prenotazione[]
-  docente       Docente           @relation(fields: [id_docente], references: [id_docente])
+  docente       Docente           @relation(fields: [id_docente], references: [id_docente], onDelete: Cascade)
 }
 
 model LuogoRicevimento {
@@ -137,7 +137,7 @@ model LuogoRicevimento {
   latitudine  Float?
   longitudine Float?
   id_slot     String          @unique
-  slot        SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
+  slot        SlotRicevimento @relation(fields: [id_slot], references: [id_slot], onDelete: Cascade)
 }
 
 model Prenotazione {
@@ -149,8 +149,8 @@ model Prenotazione {
   matricola_studente String
   id_slot            String
   documenti          Documento[]
-  slot               SlotRicevimento @relation(fields: [id_slot], references: [id_slot])
-  studente           Studente        @relation(fields: [matricola_studente], references: [matricola])
+  slot               SlotRicevimento @relation(fields: [id_slot], references: [id_slot], onDelete: Cascade)
+  studente           Studente        @relation(fields: [matricola_studente], references: [matricola], onDelete: Cascade)
 }
 
 model Documento {
@@ -161,7 +161,7 @@ model Documento {
   data_caricamento DateTime     @default(now())
   percorso_file    String
   id_prenotazione  String
-  prenotazione     Prenotazione @relation(fields: [id_prenotazione], references: [id_prenotazione])
+  prenotazione     Prenotazione @relation(fields: [id_prenotazione], references: [id_prenotazione], onDelete: Cascade)
 }
 
 model Notifica {

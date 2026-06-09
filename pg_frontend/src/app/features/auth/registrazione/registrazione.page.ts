@@ -90,7 +90,6 @@ export class RegistrazionePage implements OnInit {
     this.authService.registraStudente(payload).subscribe({
       next: (session: UserSession) => {
         this.inCaricamento = false;
-        localStorage.setItem('unimeet_session', JSON.stringify(session));
         this.router.navigateByUrl('/dashboard-studente');
       },
       error: (err: HttpErrorResponse) => {

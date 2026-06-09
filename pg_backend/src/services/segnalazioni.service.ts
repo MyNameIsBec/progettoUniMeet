@@ -55,7 +55,7 @@ export async function createSegnalazione(data: {
     },
   });
 
-  notificaTuttiAdmin(
+  await notificaTuttiAdmin(
     'Nuova segnalazione studente',
     `Nuova segnalazione da ${studente.nome} ${studente.cognome}: ${data.oggetto}`,
     'nuova_segnalazione'
@@ -218,7 +218,7 @@ export async function createSegnalazioneDocente(data: {
     },
   });
 
-  notificaTuttiAdmin(
+  await notificaTuttiAdmin(
     'Nuova segnalazione docente',
     `Nuova segnalazione dal docente ${docente.nome} ${docente.cognome}: ${data.oggetto}`,
     'nuova_segnalazione'

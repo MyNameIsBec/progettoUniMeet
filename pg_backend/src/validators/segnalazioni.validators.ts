@@ -4,13 +4,13 @@ import { Request, Response, NextFunction } from 'express';
 export const creaSegnalazioneSchema = [
   body('oggetto').isString().notEmpty().trim().withMessage('Oggetto obbligatorio'),
   body('descrizione').isString().notEmpty().trim().withMessage('Descrizione obbligatoria'),
-  body('matricola_studente').isString().notEmpty().trim().withMessage('Matricola studente obbligatoria'),
+  body('matricola_studente').optional().isString().trim(),
 ];
 
 export const creaSegnalazioneDocenteSchema = [
   body('oggetto').isString().notEmpty().trim().withMessage('Oggetto obbligatorio'),
   body('descrizione').isString().notEmpty().trim().withMessage('Descrizione obbligatoria'),
-  body('id_docente').isString().notEmpty().trim().withMessage('ID docente obbligatorio'),
+  body('id_docente').optional().isString().trim(),
 ];
 
 export const aggiornaStatoSchema = [

@@ -45,7 +45,7 @@ interface CorsiGrouped {
   }
 
   formVuoto(): CreaAccountRequest {
-    return { ruolo: ' ', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '', corsi: [] };
+    return { ruolo: '', nome: '', cognome: '', email: '', password: '', corsoDiStudi: '', corsi: [] };
   }
 
   caricaCorsi() {
