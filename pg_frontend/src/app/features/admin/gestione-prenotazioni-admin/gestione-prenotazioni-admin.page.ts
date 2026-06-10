@@ -50,7 +50,7 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
   }
 
   cambiaStato(p: PrenotazioneAdmin, nuovoStato: string) {
-    this.admin.aggiornaStatoPrenotazione(p.id, nuovoStato).subscribe({
+    this.admin.aggiornaStatoPrenotazione(p.id, nuovoStato.toUpperCase()).subscribe({
       next: () => this.caricaPrenotazioni(this.filtroStato || undefined),
     });
   }
@@ -95,20 +95,20 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
 
   statoLabel(stato: string): string {
     const map: Record<string, string> = {
-      IN_ATTESA: 'In attesa',
-      CONFERMATA: 'Confermata',
-      RIFIUTATA: 'Rifiutata',
-      ANNULLATA: 'Annullata',
+      in_attesa: 'In attesa',
+      confermata: 'Confermata',
+      rifiutata: 'Rifiutata',
+      annullata: 'Annullata',
     };
     return map[stato] ?? stato;
   }
 
   statoIcona(stato: string): string {
     const map: Record<string, string> = {
-      IN_ATTESA: 'time-outline',
-      CONFERMATA: 'checkmark-circle-outline',
-      RIFIUTATA: 'close-circle-outline',
-      ANNULLATA: 'ban-outline',
+      in_attesa: 'time-outline',
+      confermata: 'checkmark-circle-outline',
+      rifiutata: 'close-circle-outline',
+      annullata: 'ban-outline',
     };
     return map[stato] ?? 'help-circle-outline';
   }

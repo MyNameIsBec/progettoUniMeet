@@ -259,12 +259,14 @@ ion-chip.active {
     color: #fde047;
 }
 
-:host-context(body.dark) .status-confermato {
+:host-context(body.dark) .status-confermato,
+:host-context(body.dark) .status-confermata {
     background: rgba(22, 163, 74, 0.15);
     color: #4ade80;
 }
 
-:host-context(body.dark) .status-rifiutato {
+:host-context(body.dark) .status-rifiutato,
+:host-context(body.dark) .status-rifiutata {
     background: rgba(239, 68, 68, 0.15);
     color: #f87171;
 }
