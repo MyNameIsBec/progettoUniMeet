@@ -33,9 +33,9 @@ export interface SlotGriglia {
 }
 export async function getStats(): Promise<AdminStats> {
   const oggi = new Date();
-  oggi.setUTCHours(0, 0, 0, 0);
+  oggi.setHours(0, 0, 0, 0);
   const domani = new Date(oggi);
-  domani.setUTCDate(domani.getUTCDate() + 1);
+  domani.setDate(domani.getDate() + 1);
   const [totaleStudenti, totaleDocenti, totalePrenotazioni, slotAttivi, prenotazioniOggi] =
     await Promise.all([
       prisma.studente.count(),
