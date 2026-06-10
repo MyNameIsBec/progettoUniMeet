@@ -113,6 +113,8 @@ export class RiepilogoPrenotazioniPage implements OnInit {
       if (this.statoSelezionato === 'future') {
         matchStato = (p.stato === 'confermata' || p.stato === 'in_attesa') &&
           new Date(`${p.data}T${p.ora}`) > adesso;
+      } else if (this.statoSelezionato === 'confermata' || this.statoSelezionato === 'in_attesa') {
+        matchStato = p.stato === this.statoSelezionato && new Date(`${p.data}T${p.ora}`) > adesso;
       } else if (this.statoSelezionato !== 'tutti') {
         matchStato = p.stato === this.statoSelezionato;
       }

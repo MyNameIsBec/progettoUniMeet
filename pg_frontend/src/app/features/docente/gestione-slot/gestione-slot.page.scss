@@ -43,6 +43,15 @@
     }
 }
 
+.create-slot-btn {
+    margin-bottom: 24px;
+    --border-radius: 16px;
+    font-weight: 900;
+    font-size: 1rem;
+    height: 52px;
+    --box-shadow: 0 8px 24px rgba(37, 99, 235, 0.25);
+}
+
 ion-modal.slot-modal {
     --width: 800px !important;
     --height: 96% !important;

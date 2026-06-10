@@ -13,6 +13,7 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
+  IonModal,
 } from '@ionic/angular/standalone';
 import { AlertController, ToastController } from '@ionic/angular';
 import { DashboardLayoutComponent } from '../../../components/dashboard-layout/dashboard-layout.component';
@@ -31,6 +32,7 @@ import { ErroriService } from '../../../core/services/errori';@Component({  se
     IonInput,
     IonSelect,
     IonSelectOption,
+    IonModal,
     DashboardLayoutComponent
   ]})export class GestioneSlotPage implements OnInit, AfterViewInit {  @ViewChild('mapContainer') mapContainer!: ElementRef;  private map: L.Map | null = null;  private marker: L.Marker | null = null;  private defaultLat = 38.1157;  private defaultLng = 13.3615;  docente: any = null;  slots: any[] = [];  filteredSlots: any[] = [];  slotAttiviCount = 0;  disponibiliCount = 0;  pieniCount = 0;  annullatiCount = 0;  searchTerm = '';  filtroStato = 'tutti';    inModifica = false;
   slotInModificaId: string | null = null;

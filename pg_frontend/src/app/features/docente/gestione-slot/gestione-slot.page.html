@@ -86,91 +86,11 @@
     <!-- COLONNA SINISTRA -->
     <div class="slot-left-column">
 
-      <!-- CREA / MODIFICA SLOT -->
-      <ion-card class="form-card">
-        <ion-card-header>
-          <ion-card-title>
-            <ion-icon name="create-outline"></ion-icon>
-            @if (inModifica) {
-              Modifica slot esistente
-            } @else {
-              Crea nuovo slot
-            }
-          </ion-card-title>
-        </ion-card-header>
-
-        <ion-card-content>
-          <div class="slot-form-grid">
-
-            <div class="custom-field">
-              <label>Giorno *</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="date" [(ngModel)]="form.data"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field">
-              <label>Ora inizio *</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="time" [(ngModel)]="form.oraInizio"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field">
-              <label>Ora fine *</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="time" [(ngModel)]="form.oraFine"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field">
-              <label>Aula / Studio</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="text" placeholder="Es. Stanza 12 o Aula 5" [(ngModel)]="form.nomeAula"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field">
-              <label>Edificio</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="text" placeholder="Es. Edificio D" [(ngModel)]="form.edificio"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field">
-              <label>Piano</label>
-              <ion-item lines="none" class="custom-item">
-                <ion-input type="text" placeholder="Es. Piano 1 o Terra" [(ngModel)]="form.piano"></ion-input>
-              </ion-item>
-            </div>
-
-            <div class="custom-field map-field">
-              <label>Seleziona posizione sulla mappa</label>
-              <div #mapContainer class="slot-map"></div>
-              @if (form.latitudine != null && form.longitudine != null) {
-                <small class="coords-hint">Lat: {{ form.latitudine.toFixed(6) }}, Lng: {{ form.longitudine.toFixed(6) }}</small>
-              }
-            </div>
-
-          </div>
-
-          <div class="form-actions">
-            <ion-button (click)="salvaSlot()" [disabled]="salvataggioInCorso">
-              <ion-icon name="save-outline" slot="start"></ion-icon>
-              @if (salvataggioInCorso) {
-                Salvataggio...
-              } @else {
-                Salva slot
-              }
-            </ion-button>
-
-            <ion-button fill="outline" (click)="resetForm()">
-              <ion-icon name="refresh-outline" slot="start"></ion-icon>
-              Annulla
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
+      <!-- CREA NUOVO SLOT -->
+      <ion-button expand="block" class="create-slot-btn" (click)="apriModaleCrea()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Crea nuovo slot
+      </ion-button>
 
       <!-- LISTA SLOT -->
       <ion-card class="slots-list-card">
@@ -347,5 +267,97 @@
     </aside>
 
   </section>
+
+  <!-- MODALE CREA/MODIFICA SLOT -->
+  <ion-modal [isOpen]="mostraModale" (didDismiss)="chiudiModale()" class="slot-modal">
+    <ng-template>
+      <div class="modal-root-native">
+        <div class="modal-toolbar-premium-native">
+          <div class="header-left">
+            <ion-icon name="create-outline" style="color:white;font-size:20px"></ion-icon>
+            <span class="header-title">{{ modaleTitolo }}</span>
+          </div>
+          <div class="header-right">
+            <ion-button class="header-close-btn" fill="clear" (click)="chiudiModale()">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+        <div class="modal-scroll-area">
+          <div class="modal-slot-content">
+            <div class="slot-form-grid">
+
+              <div class="custom-field">
+                <label>Giorno *</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="date" [(ngModel)]="form.data"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field">
+                <label>Ora inizio *</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="time" [(ngModel)]="form.oraInizio"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field">
+                <label>Ora fine *</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="time" [(ngModel)]="form.oraFine"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field">
+                <label>Aula / Studio</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="text" placeholder="Es. Stanza 12 o Aula 5" [(ngModel)]="form.nomeAula"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field">
+                <label>Edificio</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="text" placeholder="Es. Edificio D" [(ngModel)]="form.edificio"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field">
+                <label>Piano</label>
+                <ion-item lines="none" class="custom-item">
+                  <ion-input type="text" placeholder="Es. Piano 1 o Terra" [(ngModel)]="form.piano"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="custom-field map-field">
+                <label>Seleziona posizione sulla mappa</label>
+                <div #mapContainer class="slot-map"></div>
+                @if (form.latitudine != null && form.longitudine != null) {
+                  <small class="coords-hint">Lat: {{ form.latitudine.toFixed(6) }}, Lng: {{ form.longitudine.toFixed(6) }}</small>
+                }
+              </div>
+
+            </div>
+
+            <div class="form-actions">
+              <ion-button class="header-confirm-btn" (click)="salvaSlot()" [disabled]="salvataggioInCorso">
+                <ion-icon name="save-outline" slot="start"></ion-icon>
+                @if (salvataggioInCorso) {
+                  Salvataggio...
+                } @else {
+                  Salva slot
+                }
+              </ion-button>
+
+              <ion-button fill="outline" (click)="chiudiModale()">
+                <ion-icon name="close-outline" slot="start"></ion-icon>
+                Annulla
+              </ion-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
 
 </app-dashboard-layout>

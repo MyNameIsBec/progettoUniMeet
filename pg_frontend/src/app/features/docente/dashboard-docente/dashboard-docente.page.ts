@@ -69,13 +69,13 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
       const oggiStr = this.getLocalOggiStr();
       this.prenotazioniOggiCount = tuttePrenotazioni.filter(p => p.data === oggiStr && p.stato !== 'annullata').length;
       this.richiesteInAttesaCount = tuttePrenotazioni.filter(p => p.stato === 'in_attesa').length;
-      this.prossimiRicevimenti = tuttePrenotazioni.filter(p => p.stato === 'confermata' || p.stato === 'in_attesa').sort((a, b) => {
+      this.prossimiRicevimenti = tuttePrenotazioni.filter(p => (p.stato === 'confermata' || p.stato === 'in_attesa') && p.data >= oggiStr).sort((a, b) => {
         const cmp = b.data.localeCompare(a.data);
         if (cmp !== 0) return cmp;
         return (b.oraInizio || '').localeCompare(a.oraInizio || '');
       }).slice(0, 3);
 
-      this.recentiPrenotazioni = tuttePrenotazioni.sort((a, b) => {
+      this.recentiPrenotazioni = tuttePrenotazioni.filter(p => p.data >= oggiStr).sort((a, b) => {
         const cmp = b.data.localeCompare(a.data);
         if (cmp !== 0) return cmp;
         return (b.oraInizio || '').localeCompare(a.oraInizio || '');
@@ -84,11 +84,12 @@ export class DashboardDocentePage implements OnInit, OnDestroy {
       const tuttiSlots = await firstValueFrom(this.docenteService.getSlots(idDocente));
       this.slotDisponibiliCount = tuttiSlots.filter(s => s.disponibilita && new Date(s.data) >= new Date(oggiStr)).length;
 
-      const totalSlots = tuttiSlots.length;
-      const occupatiSlots = tuttiSlots.filter(s => !s.disponibilita).length;
+      const slotsFuturi = tuttiSlots.filter(s => new Date(s.data) >= new Date(oggiStr));
+      const totalSlots = slotsFuturi.length;
+      const occupatiSlots = slotsFuturi.filter(s => !s.disponibilita).length;
       this.riempimentoMedio = totalSlots > 0 ? Math.round((occupatiSlots / totalSlots) * 100) : 0;
 
-      this.recentiSlots = tuttiSlots.sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()).slice(0, 3);
+      this.recentiSlots = tuttiSlots.filter(s => new Date(s.data) >= new Date(oggiStr)).sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime()).slice(0, 3);
 
       const stats = await firstValueFrom(this.docenteService.getStatistiche(idDocente));
       if (stats && stats.argomenti) {

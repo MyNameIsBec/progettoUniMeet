@@ -54,7 +54,7 @@ export class PrenotazioniRicevutePage implements OnInit {
   completateCount = 0;
   searchTerm = '';
   filtroStato = 'tutti';
-  filtroTempo = 'storico';
+  filtroTempo = 'oggi';
   loading = true;
 
   constructor(
