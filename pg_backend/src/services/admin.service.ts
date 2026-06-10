@@ -41,7 +41,7 @@ export async function getStats(): Promise<AdminStats> {
       prisma.studente.count(),
       prisma.docente.count(),
       prisma.prenotazione.count(),
-      prisma.slotRicevimento.count({ where: { data: { gte: oggi } } }),
+      prisma.slotRicevimento.count({ where: { data: { gte: oggi }, disponibilita: true } }),
             prisma.prenotazione.count({
 
         where: {
