@@ -274,12 +274,19 @@ export async function aggiornaStatoPrenotazione(id: string, stato: string) {
         data: { disponibilita: true },
       });
     }
-    if (statoSup === 'CONFERMATA' || statoSup === 'RIFIUTATA') {
+    if (statoSup === 'CONFERMATA') {
+      await tx.slotRicevimento.update({
+        where: { id_slot: prenotazione.id_slot },
+        data: { disponibilita: false },
+      });
+    }
+    if (statoSup === 'CONFERMATA' || statoSup === 'RIFIUTATA' || statoSup === 'ANNULLATA') {
       const dataSlot = updated.slot.data.toISOString().split('T')[0];
+      const label = statoSup === 'CONFERMATA' ? 'confermata' : statoSup === 'RIFIUTATA' ? 'rifiutata' : 'annullata';
       await tx.notifica.create({
         data: {
-          titolo: `Prenotazione ${statoSup === 'CONFERMATA' ? 'confermata' : 'rifiutata'}`,
-          messaggio: `La tua prenotazione del ${dataSlot} alle ${formatTime(updated.slot.ora_inizio)} con il Prof. ${updated.slot.docente.nome} ${updated.slot.docente.cognome} è stata ${statoSup === 'CONFERMATA' ? 'CONFERMATA' : 'RIFIUTATA'}.`,
+          titolo: `Prenotazione ${label}`,
+          messaggio: `La tua prenotazione del ${dataSlot} alle ${formatTime(updated.slot.ora_inizio)} con il Prof. ${updated.slot.docente.nome} ${updated.slot.docente.cognome} è stata ${label.toUpperCase()}.`,
           tipo: 'stato_prenotazione',
           destinatario_id: updated.matricola_studente,
           destinatario_ruolo: 'STUDENTE',

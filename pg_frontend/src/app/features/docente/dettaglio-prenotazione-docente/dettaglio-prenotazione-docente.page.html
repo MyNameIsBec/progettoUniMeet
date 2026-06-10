@@ -17,8 +17,8 @@
       <p>Dettaglio della prenotazione ricevuta da {{ prenotazione.studente || 'studente' }}.</p>
     </div>
     <span class="page-status" [ngClass]="getStatusClass(prenotazione.stato)">
-      <ion-icon [name]="isStato(prenotazione.stato, 'confermata') ? 'checkmark-circle-outline' : isStato(prenotazione.stato, 'in_attesa') ? 'time-outline' : isStato(prenotazione.stato, 'rifiutata') ? 'close-circle-outline' : 'ban-outline'"></ion-icon>
-      {{ isStato(prenotazione.stato, 'confermata') ? 'Confermata' : isStato(prenotazione.stato, 'in_attesa') ? 'In attesa' : isStato(prenotazione.stato, 'rifiutata') ? 'Rifiutata' : 'Annullata' }}
+      <ion-icon [name]="isStato(prenotazione.stato, 'confermata') ? 'checkmark-circle-outline' : isStato(prenotazione.stato, 'in_attesa') ? 'time-outline' : isStato(prenotazione.stato, 'completata') ? 'checkmark-done-outline' : isStato(prenotazione.stato, 'rifiutata') ? 'close-circle-outline' : 'ban-outline'"></ion-icon>
+      {{ isStato(prenotazione.stato, 'confermata') ? 'Confermata' : isStato(prenotazione.stato, 'in_attesa') ? 'In attesa' : isStato(prenotazione.stato, 'completata') ? 'Completata' : isStato(prenotazione.stato, 'rifiutata') ? 'Rifiutata' : 'Annullata' }}
     </span>
   </div>
 
@@ -31,7 +31,7 @@
           </div>
           <div>
             <span>STATO PRENOTAZIONE</span>
-            <h3>{{ isStato(prenotazione.stato, 'confermata') ? 'Confermata' : isStato(prenotazione.stato, 'in_attesa') ? 'In attesa di conferma' : isStato(prenotazione.stato, 'rifiutata') ? 'Rifiutata' : 'Annullata' }}</h3>
+            <h3>{{ isStato(prenotazione.stato, 'confermata') ? 'Confermata' : isStato(prenotazione.stato, 'in_attesa') ? 'In attesa di conferma' : isStato(prenotazione.stato, 'completata') ? 'Completata' : isStato(prenotazione.stato, 'rifiutata') ? 'Rifiutata' : 'Annullata' }}</h3>
             <p>Ricevimento prenotato per il {{ formattaData(prenotazione.data) }}</p>
           </div>
         </div>
