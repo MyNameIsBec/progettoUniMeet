@@ -70,6 +70,7 @@ export async function createPrenotazione(
             id_docente: slot.id_docente,
             data: slot.data,
           },
+          stato_prenotazione: { in: ['IN_ATTESA', 'CONFERMATA', 'COMPLETATA'] },
         },
       });
       if (stessoGiorno) throw new Error('Hai già una prenotazione con questo docente nella stessa data');
