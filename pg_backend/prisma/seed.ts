@@ -207,28 +207,10 @@ async function main() {
     { domanda: 'Che prerequisiti servono per Fondamenti di Informatica?', risposta: 'Nessun prerequisito formale, il corso parte da zero con Python.', corso: 'corso-10', docente: 'paolo.russo@unimeet.it' },
     { domanda: 'Come si svolge l\'esame?', risposta: 'Prova scritta con esercizi di programmazione e domande di teoria.', corso: 'corso-10', docente: 'paolo.russo@unimeet.it' },
   ];
-  console.log('\n── GiornoBloccato ──');
-  const giorniBloccati = [
-    { data: d(-36), motivo: 'Festa della Liberazione' },
-    { data: d(-30), motivo: 'Festa del Lavoro' },
-    { data: d(2),   motivo: 'Festa della Repubblica' },
-    { data: d(15),  motivo: 'Chiusura straordinaria per manutenzione' },
-  ];
-  for (const g of giorniBloccati) {
-    const gDate = new Date(g.data);
-    gDate.setHours(0, 0, 0, 0);
-    await prisma.giornoBloccato.upsert({
-      where: { data: gDate },
-      update: {},
-      create: { data: gDate, motivo: g.motivo },
-    });
-    console.log(`  ${g.data.toISOString().slice(0, 10)} — ${g.motivo}`);
-  }
   console.log('\n✅ Seed completato con successo!');
   console.log(`   - ${studentData.length} studenti (MAT006 senza prenotazioni)`);
   console.log(`   - ${docenteData.length} docenti`);
   console.log(`   - 0 documenti preimpostati`);
-  console.log(`   - ${giorniBloccati.length} giorni bloccati`);
 }
 main()
   .catch((e) => {
