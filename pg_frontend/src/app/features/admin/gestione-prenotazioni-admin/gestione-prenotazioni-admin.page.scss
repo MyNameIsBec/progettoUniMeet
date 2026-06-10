@@ -133,6 +133,11 @@ ion-chip.active {
   color: var(--text-muted);
 }
 
+.status-completata {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
 .studente-cell {
   font-weight: 600;
   white-space: nowrap;
@@ -274,6 +279,11 @@ ion-chip.active {
 :host-context(body.dark) .status-annullata {
     background: rgba(100, 116, 139, 0.2);
     color: #94a3b8;
+}
+
+:host-context(body.dark) .status-completata {
+    background: rgba(147, 51, 234, 0.15);
+    color: #c084fc;
 }
 
 :host-context(body.dark) .argomento-cell p {

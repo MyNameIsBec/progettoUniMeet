@@ -32,42 +32,6 @@
         </div>
       </ion-card-content>
     </ion-card>
-
-    <ion-card class="summary-card">
-      <ion-card-content>
-        <div class="summary-icon orange">
-          <ion-icon name="time-outline"></ion-icon>
-        </div>
-        <div>
-          <span>Promemoria</span>
-          <strong>{{ info.promemoria }}</strong>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="summary-card">
-      <ion-card-content>
-        <div class="summary-icon green">
-          <ion-icon name="megaphone-outline"></ion-icon>
-        </div>
-        <div>
-          <span>Aggiornamenti</span>
-          <strong>{{ info.aggiornamenti }}</strong>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </section>
-
-  <!-- FILTRI -->
-  <section class="filters-row">
-    @for (f of ['Tutte', 'Non lette', 'Promemoria', 'Aggiornamenti']; track f) {
-      <button 
-        class="filter-button" 
-        [class.active]="filtroAttivo === f"
-        (click)="applicaFiltri(f)">
-        {{ f }}
-      </button>
-    }
   </section>
 
   <!-- CONTENUTO PRINCIPALE -->
@@ -75,13 +39,13 @@
     <div class="left-column">
       <ion-card class="notifications-list-card">
         <ion-card-content>
-          @if (filtriNotifiche.length === 0) {
+          @if (notifiche.length === 0) {
             <div class="empty-state">
               <ion-icon name="notifications-off-outline"></ion-icon>
               <p>Non ci sono notifiche da visualizzare</p>
             </div>
           } @else {
-            @for (n of filtriNotifiche; track n.id) {
+            @for (n of notifiche; track n.id) {
               <div 
                 class="notification-item" 
                 [class.unread]="!n.letta"

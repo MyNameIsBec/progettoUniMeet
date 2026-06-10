@@ -20,12 +20,8 @@ import { ErroriService } from '../../../core/services/errori';
 export class NotificheDocentePage implements OnInit {
   docenteId: string = '';
   notifiche: Notifica[] = [];
-  filtriNotifiche: Notifica[] = [];
-  filtroAttivo: string = 'Tutte';
   info = {
     nonLette: 0,
-    promemoria: 0,
-    aggiornamenti: 0
   };
 
   constructor(
@@ -48,7 +44,6 @@ export class NotificheDocentePage implements OnInit {
     this.notificaService.getNotifiche(this.docenteId).subscribe({
       next: (data) => {
         this.notifiche = data;
-        this.applicaFiltri(this.filtroAttivo);
         this.aggiornaStatistiche();
       },
       error: (err) => {
@@ -60,26 +55,6 @@ export class NotificheDocentePage implements OnInit {
 
   aggiornaStatistiche() {
     this.info.nonLette = this.notifiche.filter(n => !n.letta).length;
-    this.info.promemoria = this.notifiche.filter(n => n.tipo === 'PROMEMORIA').length;
-    this.info.aggiornamenti = this.notifiche.filter(n => n.tipo === 'MODIFICA' || n.tipo === 'SISTEMA').length;
-  }
-
-  applicaFiltri(filter: string) {
-    this.filtroAttivo = filter;
-    switch (filter) {
-      case 'Non lette':
-        this.filtriNotifiche = this.notifiche.filter(n => !n.letta);
-        break;
-      case 'Promemoria':
-        this.filtriNotifiche = this.notifiche.filter(n => n.tipo === 'PROMEMORIA');
-        break;
-      case 'Aggiornamenti':
-        this.filtriNotifiche = this.notifiche.filter(n => n.tipo === 'MODIFICA' || n.tipo === 'SISTEMA');
-        break;
-      default:
-        this.filtriNotifiche = this.notifiche;
-        break;
-    }
   }
 
   async dettagliNotifica(n: Notifica) {
@@ -121,7 +96,6 @@ export class NotificheDocentePage implements OnInit {
     if (!this.docenteId) return;
     this.notificaService.cancellaNotificheLette(this.docenteId).subscribe(() => {
       this.notifiche = this.notifiche.filter(n => !n.letta);
-      this.applicaFiltri(this.filtroAttivo);
       this.aggiornaStatistiche();
     });
   }

@@ -18,14 +18,10 @@ import { AuthService } from '../../../core/services/auth';
 
 export class NotificheStudentePage implements OnInit {
   notifiche: Notifica[] = [];
-  filtriNotifiche: Notifica[] = [];
-  filtroAttivo: string = 'Tutte';
   matricola: string ='';
 
   info = {
     nonLette: 0,
-    promemoria: 0,
-    aggiornamenti: 0
   };
 
   constructor(
@@ -51,7 +47,6 @@ export class NotificheStudentePage implements OnInit {
     this.notificaService.getNotifiche(this.matricola).subscribe({
       next: (data) => {
         this.notifiche = data;
-        this.applicaFiltri(this.filtroAttivo);
         this.aggiornaStatistiche();
       },
       error: (err) => console.error('Errore nel caricamento notifiche', err)
@@ -60,26 +55,6 @@ export class NotificheStudentePage implements OnInit {
 
   aggiornaStatistiche() {
     this.info.nonLette = this.notifiche.filter(n => !n.letta).length;
-    this.info.promemoria = this.notifiche.filter(n => n.tipo === 'PROMEMORIA').length;
-    this.info.aggiornamenti = this.notifiche.filter(n => n.tipo === 'MODIFICA' || n.tipo === 'SISTEMA').length;
-  }
-
-  applicaFiltri(filter: string) {
-    this.filtroAttivo = filter;
-    switch (filter) {
-      case 'Non lette':
-        this.filtriNotifiche = this.notifiche.filter(n => !n.letta);
-        break;
-      case 'Promemoria':
-        this.filtriNotifiche = this.notifiche.filter(n => n.tipo === 'PROMEMORIA');
-        break;
-      case 'Aggiornamenti':
-        this.filtriNotifiche = this.notifiche.filter(n => n.tipo === 'MODIFICA' || n.tipo === 'SISTEMA');
-        break;
-      default:
-        this.filtriNotifiche = this.notifiche;
-        break;
-    }
   }
 
   async dettagliNotifica(n: Notifica) {
@@ -120,7 +95,6 @@ export class NotificheStudentePage implements OnInit {
   cancellaNotificheLette() {
     this.notificaService.cancellaNotificheLette(this.matricola).subscribe(() => {
       this.notifiche = this.notifiche.filter(n => !n.letta);
-      this.applicaFiltri(this.filtroAttivo);
       this.aggiornaStatistiche();
     });
   }

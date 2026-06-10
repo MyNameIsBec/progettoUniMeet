@@ -27,8 +27,8 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
 
   ngOnInit() {
     const params = this.route.snapshot.queryParams;
-    if (params['stato']) this.filtroStato = params['stato'];
-    this.caricaPrenotazioni();
+    if (params['stato']) this.filtroStato = params['stato'].toUpperCase();
+    this.caricaPrenotazioni(this.filtroStato || undefined);
   }
 
   caricaPrenotazioni(stato?: string) {
@@ -99,6 +99,7 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
       confermata: 'Confermata',
       rifiutata: 'Rifiutata',
       annullata: 'Annullata',
+      completata: 'Completata',
     };
     return map[stato] ?? stato;
   }
@@ -109,6 +110,7 @@ import { AdminService, PrenotazioneAdmin } from 'src/app/core/services/admin';
       confermata: 'checkmark-circle-outline',
       rifiutata: 'close-circle-outline',
       annullata: 'ban-outline',
+      completata: 'checkmark-done-outline',
     };
     return map[stato] ?? 'help-circle-outline';
   }

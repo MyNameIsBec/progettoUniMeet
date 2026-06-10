@@ -18,7 +18,13 @@ export const creaSlotSchema = [
 export const modificaSlotSchema = [
   body('data').optional().isString().notEmpty().matches(/^\d{4}-\d{2}-\d{2}$/),
   body('oraInizio').optional().isString().notEmpty().matches(/^\d{2}:\d{2}$/),
-  body('oraFine').optional().isString().notEmpty().matches(/^\d{2}:\d{2}$/),
+  body('oraFine').optional().isString().notEmpty().matches(/^\d{2}:\d{2}$/)
+    .custom((value, { req }) => {
+      const inizio = req.body.oraInizio;
+      if (inizio && value <= inizio) throw new Error('oraFine deve essere dopo oraInizio');
+      return true;
+    }),
+  body('data').optional().isString().notEmpty().matches(/^\d{4}-\d{2}-\d{2}$/),
   body('disponibilita').optional().isBoolean(),
   body('luogo').optional().isObject(),
   body('luogo.nomeAula').if(body('luogo').exists()).isString().notEmpty(),
